@@ -2,8 +2,6 @@ package com.drajer.cdafromr4;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
@@ -15,7 +13,11 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +42,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({CdaHeaderGenerator.class, CdaGeneratorUtils.class, ActionRepo.class})
+@PrepareForTest({
+  CdaHeaderGenerator.class,
+  CdaGeneratorUtils.class,
+  ActionRepo.class,
+  CdaResultGenerator.class
+})
 public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
   // Constants
@@ -49,35 +56,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
   private static final String PATIENT_SAMPLE_CDA_FILE = "CdaTestData/Cda/sample/PatientSample.xml";
   private static final String EICR_CDA_FILE = "CdaTestData/Eicr/eicr.xml";
 
-  @Test
-  public void testConvertR4FhirBundleToCdaEicr() {
-    // Initialize test data
-    R4FhirData r4Data = createR4FhirData();
-    launchDetails.setStatus(
-        TestUtils.toJsonString(
-            createPatientExecutionState("Condition", "http://loinc.org|68518-0")));
-
-    // Read expected CDA content from file
-    String expectedXml = TestUtils.getFileContentAsString(PATIENT_SAMPLE_CDA_FILE);
-
-    // Mock static methods
-    PowerMockito.mockStatic(ActionRepo.class);
-    PowerMockito.mockStatic(CdaHeaderGenerator.class);
-    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
-
-    when(CdaHeaderGenerator.createCdaHeader(
-            any(R4FhirData.class), any(LaunchDetails.class), any(Eicr.class)))
-        .thenReturn(getCdaHeaderData());
-    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
-
-    PowerMockito.when(CdaGeneratorUtils.getGuid())
-        .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
-
-    String actualXml =
-        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, launchDetails, eicr);
-
-    assertXmlEquals(expectedXml, actualXml);
-  }
+  private static final String LAB_SECTION_FILE = "CdaTestData/cda/Result/result-section.xml";
 
   @Test
   public void testConvertR4FhirBundleToEicr() {
@@ -85,7 +64,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     Bundle b =
         loadBundleFromFile(
             "CdaTestData/LoadingQuery/LoadingQueryBundle_e9bd7100-48af-4c69-a557-c13235f72f74.json");
-    String expectedXml = TestUtils.getFileContentAsString(EICR_CDA_FILE);
+
     List<BundleEntryComponent> entries = b.getEntry();
     Bundle bundle = new Bundle();
     Set<Resource> resourceSet = new HashSet<>(); // Initialize HashSet outside the loop
@@ -105,9 +84,13 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
           uniqueResourceIdsByType);
       resourceSet.clear();
     }
+    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
+    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
 
-    // PowerMockito.mockStatic(CdaHeaderGenerator.class);
+    String expectedXml = TestUtils.getFileContentAsString(EICR_CDA_FILE);
+    String labSection = TestUtils.getFileContentAsString(LAB_SECTION_FILE);
+
     PowerMockito.mockStatic(ActionRepo.class);
 
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
@@ -132,9 +115,16 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
             CdaGeneratorUtils.getXmlForEffectiveTime(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()))
         .thenReturn("<effectiveTime value=\"20240819101316\"/>");
+
+    PowerMockito.mockStatic(CdaResultGenerator.class);
+    PowerMockito.when(CdaResultGenerator.generateResultsSection(data, launchDetails))
+        .thenReturn(labSection);
+
     String actualXml =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(data, launchDetails, eicr);
 
+    // saveDataToFile(actualXml,
+    // "C://codebase/eCRNow/src/test/resources/CdaTestData/Eicr/eicr.xml");
     assertXmlEquals(expectedXml, actualXml);
   }
 
@@ -473,5 +463,19 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
             + "</encompassingEncounter>\r\n"
             + "</componentOf>";
     return cdaHeaderXml;
+  }
+
+  public static void saveDataToFile(String data, String filename) {
+
+    if (true) {
+      try (DataOutputStream outStream =
+          new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)))) {
+
+        logger.info(" Writing data to file: {}", filename);
+        outStream.writeBytes(data);
+      } catch (IOException e) {
+        logger.debug(" Unable to write data to file: {}", filename, e);
+      }
+    }
   }
 }

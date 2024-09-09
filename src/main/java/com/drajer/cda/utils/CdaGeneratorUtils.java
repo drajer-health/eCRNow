@@ -226,6 +226,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForCD(
       String cdName, String code, String codeSystem, String codeSystemName, String displayName) {
+
     if (!StringUtils.isEmpty(displayName)) {
       return CdaGeneratorConstants.START_XMLTAG
           + cdName

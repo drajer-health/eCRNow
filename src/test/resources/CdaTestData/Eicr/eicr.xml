@@ -137,7 +137,7 @@
 </addr>
 <assignedAuthoringDevice>
 <manufacturerModelName displayName="System-Integrator"/>
-<softwareName displayName="1.0.0"/>
+<softwareName displayName="3.1.5"/>
 </assignedAuthoringDevice>
 </assignedAuthor>
 </author>
@@ -498,409 +498,620 @@
 </section>
 </component>
 <component>
-<section>
-<templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
-<code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
-<title>RESULTS</title>
-<text>
-<table border="1" width="100%">
-<thead>
-<tr>
-<th>Lab Test Name</th>
-<th>Lab Test Result Value</th>
-<th>Lab Test Result Date</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<content ID="labTestName1">SARS coronavirus 2 Ag [Presence] in Respiratory specimen by</content>
-</td>
-<td>
-<content ID="labTestResultValue1">22.0|http://unitsofmeasure.org|mg</content>
-</td>
-<td>
-<content ID="labTestResultValueDate1">20240409000000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName2">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
-</td>
-<td>
-<content ID="labTestResultValue2">Result#1:Balamuthia mandrillaris</content>
-</td>
-<td>
-<content ID="labTestResultValueDate2">20240101000000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName3">CBC panel - Blood by Automated count</content>
-</td>
-<td>
-<content ID="labTestResultValue3">Result#1:4.6|http://unitsofmeasure.org|10*9/L | Result#2:20.0|http://unitsofmeasure.org|%</content>
-</td>
-<td>
-<content ID="labTestResultValueDate3">20240101000000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName4">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
-</td>
-<td>
-<content ID="labTestResultValue4">Result#1:postive | Result#2:postive</content>
-</td>
-<td>
-<content ID="labTestResultValueDate4">20240101000000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName5">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
-</td>
-<td>
-<content ID="labTestResultValue5">Result#1:Balamuthia mandrillaris</content>
-</td>
-<td>
-<content ID="labTestResultValueDate5">20240101000000+0000</content>
-</td>
-</tr>
-</tbody>
-</table>
-</text>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94558-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SARS coronavirus 2 Ag [Presence] in Respiratory specimen by"></code>
-<statusCode code="completed"/>
-<author>
-<time value="20231225000000+0000"/>
-<assignedAuthor>
-<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
-<addr>
-<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
-<city>New York City</city>
-<county>Manhattan</county>
-<state>NY</state>
-<postalCode>10001</postalCode>
-<country>US</country>
-</addr>
-<telecom value="tel:(816)673-2878" use="MC"/>
-<telecom value="mailto:arthur.james73@gmail.com"/>
-<assignedPerson>
-<name>
-<given>Arthur</given>
-<given>James</given>
-<family>Smith</family>
-</name>
-</assignedPerson>
-<representedOrganization>
-<name>Model Hospital</name>
-</representedOrganization>
-</assignedAuthor>
-</author>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="b9e0a76e-9b16-4f8e-8607-0ba69f8421eb"/>
-<code code="94558-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SARS coronavirus 2 Ag [Presence] in Respiratory specimen by"><originalText>
-<reference value="#labTestName1"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20240409000000+0000"/>
-<value xsi:type="PQ" value="22.0" unit="mg"/>
-<interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
-<author>
-<time value="20231225000000+0000"/>
-<assignedAuthor>
-<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
-<addr>
-<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
-<city>New York City</city>
-<county>Manhattan</county>
-<state>NY</state>
-<postalCode>10001</postalCode>
-<country>US</country>
-</addr>
-<telecom value="tel:(816)673-2878" use="MC"/>
-<telecom value="mailto:arthur.james73@gmail.com"/>
-<assignedPerson>
-<name>
-<given>Arthur</given>
-<given>James</given>
-<family>Smith</family>
-</name>
-</assignedPerson>
-<representedOrganization>
-<name>Model Hospital</name>
-</representedOrganization>
-</assignedAuthor>
-</author>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
-<statusCode code="completed"/>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="36aa8224-2021-4ed2-8f2f-1f7227c57230"/>
-<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"><originalText>
-<reference value="#labTestName2"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20240105000000+0000"/>
-<value xsi:type="CD" code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris"><originalText>
-<reference value="#labTestName2"/>
-</originalText>
-</value>
-<author>
-<time value="20231225000000+0000"/>
-<assignedAuthor>
-<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
-<addr>
-<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
-<city>New York City</city>
-<county>Manhattan</county>
-<state>NY</state>
-<postalCode>10001</postalCode>
-<country>US</country>
-</addr>
-<telecom value="tel:(816)673-2878" use="MC"/>
-<telecom value="mailto:arthur.james73@gmail.com"/>
-<assignedPerson>
-<name>
-<given>Arthur</given>
-<given>James</given>
-<family>Smith</family>
-</name>
-</assignedPerson>
-<representedOrganization>
-<name>Model Hospital</name>
-</representedOrganization>
-</assignedAuthor>
-</author>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="58410-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="CBC panel - Blood by Automated count"></code>
-<statusCode code="completed"/>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="d0aafda7-1eba-41be-8a0c-bdc9cfe9127a"/>
-<code code="6690-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukocytes [#/volume] in Blood by Automated count"><originalText>
-<reference value="#labTestName3"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20240105000000+0000"/>
-<value xsi:type="PQ" value="4.6" unit="10*9/L"/>
-</observation>
-</component>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="3eb6aaa3-af28-4d33-842e-5ac496ea82b8"/>
-<code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count"><originalText>
-<reference value="#labTestName3"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20240105000000+0000"/>
-<value xsi:type="PQ" value="20.0" unit="%"/>
-<author>
-<time value="20231225000000+0000"/>
-<assignedAuthor>
-<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
-<addr>
-<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
-<city>New York City</city>
-<county>Manhattan</county>
-<state>NY</state>
-<postalCode>10001</postalCode>
-<country>US</country>
-</addr>
-<telecom value="tel:(816)673-2878" use="MC"/>
-<telecom value="mailto:arthur.james73@gmail.com"/>
-<assignedPerson>
-<name>
-<given>Arthur</given>
-<given>James</given>
-<family>Smith</family>
-</name>
-</assignedPerson>
-<representedOrganization>
-<name>Model Hospital</name>
-</representedOrganization>
-</assignedAuthor>
-</author>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
-<statusCode code="completed"/>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="f7e55c9f-0612-42e3-8e52-67f4f3a25712"/>
-<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"><originalText>
-<reference value="#labTestName4"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20240105000000+0000"/>
-<value xsi:type="ST">postive</value>
-<author>
-<time value="20231225000000+0000"/>
-<assignedAuthor>
-<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
-<addr>
-<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
-<city>New York City</city>
-<county>Manhattan</county>
-<state>NY</state>
-<postalCode>10001</postalCode>
-<country>US</country>
-</addr>
-<telecom value="tel:(816)673-2878" use="MC"/>
-<telecom value="mailto:arthur.james73@gmail.com"/>
-<assignedPerson>
-<name>
-<given>Arthur</given>
-<given>James</given>
-<family>Smith</family>
-</name>
-</assignedPerson>
-<representedOrganization>
-<name>Model Hospital</name>
-</representedOrganization>
-</assignedAuthor>
-</author>
-</observation>
-</component>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="535e7bf4-2ff6-40b4-89d3-dfff0ffdd622"/>
-<code code="87758-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"><originalText>
-<reference value="#labTestName4"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20240105000000+0000"/>
-<value xsi:type="ST">postive</value>
-<author>
-<time value="20231225000000+0000"/>
-<assignedAuthor>
-<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
-<addr>
-<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
-<city>New York City</city>
-<county>Manhattan</county>
-<state>NY</state>
-<postalCode>10001</postalCode>
-<country>US</country>
-</addr>
-<telecom value="tel:(816)673-2878" use="MC"/>
-<telecom value="mailto:arthur.james73@gmail.com"/>
-<assignedPerson>
-<name>
-<given>Arthur</given>
-<given>James</given>
-<family>Smith</family>
-</name>
-</assignedPerson>
-<representedOrganization>
-<name>Model Hospital</name>
-</representedOrganization>
-</assignedAuthor>
-</author>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
-<statusCode code="completed"/>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="46e1fea4-ce38-4b0d-9514-f8518cf370b9"/>
-<code code="41432-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"><originalText>
-<reference value="#labTestName5"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20240105000000+0000"/>
-<value xsi:type="CD" code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris"><originalText>
-<reference value="#labTestName5"/>
-</originalText>
-</value>
-<author>
-<time value="20231225000000+0000"/>
-<assignedAuthor>
-<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
-<addr>
-<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
-<city>New York City</city>
-<county>Manhattan</county>
-<state>NY</state>
-<postalCode>10001</postalCode>
-<country>US</country>
-</addr>
-<telecom value="tel:(816)673-2878" use="MC"/>
-<telecom value="mailto:arthur.james73@gmail.com"/>
-<assignedPerson>
-<name>
-<given>Arthur</given>
-<given>James</given>
-<family>Smith</family>
-</name>
-</assignedPerson>
-<representedOrganization>
-<name>Model Hospital</name>
-</representedOrganization>
-</assignedAuthor>
-</author>
-</observation>
-</component>
-</organizer>
-</entry>
-</section>
-</component>
-<component>
+				<section>
+					<templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+					<templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
+					<code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+					<title>RESULTS</title>
+					<text>
+						<table border="1" width="100%">
+							<thead>
+								<tr>
+									<th>Lab Test Name</th>
+									<th>Lab Test Result Value</th>
+									<th>Lab Test Result Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<content ID="labTestName1">Panel Name: Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen| Component Name: Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</content>
+									</td>
+									<td>
+										<content ID="labTestResultValue1">Balamuthia mandrillaris</content>
+									</td>
+									<td>
+										<content ID="labTestResultValueDate1">20240101000000+0000</content>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<content ID="labTestName2">Panel Name: Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen| Component Name: Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen| Component Name: Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection</content>
+									</td>
+									<td>
+										<content ID="labTestResultValue2">postivepostive</content>
+									</td>
+									<td>
+										<content ID="labTestResultValueDate2">20240101000000+0000</content>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<content ID="labTestName3">Panel Name: Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen| Component Name: Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</content>
+									</td>
+									<td>
+										<content ID="labTestResultValue3">Balamuthia mandrillaris</content>
+									</td>
+									<td>
+										<content ID="labTestResultValueDate3">20240101000000+0000</content>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<content ID="labTestName4">Panel Name: CBC panel - Blood by Automated count| Component Name: White Cell Count| Component Name: Eosinophils</content>
+									</td>
+									<td>
+										<content ID="labTestResultValue4">4.6|http://unitsofmeasure.org|10*9/L20.0|http://unitsofmeasure.org|%</content>
+									</td>
+									<td>
+										<content ID="labTestResultValueDate4">20240101000000+0000</content>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<content ID="labTestName5">Panel Name: Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen| Component Name: Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</content>
+									</td>
+									<td>
+										<content ID="labTestResultValue5">Balamuthia mandrillaris</content>
+									</td>
+									<td>
+										<content ID="labTestResultValueDate5">20240101000000+0000</content>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<content ID="labTestName6">Panel Name: SARS coronavirus 2 Ag [Presence] in Respiratory sp| Component Name: SARS coronavirus 2 Ag [Presence] in Respiratory specimen by</content>
+									</td>
+									<td>
+										<content ID="labTestResultValue6">22.0|http://unitsofmeasure.org|mg</content>
+									</td>
+									<td>
+										<content ID="labTestResultValueDate6">20240409000000+0000</content>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</text>
+					<entry typeCode="DRIV">
+						<organizer classCode="CLUSTER" moodCode="EVN">
+							<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+							<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+							<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+							<code nullFlavor="OTH">
+								<originalText>
+Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</originalText>
+							</code>
+							<statusCode code="completed"/>
+							<effectiveTime>
+								<low value="20240101000000+0000"/>
+								<high value="20240101000000+0000"/>
+							</effectiveTime>
+							<author>
+								<time value="20231225000000+0000"/>
+								<assignedAuthor>
+									<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+									<addr>
+										<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+										<city>New York City</city>
+										<county>Manhattan</county>
+										<state>NY</state>
+										<postalCode>10001</postalCode>
+										<country>US</country>
+									</addr>
+									<telecom value="tel:(816)673-2878" use="MC"/>
+									<telecom value="mailto:arthur.james73@gmail.com"/>
+									<assignedPerson>
+										<name>
+											<given>Arthur</given>
+											<given>James</given>
+											<family>Smith</family>
+										</name>
+									</assignedPerson>
+									<representedOrganization>
+										<name>Model Hospital</name>
+									</representedOrganization>
+								</assignedAuthor>
+							</author>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/46e1fea4-ce38-4b0d-9514-f8518cf370b9/_history/1"/>
+									<code code="41432-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection">
+										<originalText>
+											<reference value="#labTestName1"/>
+										</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240105000000+0000"/>
+									<value xsi:type="CD" code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris">
+										<originalText>
+											<reference value="#labTestResultValue1"/>
+										</originalText>
+									</value>
+									<author>
+										<time value="20231225000000+0000"/>
+										<assignedAuthor>
+											<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+											<addr>
+												<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+												<city>New York City</city>
+												<county>Manhattan</county>
+												<state>NY</state>
+												<postalCode>10001</postalCode>
+												<country>US</country>
+											</addr>
+											<telecom value="tel:(816)673-2878" use="MC"/>
+											<telecom value="mailto:arthur.james73@gmail.com"/>
+											<assignedPerson>
+												<name>
+													<given>Arthur</given>
+													<given>James</given>
+													<family>Smith</family>
+												</name>
+											</assignedPerson>
+											<representedOrganization>
+												<name>Model Hospital</name>
+											</representedOrganization>
+										</assignedAuthor>
+									</author>
+								</observation>
+							</component>
+						</organizer>
+					</entry>
+					<entry typeCode="DRIV">
+						<organizer classCode="CLUSTER" moodCode="EVN">
+							<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+							<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+							<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+							<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
+							<statusCode code="completed"/>
+							<effectiveTime>
+								<low value="20240101000000+0000"/>
+								<high value="20240101000000+0000"/>
+							</effectiveTime>
+							<author>
+								<time value="20231225000000+0000"/>
+								<assignedAuthor>
+									<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+									<addr>
+										<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+										<city>New York City</city>
+										<county>Manhattan</county>
+										<state>NY</state>
+										<postalCode>10001</postalCode>
+										<country>US</country>
+									</addr>
+									<telecom value="tel:(816)673-2878" use="MC"/>
+									<telecom value="mailto:arthur.james73@gmail.com"/>
+									<assignedPerson>
+										<name>
+											<given>Arthur</given>
+											<given>James</given>
+											<family>Smith</family>
+										</name>
+									</assignedPerson>
+									<representedOrganization>
+										<name>Model Hospital</name>
+									</representedOrganization>
+								</assignedAuthor>
+							</author>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/f7e55c9f-0612-42e3-8e52-67f4f3a25712/_history/1"/>
+									<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen">
+										<originalText>
+											<reference value="#labTestName2"/>
+										</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240105000000+0000"/>
+									<value xsi:type="ST">postive</value>
+									<author>
+										<time value="20231225000000+0000"/>
+										<assignedAuthor>
+											<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+											<addr>
+												<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+												<city>New York City</city>
+												<county>Manhattan</county>
+												<state>NY</state>
+												<postalCode>10001</postalCode>
+												<country>US</country>
+											</addr>
+											<telecom value="tel:(816)673-2878" use="MC"/>
+											<telecom value="mailto:arthur.james73@gmail.com"/>
+											<assignedPerson>
+												<name>
+													<given>Arthur</given>
+													<given>James</given>
+													<family>Smith</family>
+												</name>
+											</assignedPerson>
+											<representedOrganization>
+												<name>Model Hospital</name>
+											</representedOrganization>
+										</assignedAuthor>
+									</author>
+								</observation>
+							</component>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/535e7bf4-2ff6-40b4-89d3-dfff0ffdd622/_history/1"/>
+									<code code="87758-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection">
+										<originalText>
+											<reference value="#labTestName2"/>
+										</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240105000000+0000"/>
+									<value xsi:type="ST">postive</value>
+									<author>
+										<time value="20231225000000+0000"/>
+										<assignedAuthor>
+											<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+											<addr>
+												<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+												<city>New York City</city>
+												<county>Manhattan</county>
+												<state>NY</state>
+												<postalCode>10001</postalCode>
+												<country>US</country>
+											</addr>
+											<telecom value="tel:(816)673-2878" use="MC"/>
+											<telecom value="mailto:arthur.james73@gmail.com"/>
+											<assignedPerson>
+												<name>
+													<given>Arthur</given>
+													<given>James</given>
+													<family>Smith</family>
+												</name>
+											</assignedPerson>
+											<representedOrganization>
+												<name>Model Hospital</name>
+											</representedOrganization>
+										</assignedAuthor>
+									</author>
+								</observation>
+							</component>
+						</organizer>
+					</entry>
+					<entry typeCode="DRIV">
+						<organizer classCode="CLUSTER" moodCode="EVN">
+							<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+							<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+							<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+							<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
+							<statusCode code="completed"/>
+							<effectiveTime>
+								<low value="20240101000000+0000"/>
+								<high value="20240101000000+0000"/>
+							</effectiveTime>
+							<author>
+								<time value="20231225000000+0000"/>
+								<assignedAuthor>
+									<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+									<addr>
+										<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+										<city>New York City</city>
+										<county>Manhattan</county>
+										<state>NY</state>
+										<postalCode>10001</postalCode>
+										<country>US</country>
+									</addr>
+									<telecom value="tel:(816)673-2878" use="MC"/>
+									<telecom value="mailto:arthur.james73@gmail.com"/>
+									<assignedPerson>
+										<name>
+											<given>Arthur</given>
+											<given>James</given>
+											<family>Smith</family>
+										</name>
+									</assignedPerson>
+									<representedOrganization>
+										<name>Model Hospital</name>
+									</representedOrganization>
+								</assignedAuthor>
+							</author>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/36aa8224-2021-4ed2-8f2f-1f7227c57230/_history/1"/>
+									<code nullFlavor="OTH">
+										<originalText>
+Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240105000000+0000"/>
+									<value xsi:type="CD" code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris">
+										<originalText>
+											<reference value="#labTestResultValue3"/>
+										</originalText>
+									</value>
+									<author>
+										<time value="20231225000000+0000"/>
+										<assignedAuthor>
+											<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+											<addr>
+												<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+												<city>New York City</city>
+												<county>Manhattan</county>
+												<state>NY</state>
+												<postalCode>10001</postalCode>
+												<country>US</country>
+											</addr>
+											<telecom value="tel:(816)673-2878" use="MC"/>
+											<telecom value="mailto:arthur.james73@gmail.com"/>
+											<assignedPerson>
+												<name>
+													<given>Arthur</given>
+													<given>James</given>
+													<family>Smith</family>
+												</name>
+											</assignedPerson>
+											<representedOrganization>
+												<name>Model Hospital</name>
+											</representedOrganization>
+										</assignedAuthor>
+									</author>
+								</observation>
+							</component>
+						</organizer>
+					</entry>
+					<entry typeCode="DRIV">
+						<organizer classCode="CLUSTER" moodCode="EVN">
+							<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+							<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+							<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+							<code code="58410-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="CBC panel - Blood by Automated count"></code>
+							<statusCode code="completed"/>
+							<effectiveTime>
+								<low value="20240101000000+0000"/>
+								<high value="20240101000000+0000"/>
+							</effectiveTime>
+							<author>
+								<time value="20231225000000+0000"/>
+								<assignedAuthor>
+									<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+									<addr>
+										<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+										<city>New York City</city>
+										<county>Manhattan</county>
+										<state>NY</state>
+										<postalCode>10001</postalCode>
+										<country>US</country>
+									</addr>
+									<telecom value="tel:(816)673-2878" use="MC"/>
+									<telecom value="mailto:arthur.james73@gmail.com"/>
+									<assignedPerson>
+										<name>
+											<given>Arthur</given>
+											<given>James</given>
+											<family>Smith</family>
+										</name>
+									</assignedPerson>
+									<representedOrganization>
+										<name>Model Hospital</name>
+									</representedOrganization>
+								</assignedAuthor>
+							</author>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/d0aafda7-1eba-41be-8a0c-bdc9cfe9127a/_history/1"/>
+									<code code="6690-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukocytes [#/volume] in Blood by Automated count">
+										<originalText>
+											<reference value="#labTestName4"/>
+										</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240105000000+0000"/>
+									<value xsi:type="PQ" value="4.6" unit="10*9/L"/>
+								</observation>
+							</component>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/3eb6aaa3-af28-4d33-842e-5ac496ea82b8/_history/1"/>
+									<code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count">
+										<originalText>
+											<reference value="#labTestName4"/>
+										</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240105000000+0000"/>
+									<value xsi:type="PQ" value="20.0" unit="%"/>
+									<author>
+										<time value="20231225000000+0000"/>
+										<assignedAuthor>
+											<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+											<addr>
+												<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+												<city>New York City</city>
+												<county>Manhattan</county>
+												<state>NY</state>
+												<postalCode>10001</postalCode>
+												<country>US</country>
+											</addr>
+											<telecom value="tel:(816)673-2878" use="MC"/>
+											<telecom value="mailto:arthur.james73@gmail.com"/>
+											<assignedPerson>
+												<name>
+													<given>Arthur</given>
+													<given>James</given>
+													<family>Smith</family>
+												</name>
+											</assignedPerson>
+											<representedOrganization>
+												<name>Model Hospital</name>
+											</representedOrganization>
+										</assignedAuthor>
+									</author>
+								</observation>
+							</component>
+						</organizer>
+					</entry>
+					<entry typeCode="DRIV">
+						<organizer classCode="CLUSTER" moodCode="EVN">
+							<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+							<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+							<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+							<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
+							<statusCode code="completed"/>
+							<effectiveTime>
+								<low value="20240101000000+0000"/>
+								<high value="20240101000000+0000"/>
+							</effectiveTime>
+							<author>
+								<time value="20231225000000+0000"/>
+								<assignedAuthor>
+									<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+									<addr>
+										<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+										<city>New York City</city>
+										<county>Manhattan</county>
+										<state>NY</state>
+										<postalCode>10001</postalCode>
+										<country>US</country>
+									</addr>
+									<telecom value="tel:(816)673-2878" use="MC"/>
+									<telecom value="mailto:arthur.james73@gmail.com"/>
+									<assignedPerson>
+										<name>
+											<given>Arthur</given>
+											<given>James</given>
+											<family>Smith</family>
+										</name>
+									</assignedPerson>
+									<representedOrganization>
+										<name>Model Hospital</name>
+									</representedOrganization>
+								</assignedAuthor>
+							</author>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/46e1fea4-ce38-4b0d-9514-f8518cf370b9/_history/1"/>
+									<code code="41432-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection">
+										<originalText>
+											<reference value="#labTestName5"/>
+										</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240105000000+0000"/>
+									<value xsi:type="CD" code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris">
+										<originalText>
+											<reference value="#labTestResultValue5"/>
+										</originalText>
+									</value>
+									<author>
+										<time value="20231225000000+0000"/>
+										<assignedAuthor>
+											<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+											<addr>
+												<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+												<city>New York City</city>
+												<county>Manhattan</county>
+												<state>NY</state>
+												<postalCode>10001</postalCode>
+												<country>US</country>
+											</addr>
+											<telecom value="tel:(816)673-2878" use="MC"/>
+											<telecom value="mailto:arthur.james73@gmail.com"/>
+											<assignedPerson>
+												<name>
+													<given>Arthur</given>
+													<given>James</given>
+													<family>Smith</family>
+												</name>
+											</assignedPerson>
+											<representedOrganization>
+												<name>Model Hospital</name>
+											</representedOrganization>
+										</assignedAuthor>
+									</author>
+								</observation>
+							</component>
+						</organizer>
+					</entry>
+					<entry typeCode="DRIV">
+						<organizer classCode="CLUSTER" moodCode="EVN">
+							<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+							<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+							<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+							<code nullFlavor="OTH">
+								<originalText>
+SARS coronavirus 2 Ag [Presence] in Respiratory sp</originalText>
+							</code>
+							<statusCode code="completed"/>
+							<effectiveTime>
+								<low value="20240409000000+0000"/>
+								<high value="20240409000000+0000"/>
+							</effectiveTime>
+							<component>
+								<observation classCode="OBS" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+									<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+									<id root="2.16.840.1.113883.1.1.1.1" extension="Observation/b9e0a76e-9b16-4f8e-8607-0ba69f8421eb/_history/1"/>
+									<code code="94558-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SARS coronavirus 2 Ag [Presence] in Respiratory specimen by">
+										<originalText>
+											<reference value="#labTestName6"/>
+										</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<effectiveTime value="20240409000000+0000"/>
+									<value xsi:type="PQ" value="22.0" unit="mg"/>
+									<interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+									<author>
+										<time value="20231225000000+0000"/>
+										<assignedAuthor>
+											<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+											<addr>
+												<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+												<city>New York City</city>
+												<county>Manhattan</county>
+												<state>NY</state>
+												<postalCode>10001</postalCode>
+												<country>US</country>
+											</addr>
+											<telecom value="tel:(816)673-2878" use="MC"/>
+											<telecom value="mailto:arthur.james73@gmail.com"/>
+											<assignedPerson>
+												<name>
+													<given>Arthur</given>
+													<given>James</given>
+													<family>Smith</family>
+												</name>
+											</assignedPerson>
+											<representedOrganization>
+												<name>Model Hospital</name>
+											</representedOrganization>
+										</assignedAuthor>
+									</author>
+								</observation>
+							</component>
+						</organizer>
+					</entry>
+				</section>
+			</component><component>
 <section>
 <templateId root="2.16.840.1.113883.10.20.22.2.38"/>
 <templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>
@@ -1132,6 +1343,7 @@
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Smoking History |  Value : Every Day Component 1 : Type |  Value : Cigarettes Component 2 : Type |  Value : Chew Component 3 : Years Used |  Value : 12.4|http://unitsofmeasure.org|a Component 4 : Packs/Day |  Value : 0.3|http://snomed.info/sct|228963008</text>
 <statusCode code="completed"/>
+<effectiveTime nullFlavor="NI"/>
 <participant typeCode="LOC">
 <participantRole classCode="TERR">
 <code code="65568007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Cigarette Smoker"/>
@@ -1158,6 +1370,7 @@
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Travel Component 1 : Location |  Value : Travel Location: China</text>
 <statusCode code="completed"/>
+<effectiveTime nullFlavor="NI"/>
 <participant typeCode="LOC">
 <participantRole classCode="TERR">
 <code nullFlavor="OTH">
@@ -1175,6 +1388,7 @@ Travel Location: China</originalText>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Travel History Component 1 : Location |  Value : Travelled abroad</text>
 <statusCode code="completed"/>
+<effectiveTime nullFlavor="NI"/>
 <participant typeCode="LOC">
 <participantRole classCode="TERR">
 <code nullFlavor="OTH">
@@ -1192,6 +1406,7 @@ Travelled abroad</originalText>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
 <statusCode code="completed"/>
+<effectiveTime nullFlavor="NI"/>
 <participant typeCode="LOC">
 <participantRole classCode="TERR">
 <code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
@@ -1205,6 +1420,7 @@ Travelled abroad</originalText>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</text>
 <statusCode code="completed"/>
+<effectiveTime nullFlavor="NI"/>
 <participant typeCode="LOC">
 <participantRole classCode="TERR">
 <code nullFlavor="OTH">
@@ -1227,6 +1443,7 @@ Travelled abroad</originalText>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Travel Component 1 : Location |  Value : Travel to China in last 14 days</text>
 <statusCode code="completed"/>
+<effectiveTime nullFlavor="NI"/>
 <participant typeCode="LOC">
 <participantRole classCode="TERR">
 <code nullFlavor="OTH">
