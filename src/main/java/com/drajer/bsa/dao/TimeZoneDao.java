@@ -2,7 +2,7 @@ package com.drajer.bsa.dao;
 
 public interface TimeZoneDao {
 
-  String getDatabaseTimezone();
+  String getDatabaseTimezone(String query);
 
-  void setDatabaseTimezone(String tz);
+  void setDatabaseTimezone(String query, String timeZone);
 }

@@ -11,14 +11,17 @@ import org.springframework.stereotype.Repository;
 public class TimeZoneDaoImpl extends AbstractDao implements TimeZoneDao {
 
   @Override
-  public String getDatabaseTimezone() {
+  public String getDatabaseTimezone(String query) {
 
-    NativeQuery<String> query =
-        getSession().createNativeQuery("SELECT current_setting('timezone')");
-    Object singleResult = query.getSingleResult();
+    NativeQuery<String> nativequery = getSession().createNativeQuery(query);
+    Object singleResult = nativequery.getSingleResult();
     return singleResult.toString();
   }
 
   @Override
-  public void setDatabaseTimezone(String tz) {}
+  public void setDatabaseTimezone(String query, String timeZone) {
+    String fullQuery = query + " '" + timeZone + "'";
+    NativeQuery<?> nativequery = getSession().createNativeQuery(fullQuery);
+    nativequery.executeUpdate();
+  }
 }
