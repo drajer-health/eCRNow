@@ -226,6 +226,57 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForCD(
       String cdName, String code, String codeSystem, String codeSystemName, String displayName) {
+
+    if (!StringUtils.isEmpty(displayName)) {
+      return CdaGeneratorConstants.START_XMLTAG
+          + cdName
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.CODE_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + StringEscapeUtils.escapeXml10(code)
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + codeSystem
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + codeSystemName
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + StringEscapeUtils.escapeXml10(displayName)
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+
+    } else {
+      return CdaGeneratorConstants.START_XMLTAG
+          + cdName
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.CODE_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + StringEscapeUtils.escapeXml10(code)
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + codeSystem
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + codeSystemName
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
+  }
+
+  public static String getXmlForCD1(
+      String cdName, String code, String codeSystem, String codeSystemName, String displayName) {
+    System.out.println("hi");
     if (!StringUtils.isEmpty(displayName)) {
       return CdaGeneratorConstants.START_XMLTAG
           + cdName
