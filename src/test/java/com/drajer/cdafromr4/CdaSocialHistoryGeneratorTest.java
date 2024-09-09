@@ -69,23 +69,21 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateTravelHistoryEntry() {
 
-    StringBuilder expectedXml = new StringBuilder();
-
-    expectedXml.append("<entry>\r\n");
-    expectedXml.append("<act classCode=\"ACT\" moodCode=\"EVN\">\r\n");
-    expectedXml.append(
-        "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n");
-    expectedXml.append("<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>");
-    expectedXml.append(
-        "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n");
-    expectedXml.append("<text>Travel history</text>\r\n");
-    expectedXml.append("<statusCode code=\"completed\"/>\r\n");
-    expectedXml.append("<effectiveTime>\r\n");
-    expectedXml.append("<low value=\"20220403153000-0400\"/>\r\n");
-    expectedXml.append("<high value=\"20230403153000-0400\"/>\r\n");
-    expectedXml.append("</effectiveTime>\r\n");
-    expectedXml.append("</act>\r\n");
-    expectedXml.append("</entry>");
+    String expectedXml =
+        "<entry>\r\n"
+            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
+            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
+            + "<text>Travel history</text>\r\n"
+            + "<statusCode code=\"completed\"/>\r\n"
+            + "<effectiveTime>\r\n"
+            + "<low value=\"20220403153000-0400\"/>\r\n"
+            + "<high value=\"20230403153000-0400\"/>\r\n"
+            + "</effectiveTime>\r\n"
+            + "</act>\r\n"
+            + "</entry>\r\n"
+            + "";
 
     Observation observation = new Observation();
     Period period = new Period();
@@ -105,20 +103,18 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateTravelHistoryEntry1() {
 
-    StringBuilder expectedXml = new StringBuilder();
-
-    expectedXml.append("<entry>\r\n");
-    expectedXml.append("<act classCode=\"ACT\" moodCode=\"EVN\">\r\n");
-    expectedXml.append(
-        "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n");
-    expectedXml.append("<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>");
-    expectedXml.append(
-        "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n");
-    expectedXml.append("<text>Travel history</text>\r\n");
-    expectedXml.append("<statusCode code=\"completed\"/>\r\n");
-    expectedXml.append("<effectiveTime value=\"20230403153000-0400\"/>\r\n");
-    expectedXml.append("</act>\r\n");
-    expectedXml.append("</entry>");
+    String expectedXml =
+        "<entry>\r\n"
+            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
+            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
+            + "<text>Travel history</text>\r\n"
+            + "<statusCode code=\"completed\"/>\r\n"
+            + "<effectiveTime value=\"20230403153000-0400\"/>\r\n"
+            + "</act>\r\n"
+            + "</entry>\r\n"
+            + "";
 
     Observation observation = new Observation();
     DateTimeType dateTimeType = new DateTimeType("2023-04-03T15:30:00-04:00");
