@@ -3,6 +3,7 @@ package com.drajer.bsa.utils;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
@@ -24,6 +25,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -742,5 +746,13 @@ public class BsaServiceUtils {
     }
 
     return state;
+  }
+
+  public static Instant convertInstantToDBTimezoneInstant(Instant t, TimeZoneDao dao) {
+
+    ZoneId z = ZoneId.of(dao.getDatabaseTimezone());
+    ZonedDateTime zdt = t.atZone(z);
+
+    return zdt.toInstant();
   }
 }

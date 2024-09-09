@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.model;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.model.BsaTypes;
@@ -126,6 +127,9 @@ public abstract class BsaAction {
 
   /** The scheduler that is required to be used to schedule jobs. */
   protected BsaScheduler scheduler;
+
+  /** The Timzezone Dao to acess the timezone */
+  protected TimeZoneDao timeZoneDao;
 
   /** Attribute that can be set to ignore timers for testing through the same code paths */
   protected Boolean ignoreTimers;
@@ -273,11 +277,15 @@ public abstract class BsaAction {
 
     KarExecutionState st = kd.getKarExecutionStateService().saveOrUpdate(kd.getKarExecutionState());
 
+    Instant finalTime = BsaServiceUtils.convertInstantToDBTimezoneInstant(t, timeZoneDao);
+
+    logger.info(" Converted Time to DB Timezone Instant {}", finalTime);
+
     scheduler.scheduleJob(
         st.getId(),
         ract.getAction().getActionId(),
         ract.getAction().getType(),
-        t,
+        finalTime,
         kd.getxRequestId(),
         kd.getJobType(),
         MDC.getCopyOfContextMap());
@@ -486,6 +494,14 @@ public abstract class BsaAction {
 
   public IParser getXmlParser() {
     return xmlParser;
+  }
+
+  public TimeZoneDao getTimeZoneDao() {
+    return timeZoneDao;
+  }
+
+  public void setTimeZoneDao(TimeZoneDao timeZoneDao) {
+    this.timeZoneDao = timeZoneDao;
   }
 
   public void setXmlParser(IParser xmlParser) {
