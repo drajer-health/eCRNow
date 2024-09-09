@@ -133,7 +133,7 @@ public class PatientLaunchController {
     } catch (Exception e) {
 
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-          .body(OperationOutcomeUtil.createErrorOperationOutcome(e.getMessage()));
+          .body(OperationOutcomeUtil.createErrorOperationOutcome("Unable to launch Patient Instance, Error: " + e.getMessage()));
     }
   }
 
@@ -165,7 +165,7 @@ public class PatientLaunchController {
    */
   @CrossOrigin
   @PostMapping(value = "/api/reLaunchPatient")
-  public String reLaunchPatient(
+  public ResponseEntity<Object> reLaunchPatient(
       @RequestBody PatientLaunchContext launchContext,
       HttpServletRequest request,
       HttpServletResponse response) {
@@ -179,6 +179,8 @@ public class PatientLaunchController {
         launchContext.getThrottleContext());
 
     logger.info(FHIR_VERSION);
+    
+    try {
 
     HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
 
@@ -195,14 +197,23 @@ public class PatientLaunchController {
             nb, request, response, launchContext, true);
 
       } else {
-        throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST,
-            "No Request Id set in the header. Add X-Request-ID parameter for request tracking. ");
+    	  return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                  .body(
+                      OperationOutcomeUtil.createErrorOperationOutcome(
+                          "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
       }
 
     } else {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Unrecognized healthcare setting FHIR URL ");
+    	return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(
+                    OperationOutcomeUtil.createErrorOperationOutcome(
+                        "Unrecognized healthcare setting FHIR URL"));
+    }
+    
+    } catch (Exception e) {
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(OperationOutcomeUtil.createErrorOperationOutcome("Unable to launch Patient Instance, Error: " + e.getMessage()));
     }
     logger.info(
         " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
@@ -210,7 +221,10 @@ public class PatientLaunchController {
         StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
         StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
 
-    return "Patient Instance launched for processing successfully";
+    return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                OperationOutcomeUtil.createSuccessOperationOutcome(
+                    "Patient Instance Re-launched for processing successfully"));
   }
 
   /**

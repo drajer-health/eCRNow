@@ -3,6 +3,7 @@ package com.drajer.bsa.service.impl;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.NotificationContextDao;
+import com.drajer.bsa.exceptions.InvalidLaunchContext;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
@@ -63,7 +64,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext) {
+      PatientLaunchContext launchContext) throws InvalidLaunchContext {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Starting to process launch notification ");
@@ -193,7 +194,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       HttpServletRequest request,
       HttpServletResponse response,
       PatientLaunchContext launchContext,
-      Boolean relaunch) {
+      Boolean relaunch) throws InvalidLaunchContext {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Stating to process notification ");

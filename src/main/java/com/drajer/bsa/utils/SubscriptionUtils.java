@@ -1,5 +1,6 @@
 package com.drajer.bsa.utils;
 
+import com.drajer.bsa.exceptions.InvalidLaunchContext;
 import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PatientLaunchContext;
@@ -93,7 +94,7 @@ public class SubscriptionUtils {
       HttpServletRequest request,
       HttpServletResponse response,
       Boolean relaunch,
-      PatientLaunchContext launchContext) {
+      PatientLaunchContext launchContext) throws InvalidLaunchContext {
 
     NotificationContext nc = null;
 
@@ -142,6 +143,8 @@ public class SubscriptionUtils {
         // Verify if the resource received matches the resource Type expected.
         Resource res = bundle.getEntry().get(1).getResource();
 
+        if(res != null) 
+        {
         logger.info(" Resource Type Received : {}", res.getResourceType());
 
         if (res.getResourceType().toString().equals(resourceType)) {
@@ -246,12 +249,19 @@ public class SubscriptionUtils {
                 (fhirServerUrl != null) ? fhirServerUrl : "Null Value");
           }
 
-        } else {
+        } else { // if resourceType is not the same
 
           logger.error(
               " Resource Type Received {}, does not match Resource Type Expected {}",
               res.getResourceType().getDeclaringClass(),
               ResourceType.fromCode(resourceType).getDeclaringClass());
+        }
+        }else {
+        	String error = "Resource not found for type: " + resourceType;
+        	logger.error(
+                    error);
+        	String possibleCauses = error + ", Check PatientId, Encounter or Notified Resource Id, Authorization Token";
+            throw new InvalidLaunchContext(possibleCauses);
         }
 
       } else {

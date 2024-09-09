@@ -573,8 +573,9 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && (/*(c.getCode().contentEquals("29762-2") && c.getSystem().contains("http://loinc.org")) */
-                 (c.getCode().contentEquals("161085007")
+            && (
+            /*(c.getCode().contentEquals("29762-2") && c.getSystem().contains("http://loinc.org")) */
+            (c.getCode().contentEquals("161085007")
                     && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("161086008")
                     && c.getSystem().contains("http://snomed.info/sct"))

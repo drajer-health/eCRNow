@@ -73,7 +73,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class BsaServiceUtilsTest {
 
   @Autowired KarParser parser;
-  
+
   @Mock QueryReaderConfig queryReaderConfig;
 
   @InjectMocks BsaServiceUtils bsaServiceUtils;

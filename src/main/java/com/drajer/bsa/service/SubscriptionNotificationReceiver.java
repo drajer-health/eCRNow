@@ -1,5 +1,6 @@
 package com.drajer.bsa.service;
 
+import com.drajer.bsa.exceptions.InvalidLaunchContext;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PatientLaunchContext;
 import java.util.List;
@@ -31,12 +32,12 @@ public interface SubscriptionNotificationReceiver {
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext);
+      PatientLaunchContext launchContext) throws InvalidLaunchContext;
 
   public List<KarProcessingData> processRelaunchNotification(
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
       PatientLaunchContext launchContext,
-      Boolean relaunch);
+      Boolean relaunch) throws InvalidLaunchContext;
 }
