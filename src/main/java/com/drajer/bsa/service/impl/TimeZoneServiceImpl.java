@@ -6,7 +6,6 @@ import com.drajer.ecrapp.config.QueryReaderConfig;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,9 +17,6 @@ public class TimeZoneServiceImpl implements TimeZoneService {
 
   private final TimeZoneDao timeZoneDao;
   private final QueryReaderConfig queryReaderConfig;
-
-  @Value("${db.timezone}")
-  private String dbTimezone;
 
   public TimeZoneServiceImpl(TimeZoneDao timeZoneDao, QueryReaderConfig queryReaderConfig) {
     this.timeZoneDao = timeZoneDao;
@@ -55,11 +51,12 @@ public class TimeZoneServiceImpl implements TimeZoneService {
                         HttpStatus.BAD_REQUEST,
                         "Query for 'query.setTimezone' not found in queries properties."));
 
-    String effectiveTimeZone = Optional.ofNullable(timeZone).orElse(dbTimezone);
-
-    if (effectiveTimeZone.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid time zone provided");
-    }
+    String effectiveTimeZone =
+        Optional.ofNullable(timeZone)
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Invalid time zone provided"));
 
     try {
       timeZoneDao.setDatabaseTimezone(query, effectiveTimeZone);
