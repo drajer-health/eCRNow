@@ -5,6 +5,7 @@ import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
 import com.drajer.bsa.kar.action.CheckResponse;
@@ -159,10 +160,12 @@ public class KarParserImpl implements KarParser {
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
 
+  // The healthcare setting data access object
   @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
 
+  // The EHR query interface
   @Autowired EhrQueryService ehrInterface;
 
   @Autowired DirectTransportImpl directInterface;
@@ -174,6 +177,8 @@ public class KarParserImpl implements KarParser {
   @Autowired FhirContextInitializer fhirContextInitializer;
 
   @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
+
+  @Autowired TimeZoneDao timezoneDao;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -536,6 +541,7 @@ public class KarParserImpl implements KarParser {
         BsaAction action = getAction(cd.getCode());
         action.setActionId(act.getId(), plan.getUrl());
         action.setScheduler(scheduler);
+        action.setTimeZoneDao(timezoneDao);
         action.setJsonParser(jsonParser);
         action.setXmlParser(FhirContext.forR4().newXmlParser());
         action.setRestTemplate(restTemplate);
@@ -566,6 +572,7 @@ public class KarParserImpl implements KarParser {
     CheckResponse action = (CheckResponse) getAction("check-response");
     action.setActionId("check-response", plan.getUrl());
     action.setScheduler(scheduler);
+    action.setTimeZoneDao(timezoneDao);
     action.setJsonParser(jsonParser);
     action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setRestTemplate(restTemplate);
@@ -803,6 +810,7 @@ public class KarParserImpl implements KarParser {
           BsaAction subAction = getAction(cd.getCode());
           subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
+          subAction.setTimeZoneDao(timezoneDao);
           subAction.setJsonParser(jsonParser);
           subAction.setXmlParser(FhirContext.forR4().newXmlParser());
           subAction.setRestTemplate(restTemplate);

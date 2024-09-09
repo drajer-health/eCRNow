@@ -11,6 +11,8 @@ import static org.mockito.Mockito.mock;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.action.SubmitReport;
 import com.drajer.bsa.kar.model.BsaAction;
@@ -27,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,6 +66,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BsaServiceUtilsTest {
+	
+	@Autowired TimeZoneDao timeZoneDao;
 
   @Autowired KarParser parser;
 
@@ -396,5 +401,11 @@ public class BsaServiceUtilsTest {
     Patient patient = new Patient();
     Boolean cdaData = BsaServiceUtils.hasCdaData(patient);
     assertFalse(cdaData);
+  }
+  
+  @Test
+  public void testConvertInstantToDBTimezoneInstant(Instant t, TimeZoneDao dao) {
+	  
+	  
   }
 }
