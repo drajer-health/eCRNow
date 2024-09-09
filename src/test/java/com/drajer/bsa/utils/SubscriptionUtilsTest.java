@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import ca.uhn.fhir.context.FhirContext;
-
 import com.drajer.bsa.exceptions.InvalidLaunchContext;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PatientLaunchContext;

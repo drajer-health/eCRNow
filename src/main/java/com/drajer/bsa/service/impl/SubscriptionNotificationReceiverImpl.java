@@ -64,7 +64,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext) throws InvalidLaunchContext {
+      PatientLaunchContext launchContext)
+      throws InvalidLaunchContext {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Starting to process launch notification ");
@@ -194,7 +195,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       HttpServletRequest request,
       HttpServletResponse response,
       PatientLaunchContext launchContext,
-      Boolean relaunch) throws InvalidLaunchContext {
+      Boolean relaunch)
+      throws InvalidLaunchContext {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Stating to process notification ");

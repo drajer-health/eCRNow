@@ -1,7 +1,6 @@
 package com.drajer.bsa.controller;
 
 import ca.uhn.fhir.parser.IParser;
-
 import com.drajer.bsa.exceptions.InvalidLaunchContext;
 import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
@@ -55,7 +54,8 @@ public class SubscriptionNotificationReceiverController {
       @RequestBody String notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext) throws InvalidLaunchContext {
+      PatientLaunchContext launchContext)
+      throws InvalidLaunchContext {
 
     if (notificationBundle != null) {
 

@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * This controller is used to receive notifications from EHRs to launch specific patient instances
@@ -133,7 +132,9 @@ public class PatientLaunchController {
     } catch (Exception e) {
 
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-          .body(OperationOutcomeUtil.createErrorOperationOutcome("Unable to launch Patient Instance, Error: " + e.getMessage()));
+          .body(
+              OperationOutcomeUtil.createErrorOperationOutcome(
+                  "Unable to launch Patient Instance, Error: " + e.getMessage()));
     }
   }
 
@@ -179,41 +180,43 @@ public class PatientLaunchController {
         launchContext.getThrottleContext());
 
     logger.info(FHIR_VERSION);
-    
+
     try {
 
-    HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
+      HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
 
-    // If the healthcare setting exists
-    if (hs != null) {
+      // If the healthcare setting exists
+      if (hs != null) {
 
-      String requestId = request.getHeader(X_REQUEST_ID);
+        String requestId = request.getHeader(X_REQUEST_ID);
 
-      if (!StringUtils.isEmpty(requestId)) {
+        if (!StringUtils.isEmpty(requestId)) {
 
-        Bundle nb = getNotificationBundle(launchContext, hs, requestId, true);
+          Bundle nb = getNotificationBundle(launchContext, hs, requestId, true);
 
-        notificationReceiver.processRelaunchNotification(
-            nb, request, response, launchContext, true);
+          notificationReceiver.processRelaunchNotification(
+              nb, request, response, launchContext, true);
+
+        } else {
+          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+              .body(
+                  OperationOutcomeUtil.createErrorOperationOutcome(
+                      "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+        }
 
       } else {
-    	  return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                  .body(
-                      OperationOutcomeUtil.createErrorOperationOutcome(
-                          "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(
+                OperationOutcomeUtil.createErrorOperationOutcome(
+                    "Unrecognized healthcare setting FHIR URL"));
       }
 
-    } else {
-    	return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(
-                    OperationOutcomeUtil.createErrorOperationOutcome(
-                        "Unrecognized healthcare setting FHIR URL"));
-    }
-    
     } catch (Exception e) {
 
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-            .body(OperationOutcomeUtil.createErrorOperationOutcome("Unable to launch Patient Instance, Error: " + e.getMessage()));
+      return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+          .body(
+              OperationOutcomeUtil.createErrorOperationOutcome(
+                  "Unable to launch Patient Instance, Error: " + e.getMessage()));
     }
     logger.info(
         " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
@@ -222,9 +225,9 @@ public class PatientLaunchController {
         StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
 
     return ResponseEntity.status(HttpStatus.OK)
-            .body(
-                OperationOutcomeUtil.createSuccessOperationOutcome(
-                    "Patient Instance Re-launched for processing successfully"));
+        .body(
+            OperationOutcomeUtil.createSuccessOperationOutcome(
+                "Patient Instance Re-launched for processing successfully"));
   }
 
   /**
