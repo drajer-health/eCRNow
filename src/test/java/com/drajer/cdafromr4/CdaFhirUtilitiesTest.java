@@ -2484,7 +2484,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     CodeableConcept cd = new CodeableConcept();
 
     String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
-    assertThat(result).isBlank();
+    assertEquals("Unknown", result);
   }
 
   @Test
@@ -2503,7 +2503,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @Test
   public void testGetStringForCodeableConcept_WithEmptyValue() {
 
-    assertThat(CdaFhirUtilities.getStringForCodeableConcept(null)).isBlank();
+    assertEquals("Unknown", CdaFhirUtilities.getStringForCodeableConcept(null));
   }
 
   @Test

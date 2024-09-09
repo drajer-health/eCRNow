@@ -437,7 +437,7 @@ public class CdaResultGenerator {
               obs.getCode(),
               obs.getValue(),
               (obs.hasId()
-                  ? obs.getIdElement().toString()
+                  ? obs.getIdElement().getIdPart()
                   : new String("Component" + Integer.toString(i))),
               obs.getEffective(),
               obs.getInterpretation(),

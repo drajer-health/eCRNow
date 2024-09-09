@@ -752,18 +752,20 @@ public class CdaGeneratorUtils {
   public static String getXmlForTelecom(String telName, String telNo, String use, Boolean fax) {
 
     String s = "";
+    String countryPrefix = "";
 
     String tel = digitPattern.matcher(telNo).replaceAll("");
     String finalTel = tel;
 
     if (tel.length() > 10) {
       finalTel = tel.substring(tel.length() - 10);
+      countryPrefix = tel.substring(0, tel.length() - 10);
     }
 
-    String telprefix = "tel:(";
+    String telprefix = "tel:" + (countryPrefix.isEmpty() ? "" : ("+" + countryPrefix)) + "(";
 
     if (fax) {
-      telprefix = "fax:(";
+      telprefix = "fax:" + (countryPrefix.isEmpty() ? "" : ("+" + countryPrefix)) + "(";
     }
 
     if (!StringUtils.isEmpty(use) && finalTel.length() == 10) {
