@@ -757,9 +757,12 @@ public class BsaServiceUtils {
 
   public static Instant convertInstantToDBTimezoneInstant(Instant t, TimeZoneDao dao) {
 
-    ZoneId z = ZoneId.of(dao.getDatabaseTimezone(TIMEZONE_QUERY));
-    ZonedDateTime zdt = t.atZone(z);
+    if (TIMEZONE_QUERY.isEmpty()) return t;
+    else {
+      ZoneId z = ZoneId.of(dao.getDatabaseTimezone(TIMEZONE_QUERY));
+      ZonedDateTime zdt = t.atZone(z);
 
-    return zdt.toInstant();
+      return zdt.toInstant();
+    }
   }
 }

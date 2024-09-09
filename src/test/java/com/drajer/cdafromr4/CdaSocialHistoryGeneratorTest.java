@@ -97,7 +97,8 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
     String actualXml =
-        CdaSocialHistoryGenerator.generateTravelHistoryEntry(observation, "Travel history");
+        CdaSocialHistoryGenerator.generateTravelHistoryEntry(
+            observation, "Travel history", launchDetails);
     assertXmlEquals(expectedXml.toString(), actualXml);
   }
 
@@ -128,7 +129,8 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     observation.setEffective(dateTimeType);
 
     String actualXml =
-        CdaSocialHistoryGenerator.generateTravelHistoryEntry(observation, "Travel history");
+        CdaSocialHistoryGenerator.generateTravelHistoryEntry(
+            observation, "Travel history", launchDetails);
     assertXmlEquals(expectedXml.toString(), actualXml);
   }
 

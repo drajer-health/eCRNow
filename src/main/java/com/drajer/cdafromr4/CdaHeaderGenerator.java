@@ -362,6 +362,12 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
+      // Add name here from the location resource
+      if (loc.hasName()) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, loc.getName()));
+      }
+
       List<Address> addrs = new ArrayList<>();
       addrs.add(loc.getAddress());
       sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
@@ -398,6 +404,11 @@ public class CdaHeaderGenerator {
       }
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+
+      if (org.hasName()) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
+      }
 
       if (org.hasAddress()) {
         List<Address> addrs = org.getAddress();

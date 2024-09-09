@@ -211,6 +211,7 @@ public class R3ToR2DataConverterUtils {
     logger.info("Data id in addResourcesToR4FhirData:{}", dataId);
 
     removeDuplicatesAndUpdateData(resources, type, uniqueResourceIdsByType);
+
     if (resources != null && !resources.isEmpty()) {
       if (type.contentEquals(ResourceType.Patient.toString())) {
 
@@ -431,13 +432,13 @@ public class R3ToR2DataConverterUtils {
 
             if (sochisObs.hasCode() && isTravelObservation(sochisObs.getCode())) {
 
-              logger.info(" Found Occupation History Observation ");
+              logger.info(" Found Travel History Observation ");
               travelObs.add(sochisObs);
             }
 
             if (sochisObs.hasCode() && isPregnancyObservation(sochisObs.getCode())) {
 
-              logger.info(" Found Occupation History Observation ");
+              logger.info(" Found Pregnancy Observation ");
               pregnancyObs.add(sochisObs);
             }
 
@@ -572,8 +573,8 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("29762-2") && c.getSystem().contains("http://loinc.org"))
-                || (c.getCode().contentEquals("161085007")
+            && (/*(c.getCode().contentEquals("29762-2") && c.getSystem().contains("http://loinc.org")) */
+                 (c.getCode().contentEquals("161085007")
                     && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("161086008")
                     && c.getSystem().contains("http://snomed.info/sct"))
@@ -863,20 +864,28 @@ public class R3ToR2DataConverterUtils {
 
   private static void removeDuplicatesAndUpdateData(
       Set<Resource> resources, String type, Map<String, List<String>> data) {
+
     if (data == null) {
       data = new HashMap<>();
     }
 
+    if (type.equals(ResourceType.Observation.toString())) {
+      logger.debug(" Found Observation ");
+    }
+
+    // Get he initial list of Ids
+    List<String> dataIds = data.getOrDefault(type, new ArrayList<>());
+
     if (resources != null && !resources.isEmpty()) {
-      List<String> dataIds = data.getOrDefault(type, new ArrayList<>());
 
       resources.removeIf(
           resource -> {
             String resourceId = resource.getIdElement().getIdPart();
             if (dataIds.contains(resourceId)) {
               logger.info(
-                  "Removing {} resource since they are already added to the R4FhirData object",
-                  type);
+                  "Removing {} resource with Id {} since they are already added to the R4FhirData object",
+                  type,
+                  resourceId);
               return true;
             } else {
               dataIds.add(resourceId);
