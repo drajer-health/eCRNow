@@ -3,6 +3,8 @@ package com.drajer.cdafromr4;
 import static org.junit.Assert.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
+import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
+import com.drajer.bsa.utils.ReportGenerationUtils;
 import com.drajer.eca.model.MatchTriggerStatus;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
@@ -33,10 +35,14 @@ import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
 import org.junit.Before;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.slf4j.Logger;
@@ -102,6 +108,7 @@ public class BaseGeneratorTest {
     List<Practitioner> practitionerList = new ArrayList<>();
     List<ServiceRequest> serviceRequests = new ArrayList<>();
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
+    List<Procedure> procedures = new ArrayList<>();
     List<BundleEntryComponent> entries = bundle.getEntry();
 
     entries.forEach(
@@ -122,6 +129,10 @@ public class BaseGeneratorTest {
             case Location:
               Location location = (Location) ent.getResource();
               r4FhirData.setLocation(location);
+              break;
+            case Organization:
+              Organization org = (Organization) ent.getResource();
+              r4FhirData.setOrganization(org);
               break;
             case Encounter:
               Encounter encounter = (Encounter) ent.getResource();
@@ -148,7 +159,12 @@ public class BaseGeneratorTest {
             case ServiceRequest:
               serviceRequests.add((ServiceRequest) ent.getResource());
               break;
-
+            case Procedure:
+              procedures.add((Procedure) ent.getResource());
+              break;
+            case Observation:
+              addObservation((Observation) ent.getResource(), r4FhirData);
+              break;
             case DiagnosticReport:
               diagnosticReports.add((DiagnosticReport) ent.getResource());
               break;
@@ -165,7 +181,164 @@ public class BaseGeneratorTest {
     r4FhirData.setDiagReports(diagnosticReports);
     r4FhirData.setServiceRequests(serviceRequests);
     r4FhirData.setPractitionersList(practitionerList);
+    r4FhirData.setProcedureList(procedures);
     return r4FhirData;
+  }
+
+  public void addObservation(Observation obs, R4FhirData data) {
+
+    logger.info(" Setting up the Observation for R4FhirData ");
+
+    Set<Resource> resources = new HashSet<>();
+    resources.add(obs);
+
+    Set<Resource> labObs =
+        ReportGenerationUtils.filterObservationsByCategory(
+            resources, ObservationCategory.LABORATORY.toCode());
+    ArrayList<Observation> labObsList = new ArrayList<>();
+    if (labObs != null && !labObs.isEmpty()) {
+
+      for (Resource r : labObs) {
+        labObsList.add((Observation) r);
+      }
+      data.addLabResults(labObsList);
+    }
+
+    logger.info(" Setting up the Vital Signs for R4FhirData ");
+    Set<Resource> vitalObs =
+        ReportGenerationUtils.filterObservationsByCategory(
+            resources, ObservationCategory.VITALSIGNS.toCode());
+    ArrayList<Observation> vitalObsList = new ArrayList<>();
+    if (vitalObs != null && !vitalObs.isEmpty()) {
+
+      for (Resource r : labObs) {
+        vitalObsList.add((Observation) r);
+      }
+      data.setVitalObs(vitalObsList);
+    }
+
+    logger.info(" Setting up the SocialHistory for R4FhirData ");
+    Set<Resource> socObs =
+        ReportGenerationUtils.filterObservationsByCategory(
+            resources, ObservationCategory.SOCIALHISTORY.toCode());
+    ArrayList<Observation> socObsList = new ArrayList<>();
+    if (socObs != null && !socObs.isEmpty()) {
+
+      List<Observation> occObs = new ArrayList<>();
+      List<Observation> travelObs = new ArrayList<>();
+      List<Observation> pregnancyObs = new ArrayList<>();
+      List<Observation> pregnancyStatusObs = new ArrayList<>();
+      List<Observation> lmpObs = new ArrayList<>();
+      List<Observation> postPartumObs = new ArrayList<>();
+      List<Observation> pregnancyOutcomeObs = new ArrayList<>();
+      List<Observation> homelessObs = new ArrayList<>();
+      List<Observation> disabilityObs = new ArrayList<>();
+      List<Observation> vaccineCredObs = new ArrayList<>();
+      List<Observation> residencyObs = new ArrayList<>();
+      List<Observation> nationalityObs = new ArrayList<>();
+
+      for (Resource r : socObs) {
+        Observation sochisObs = (Observation) r;
+        socObsList.add(sochisObs);
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isOccupationObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Occupation History Observation ");
+          occObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isTravelObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Occupation History Observation ");
+          travelObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isPregnancyObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Occupation History Observation ");
+          pregnancyObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isPregnancyStatusObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Pregnancy Status Observation ");
+          pregnancyStatusObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isLastMenstrualPeriodObservation(sochisObs.getCode())) {
+
+          logger.info(" Found LMP Observation ");
+          lmpObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isPostPartumStatusObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Post Partum Status Observation ");
+          postPartumObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isPregnancyOutcomeObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Pregnancy Outcome Observation ");
+          pregnancyOutcomeObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isHomelessObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Homeless Observation ");
+          homelessObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isDisabilityObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Disability Observation ");
+          disabilityObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isVaccineCredObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Vaccine Credential Observation ");
+          vaccineCredObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isResidencyObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Residency Info Observation ");
+          residencyObs.add(sochisObs);
+        }
+
+        if (sochisObs.hasCode()
+            && R3ToR2DataConverterUtils.isNationalityObservation(sochisObs.getCode())) {
+
+          logger.info(" Found Nationality Observation ");
+          nationalityObs.add(sochisObs);
+        }
+      }
+
+      data.addOccupationObs(occObs);
+      data.addTravelObs(travelObs);
+      data.addPregnancyObs(pregnancyObs);
+      data.addPregnancyStatusObs(pregnancyStatusObs);
+      data.addLmpObs(lmpObs);
+      data.addPostPartumObs(postPartumObs);
+      data.addPregnancyOutcomeObs(pregnancyOutcomeObs);
+      data.addHomelessObs(homelessObs);
+      data.addDisabilityObs(disabilityObs);
+      data.addVaccineCredObs(vaccineCredObs);
+      data.addResidencyObs(residencyObs);
+      data.addNationalityObs(nationalityObs);
+    }
   }
 
   public List<DiagnosticReport> getDiagnosticReport(String filename) {

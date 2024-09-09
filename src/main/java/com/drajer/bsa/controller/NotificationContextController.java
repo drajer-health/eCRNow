@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -50,5 +53,22 @@ public class NotificationContextController {
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "NotificationContext Not found");
     return "NotificationContext Not found";
+  }
+
+  @GetMapping("/api/notificationContext")
+  public ResponseEntity<List<NotificationContext>> getNotificationContextData(
+      @RequestParam(required = false) String fhirServerUrl,
+      @RequestParam(required = false) String patientId,
+      @RequestParam(required = false) String notificationResourceId) {
+
+    List<NotificationContext> contexts =
+        notificationContextService.getNotificationContextData(
+            null, fhirServerUrl, patientId, notificationResourceId);
+
+    if (contexts.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.ok(contexts);
+    }
   }
 }

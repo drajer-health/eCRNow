@@ -111,7 +111,7 @@ public class CdaSocialHistoryGenerator {
           sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
           index++;
 
-          pregCondXml.append(generatePregnancyEntry(c));
+          pregCondXml.append(generatePregnancyEntry(c, details));
         }
       }
 
@@ -153,7 +153,7 @@ public class CdaSocialHistoryGenerator {
             sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
             index++;
 
-            occHistoryXml.append(generateOccHistoryEntry(obs));
+            occHistoryXml.append(generateOccHistoryEntry(obs, details));
           }
         }
       }
@@ -175,7 +175,7 @@ public class CdaSocialHistoryGenerator {
           sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
           index++;
 
-          travelHistoryXml.append(generateTravelHistoryEntry(obs, display));
+          travelHistoryXml.append(generateTravelHistoryEntry(obs, display, details));
         }
       }
 
@@ -214,7 +214,8 @@ public class CdaSocialHistoryGenerator {
     return sb.toString();
   }
 
-  public static String generateTravelHistoryEntry(Observation obs, String display) {
+  public static String generateTravelHistoryEntry(
+      Observation obs, String display, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -231,7 +232,9 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.TRAVEL_HISTORY_OBS_TEMPLATE_ID,
             CdaGeneratorConstants.TRAVEL_HISTORY_OBS_TEMPLATE_ID_EXT));
 
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -333,7 +336,7 @@ public class CdaSocialHistoryGenerator {
     return participantXml.toString();
   }
 
-  public static String generateOccHistoryEntry(Observation obs) {
+  public static String generateOccHistoryEntry(Observation obs, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -350,7 +353,9 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID,
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID_EXT));
 
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -395,7 +400,7 @@ public class CdaSocialHistoryGenerator {
     return sb.toString();
   }
 
-  public static String generatePregnancyEntry(Condition cond) {
+  public static String generatePregnancyEntry(Condition cond, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -409,7 +414,9 @@ public class CdaSocialHistoryGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PREGNANCY_OBS_TEMPLATE_ID));
 
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(

@@ -12,7 +12,7 @@ public class QueryReaderConfig {
 
   public QueryReaderConfig() {
     try (InputStream input =
-        getClass().getClassLoader().getResourceAsStream("queries.properties")) {
+        getClass().getClassLoader().getResourceAsStream("dbqueries.properties")) {
       if (input == null) {
         System.out.println("Sorry, unable to find queries.properties");
         return;
