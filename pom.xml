@@ -13,7 +13,7 @@
 	<artifactId>ecr-now</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>eCR Now FHIR App</name>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
