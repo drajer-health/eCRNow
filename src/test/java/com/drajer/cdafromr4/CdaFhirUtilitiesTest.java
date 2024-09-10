@@ -849,7 +849,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-            cds, cdName, valueTrue, codeSystemUrl, csOptional);
+            cds, cdName, valueTrue, codeSystemUrl, csOptional, "");
 
     assertEquals(expectedXml.trim(), actualXml.trim());
   }
@@ -874,7 +874,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-            cds, cdName, valueTrue, codeSystemUrl, csOptional);
+            cds, cdName, valueTrue, codeSystemUrl, csOptional, "");
 
     assertEquals(expectedXml.trim(), actualXml.trim());
   }

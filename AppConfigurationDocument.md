@@ -119,3 +119,13 @@ These are configured using two application properties namely
 By default the version should be set to the App Release version.
 If these are present in the application.properties, then an author participant is added to the CDA eICR to convey this information.
 If it is not present, the author is not added. 
+
+## 2.13 Configuring startup time delay to allow application to settle down from loading necessary data 
+
+There are times during startup when the application loads ERSD/KARs, CQL libraries etc, and there is spike in memory and CPU usage.
+When the application is booting up, it is better to delay launching patients until the application has completely booted up.
+To control the timing there is an application property that specifies the number of seconds to wait before accepting launchPatient requests.
+
+* startup.timedelay=10 
+
+The above introduces a delay of 10 seconds before accepting launch patient requests.  

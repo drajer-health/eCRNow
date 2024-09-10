@@ -260,7 +260,8 @@ public class SubscriptionUtils {
           String error = "Resource not found for type: " + resourceType;
           logger.error(error);
           String possibleCauses =
-              error + ", Check PatientId, Encounter or Notified Resource Id, Authorization Token";
+              error
+                  + ", Check for accurate PatientId, Encounter or Notified Resource Id or an Expired Authorization Token";
           throw new InvalidLaunchContext(possibleCauses);
         }
 

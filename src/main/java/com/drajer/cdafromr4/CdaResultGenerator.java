@@ -8,7 +8,6 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,11 +29,9 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.Type;
-import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,7 +303,7 @@ public class CdaResultGenerator {
     }
 
     if (performerReferences != null && !performerReferences.isEmpty())
-      lrEntry.append(getXmlForAuthor(performerReferences, data));
+      lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerReferences, data));
 
     return lrEntry.toString();
   }
@@ -771,7 +768,7 @@ public class CdaResultGenerator {
               CdaGeneratorUtils.getXmlForIVLWithTS(
                   CdaGeneratorConstants.EFF_TIME_EL_NAME, issuedDate, issuedDate, true));
         }
-        lrEntry.append(getXmlForAuthor(obs.getPerformer(), data));
+        lrEntry.append(CdaFhirUtilities.getXmlForAuthor(obs.getPerformer(), data));
 
         lrEntry.append(
             getXmlForObservation(
@@ -1254,7 +1251,7 @@ public class CdaResultGenerator {
     }
 
     // Add performer
-    lrEntry.append(getXmlForAuthor(performerRefs, data));
+    lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerRefs, data));
 
     // End Tag for Entry Relationship
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -1379,7 +1376,7 @@ public class CdaResultGenerator {
 
     // Add performer
 
-    lrEntry.append(getXmlForAuthor(performerRefs, data));
+    lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerRefs, data));
 
     // End Tag for Entry Relationship
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -1618,29 +1615,6 @@ public class CdaResultGenerator {
     }
 
     return sr;
-  }
-
-  public static String getXmlForAuthor(List<Reference> performerRefs, R4FhirData data) {
-    StringBuilder sb = new StringBuilder();
-    if (data == null || performerRefs == null || performerRefs.isEmpty()) {
-      return sb.toString();
-    }
-
-    for (Reference reference : performerRefs) {
-      if (reference.hasReferenceElement()
-          && reference.getReferenceElement().hasResourceType()
-          && ResourceType.fromCode(reference.getReferenceElement().getResourceType())
-              == ResourceType.Practitioner) {
-
-        Practitioner pract = data.getPractitionerById(reference.getReferenceElement().getIdPart());
-        if (pract != null) {
-          HashMap<V3ParticipationType, List<Practitioner>> practMap = new HashMap<>();
-          practMap.put(V3ParticipationType.AUT, Collections.singletonList(pract));
-          sb.append(CdaHeaderGenerator.getAuthorXml(data, data.getEncounter(), practMap));
-        }
-      }
-    }
-    return sb.toString();
   }
 
   public static List<DiagnosticReport> getValidDiagnosticReports(

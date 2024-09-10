@@ -446,7 +446,8 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.VAL_EL_NAME,
             true,
             CdaGeneratorConstants.FHIR_SNOMED_URL,
-            false);
+            false,
+            "");
 
     if (!codeXml.isEmpty()) {
       sb.append(codeXml);

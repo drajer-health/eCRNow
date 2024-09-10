@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -103,7 +104,7 @@ public class CdaPlanOfTreatmentGenerator {
 
         rowNum++;
 
-        potObsXml.append(getPlannedObservationXml(s, details, contentRef));
+        potObsXml.append(getPlannedObservationXml(s, details, contentRef, data));
       }
 
       for (DiagnosticReport dr : reports) {
@@ -135,7 +136,7 @@ public class CdaPlanOfTreatmentGenerator {
 
         rowNum++;
 
-        drXml.append(getDiagnosticReportXml(dr, details, contentRef));
+        drXml.append(getDiagnosticReportXml(dr, details, contentRef, data));
       }
 
       // Close the Text Element
@@ -160,7 +161,7 @@ public class CdaPlanOfTreatmentGenerator {
   }
 
   public static String getPlannedObservationXml(
-      ServiceRequest sr, LaunchDetails details, String contentRef) {
+      ServiceRequest sr, LaunchDetails details, String contentRef, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -215,7 +216,9 @@ public class CdaPlanOfTreatmentGenerator {
     }
 
     // add Id
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), sr.getIdElement().getIdPart()));
 
     if (codeXml.isEmpty()) {
       List<CodeableConcept> ccs = new ArrayList<>();
@@ -226,7 +229,8 @@ public class CdaPlanOfTreatmentGenerator {
               CdaGeneratorConstants.CODE_EL_NAME,
               false,
               CdaGeneratorConstants.FHIR_LOINC_URL,
-              false);
+              false,
+              "");
 
       if (!codeXml.isEmpty()) {
         sb.append(codeXml);
@@ -253,6 +257,12 @@ public class CdaPlanOfTreatmentGenerator {
         CdaGeneratorUtils.getXmlForEffectiveTime(
             CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
+    if (sr.hasRequester()) {
+      List<Reference> reqPerfs = new ArrayList<>();
+      reqPerfs.add(sr.getRequester());
+      sb.append(CdaFhirUtilities.getXmlForAuthor(reqPerfs, data));
+    }
+
     // End Tag for Entry
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -261,7 +271,7 @@ public class CdaPlanOfTreatmentGenerator {
   }
 
   public static String getDiagnosticReportXml(
-      DiagnosticReport dr, LaunchDetails details, String contentRef) {
+      DiagnosticReport dr, LaunchDetails details, String contentRef, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -316,7 +326,9 @@ public class CdaPlanOfTreatmentGenerator {
     }
 
     // add Id
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), dr.getIdElement().getIdPart()));
 
     if (codeXml.isEmpty()) {
       List<CodeableConcept> ccs = new ArrayList<>();
@@ -327,7 +339,8 @@ public class CdaPlanOfTreatmentGenerator {
               CdaGeneratorConstants.CODE_EL_NAME,
               false,
               CdaGeneratorConstants.FHIR_LOINC_URL,
-              false);
+              false,
+              "");
 
       if (!codeXml.isEmpty()) {
         sb.append(codeXml);

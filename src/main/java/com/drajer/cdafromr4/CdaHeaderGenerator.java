@@ -352,7 +352,8 @@ public class CdaHeaderGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                false);
+                false,
+                "");
 
         sb.append(typeXml);
       } else {

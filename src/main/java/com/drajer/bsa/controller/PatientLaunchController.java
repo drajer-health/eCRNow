@@ -1,5 +1,6 @@
 package com.drajer.bsa.controller;
 
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
@@ -8,6 +9,7 @@ import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.OperationOutcomeUtil;
+import com.drajer.bsa.utils.StartupUtils;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
@@ -33,6 +35,7 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -89,52 +92,73 @@ public class PatientLaunchController {
         StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
         launchContext.getThrottleContext());
 
-    logger.info(FHIR_VERSION);
+    if (StartupUtils.hasAppStarted()) {
+      try {
 
-    try {
+        HealthcareSetting hs =
+            hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
 
-      HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
+        // If the healthcare setting exists
+        if (hs != null) {
 
-      // If the healthcare setting exists
-      if (hs != null) {
+          String requestId = request.getHeader(X_REQUEST_ID);
 
-        String requestId = request.getHeader(X_REQUEST_ID);
+          if (!StringUtils.isEmpty(requestId)) {
 
-        if (!StringUtils.isEmpty(requestId)) {
+            Bundle nb = getNotificationBundle(launchContext, hs, requestId, false);
 
-          Bundle nb = getNotificationBundle(launchContext, hs, requestId, false);
+            notificationReceiver.processNotification(nb, request, response, launchContext);
 
-          notificationReceiver.processNotification(nb, request, response, launchContext);
+          } else {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(
+                    OperationOutcomeUtil.createErrorOperationOutcome(
+                        "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+          }
 
         } else {
           return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
               .body(
                   OperationOutcomeUtil.createErrorOperationOutcome(
-                      "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+                      "Unrecognized healthcare setting FHIR URL"));
         }
+        logger.info(
+            " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+            StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+            StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+            StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
 
-      } else {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                OperationOutcomeUtil.createSuccessOperationOutcome(
+                    "Patient Instance launched for processing successfully"));
+      } catch (AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(
+                OperationOutcomeUtil.createErrorOperationOutcome(
+                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
+      } catch (DataIntegrityViolationException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unrecognized healthcare setting FHIR URL"));
+                    "Unable to launch Patient Instance, Unique Constraint Violation, Detailed Error: "
+                        + e.getMessage()));
+      } catch (Exception e) {
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(
+                OperationOutcomeUtil.createErrorOperationOutcome(
+                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
       }
-      logger.info(
-          " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
-          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-          StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
+    } else {
 
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(
-              OperationOutcomeUtil.createSuccessOperationOutcome(
-                  "Patient Instance launched for processing successfully"));
-    } catch (Exception e) {
-
+      logger.error(" Unable to launch the patient instance due to application startup delay");
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
           .body(
               OperationOutcomeUtil.createErrorOperationOutcome(
-                  "Unable to launch Patient Instance, Error: " + e.getMessage()));
+                  "Unable to launch Patient Instance since the app has not started yet, wait till "
+                      + StartupUtils.getPatientLaunchInstanceTime().toString()
+                      + " for the application to startup and launch patients"));
     }
   }
 
@@ -179,55 +203,71 @@ public class PatientLaunchController {
         StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
         launchContext.getThrottleContext());
 
-    logger.info(FHIR_VERSION);
+    if (StartupUtils.hasAppStarted()) {
+      try {
 
-    try {
+        HealthcareSetting hs =
+            hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
 
-      HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
+        // If the healthcare setting exists
+        if (hs != null) {
 
-      // If the healthcare setting exists
-      if (hs != null) {
+          String requestId = request.getHeader(X_REQUEST_ID);
 
-        String requestId = request.getHeader(X_REQUEST_ID);
+          if (!StringUtils.isEmpty(requestId)) {
 
-        if (!StringUtils.isEmpty(requestId)) {
+            Bundle nb = getNotificationBundle(launchContext, hs, requestId, true);
 
-          Bundle nb = getNotificationBundle(launchContext, hs, requestId, true);
+            notificationReceiver.processRelaunchNotification(
+                nb, request, response, launchContext, true);
 
-          notificationReceiver.processRelaunchNotification(
-              nb, request, response, launchContext, true);
+          } else {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(
+                    OperationOutcomeUtil.createErrorOperationOutcome(
+                        "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+          }
 
         } else {
           return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
               .body(
                   OperationOutcomeUtil.createErrorOperationOutcome(
-                      "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+                      "Unrecognized healthcare setting FHIR URL"));
         }
 
-      } else {
+      } catch (AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(
+                OperationOutcomeUtil.createErrorOperationOutcome(
+                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
+      } catch (Exception e) {
+
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unrecognized healthcare setting FHIR URL"));
+                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
       }
 
-    } catch (Exception e) {
+      logger.info(
+          " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+          StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
+
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(
+              OperationOutcomeUtil.createSuccessOperationOutcome(
+                  "Patient Instance Re-launched for processing successfully"));
+
+    } else {
 
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
           .body(
               OperationOutcomeUtil.createErrorOperationOutcome(
-                  "Unable to launch Patient Instance, Error: " + e.getMessage()));
+                  "Unable to launch Patient Instance since the app has not started yet, wait till "
+                      + StartupUtils.getPatientLaunchInstanceTime().toString()
+                      + " for the application to startup and launch patients"));
     }
-    logger.info(
-        " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
-        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-        StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(
-            OperationOutcomeUtil.createSuccessOperationOutcome(
-                "Patient Instance Re-launched for processing successfully"));
   }
 
   /**

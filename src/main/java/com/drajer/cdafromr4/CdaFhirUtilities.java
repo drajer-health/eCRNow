@@ -8,7 +8,9 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -49,6 +51,7 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Type;
@@ -936,14 +939,17 @@ public class CdaFhirUtilities {
       String cdName,
       Boolean valueTrue,
       String codeSystemUrl,
-      Boolean csOptional) {
+      Boolean csOptional,
+      String contentRef) {
 
     StringBuilder sb = new StringBuilder(500);
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
     if (Boolean.FALSE.equals(valueTrue))
-      sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional, ""));
-    else sb.append(getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
+      sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional, contentRef));
+    else
+      sb.append(
+          getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional, contentRef));
 
     return sb.toString();
   }
@@ -1225,7 +1231,11 @@ public class CdaFhirUtilities {
   }
 
   public static String getCodingXmlForValueForCodeSystem(
-      List<Coding> codes, String cdName, String codeSystemUrl, Boolean csOptional) {
+      List<Coding> codes,
+      String cdName,
+      String codeSystemUrl,
+      Boolean csOptional,
+      String contentRef) {
 
     StringBuilder sb = new StringBuilder(200);
     StringBuilder translations = new StringBuilder(200);
@@ -1247,6 +1257,9 @@ public class CdaFhirUtilities {
           sb.append(
               CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
                   c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          if (!contentRef.isEmpty())
+            sb.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
 
           foundCodeForCodeSystem = true;
         } else if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
@@ -2499,7 +2512,7 @@ public class CdaFhirUtilities {
         cds.add(cd);
         if (Boolean.FALSE.equals(valFlag))
           val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
-        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
 
       } else if (dt instanceof CodeableConcept) {
 
@@ -2509,7 +2522,7 @@ public class CdaFhirUtilities {
 
         if (Boolean.FALSE.equals(valFlag))
           val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
-        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
 
       } else {
 
@@ -3066,6 +3079,29 @@ public class CdaFhirUtilities {
                   CdaGeneratorConstants.RACE_CODE_SYSTEM,
                   CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
                   detailedCoding.getDisplay()));
+        }
+      }
+    }
+    return sb.toString();
+  }
+
+  public static String getXmlForAuthor(List<Reference> performerRefs, R4FhirData data) {
+    StringBuilder sb = new StringBuilder();
+    if (data == null || performerRefs == null || performerRefs.isEmpty()) {
+      return sb.toString();
+    }
+
+    for (Reference reference : performerRefs) {
+      if (reference.hasReferenceElement()
+          && reference.getReferenceElement().hasResourceType()
+          && ResourceType.fromCode(reference.getReferenceElement().getResourceType())
+              == ResourceType.Practitioner) {
+
+        Practitioner pract = data.getPractitionerById(reference.getReferenceElement().getIdPart());
+        if (pract != null) {
+          HashMap<V3ParticipationType, List<Practitioner>> practMap = new HashMap<>();
+          practMap.put(V3ParticipationType.AUT, Collections.singletonList(pract));
+          sb.append(CdaHeaderGenerator.getAuthorXml(data, data.getEncounter(), practMap));
         }
       }
     }
