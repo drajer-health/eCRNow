@@ -15,18 +15,42 @@
 <tbody>
 <tr>
 <td>
-<content ID="potObsContent1">Coronavirus Panel</content>
+<content ID="potObsContent1">Resuscitation Status</content>
 </td>
 <td>
-<content ID="potObsDate1">20200430031500-0500|20200430152923-0500</content>
+<content ID="potObsDate1">20200909104200-0500</content>
 </td>
 </tr>
 <tr>
 <td>
-<content ID="potObsContent2">Complete blood count (hemogram) panel - Blood by Automated count</content>
+<content ID="potObsContent2">VTE Quality Measures</content>
 </td>
 <td>
-<content ID="potObsDate2">20110304083000+1100</content>
+<content ID="potObsDate2">20200427115527-0500</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="potObsContent3">Coronavirus Panel</content>
+</td>
+<td>
+<content ID="potObsDate3">20200430031500-0500|20200430152923-0500</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="potObsContent4">Complete Blood Count</content>
+</td>
+<td>
+<content ID="potObsDate4">20110304083000+1100</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="potObsContent5">http://loinc.org|94308-4</content>
+</td>
+<td>
+<content ID="potObsDate5">20220920084400-0400</content>
 </td>
 </tr>
 </tbody>
@@ -36,8 +60,31 @@
 <observation classCode="OBS" moodCode="RQO">
 <templateId root="2.16.840.1.113883.10.20.22.4.44"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="315890729"/>
+<code nullFlavor="OTH"></code>
+<statusCode code="active"/>
+<effectiveTime value="20200909104200-0500"/>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="RQO">
+<templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="311447079"/>
+<code nullFlavor="OTH"></code>
+<statusCode code="active"/>
+<effectiveTime value="20200427115527-0500"/>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="RQO">
+<templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="311539773"/>
-<code code="94531-1" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+<code code="94531-1" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+<reference value="#potObsContent3"/>
+</originalText>
+</code>
 <statusCode code="active"/>
 <effectiveTime value="20200430031500-0500"/>
 </observation>
@@ -47,9 +94,25 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.44"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="101"/>
-<code code="58410-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Complete blood count (hemogram) panel - Blood by Automated count"></code>
+<code code="58410-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Complete blood count (hemogram) panel - Blood by Automated count"><originalText>
+<reference value="#potObsContent4"/>
+</originalText>
+</code>
 <statusCode code="active"/>
 <effectiveTime value="20110304083000+1100"/>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="RQO">
+<templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptresultlab-1484"/>
+<code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+<reference value="#potObsContent5"/>
+</originalText>
+</code>
+<statusCode code="active"/>
+<effectiveTime value="20220920084400-0400"/>
 </observation>
 </entry>
 </section>

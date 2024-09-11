@@ -822,16 +822,16 @@ public class CdaFhirUtilities {
 
     for (Coding c : codings) {
 
-      if (c.getSystem().contentEquals(codeSystemUrl) && !StringUtils.isEmpty(c.getDisplay())) {
+      if (c.hasSystem() && c.getSystem().contentEquals(codeSystemUrl) && c.hasDisplay()) {
 
         display = c.getDisplay();
         foundCodeSystem = true;
         break;
-      } else if (c.getSystem().contentEquals(codeSystemUrl)) {
+      } else if (c.hasSystem() && c.getSystem().contentEquals(codeSystemUrl)) {
         foundCodeSystem = true;
       }
 
-      if (Boolean.TRUE.equals(csOptional) && !StringUtils.isEmpty(c.getDisplay())) {
+      if (Boolean.TRUE.equals(csOptional) && c.hasDisplay()) {
         anyDisplay = c.getDisplay();
       }
     }

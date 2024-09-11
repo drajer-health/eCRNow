@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ServiceRequest;
@@ -28,7 +27,8 @@ public class CdaPlanOfTreatmentGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
 
-    List<ServiceRequest> sr = getValidServiceRequests(data);
+    // List<ServiceRequest> sr = getValidServiceRequests(data);
+    List<ServiceRequest> sr = data.getServiceRequests();
     List<DiagnosticReport> reports = getValidDiagnosticOrders(data);
 
     if ((sr != null && !sr.isEmpty()) || (reports != null && !reports.isEmpty())) {
@@ -77,13 +77,7 @@ public class CdaPlanOfTreatmentGenerator {
       StringBuilder drXml = new StringBuilder();
       for (ServiceRequest s : sr) {
 
-        Pair<String, Boolean> srDisplayName =
-            CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
-                s.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL, false);
-
-        if (srDisplayName.getValue0().isEmpty()) {
-          srDisplayName.setAt0(CdaGeneratorConstants.UNKNOWN_VALUE);
-        }
+        String srDisplayName = CdaFhirUtilities.getStringForCodeableConcept(s.getCode());
 
         String serviceDate = CdaFhirUtilities.getStringForType(s.getOccurrence());
         logger.debug("Service Date for display {} ", serviceDate);
@@ -93,8 +87,7 @@ public class CdaPlanOfTreatmentGenerator {
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
-        bodyvals.put(
-            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, srDisplayName.getValue0());
+        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, srDisplayName);
         bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, serviceDate);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
@@ -109,13 +102,7 @@ public class CdaPlanOfTreatmentGenerator {
 
       for (DiagnosticReport dr : reports) {
 
-        Pair<String, Boolean> drDisplayName =
-            CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
-                dr.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL, false);
-
-        if (drDisplayName.getValue0().isEmpty()) {
-          drDisplayName.setAt0(CdaGeneratorConstants.UNKNOWN_VALUE);
-        }
+        String drDisplayName = CdaFhirUtilities.getStringForCodeableConcept(dr.getCode());
 
         String orderDate = CdaFhirUtilities.getStringForType(dr.getEffective());
         logger.debug("Order Date for display {} ", orderDate);
@@ -125,8 +112,7 @@ public class CdaPlanOfTreatmentGenerator {
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
-        bodyvals.put(
-            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, drDisplayName.getValue0());
+        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, drDisplayName);
         bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, orderDate);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
@@ -221,22 +207,38 @@ public class CdaPlanOfTreatmentGenerator {
             details.getAssigningAuthorityId(), sr.getIdElement().getIdPart()));
 
     if (codeXml.isEmpty()) {
-      List<CodeableConcept> ccs = new ArrayList<>();
-      ccs.add(sr.getCode());
-      codeXml =
-          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-              ccs,
-              CdaGeneratorConstants.CODE_EL_NAME,
-              false,
-              CdaGeneratorConstants.FHIR_LOINC_URL,
-              false,
-              "");
 
-      if (!codeXml.isEmpty()) {
-        sb.append(codeXml);
-      } else {
+      if (sr.hasCode() && sr.getCode().hasCoding()) {
+
+        logger.debug("Find the Loinc Code as a priority first for Lab Results");
+        codeXml =
+            CdaFhirUtilities.getCodingXmlForCodeSystem(
+                sr.getCode().getCoding(),
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_LOINC_URL,
+                false,
+                contentRef);
+
+        logger.debug("Code Xml = {}", codeXml);
+
+        if (!codeXml.isEmpty()) {
+          sb.append(codeXml);
+        } else {
+          sb.append(
+              CdaFhirUtilities.getCodingXml(
+                  sr.getCode().getCoding(), CdaGeneratorConstants.CODE_EL_NAME, ""));
+        }
+      } else if (sr.hasCode() && sr.getCode().hasText()) {
+
+        // Add text value for code in dynamic data
         sb.append(
-            CdaFhirUtilities.getCodeableConceptXml(ccs, CdaGeneratorConstants.CODE_EL_NAME, false));
+            CdaGeneratorUtils.getXmlForNullCDWithText(
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.NF_OTH,
+                sr.getCode().getText()));
+      } else {
+        // Add null flavor for code in dynamic data
+        sb.append(CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, ""));
       }
     } else {
       sb.append(codeXml);
@@ -331,22 +333,37 @@ public class CdaPlanOfTreatmentGenerator {
             details.getAssigningAuthorityId(), dr.getIdElement().getIdPart()));
 
     if (codeXml.isEmpty()) {
-      List<CodeableConcept> ccs = new ArrayList<>();
-      ccs.add(dr.getCode());
-      codeXml =
-          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-              ccs,
-              CdaGeneratorConstants.CODE_EL_NAME,
-              false,
-              CdaGeneratorConstants.FHIR_LOINC_URL,
-              false,
-              "");
+      if (dr.hasCode() && dr.getCode().hasCoding()) {
 
-      if (!codeXml.isEmpty()) {
-        sb.append(codeXml);
-      } else {
+        logger.debug("Find the Loinc Code as a priority first for Lab Results");
+        codeXml =
+            CdaFhirUtilities.getCodingXmlForCodeSystem(
+                dr.getCode().getCoding(),
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_LOINC_URL,
+                false,
+                contentRef);
+
+        logger.debug("Code Xml = {}", codeXml);
+
+        if (!codeXml.isEmpty()) {
+          sb.append(codeXml);
+        } else {
+          sb.append(
+              CdaFhirUtilities.getCodingXml(
+                  dr.getCode().getCoding(), CdaGeneratorConstants.CODE_EL_NAME, ""));
+        }
+      } else if (dr.hasCode() && dr.getCode().hasText()) {
+
+        // Add text value for code in dynamic data
         sb.append(
-            CdaFhirUtilities.getCodeableConceptXml(ccs, CdaGeneratorConstants.CODE_EL_NAME, false));
+            CdaGeneratorUtils.getXmlForNullCDWithText(
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.NF_OTH,
+                dr.getCode().getText()));
+      } else {
+        // Add null flavor for code in dynamic data
+        sb.append(CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, ""));
       }
     } else {
       sb.append(codeXml);
@@ -462,20 +479,19 @@ public class CdaPlanOfTreatmentGenerator {
 
       for (DiagnosticReport dr : data.getDiagReports()) {
 
-        if (dr.getCode() != null
-            && dr.getCode().getCoding() != null
-            && !dr.getCode().getCoding().isEmpty()
-            && (dr.getResult() == null || dr.getResult().isEmpty())
-            && Boolean.TRUE.equals(
-                CdaFhirUtilities.isCodingPresentForCodeSystem(
-                    dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
+        if ((dr.hasCode()
+                && dr.getCode().hasCoding()
+                //  && (dr.getResult() == null || dr.getResult().isEmpty()) -- Need to retain these
+                // for trigger code matches
+                && Boolean.TRUE.equals(
+                    CdaFhirUtilities.isCodingPresentForCodeSystem(
+                        dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)))
+            || (!dr.hasResult())) {
 
-          logger.debug("Found a DiagnosticReport with a LOINC code with no result");
+          logger.debug("Found a DiagnosticReport to be added");
           drs.add(dr);
         } else {
-          logger.info(
-              " Ignoring Diagnostic Report with id {} as it is not having a loinc code ",
-              dr.getIdElement().getIdPart());
+          logger.info(" Ignoring Diagnostic Report with id {} ", dr.getIdElement().getIdPart());
         }
       }
     } else {

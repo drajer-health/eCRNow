@@ -245,9 +245,11 @@ public class DirectTransportImpl implements DataTransportInterface {
           data.getxCorrelationId(),
           hs.getDirectTlsVersion());
 
-      logger.info(" Finished sending the message using Direct ");
+      logger.info(" Finished receiving the message using Direct ");
 
     } else if (!StringUtils.isEmpty(hs.getDirectHost())) {
+
+      logger.info("Using Imap URL {} to receive the data", hs.getDirectHost());
 
       readMailUsingImap(
           hs.getDirectHost(),
@@ -260,7 +262,7 @@ public class DirectTransportImpl implements DataTransportInterface {
     } else {
 
       logger.error(
-          " Cannot receive Direct message since both Direct Host and SMTP Urls are empty ");
+          " Cannot receive Direct message since both Direct Host and IMAP Urls are empty ");
     }
 
     logger.info(" Finish receiving process from Direct HISP ");
