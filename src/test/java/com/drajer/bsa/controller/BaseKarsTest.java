@@ -225,20 +225,20 @@ public class BaseKarsTest extends BaseIntegrationTest {
     } else {
       String processMessageUrl = "/fhir/$process-message-bundle";
       List<LoggedRequest> requests =
-              wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
+          wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
 
       if (requests.size() > 0) {
         try {
           IBaseResource resource =
-                  FhirContext.forCached(FhirVersionEnum.R4)
-                          .newJsonParser()
-                          .parseResource(requests.get(0).getBodyAsString());
+              FhirContext.forCached(FhirVersionEnum.R4)
+                  .newJsonParser()
+                  .parseResource(requests.get(0).getBodyAsString());
           if (resource instanceof Parameters) {
             Parameters params = (Parameters) resource;
             for (ParametersParameterComponent parameter : params.getParameter()) {
               if (parameter.getName().equals("content")) {
                 if (parameter.getResource() != null
-                        && parameter.getResource().fhirType().equals("Bundle")) {
+                    && parameter.getResource().fhirType().equals("Bundle")) {
                   return (Bundle) parameter.getResource();
                 }
               }

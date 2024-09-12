@@ -85,8 +85,7 @@ public class BsaServiceUtils {
 
   @Autowired private QueryReaderConfig queryReaderConfig;
 
-  @Autowired
-  Map<String, Bundle> eicrBundles;
+  @Autowired Map<String, Bundle> eicrBundles;
 
   private static String DEBUG_DIRECTORY;
   private static IParser FHIR_JSON_PARSER;
