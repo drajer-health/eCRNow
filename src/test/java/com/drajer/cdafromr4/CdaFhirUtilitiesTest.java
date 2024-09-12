@@ -2049,7 +2049,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaGeneratorConstants.CODE_EL_NAME,
         true,
         CdaGeneratorConstants.FHIR_ICD10_CM_URL,
-        false,
+        true,
         "<code xsi:type=\"CD\" nullFlavor=\"OTH\"><translation code=\"15074-8\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Glucose [Moles/volume] in Blood\"/></value>");
 
     testGetXmlForTypeForCodeSystem(

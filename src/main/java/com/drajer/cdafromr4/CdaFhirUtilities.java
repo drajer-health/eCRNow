@@ -112,7 +112,7 @@ public class CdaFhirUtilities {
 
       for (ContactComponent cc : ccs) {
 
-        if (cc.getRelationship() != null && !cc.getRelationship().isEmpty()) {
+        if (cc.hasRelationship()) {
 
           for (CodeableConcept cd : cc.getRelationship()) {
 
@@ -127,14 +127,16 @@ public class CdaFhirUtilities {
 
               for (Coding c : cs) {
 
-                if (c.getSystem() != null
+                if (c.hasSystem()
                     && (c.getSystem()
                             .contentEquals(
                                 CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
                         || c.getSystem()
                             .contentEquals(
-                                CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM))
-                    && c.getCode() != null
+                                CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
+                        || c.getSystem()
+                            .contentEquals(CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3))
+                    && c.hasCode()
                     && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
                         || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
                         || c.getCode().contentEquals(CdaGeneratorConstants.EMERGENCY_VALUE)
@@ -1098,7 +1100,7 @@ public class CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || Boolean.FALSE.equals(csOptional)) {
+    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || Boolean.TRUE.equals(csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();
@@ -1292,7 +1294,7 @@ public class CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || Boolean.FALSE.equals(csOptional)) {
+    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || Boolean.TRUE.equals(csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();

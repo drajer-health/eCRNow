@@ -519,7 +519,7 @@ public class CdaEncounterGenerator {
                 codes,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_ENCOUNTER_CLASS_URL,
-                true,
+                false,
                 contentRef);
       }
 
@@ -537,7 +537,7 @@ public class CdaEncounterGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_CPT_URL,
-                true,
+                false,
                 contentRef);
 
         if (!codeXml.isEmpty()) {
@@ -550,7 +550,7 @@ public class CdaEncounterGenerator {
                   CdaGeneratorConstants.CODE_EL_NAME,
                   false,
                   CdaGeneratorConstants.FHIR_ICD10_CM_URL,
-                  true,
+                  false,
                   contentRef);
 
           if (!codeXml.isEmpty()) {
@@ -564,7 +564,7 @@ public class CdaEncounterGenerator {
                     CdaGeneratorConstants.CODE_EL_NAME,
                     false,
                     CdaGeneratorConstants.FHIR_SNOMED_URL,
-                    true,
+                    false,
                     contentRef);
 
             if (!codeXml.isEmpty()) {

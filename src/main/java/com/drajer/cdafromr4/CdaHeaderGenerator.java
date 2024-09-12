@@ -9,7 +9,6 @@ import com.drajer.sof.model.R4FhirData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -342,7 +341,7 @@ public class CdaHeaderGenerator {
                 details.getAssigningAuthorityId(), loc.getIdElement().getIdPart()));
       }
 
-      if (loc.getType() != null) {
+      if (loc.hasType()) {
 
         List<CodeableConcept> cds = loc.getType();
 
@@ -352,7 +351,7 @@ public class CdaHeaderGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                false,
+                true,
                 "");
 
         sb.append(typeXml);
@@ -960,21 +959,20 @@ public class CdaHeaderGenerator {
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
 
-        if (guardianContact.hasRelationship()) {
-          Coding coding =
-              CdaFhirUtilities.getSingleCodingForCodeSystems(
-                  guardianContact.getRelationship(),
-                  CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM);
-
-          if (coding != null) {
-            patientDetails.append(
-                CdaFhirUtilities.getCodingXmlForCodeSystem(
-                    Collections.singletonList(coding),
-                    CdaGeneratorConstants.CODE_EL_NAME,
-                    CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                    false,
-                    ""));
-          }
+        String guardXml =
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                guardianContact.getRelationship(),
+                CdaGeneratorConstants.CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                true,
+                "");
+        if (!guardXml.isEmpty()) {
+          patientDetails.append(guardXml);
+        } else {
+          patientDetails.append(
+              CdaFhirUtilities.getCodeableConceptXml(
+                  guardianContact.getRelationship(), CdaGeneratorConstants.CODE_EL_NAME, false));
         }
 
         // Add address if found

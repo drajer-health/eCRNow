@@ -268,7 +268,7 @@ public class CdaResultGenerator {
               cd.getCoding(),
               CdaGeneratorConstants.CODE_EL_NAME,
               CdaGeneratorConstants.FHIR_LOINC_URL,
-              false,
+              true,
               "");
 
       logger.debug("Code Xml = {}", codeXml);
@@ -1481,7 +1481,7 @@ public class CdaResultGenerator {
                 cds,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_LOINC_URL,
-                true,
+                false,
                 "");
 
         if (!codeXml.isEmpty()) {
