@@ -36,8 +36,7 @@ public class CreateReport extends BsaAction {
 
   PublicHealthMessagesDao phDao;
 
-  @Autowired
-  BsaServiceUtils bsaServiceUtils;
+  @Autowired BsaServiceUtils bsaServiceUtils;
 
   public PublicHealthMessagesDao getPhDao() {
     return phDao;
@@ -161,10 +160,10 @@ public class CreateReport extends BsaAction {
       // Save bundle for test purposes
       List<DataRequirement> output = getOutputData();
       if (output != null) {
-        for (DataRequirement req: output) {
+        for (DataRequirement req : output) {
           Set<Resource> resourceSet = data.getOutputDataById(req.getId());
           if (resourceSet != null && !resourceSet.isEmpty()) {
-            for (Resource r: resourceSet) {
+            for (Resource r : resourceSet) {
               Bundle eicrBundle = (Bundle) r;
               bsaServiceUtils.saveEicrState(req.getId(), eicrBundle);
             }
