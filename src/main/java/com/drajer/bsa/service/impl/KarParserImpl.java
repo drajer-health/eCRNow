@@ -26,6 +26,7 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.model.KnowledgeArtifactSummaryInfo;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import com.drajer.bsa.routing.impl.RestfulTransportImpl;
@@ -276,14 +277,20 @@ public class KarParserImpl implements KarParser {
   @Override
   public void loadKars() {
     loadKarsFromDirectory(karDirectory, LOCAL_HOST_REPO_BASE_URL, LOCAL_HOST_REPO_NAME);
-    persistLocalKars();
+    persistAndSyncLocalKars();
   }
 
-  public void persistLocalKars() {
+  public void persistAndSyncLocalKars() {
 
     logger.info(" Persisting Kars for each Repo ");
 
+    List<KnowledgeArtifactRepository> inActiveRepos = karService.getAllKARs();
+    Set<KnowledgeArtifactSummaryInfo> kars = new HashSet<>();
+
     for (Map.Entry<String, String> entry : localKarRepoUrlToName.entrySet()) {
+
+      // Clear before doing anything
+      kars.clear();
 
       logger.info("Adding entry for Url {} and Name {}", entry.getKey(), entry.getValue());
 
@@ -292,6 +299,8 @@ public class KarParserImpl implements KarParser {
       if (repo != null) {
         logger.info(" Adding Artifacts to existing repo {}", entry.getKey());
         repo.addKars(localKars.get(entry.getKey()));
+        kars = repo.getKarsInfo();
+        repo.setRepoStatus(true);
       } else {
 
         logger.info(" Repository for Url {} does not exist ", entry.getKey());
@@ -299,11 +308,48 @@ public class KarParserImpl implements KarParser {
         repo.setFhirServerURL(entry.getKey());
         repo.setRepoName(entry.getValue());
         repo.addKars(localKars.get(entry.getKey()));
+        kars = repo.getKarsInfo();
+        repo.setRepoStatus(true);
       }
+
+      // Update non existing KARS in the Repo.
+      kars.stream()
+          .forEach(
+              art -> {
+                if (!isArtifactLoaded(art, localKars.get(entry.getKey()))) {
+                  art.setKarAvailable(false);
+                }
+              });
+
+      // Remove the repos that are found since they will be active.
+      inActiveRepos.removeIf(
+          repoEntry -> {
+            String repoUrl = entry.getKey();
+            if (repoEntry.getFhirServerURL().contentEquals(repoUrl)) {
+              logger.info("Removing repo with Url {} since they are existing", repoUrl);
+              return true;
+            } else {
+              return false;
+            }
+          });
 
       // Save the repo.
       karService.saveOrUpdate(repo);
     }
+
+    logger.info(" Number of Repos to be disabled {}", inActiveRepos.size());
+    for (KnowledgeArtifactRepository r : inActiveRepos) {
+      r.setRepoStatus(false);
+      karService.saveOrUpdate(r);
+    }
+  }
+
+  private boolean isArtifactLoaded(KnowledgeArtifactSummaryInfo kar, Set<KnowledgeArtifact> arts) {
+
+    for (KnowledgeArtifact ka : arts) {
+      if (ka.getVersionUniqueId().contentEquals(kar.getVersionUniqueId())) return true;
+    }
+    return false;
   }
 
   public void loadKarsFromDirectory(String dirName, String repoUrl, String repoName) {

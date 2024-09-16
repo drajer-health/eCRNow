@@ -100,6 +100,17 @@ public class KnowledgeArtifactRepository {
     this.karsInfo = karsInfo;
   }
 
+  public Boolean getRepoStatus() {
+    return repoStatus;
+  }
+
+  public void setRepoStatus(Boolean repoStatus) {
+    this.repoStatus = repoStatus;
+
+    // All KARs should be not available.
+    // karsInfo.forEach(kar -> kar.setKarAvailable(false));
+  }
+
   public void addKar(KnowledgeArtifact kar) {
 
     KnowledgeArtifactSummaryInfo info =
@@ -112,15 +123,19 @@ public class KnowledgeArtifactRepository {
     if (info == null) {
 
       info = new KnowledgeArtifactSummaryInfo();
-
       info.setKarId(kar.getKarId());
       info.setKarName(kar.getKarName());
       info.setKarPublisher(kar.getKarPublisher());
       info.setKarVersion(kar.getKarVersion());
+      info.setKarAvailable(true);
       karsInfo.add(info);
 
     } else {
       logger.info(" Not adding Kar {} as it already exists ", kar.getVersionUniqueId());
+      // Make it available no matter the previous status
+      karsInfo.remove(info);
+      info.setKarAvailable(true);
+      karsInfo.add(info);
     }
   }
 

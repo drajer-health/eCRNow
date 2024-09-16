@@ -40,6 +40,14 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   @Override
   public List<KnowledgeArtifactRepository> getAllKARs() {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
+    criteria.add(Restrictions.eq("repoStatus", true));
+
+    // criteria.createAlias("karsInfo", "karInfo");
+    // criteria.add(Restrictions.eq("karInfo.karAvailable", true));
+
+    // criteria.createCriteria("karsInfo")
+    //	.add(Restrictions.eq("karAvailable", true));
+
     return criteria.addOrder(Order.desc("id")).list();
   }
 

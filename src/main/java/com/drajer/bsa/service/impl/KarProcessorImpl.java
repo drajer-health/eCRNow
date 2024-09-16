@@ -203,8 +203,9 @@ public class KarProcessorImpl implements KarProcessor {
 
           for (KnowledgeArtifactStatus ks : stat) {
 
-            if (ks.getIsActive().booleanValue()
-                && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
+            if ( // ks.getIsActive().booleanValue() && -- Do not check to allow inactive KAR based
+            // timers to execute.
+            ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
 
               logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
               kd.setKarStatus(ks);
