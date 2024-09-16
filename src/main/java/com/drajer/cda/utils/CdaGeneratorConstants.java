@@ -129,6 +129,7 @@ public class CdaGeneratorConstants {
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
   public static final String OMB_ETHNICITY_DETAILED_URL = "detailed";
+  public static final String OMB_TEXT_URL = "text";
   public static final String FHIR_NPI_URL = "http://hl7.org/fhir/sid/us-npi";
   public static final String FHIR_CPT_URL = "http://www.ama-assn.org/go/cpt";
   public static final String FHIR_SNOMED_URL = "http://snomed.info/sct";

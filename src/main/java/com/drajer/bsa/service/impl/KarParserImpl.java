@@ -5,6 +5,7 @@ import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
 import com.drajer.bsa.kar.action.CheckResponse;
@@ -25,6 +26,7 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.model.KnowledgeArtifactSummaryInfo;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import com.drajer.bsa.routing.impl.RestfulTransportImpl;
@@ -159,10 +161,12 @@ public class KarParserImpl implements KarParser {
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
 
+  // The healthcare setting data access object
   @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
 
+  // The EHR query interface
   @Autowired EhrQueryService ehrInterface;
 
   @Autowired DirectTransportImpl directInterface;
@@ -174,6 +178,8 @@ public class KarParserImpl implements KarParser {
   @Autowired FhirContextInitializer fhirContextInitializer;
 
   @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
+
+  @Autowired TimeZoneDao timezoneDao;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -271,14 +277,20 @@ public class KarParserImpl implements KarParser {
   @Override
   public void loadKars() {
     loadKarsFromDirectory(karDirectory, LOCAL_HOST_REPO_BASE_URL, LOCAL_HOST_REPO_NAME);
-    persistLocalKars();
+    persistAndSyncLocalKars();
   }
 
-  public void persistLocalKars() {
+  public void persistAndSyncLocalKars() {
 
     logger.info(" Persisting Kars for each Repo ");
 
+    List<KnowledgeArtifactRepository> inActiveRepos = karService.getAllKARs();
+    Set<KnowledgeArtifactSummaryInfo> kars = new HashSet<>();
+
     for (Map.Entry<String, String> entry : localKarRepoUrlToName.entrySet()) {
+
+      // Clear before doing anything
+      kars.clear();
 
       logger.info("Adding entry for Url {} and Name {}", entry.getKey(), entry.getValue());
 
@@ -287,6 +299,8 @@ public class KarParserImpl implements KarParser {
       if (repo != null) {
         logger.info(" Adding Artifacts to existing repo {}", entry.getKey());
         repo.addKars(localKars.get(entry.getKey()));
+        kars = repo.getKarsInfo();
+        repo.setRepoStatus(true);
       } else {
 
         logger.info(" Repository for Url {} does not exist ", entry.getKey());
@@ -294,11 +308,48 @@ public class KarParserImpl implements KarParser {
         repo.setFhirServerURL(entry.getKey());
         repo.setRepoName(entry.getValue());
         repo.addKars(localKars.get(entry.getKey()));
+        kars = repo.getKarsInfo();
+        repo.setRepoStatus(true);
       }
+
+      // Update non existing KARS in the Repo.
+      kars.stream()
+          .forEach(
+              art -> {
+                if (!isArtifactLoaded(art, localKars.get(entry.getKey()))) {
+                  art.setKarAvailable(false);
+                }
+              });
+
+      // Remove the repos that are found since they will be active.
+      inActiveRepos.removeIf(
+          repoEntry -> {
+            String repoUrl = entry.getKey();
+            if (repoEntry.getFhirServerURL().contentEquals(repoUrl)) {
+              logger.info("Removing repo with Url {} since they are existing", repoUrl);
+              return true;
+            } else {
+              return false;
+            }
+          });
 
       // Save the repo.
       karService.saveOrUpdate(repo);
     }
+
+    logger.info(" Number of Repos to be disabled {}", inActiveRepos.size());
+    for (KnowledgeArtifactRepository r : inActiveRepos) {
+      r.setRepoStatus(false);
+      karService.saveOrUpdate(r);
+    }
+  }
+
+  private boolean isArtifactLoaded(KnowledgeArtifactSummaryInfo kar, Set<KnowledgeArtifact> arts) {
+
+    for (KnowledgeArtifact ka : arts) {
+      if (ka.getVersionUniqueId().contentEquals(kar.getVersionUniqueId())) return true;
+    }
+    return false;
   }
 
   public void loadKarsFromDirectory(String dirName, String repoUrl, String repoName) {
@@ -378,16 +429,23 @@ public class KarParserImpl implements KarParser {
           Library lib = (Library) comp.getResource();
 
           // Add Version
-          if (lib.hasMeta() && lib.getMeta().hasProfile() && lib.getMeta().hasVersionId()) {
+          if (lib.hasMeta() && lib.getMeta().hasProfile()) {
 
             List<CanonicalType> profiles = lib.getMeta().getProfile();
 
             for (CanonicalType prof : profiles) {
 
               if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                  && lib.getMeta().hasVersionId()
                   && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
                 logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
                 art.setKarVersion(lib.getMeta().getVersionId());
+                break;
+              } else if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                  && lib.hasVersion()
+                  && lib.getVersion().startsWith(VERSION3_ERSD)) {
+                logger.info(" Adding Version {} to KAR", lib.getVersion());
+                art.setKarVersion(lib.getVersion());
                 break;
               }
             }
@@ -529,6 +587,7 @@ public class KarParserImpl implements KarParser {
         BsaAction action = getAction(cd.getCode());
         action.setActionId(act.getId(), plan.getUrl());
         action.setScheduler(scheduler);
+        action.setTimeZoneDao(timezoneDao);
         action.setJsonParser(jsonParser);
         action.setXmlParser(FhirContext.forR4().newXmlParser());
         action.setRestTemplate(restTemplate);
@@ -559,6 +618,7 @@ public class KarParserImpl implements KarParser {
     CheckResponse action = (CheckResponse) getAction("check-response");
     action.setActionId("check-response", plan.getUrl());
     action.setScheduler(scheduler);
+    action.setTimeZoneDao(timezoneDao);
     action.setJsonParser(jsonParser);
     action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setRestTemplate(restTemplate);
@@ -796,6 +856,7 @@ public class KarParserImpl implements KarParser {
           BsaAction subAction = getAction(cd.getCode());
           subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
+          subAction.setTimeZoneDao(timezoneDao);
           subAction.setJsonParser(jsonParser);
           subAction.setXmlParser(FhirContext.forR4().newXmlParser());
           subAction.setRestTemplate(restTemplate);

@@ -123,7 +123,8 @@
 <entry>
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="p730798451"/>
+<code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
 <statusCode code="completed"/>
 <effectiveTime>
 <low value="20240101"/>
@@ -143,7 +144,8 @@
 <entry>
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="p73079845"/>
+<code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
 <statusCode code="completed"/>
 <effectiveTime>
 <low nullFlavor="NI"/>
@@ -163,7 +165,8 @@
 <entry>
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.38" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail"><translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="123"/>
+<code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail"><translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>
 <translation code="74174-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Occupation history"></translation>
 </code>
 <statusCode code="completed"/>
@@ -174,7 +177,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-203785063"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121500+0000"/>
@@ -193,7 +197,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-203785061"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel History |  Value : Last travel within 21 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121500+0000"/>
@@ -202,7 +207,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-203785047"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121000+0000"/>
@@ -221,7 +227,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-203785045"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel History |  Value : Last travel within 21 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121000+0000"/>
@@ -230,7 +237,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-197424268"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel Location |  Value : Italy</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112164000+0000"/>
@@ -239,7 +247,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-197424266"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel History |  Value : Last travel within 7 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112164000+0000"/>
@@ -248,7 +257,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-197424250"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel Location |  Value : China</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112163300+0000"/>
@@ -257,7 +267,8 @@
 <entry>
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="L-197424248"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
 <text>Recent Travel History |  Value : Last travel within 7 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112163300+0000"/>

@@ -294,7 +294,8 @@ public class CdaEncounterGenerator {
                 CdaGeneratorConstants.VAL_EL_NAME,
                 true,
                 CdaGeneratorConstants.FHIR_SNOMED_URL,
-                false);
+                false,
+                "");
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
@@ -509,7 +510,7 @@ public class CdaEncounterGenerator {
     String codeXml = "";
 
     if (encounter != null) {
-      if (encounter.getClass_() != null) {
+      if (encounter.hasClass_()) {
         Coding encClass = encounter.getClass_();
         List<Coding> codes = new ArrayList<>();
         codes.add(encClass);
@@ -518,7 +519,7 @@ public class CdaEncounterGenerator {
                 codes,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_ENCOUNTER_CLASS_URL,
-                true,
+                false,
                 contentRef);
       }
 
@@ -536,7 +537,8 @@ public class CdaEncounterGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_CPT_URL,
-                true);
+                false,
+                contentRef);
 
         if (!codeXml.isEmpty()) {
           logger.debug("Found Encounter Information using CPT, so using it ");
@@ -548,7 +550,8 @@ public class CdaEncounterGenerator {
                   CdaGeneratorConstants.CODE_EL_NAME,
                   false,
                   CdaGeneratorConstants.FHIR_ICD10_CM_URL,
-                  true);
+                  false,
+                  contentRef);
 
           if (!codeXml.isEmpty()) {
             logger.debug("Found Encounter Information using ICD10, so using it ");
@@ -561,7 +564,8 @@ public class CdaEncounterGenerator {
                     CdaGeneratorConstants.CODE_EL_NAME,
                     false,
                     CdaGeneratorConstants.FHIR_SNOMED_URL,
-                    true);
+                    false,
+                    contentRef);
 
             if (!codeXml.isEmpty()) {
               logger.debug("Found Encounter Information using SNOMED, so using it ");

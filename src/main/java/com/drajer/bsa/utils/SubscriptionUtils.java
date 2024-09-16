@@ -1,5 +1,6 @@
 package com.drajer.bsa.utils;
 
+import com.drajer.bsa.exceptions.InvalidLaunchContext;
 import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PatientLaunchContext;
@@ -93,7 +94,8 @@ public class SubscriptionUtils {
       HttpServletRequest request,
       HttpServletResponse response,
       Boolean relaunch,
-      PatientLaunchContext launchContext) {
+      PatientLaunchContext launchContext)
+      throws InvalidLaunchContext {
 
     NotificationContext nc = null;
 
@@ -142,116 +144,125 @@ public class SubscriptionUtils {
         // Verify if the resource received matches the resource Type expected.
         Resource res = bundle.getEntry().get(1).getResource();
 
-        logger.info(" Resource Type Received : {}", res.getResourceType());
+        if (res != null) {
+          logger.info(" Resource Type Received : {}", res.getResourceType());
 
-        if (res.getResourceType().toString().equals(resourceType)) {
+          if (res.getResourceType().toString().equals(resourceType)) {
 
-          logger.info(
-              " Found the Resource Type Expected in the bundle : {}", res.getResourceType());
+            logger.info(
+                " Found the Resource Type Expected in the bundle : {}", res.getResourceType());
 
-          String fhirServerUrl = getFhirServerUrl(subsRef);
+            String fhirServerUrl = getFhirServerUrl(subsRef);
 
-          // Check if we received a FHIR Server URL.
-          if (fhirServerUrl != null && (fhirServerUrl.length() > FHIR_SERVER_URL_MIN_LENGTH)) {
+            // Check if we received a FHIR Server URL.
+            if (fhirServerUrl != null && (fhirServerUrl.length() > FHIR_SERVER_URL_MIN_LENGTH)) {
 
-            nc = new NotificationContext();
+              nc = new NotificationContext();
 
-            if (!relaunch) {
-              nc.setTriggerEvent(namedEvent);
-            } else {
-              nc.setTriggerEvent(namedEvent + "|" + UUID.randomUUID().toString());
-            }
-            nc.setFhirServerBaseUrl(fhirServerUrl);
-            nc.setPatientId(getPatientId(res));
-            nc.setNotificationResourceId(res.getIdElement().getIdPart());
-            nc.setNotificationResourceType(resourceType);
-            nc.setLastUpdated(Date.from(Instant.now()));
-            nc.setNotifiedResource(res);
-            nc.setNotificationProcessingStatus(
-                NotificationProcessingStatusType.IN_PROGRESS.toString());
+              if (!relaunch) {
+                nc.setTriggerEvent(namedEvent);
+              } else {
+                nc.setTriggerEvent(namedEvent + "|" + UUID.randomUUID().toString());
+              }
+              nc.setFhirServerBaseUrl(fhirServerUrl);
+              nc.setPatientId(getPatientId(res));
+              nc.setNotificationResourceId(res.getIdElement().getIdPart());
+              nc.setNotificationResourceType(resourceType);
+              nc.setLastUpdated(Date.from(Instant.now()));
+              nc.setNotifiedResource(res);
+              nc.setNotificationProcessingStatus(
+                  NotificationProcessingStatusType.IN_PROGRESS.toString());
 
-            if (res.getResourceType() == ResourceType.Encounter) {
-              Encounter enc = (Encounter) res;
+              if (res.getResourceType() == ResourceType.Encounter) {
+                Encounter enc = (Encounter) res;
 
-              if (enc.getPeriod() != null && enc.getPeriod().getStart() != null) {
+                if (enc.getPeriod() != null && enc.getPeriod().getStart() != null) {
 
-                logger.debug(" Encounter has a start date");
-                nc.setEncounterStartTime(enc.getPeriod().getStart());
+                  logger.debug(" Encounter has a start date");
+                  nc.setEncounterStartTime(enc.getPeriod().getStart());
 
-                if (enc.getPeriod().getEnd() != null) {
-                  logger.info(" Encounter has an end date, so it is a closed encounter ");
-                  nc.setEncounterEndTime(enc.getPeriod().getEnd());
+                  if (enc.getPeriod().getEnd() != null) {
+                    logger.info(" Encounter has an end date, so it is a closed encounter ");
+                    nc.setEncounterEndTime(enc.getPeriod().getEnd());
+                  }
+                } else {
+
+                  logger.debug(" Initializing Encounter Start time as current time ");
+                  nc.setEncounterStartTime(new Date());
                 }
-              } else {
 
-                logger.debug(" Initializing Encounter Start time as current time ");
-                nc.setEncounterStartTime(new Date());
+                if (enc.hasClass_()
+                    && enc.getClass_().hasCode()
+                    && (enc.getClass_().getCode().contentEquals("AMB")
+                        || enc.getClass_().getCode().contentEquals("VR")
+                        || enc.getClass_().getCode().contentEquals("HH"))) {
+                  logger.info("Setting Encounter Class as Ambulatory ");
+                  nc.setEncounterClass("AMB");
+                } else {
+                  logger.info("Setting Encounter Class as Inpatient ");
+                  nc.setEncounterClass("IMP");
+                }
               }
 
-              if (enc.hasClass_()
-                  && enc.getClass_().hasCode()
-                  && (enc.getClass_().getCode().contentEquals("AMB")
-                      || enc.getClass_().getCode().contentEquals("VR")
-                      || enc.getClass_().getCode().contentEquals("HH"))) {
-                logger.info("Setting Encounter Class as Ambulatory ");
-                nc.setEncounterClass("AMB");
+              String xRequestId = request.getHeader("X-Request-ID");
+              String xCorrelationId = request.getHeader("X-Correlation-ID");
+
+              if (xRequestId != null
+                  && xRequestId.length() > 0
+                  && xCorrelationId != null
+                  && xCorrelationId.length() > 0) {
+
+                // Setup the attributes to be different.
+                nc.setxRequestId(xRequestId);
+                nc.setxCorrelationId(xCorrelationId);
+              } else if (xRequestId != null && xRequestId.length() > 0) {
+                // Set both to the same since the other one  is null.
+                nc.setxRequestId(xRequestId);
+                nc.setxCorrelationId(xRequestId);
+              } else if (xCorrelationId != null && xCorrelationId.length() > 0) {
+                // Set both to the same since the other one  is null.
+
+                nc.setxCorrelationId(xCorrelationId);
+                nc.setxRequestId(xCorrelationId);
               } else {
-                logger.info("Setting Encounter Class as Inpatient ");
-                nc.setEncounterClass("IMP");
+                String guid = java.util.UUID.randomUUID().toString();
+                nc.setxRequestId(guid);
+                nc.setxCorrelationId(guid);
               }
-            }
 
-            String xRequestId = request.getHeader("X-Request-ID");
-            String xCorrelationId = request.getHeader("X-Correlation-ID");
+              if (launchContext != null
+                  && launchContext.getEhrLaunchContext() != null
+                  && !launchContext.getEhrLaunchContext().isEmpty()) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                  nc.setEhrLaunchContext(
+                      objectMapper.writeValueAsString(launchContext.getEhrLaunchContext()));
+                } catch (JsonProcessingException e) {
+                  logger.error("Unable to set the Launch Context in the Notification Context ");
+                }
+              }
 
-            if (xRequestId != null
-                && xRequestId.length() > 0
-                && xCorrelationId != null
-                && xCorrelationId.length() > 0) {
-
-              // Setup the attributes to be different.
-              nc.setxRequestId(xRequestId);
-              nc.setxCorrelationId(xCorrelationId);
-            } else if (xRequestId != null && xRequestId.length() > 0) {
-              // Set both to the same since the other one  is null.
-              nc.setxRequestId(xRequestId);
-              nc.setxCorrelationId(xRequestId);
-            } else if (xCorrelationId != null && xCorrelationId.length() > 0) {
-              // Set both to the same since the other one  is null.
-
-              nc.setxCorrelationId(xCorrelationId);
-              nc.setxRequestId(xCorrelationId);
             } else {
-              String guid = java.util.UUID.randomUUID().toString();
-              nc.setxRequestId(guid);
-              nc.setxCorrelationId(guid);
+
+              logger.error(
+                  "Fhir Server Url received is not valid for further processing, Url Value : {}",
+                  (fhirServerUrl != null) ? fhirServerUrl : "Null Value");
             }
 
-            if (launchContext != null
-                && launchContext.getEhrLaunchContext() != null
-                && !launchContext.getEhrLaunchContext().isEmpty()) {
-              ObjectMapper objectMapper = new ObjectMapper();
-              try {
-                nc.setEhrLaunchContext(
-                    objectMapper.writeValueAsString(launchContext.getEhrLaunchContext()));
-              } catch (JsonProcessingException e) {
-                logger.error("Unable to set the Launch Context in the Notification Context ");
-              }
-            }
-
-          } else {
+          } else { // if resourceType is not the same
 
             logger.error(
-                "Fhir Server Url received is not valid for further processing, Url Value : {}",
-                (fhirServerUrl != null) ? fhirServerUrl : "Null Value");
+                " Resource Type Received {}, does not match Resource Type Expected {}",
+                res.getResourceType().getDeclaringClass(),
+                ResourceType.fromCode(resourceType).getDeclaringClass());
           }
-
         } else {
-
-          logger.error(
-              " Resource Type Received {}, does not match Resource Type Expected {}",
-              res.getResourceType().getDeclaringClass(),
-              ResourceType.fromCode(resourceType).getDeclaringClass());
+          String error = "Resource not found for type: " + resourceType;
+          logger.error(error);
+          String possibleCauses =
+              error
+                  + ", Check for accurate PatientId, Encounter or Notified Resource Id or an Expired Authorization Token";
+          throw new InvalidLaunchContext(possibleCauses);
         }
 
       } else {

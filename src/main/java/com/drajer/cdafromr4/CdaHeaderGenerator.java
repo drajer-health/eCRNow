@@ -9,7 +9,6 @@ import com.drajer.sof.model.R4FhirData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Location;
@@ -43,7 +41,7 @@ public class CdaHeaderGenerator {
   private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  private static String SW_APP_VERSION = "Version 3.1.X";
+  private static String SW_APP_VERSION = "Version 3.1.5";
   private static String SW_APP_NAME = "ecrNowApp";
   private static final String SPRING_ACTIVE_PROFILE = "spring.active.profile";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
@@ -258,7 +256,7 @@ public class CdaHeaderGenerator {
     }
 
     if (cc.hasTelecom()) {
-      s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false));
+      s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false, false));
     }
 
     s.append(
@@ -343,7 +341,7 @@ public class CdaHeaderGenerator {
                 details.getAssigningAuthorityId(), loc.getIdElement().getIdPart()));
       }
 
-      if (loc.getType() != null) {
+      if (loc.hasType()) {
 
         List<CodeableConcept> cds = loc.getType();
 
@@ -353,7 +351,8 @@ public class CdaHeaderGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                false);
+                true,
+                "");
 
         sb.append(typeXml);
       } else {
@@ -362,6 +361,12 @@ public class CdaHeaderGenerator {
       }
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+
+      // Add name here from the location resource
+      if (loc.hasName()) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, loc.getName()));
+      }
 
       List<Address> addrs = new ArrayList<>();
       addrs.add(loc.getAddress());
@@ -399,6 +404,11 @@ public class CdaHeaderGenerator {
       }
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+
+      if (org.hasName()) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
+      }
 
       if (org.hasAddress()) {
         List<Address> addrs = org.getAddress();
@@ -548,7 +558,7 @@ public class CdaHeaderGenerator {
   }
 
   public static String getOrganizationXml(
-      Organization org, LaunchDetails details, boolean onlyOneTelecom) {
+      Organization org, LaunchDetails details, boolean onlyOneTelecom, boolean isPhonePr) {
 
     StringBuilder sb = new StringBuilder(200);
     if (org != null) {
@@ -568,7 +578,7 @@ public class CdaHeaderGenerator {
       }
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
-      sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom(), onlyOneTelecom));
+      sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom(), onlyOneTelecom, isPhonePr));
       sb.append(CdaFhirUtilities.getAddressXml(org.getAddress(), false));
 
     } else {
@@ -580,7 +590,7 @@ public class CdaHeaderGenerator {
               CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
 
       List<ContactPoint> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps, onlyOneTelecom));
+      sb.append(CdaFhirUtilities.getTelecomXml(cps, onlyOneTelecom, isPhonePr));
 
       List<Address> addrs = null;
       sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
@@ -597,7 +607,7 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, true));
+    sb.append(getOrganizationXml(data.getOrganization(), details, true, true));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
@@ -661,7 +671,7 @@ public class CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, false));
+    sb.append(getOrganizationXml(data.getOrganization(), details, false, false));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
@@ -681,7 +691,7 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElement(
             CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, false));
+    sb.append(getOrganizationXml(data.getOrganization(), details, false, false));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
@@ -879,7 +889,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress(), true));
 
     // Add Telecom (Phone)
-    patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false));
+    patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false, false));
 
     // Add patient
     patientDetails.append(
@@ -913,68 +923,27 @@ public class CdaHeaderGenerator {
       patientDetails.append(CdaFhirUtilities.getReligiousAffiliationXml(religion));
     }
 
-    Coding race =
-        CdaFhirUtilities.getCodingExtension(
+    patientDetails.append(
+        CdaFhirUtilities.getRaceOrEthnicityXml(
             p.getExtension(),
-            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
-            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
-
-    if (race != null && race.hasCode()) {
-      if (!isCodingNullFlavor(race)) {
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.RACE_CODE_EL_NAME,
-                race.getCode(),
-                CdaGeneratorConstants.RACE_CODE_SYSTEM,
-                CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
-                race.getDisplay()));
-      } else {
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForNullCD(
-                CdaGeneratorConstants.RACE_CODE_EL_NAME, race.getCode()));
-      }
-    } else {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.RACE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
-    }
+            CdaGeneratorConstants.RACE_CODE_EL_NAME,
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL));
 
     patientDetails.append(
-        generateXmlForDetailedRaceAndEthnicityCodes(
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
             p.getExtension(),
             CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
             CdaGeneratorConstants.SDTC_DETAILED_RACE_CODE));
 
-    Coding ethnicity =
-        CdaFhirUtilities.getCodingExtension(
+    patientDetails.append(
+        CdaFhirUtilities.getRaceOrEthnicityXml(
             p.getExtension(),
-            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
-            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
-
-    if (ethnicity != null && ethnicity.hasCode()) {
-      if (!isCodingNullFlavor(ethnicity)) {
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.ETHNIC_CODE_EL_NAME,
-                ethnicity.getCode(),
-                CdaGeneratorConstants.RACE_CODE_SYSTEM,
-                CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
-                ethnicity.getDisplay()));
-      } else {
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForNullCD(
-                CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, ethnicity.getCode()));
-      }
-    } else {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
-    }
+            CdaGeneratorConstants.ETHNIC_CODE_EL_NAME,
+            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL));
 
     patientDetails.append(
-        generateXmlForDetailedRaceAndEthnicityCodes(
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
             p.getExtension(),
             CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
             CdaGeneratorConstants.OMB_ETHNICITY_DETAILED_URL,
@@ -990,21 +959,20 @@ public class CdaHeaderGenerator {
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
 
-        if (guardianContact.hasRelationship()) {
-          Coding coding =
-              CdaFhirUtilities.getSingleCodingForCodeSystems(
-                  guardianContact.getRelationship(),
-                  CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM);
-
-          if (coding != null) {
-            patientDetails.append(
-                CdaFhirUtilities.getCodingXmlForCodeSystem(
-                    Collections.singletonList(coding),
-                    CdaGeneratorConstants.CODE_EL_NAME,
-                    CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                    false,
-                    ""));
-          }
+        String guardXml =
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                guardianContact.getRelationship(),
+                CdaGeneratorConstants.CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                true,
+                "");
+        if (!guardXml.isEmpty()) {
+          patientDetails.append(guardXml);
+        } else {
+          patientDetails.append(
+              CdaFhirUtilities.getCodeableConceptXml(
+                  guardianContact.getRelationship(), CdaGeneratorConstants.CODE_EL_NAME, false));
         }
 
         // Add address if found
@@ -1019,7 +987,8 @@ public class CdaHeaderGenerator {
         }
 
         // Add Telecom
-        patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false));
+        patientDetails.append(
+            CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false, false));
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
@@ -1115,43 +1084,5 @@ public class CdaHeaderGenerator {
     }
 
     return patientDetails.toString();
-  }
-
-  private static boolean isCodingNullFlavor(Coding coding) {
-
-    if (coding != null
-        && coding.getCode() != null
-        && (coding.getCode().contentEquals("ASKU") || coding.getCode().contentEquals("UNK"))) {
-      return true;
-    } else return false;
-  }
-
-  public static String generateXmlForDetailedRaceAndEthnicityCodes(
-      List<Extension> extensions, String extensionUrl, String categoryUrl, String xmlElementName) {
-    StringBuilder sb = new StringBuilder();
-
-    List<Coding> detailedCodings =
-        CdaFhirUtilities.getAllCodingsFromExtension(extensions, extensionUrl, categoryUrl);
-
-    if (detailedCodings.isEmpty()) {
-      return "";
-    }
-    for (Coding detailedCoding : detailedCodings) {
-      if (detailedCoding.hasCode()) {
-        String code = detailedCoding.getCode();
-        if (isCodingNullFlavor(detailedCoding)) {
-          sb.append(CdaGeneratorUtils.getXmlForNullCD(xmlElementName, code));
-        } else {
-          sb.append(
-              CdaGeneratorUtils.getXmlForCD(
-                  xmlElementName,
-                  code,
-                  CdaGeneratorConstants.RACE_CODE_SYSTEM,
-                  CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
-                  detailedCoding.getDisplay()));
-        }
-      }
-    }
-    return sb.toString();
   }
 }

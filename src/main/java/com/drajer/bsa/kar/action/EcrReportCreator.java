@@ -363,7 +363,7 @@ public class EcrReportCreator extends ReportCreator {
     returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
-    logger.info("Ehr Query Service :{}", ehrService);
+    // logger.info("Ehr Query Service :{}", ehrService);
 
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =

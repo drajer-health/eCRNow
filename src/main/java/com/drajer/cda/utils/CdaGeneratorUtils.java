@@ -226,6 +226,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForCD(
       String cdName, String code, String codeSystem, String codeSystemName, String displayName) {
+
     if (!StringUtils.isEmpty(displayName)) {
       return CdaGeneratorConstants.START_XMLTAG
           + cdName
@@ -336,6 +337,39 @@ public class CdaGeneratorUtils {
         + codeSystem
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
+  public static String getXmlForNFCDWithText(String cdName, String code, String text) {
+
+    String retVal = new String();
+
+    if (text != null && !text.isEmpty()) {
+
+      retVal =
+          CdaGeneratorConstants.START_XMLTAG
+              + cdName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.NF_OTH
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + CdaGeneratorConstants.NEW_LINE
+              + CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME, text)
+              + CdaGeneratorUtils.getXmlForEndElement(cdName);
+    } else {
+      retVal =
+          CdaGeneratorConstants.START_XMLTAG
+              + cdName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + code
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
+
+    return retVal;
   }
 
   public static String getXmlForCD(String cdName, String code) {
@@ -719,18 +753,20 @@ public class CdaGeneratorUtils {
   public static String getXmlForTelecom(String telName, String telNo, String use, Boolean fax) {
 
     String s = "";
+    String countryPrefix = "";
 
     String tel = digitPattern.matcher(telNo).replaceAll("");
     String finalTel = tel;
 
     if (tel.length() > 10) {
       finalTel = tel.substring(tel.length() - 10);
+      countryPrefix = tel.substring(0, tel.length() - 10);
     }
 
-    String telprefix = "tel:(";
+    String telprefix = "tel:" + (countryPrefix.isEmpty() ? "" : ("+" + countryPrefix)) + "(";
 
     if (fax) {
-      telprefix = "fax:(";
+      telprefix = "fax:" + (countryPrefix.isEmpty() ? "" : ("+" + countryPrefix)) + "(";
     }
 
     if (!StringUtils.isEmpty(use) && finalTel.length() == 10) {

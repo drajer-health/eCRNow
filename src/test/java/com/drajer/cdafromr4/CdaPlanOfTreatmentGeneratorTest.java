@@ -46,6 +46,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
   @Test
   public void testGetPlannedObservationXml() {
+    R4FhirData data = new R4FhirData();
     LaunchDetails details = new LaunchDetails();
     ServiceRequest sr = new ServiceRequest();
     Coding coding = new Coding();
@@ -60,12 +61,14 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String contentRef = "contentRef";
 
-    String actual = CdaPlanOfTreatmentGenerator.getPlannedObservationXml(sr, details, contentRef);
+    String actual =
+        CdaPlanOfTreatmentGenerator.getPlannedObservationXml(sr, details, contentRef, data);
     assertNotNull(actual);
   }
 
   @Test
   public void testGetDiagnosticReportXml() {
+    R4FhirData data = new R4FhirData();
     LaunchDetails details = new LaunchDetails();
     DiagnosticReport dr = new DiagnosticReport();
     Coding coding = new Coding();
@@ -78,7 +81,8 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     details.setStatus(TestUtils.toJsonString(state));
 
     String contentRef = "contentRef";
-    String actual = CdaPlanOfTreatmentGenerator.getDiagnosticReportXml(dr, details, contentRef);
+    String actual =
+        CdaPlanOfTreatmentGenerator.getDiagnosticReportXml(dr, details, contentRef, data);
     assertNotNull(actual);
   }
 

@@ -638,6 +638,7 @@
 					--add-opens=java.base/java.time.format=ALL-UNNAMED
 					--add-opens
 					java.base/java.text=ALL-UNNAMED
+					--add-opens java.base/java.util.stream=ALL-UNNAMED
 				</argLine>
 
 

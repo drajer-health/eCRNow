@@ -20,6 +20,7 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Type;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +111,7 @@ public class CdaSocialHistoryGenerator {
           sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
           index++;
 
-          pregCondXml.append(generatePregnancyEntry(c));
+          pregCondXml.append(generatePregnancyEntry(c, details));
         }
       }
 
@@ -152,7 +153,7 @@ public class CdaSocialHistoryGenerator {
             sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
             index++;
 
-            occHistoryXml.append(generateOccHistoryEntry(obs));
+            occHistoryXml.append(generateOccHistoryEntry(obs, details));
           }
         }
       }
@@ -174,7 +175,7 @@ public class CdaSocialHistoryGenerator {
           sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
           index++;
 
-          travelHistoryXml.append(generateTravelHistoryEntry(obs, display));
+          travelHistoryXml.append(generateTravelHistoryEntry(obs, display, details));
         }
       }
 
@@ -213,7 +214,8 @@ public class CdaSocialHistoryGenerator {
     return sb.toString();
   }
 
-  public static String generateTravelHistoryEntry(Observation obs, String display) {
+  public static String generateTravelHistoryEntry(
+      Observation obs, String display, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -230,7 +232,9 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.TRAVEL_HISTORY_OBS_TEMPLATE_ID,
             CdaGeneratorConstants.TRAVEL_HISTORY_OBS_TEMPLATE_ID_EXT));
 
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -246,11 +250,24 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(obs.getEffective());
+    if (obs.hasEffective()) {
+      Type effective = obs.getEffective();
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(
-            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+      if (effective instanceof Period) {
+        Period period = (Period) effective;
+        sb.append(
+            CdaFhirUtilities.getPeriodXml(period, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+      } else {
+        Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(effective);
+        sb.append(
+            CdaGeneratorUtils.getXmlForEffectiveTime(
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+      }
+    } else {
+      sb.append(
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+    }
 
     // Add components
     sb.append(generateParticipant(obs));
@@ -319,7 +336,7 @@ public class CdaSocialHistoryGenerator {
     return participantXml.toString();
   }
 
-  public static String generateOccHistoryEntry(Observation obs) {
+  public static String generateOccHistoryEntry(Observation obs, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -336,7 +353,9 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID,
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID_EXT));
 
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -381,7 +400,7 @@ public class CdaSocialHistoryGenerator {
     return sb.toString();
   }
 
-  public static String generatePregnancyEntry(Condition cond) {
+  public static String generatePregnancyEntry(Condition cond, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -395,7 +414,9 @@ public class CdaSocialHistoryGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PREGNANCY_OBS_TEMPLATE_ID));
 
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -425,7 +446,8 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.VAL_EL_NAME,
             true,
             CdaGeneratorConstants.FHIR_SNOMED_URL,
-            false);
+            false,
+            "");
 
     if (!codeXml.isEmpty()) {
       sb.append(codeXml);

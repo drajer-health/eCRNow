@@ -94,7 +94,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="example005"/>
 <statusCode code="completed"/>
-<effectiveTime xsi:type="TS" value="20201023"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20201023"/>
+</effectiveTime>
 <doseQuantity nullFlavor="NI"/>
 <consumable>
 <manufacturedProduct classCode="MANU">
@@ -114,7 +115,9 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="example005"/>
 <statusCode code="completed"/>
-<effectiveTime xsi:type="TS" nullFlavor="NI"/>
+<effectiveTime xsi:type="IVL_TS"><low nullFlavor="NI"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
 <doseQuantity nullFlavor="NI"/>
 <consumable>
 <manufacturedProduct classCode="MANU">
@@ -155,7 +158,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="311503471"/>
 <statusCode code="active"/>
-<effectiveTime xsi:type="TS" value="20200429083400-0500"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20200429083400-0500"/>
+</effectiveTime>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>
@@ -177,7 +181,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="311503467"/>
 <statusCode code="active"/>
-<effectiveTime xsi:type="TS" value="20200429083200-0500"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20200429083200-0500"/>
+</effectiveTime>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>
@@ -199,7 +204,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="311503469"/>
 <statusCode code="active"/>
-<effectiveTime xsi:type="TS" value="20200429090000-0500"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20200429090000-0500"/>
+</effectiveTime>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>
@@ -221,7 +227,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="311477549"/>
 <statusCode code="active"/>
-<effectiveTime xsi:type="TS" value="20200428132700-0500"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20200428132700-0500"/>
+</effectiveTime>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>
@@ -243,7 +250,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="311477547"/>
 <statusCode code="active"/>
-<effectiveTime xsi:type="TS" value="20200428132700-0500"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20200428132700-0500"/>
+</effectiveTime>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>
@@ -265,7 +273,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="311477551"/>
 <statusCode code="active"/>
-<effectiveTime xsi:type="TS" value="20200428132800-0500"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20200428132800-0500"/>
+</effectiveTime>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>

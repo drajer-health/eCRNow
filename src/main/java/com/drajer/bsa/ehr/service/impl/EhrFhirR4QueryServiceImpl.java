@@ -1147,10 +1147,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       ServiceRequest sr = (ServiceRequest) res;
 
-      // Ignore observations that should not be included.
+      // Ignore service requests that should not be included.
       if (sr.getStatus() != null
           && (sr.getStatus() == ServiceRequestStatus.REVOKED
               || sr.getStatus() == ServiceRequestStatus.ENTEREDINERROR
+              || sr.getStatus() == ServiceRequestStatus.DRAFT
+              || sr.getStatus() == ServiceRequestStatus.ONHOLD
               || sr.getStatus() == ServiceRequestStatus.UNKNOWN)) {
 
         logger.info(

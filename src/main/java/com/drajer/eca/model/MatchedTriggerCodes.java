@@ -79,7 +79,7 @@ public class MatchedTriggerCodes {
   public Pair<String, String> getMatchingCode(CodeableConcept cd, String path) {
 
     Pair<String, String> retVal = null;
-    if (cd != null && cd.getCoding() != null && !cd.getCoding().isEmpty()) {
+    if (cd != null && cd.hasCoding()) {
 
       List<Coding> cds = cd.getCoding();
 

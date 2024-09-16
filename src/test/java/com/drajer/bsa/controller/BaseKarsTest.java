@@ -109,7 +109,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
                 .getPath()));
   }
 
-  public void testScenarioAndValidate() throws InterruptedException {
+  public void testScenarioAndValidate() throws Exception {
     logger.info("Executing Test: {}", this.testCaseInfo.getName());
     try {
       deleteOutputFiles();

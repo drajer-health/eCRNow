@@ -3,6 +3,7 @@ package com.drajer.bsa.utils;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
@@ -14,6 +15,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.ecrapp.config.QueryReaderConfig;
 import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -78,9 +83,12 @@ public class BsaServiceUtils {
   @Autowired(required = false)
   Map<String, BsaActionStatus> actions;
 
+  @Autowired private QueryReaderConfig queryReaderConfig;
+
   private static String DEBUG_DIRECTORY;
   private static IParser FHIR_JSON_PARSER;
   private static boolean SAVE_DEBUG_TO_FILES;
+  private static String TIMEZONE_QUERY;
 
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
   private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
@@ -90,6 +98,7 @@ public class BsaServiceUtils {
     DEBUG_DIRECTORY = debugDirectory;
     FHIR_JSON_PARSER = jsonParser;
     SAVE_DEBUG_TO_FILES = saveDebugToFiles;
+    TIMEZONE_QUERY = queryReaderConfig.getQuery("query.getTimezone");
   }
 
   public static String getFhirPathVariableString(String id) {
@@ -217,10 +226,12 @@ public class BsaServiceUtils {
       Resource resource,
       DataRequirement.DataRequirementCodeFilterComponent codeFilter,
       KarProcessingData kd) {
-    // find the attribute by the path element in the code filter: this may be a list of codes or
+    // find the attribute by the path element in the code filter: this may be a list
+    // of codes or
     // codableconcepts
     // if the filter is contains a valueset match against that
-    // if the filter contains codes match, against them -- at this stage the matches are ORs.  If
+    // if the filter contains codes match, against them -- at this stage the matches
+    // are ORs. If
     // the
     // vs or
     // any of the codes match its a match.
@@ -742,5 +753,16 @@ public class BsaServiceUtils {
     }
 
     return state;
+  }
+
+  public static Instant convertInstantToDBTimezoneInstant(Instant t, TimeZoneDao dao) {
+
+    if (TIMEZONE_QUERY.isEmpty()) return t;
+    else {
+      ZoneId z = ZoneId.of(dao.getDatabaseTimezone(TIMEZONE_QUERY));
+      ZonedDateTime zdt = t.atZone(z);
+
+      return zdt.toInstant();
+    }
   }
 }
