@@ -4,7 +4,9 @@ import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -144,6 +146,20 @@ public class KnowledgeArtifactRepository {
     for (KnowledgeArtifact art : kars) {
 
       addKar(art);
+    }
+  }
+
+  public void removeArtifactsNotAvailable() {
+
+    if (karsInfo != null) {
+
+      List<KnowledgeArtifactSummaryInfo> infos =
+          karsInfo
+              .stream()
+              .filter(art -> art.getKarAvailable().equals(Boolean.FALSE))
+              .collect(Collectors.toList());
+
+      infos.forEach(info -> karsInfo.remove(info));
     }
   }
 }
