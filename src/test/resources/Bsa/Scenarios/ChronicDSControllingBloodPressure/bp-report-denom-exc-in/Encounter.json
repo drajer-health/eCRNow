@@ -1,6 +1,6 @@
 {
   "resourceType": "Encounter",
-  "id": "bp-report-denom-exc-in-1-encounter",
+  "id": "bp-report-denom-exc-in-encounter",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-encounter"
@@ -24,7 +24,7 @@
     }
   ],
   "subject": {
-    "reference": "Patient/bp-report-denom-exc-in-1"
+    "reference": "Patient/bp-report-denom-exc-in"
   },
   "period": {
     "start": "2024-06-19T10:00:00.0-06:00",
