@@ -17,8 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
@@ -94,19 +92,24 @@ public class CcrrReportCreator extends ReportCreator {
   public static final String REPORT_INITIATION_TYPE_CODE = "subscription-notification";
   public static final String MESSAGE_SIGNIFICANCE_CATEGORY =
       "http://hl7.org/fhir/ValueSet/message-significance-category";
-  
-  public static final String PRIMARY_CANCER_CONDITION_PROFILE = "http://hl7.org/fhir/us/central-cancer-registry-reporting/StructureDefinition/central-cancer-registry-primary-cancer-condition";
-  public static final String SECONDARY_CANCER_CONDITION_PROFILE = "http://hl7.org/fhir/us/mcode/StructureDefinition/mcode-secondary-cancer-condition";
-  public static final String TNM_STAGE_GROUP_PROFILE = "http://hl7.org/fhir/us/mcode/StructureDefinition/mcode-tnm-stage-group";
-  public static final String RADIO_THERAPY_COURSE_SUMMARY_PROFILE = "http://hl7.org/fhir/us/mcode/StructureDefinition/mcode-radiotherapy-course-summary";
-  public static final String ODH_USUAL_WORK_PROFILE = "http://hl7.org/fhir/us/odh/StructureDefinition/odh-UsualWork";
-  
+
+  public static final String PRIMARY_CANCER_CONDITION_PROFILE =
+      "http://hl7.org/fhir/us/central-cancer-registry-reporting/StructureDefinition/central-cancer-registry-primary-cancer-condition";
+  public static final String SECONDARY_CANCER_CONDITION_PROFILE =
+      "http://hl7.org/fhir/us/mcode/StructureDefinition/mcode-secondary-cancer-condition";
+  public static final String TNM_STAGE_GROUP_PROFILE =
+      "http://hl7.org/fhir/us/mcode/StructureDefinition/mcode-tnm-stage-group";
+  public static final String RADIO_THERAPY_COURSE_SUMMARY_PROFILE =
+      "http://hl7.org/fhir/us/mcode/StructureDefinition/mcode-radiotherapy-course-summary";
+  public static final String ODH_USUAL_WORK_PROFILE =
+      "http://hl7.org/fhir/us/odh/StructureDefinition/odh-UsualWork";
+
   @Value("${ehr.product.name:Unknown-Ehr-Product}")
   private String ehrProductName;
-  
+
   @Value("${ehr.product.version:Unknown-Version}")
   private String ehrProductVersion;
-  
+
   @Value("${ehr.name:Unknown-Ehr}")
   private String ehrName;
 
@@ -293,7 +296,7 @@ public class CcrrReportCreator extends ReportCreator {
 
     // Set source.
     MessageSourceComponent msc = new MessageSourceComponent();
-    
+
     msc.setName(ehrName);
     msc.setSoftware(ehrProductName);
     msc.setVersion(ehrProductVersion);
@@ -411,9 +414,7 @@ public class CcrrReportCreator extends ReportCreator {
 
     } else {
 
-      logger.error(
-          "Received more than one encounter for processing which is erroneous, using the first one.");
-      comp.getEncounter().setResource(encounters.iterator().next());
+      logger.error("Received no encounter for processing which is erroneous.");
     }
 
     // Set Date
@@ -441,37 +442,57 @@ public class CcrrReportCreator extends ReportCreator {
     Set<String> profilesToIgnore = new HashSet<>();
 
     SectionComponent sc = null;
-    
+
     // Add primary cancer condition report section
-    sc = getSection(SectionTypeEnum.PRIMARY_CANCER_CONDITION,kd);
-    if(sc != null) scs.add(sc);
+    sc = getSection(SectionTypeEnum.PRIMARY_CANCER_CONDITION, kd);
+    if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    addEntries(ResourceType.Condition, kd, sc, resTobeAdded, PRIMARY_CANCER_CONDITION_PROFILE, profilesToIgnore );
-    
+    addEntries(
+        ResourceType.Condition,
+        kd,
+        sc,
+        resTobeAdded,
+        PRIMARY_CANCER_CONDITION_PROFILE,
+        profilesToIgnore);
+
     // Add secondary cancer condition report section
-    sc = getSection(SectionTypeEnum.SECONDARY_CANCER_CONDITION,kd);
-    if(sc != null) scs.add(sc);
+    sc = getSection(SectionTypeEnum.SECONDARY_CANCER_CONDITION, kd);
+    if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    addEntries(ResourceType.Condition, kd, sc, resTobeAdded, SECONDARY_CANCER_CONDITION_PROFILE, profilesToIgnore);
+    addEntries(
+        ResourceType.Condition,
+        kd,
+        sc,
+        resTobeAdded,
+        SECONDARY_CANCER_CONDITION_PROFILE,
+        profilesToIgnore);
 
     // Cancer Stage Group
     sc = getSection(SectionTypeEnum.CANCER_STAGE_GROUP, kd);
-    if(sc != null) scs.add(sc);
+    if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded, TNM_STAGE_GROUP_PROFILE, profilesToIgnore);
-    
+    addEntries(
+        ResourceType.Observation, kd, sc, resTobeAdded, TNM_STAGE_GROUP_PROFILE, profilesToIgnore);
+
     // Radio Therapy Course Summary
     sc = getSection(SectionTypeEnum.RADIO_THERAPY_COURSE_SUMMARY, kd);
-    if(sc != null) scs.add(sc);
+    if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    addEntries(ResourceType.Procedure, kd, sc, resTobeAdded, RADIO_THERAPY_COURSE_SUMMARY_PROFILE, profilesToIgnore);
-        
+    addEntries(
+        ResourceType.Procedure,
+        kd,
+        sc,
+        resTobeAdded,
+        RADIO_THERAPY_COURSE_SUMMARY_PROFILE,
+        profilesToIgnore);
+
     // Odh Section
     sc = getSection(SectionTypeEnum.ODH, kd);
-    if(sc != null) scs.add(sc);
+    if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded, ODH_USUAL_WORK_PROFILE, profilesToIgnore);
-    
+    addEntries(
+        ResourceType.Observation, kd, sc, resTobeAdded, ODH_USUAL_WORK_PROFILE, profilesToIgnore);
+
     // Add Problem section.
     sc = getSection(SectionTypeEnum.PROBLEM, kd);
     if (sc != null) scs.add(sc);
@@ -512,7 +533,6 @@ public class CcrrReportCreator extends ReportCreator {
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.DocumentReference, kd, sc, resTobeAdded, "", profilesToIgnore);
- 
 
     // Add Plan Of Treatment section.
     sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd);
@@ -542,7 +562,7 @@ public class CcrrReportCreator extends ReportCreator {
     profilesToIgnore.clear();
     profilesToIgnore.add(TNM_STAGE_GROUP_PROFILE);
     profilesToIgnore.add(ODH_USUAL_WORK_PROFILE);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore); 
+    addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Finalize the sections.
     comp.setSection(scs);
@@ -596,26 +616,49 @@ public class CcrrReportCreator extends ReportCreator {
     SectionComponent sc = null;
 
     switch (st) {
-    
-    case PRIMARY_CANCER_CONDITION: 
-    	sc = FhirGeneratorUtils.getSectionComponent(FhirGeneratorConstants.SNOMED_CS_URL, 
-    			FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE, FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
-    	populateDefaultNarrative(sc, kd);
-    	break;
-    	
-    case SECONDARY_CANCER_CONDITION: 
-    	sc = FhirGeneratorUtils.getSectionComponent(FhirGeneratorConstants.SNOMED_CS_URL, 
-    			FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE, FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
-    	populateDefaultNarrative(sc, kd);
-    	break;
-      
-    case REASON_FOR_VISIT:
+      case PRIMARY_CANCER_CONDITION:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.SNOMED_CS_URL,
+                FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE,
+                FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case SECONDARY_CANCER_CONDITION:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.SNOMED_CS_URL,
+                FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE,
+                FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case CANCER_STAGE_GROUP:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.REASON_FOR_VISIT_CODE,
-                FhirGeneratorConstants.REASON_FOR_VISIT_CODE_DISPLAY);
-        populateReasonForVisitNarrative(sc, kd);
+                FhirGeneratorConstants.CANCER_STAGE_GROUP_SECTION_CODE,
+                FhirGeneratorConstants.CANCER_STAGE_GROUP_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case RADIO_THERAPY_COURSE_SUMMARY:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.SNOMED_CS_URL,
+                FhirGeneratorConstants.CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE,
+                FhirGeneratorConstants.CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case ODH:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.ODH_SECTION_CODE,
+                FhirGeneratorConstants.ODH_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PROBLEM:
@@ -690,15 +733,6 @@ public class CcrrReportCreator extends ReportCreator {
         populateDefaultNarrative(sc, kd);
         break;
 
-      case IMMUNIZATIONS:
-        sc =
-            FhirGeneratorUtils.getSectionComponent(
-                FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
-        break;
-
       case PROCEDURES:
         sc =
             FhirGeneratorUtils.getSectionComponent(
@@ -723,33 +757,6 @@ public class CcrrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
-        break;
-
-      case MEDICAL_EQUIPMENT:
-        sc =
-            FhirGeneratorUtils.getSectionComponent(
-                FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.MEDICAL_EQUIPMENT_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.MEDICAL_EQUIPMENT_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
-        break;
-
-      case CARE_TEAM:
-        sc =
-            FhirGeneratorUtils.getSectionComponent(
-                FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.CARE_TEAM_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.CARE_TEAM_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
-        break;
-
-      case GOAL:
-        sc =
-            FhirGeneratorUtils.getSectionComponent(
-                FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
@@ -804,8 +811,12 @@ public class CcrrReportCreator extends ReportCreator {
   }
 
   public void addEntries(
-      ResourceType rt, KarProcessingData kd, SectionComponent sc, Set<Resource> resTobeAdded,
-      String profile, Set<String> profilesToIgnore) {
+      ResourceType rt,
+      KarProcessingData kd,
+      SectionComponent sc,
+      Set<Resource> resTobeAdded,
+      String profile,
+      Set<String> profilesToIgnore) {
 
     Set<Resource> resourcesByType = kd.getResourcesByType(rt.toString());
     Set<Resource> res = null;
@@ -824,10 +835,8 @@ public class CcrrReportCreator extends ReportCreator {
       res =
           filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
     } else res = resourcesByType;
-    
-    
+
     res = filterResourcesByProfile(res, profile, profilesToIgnore);
- 
 
     if (res != null && !res.isEmpty()) {
 
@@ -849,54 +858,51 @@ public class CcrrReportCreator extends ReportCreator {
       }
     }
   }
-  
-  public Set<Resource> filterResourcesByProfile(Set<Resource> resources, String profile, Set<String> profilesToIgnore) {
-	  
-	  Set<Resource> resToReturn = new HashSet<>();
-	  
-	  for(Resource r : resources) {
-		  
-		  if(!profile.isEmpty() && r.hasMeta() && r.getMeta().hasProfile() ) {
-			  
-			  List<CanonicalType> profiles = r.getMeta().getProfile();
-			  
-			  // Check for Profile irrespective of what needs to be ignored		   
-				  for(CanonicalType c : profiles) {					 
-					  if(c.hasValue() && c.getValue().contentEquals(profile)) {
-						  	resToReturn.add(r);		
-						  	break;
-					  }
-				  }
-		  }
-		  else if(profile.isEmpty() && !profilesToIgnore.isEmpty()) {
-			  
-			  // Ensure to add only if it is not in the ignore list
-			  if(r.hasMeta() && r.getMeta().hasProfile()) {
-					  
-			  List<CanonicalType> profiles = r.getMeta().getProfile();
-			  
-			  // Check for Profile irrespective of what needs to be ignored		   
-				  for(CanonicalType c : profiles) {					 
-					  if(c.hasValue() && c.getValue().contentEquals(profile)) {
-						  	resToReturn.add(r);		
-						  	break;
-					  }
-				  }
-			  }
-			  else {
-				  // Cannot compare, so assume it is not one of the ones to be ignored.
-				  resToReturn.add(r);
-			  }
-			  
-		  }
-		  else if((profile.isEmpty() && profilesToIgnore.isEmpty())) {
-			  
-			  // Ensure to add when there is no filtering needed.
-			  resToReturn.add(r);
-		  }
-	  }
-	  return resToReturn;
-	  
+
+  public Set<Resource> filterResourcesByProfile(
+      Set<Resource> resources, String profile, Set<String> profilesToIgnore) {
+
+    Set<Resource> resToReturn = new HashSet<>();
+
+    for (Resource r : resources) {
+
+      if (!profile.isEmpty() && r.hasMeta() && r.getMeta().hasProfile()) {
+
+        List<CanonicalType> profiles = r.getMeta().getProfile();
+
+        // Check for Profile irrespective of what needs to be ignored
+        for (CanonicalType c : profiles) {
+          if (c.hasValue() && c.getValue().contentEquals(profile)) {
+            resToReturn.add(r);
+            break;
+          }
+        }
+      } else if (profile.isEmpty() && !profilesToIgnore.isEmpty()) {
+
+        // Ensure to add only if it is not in the ignore list
+        if (r.hasMeta() && r.getMeta().hasProfile()) {
+
+          List<CanonicalType> profiles = r.getMeta().getProfile();
+
+          // Check for Profile irrespective of what needs to be ignored
+          for (CanonicalType c : profiles) {
+            if (c.hasValue() && c.getValue().contentEquals(profile)) {
+              resToReturn.add(r);
+              break;
+            }
+          }
+        } else {
+          // Cannot compare, so assume it is not one of the ones to be ignored.
+          resToReturn.add(r);
+        }
+
+      } else if ((profile.isEmpty() && profilesToIgnore.isEmpty())) {
+
+        // Ensure to add when there is no filtering needed.
+        resToReturn.add(r);
+      }
+    }
+    return resToReturn;
   }
 
   public void addExtensionIfAppropriate(
@@ -1013,6 +1019,7 @@ public class CcrrReportCreator extends ReportCreator {
             || ext.getUrl().contains("us/medmorph")
             || ext.getUrl().contains("us/healthcare-survey")
             || ext.getUrl().contains("us/ecr")
+            || ext.getUrl().contains("us/ccrr")
             || ext.getUrl().contains("us/ph")) {
           newExts.add(ext);
         }
