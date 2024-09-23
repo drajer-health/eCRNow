@@ -6,6 +6,7 @@ import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
+import com.drajer.bsa.model.BsaTypes.SectionTypeEnum;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
@@ -104,28 +105,6 @@ public class EcrReportCreator extends ReportCreator {
       "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-triggerdefinition-namedevents";
 
   private final Logger logger = LoggerFactory.getLogger(EcrReportCreator.class);
-
-  public enum SectionTypeEnum {
-    REASON_FOR_VISIT,
-    CHIEF_COMPLAINT,
-    HISTORY_OF_PRESENT_ILLNESS,
-    REVIEW_OF_SYSTEMS,
-    PROBLEM,
-    MEDICAL_HISTORY,
-    MEDICATION_ADMINISTERED,
-    ADMISSION_MEDICATIONS,
-    MEDICATIONS,
-    RESULTS,
-    PLAN_OF_TREATMENT,
-    SERVICE_REQUEST,
-    IMMUNIZATIONS,
-    PROCEDURES,
-    VITAL_SIGNS,
-    SOCIAL_HISTORY,
-    PREGNANCY,
-    REPORTABILITY_RESPONSE,
-    EMERGENCY_OUTBREAK_SECTION
-  }
 
   @Override
   public Resource createReport(

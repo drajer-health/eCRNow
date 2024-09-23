@@ -20,6 +20,7 @@ public class FhirGeneratorConstants {
 
   // Code Systems
   public static final String LOINC_CS_URL = "http://loinc.org";
+  public static final String SNOMED_CS_URL = "http://snomed.info/sct";
   public static final String HL7_OBSERVATION_CATEGORY =
       "http://terminology.hl7.org/CodeSystem/observation-category";
 
@@ -28,7 +29,9 @@ public class FhirGeneratorConstants {
   public static final String ECR_COMP_TYPE_CODE_DISPLAY = "Public Health Case Report";
   public static final String HCS_COMP_TYPE_CODE = "75619-7";
   public static final String HCS_COMP_TYPE_CODE_DISPLAY = "National Health Care Surveys report";
-
+  public static final String CCRR_COMP_TYPE_CODE = "72134-0";
+  public static final String CCRR_COMP_TYPE_CODE_DISPLAY = "Cancer Event report";
+  
   // Composition section codes commonly used.
   public static final String CHIEF_COMPLAINT_SECTION_LOINC_CODE = "10154-3";
   public static final String CHIEF_COMPLAINT_SECTION_LOINC_CODE_DISPLAY =
@@ -92,4 +95,10 @@ public class FhirGeneratorConstants {
 
   public static final String REASON_FOR_VISIT_CODE = "29299-5";
   public static final String REASON_FOR_VISIT_CODE_DISPLAY = "Reason For Visit Narrative";
+  
+  public static final String PRIMARY_CANCER_CONDITION_SECTION_CODE = "363346000";
+  public static final String PRIMARY_CANCER_CONDITION_SECTION_CODE_DISPLAY = "Primary Cancer Condition narrative";
+  public static final String SECONDARY_CANCER_CONDITION_SECTION_CODE = "128462008";
+  public static final String SECONDARY_CANCER_CONDITION_SECTION_CODE_DISPLAY = "Secondary Cancer Condition narrative";
+
 }
