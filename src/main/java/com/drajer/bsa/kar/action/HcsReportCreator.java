@@ -724,13 +724,13 @@ public class HcsReportCreator extends ReportCreator {
         break;
       case CARE_PLAN:
         sc =
-        	FhirGeneratorUtils.getSectionComponent(
-        		FhirGeneratorConstants.LOINC_CS_URL,
-        		FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE,
-        		FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE_DISPLAY);
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
-    	  
+
       default:
         sc = null;
         break;

@@ -92,8 +92,7 @@ public class FhirGeneratorConstants {
 
   public static final String REASON_FOR_VISIT_CODE = "29299-5";
   public static final String REASON_FOR_VISIT_CODE_DISPLAY = "Reason For Visit Narrative";
-  
+
   public static final String CARE_PLAN_SECTION_LOINC_CODE = "18776-5";
   public static final String CARE_PLAN_SECTION_LOINC_CODE_DISPLAY = "Care Plan Section narrative";
-
 }
