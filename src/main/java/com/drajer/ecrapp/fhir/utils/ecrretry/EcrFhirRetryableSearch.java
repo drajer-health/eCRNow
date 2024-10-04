@@ -18,6 +18,7 @@ import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,10 @@ public class EcrFhirRetryableSearch<K> implements IQuery, IUntypedQuery<IQuery> 
         .execute(
             context -> {
               try {
-                logger.info("Retrying FHIR search url {}. Count {} ", url, context.getRetryCount());
+                logger.info(
+                    "Retrying FHIR search url {}. Count {} ",
+                    StringEscapeUtils.escapeJava(url),
+                    context.getRetryCount());
                 return query.execute();
               } catch (final Exception ex) {
                 throw client.handleException(ex, HttpMethod.GET.name());

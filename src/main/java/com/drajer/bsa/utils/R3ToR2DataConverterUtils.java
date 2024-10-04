@@ -13,7 +13,9 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -68,6 +70,7 @@ public class R3ToR2DataConverterUtils {
 
     R4FhirData r4FhirData = new R4FhirData();
     LaunchDetails details = new LaunchDetails();
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
     Bundle data = new Bundle();
 
     if (kd != null) {
@@ -102,12 +105,19 @@ public class R3ToR2DataConverterUtils {
 
         if (resources != null) {
 
-          addResourcesToR4FhirData(dr.getId(), data, r4FhirData, details, resources, dr.getType());
+          addResourcesToR4FhirData(
+              dr.getId(),
+              data,
+              r4FhirData,
+              details,
+              resources,
+              dr.getType(),
+              uniqueResourceIdsByType);
         }
       }
 
-      addAdministrativeResources(null, data, r4FhirData, details, kd, act);
-      addSecondaryResources(null, data, r4FhirData, details, kd, act);
+      addAdministrativeResources(null, data, r4FhirData, details, kd, act, uniqueResourceIdsByType);
+      addSecondaryResources(null, data, r4FhirData, details, kd, act, uniqueResourceIdsByType);
 
     } else {
 
@@ -124,16 +134,29 @@ public class R3ToR2DataConverterUtils {
       R4FhirData r4FhirData,
       LaunchDetails details,
       KarProcessingData kd,
-      BsaAction act) {
+      BsaAction act,
+      Map<String, List<String>> r4DataResourceIds) {
     logger.info("BsaAction in addSecondaryResources:{}", act);
 
     Set<Resource> medications = kd.getResourcesByType(ResourceType.Medication.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, medications, ResourceType.Medication.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        medications,
+        ResourceType.Medication.toString(),
+        r4DataResourceIds);
 
     Set<Resource> observations = kd.getResourcesByType(ResourceType.Observation.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, observations, ResourceType.Observation.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        observations,
+        ResourceType.Observation.toString(),
+        r4DataResourceIds);
   }
 
   public static void addAdministrativeResources(
@@ -142,20 +165,39 @@ public class R3ToR2DataConverterUtils {
       R4FhirData r4FhirData,
       LaunchDetails details,
       KarProcessingData kd,
-      BsaAction act) {
+      BsaAction act,
+      Map<String, List<String>> uniqueResourceIdsByType) {
     logger.info("BsaAction in addAdministrativeResources:{}", act);
 
     Set<Resource> practitioners = kd.getResourcesByType(ResourceType.Practitioner.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, practitioners, ResourceType.Practitioner.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        practitioners,
+        ResourceType.Practitioner.toString(),
+        uniqueResourceIdsByType);
 
     Set<Resource> locations = kd.getResourcesByType(ResourceType.Location.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, locations, ResourceType.Location.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        locations,
+        ResourceType.Location.toString(),
+        uniqueResourceIdsByType);
 
     Set<Resource> orgs = kd.getResourcesByType(ResourceType.Organization.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, orgs, ResourceType.Organization.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        orgs,
+        ResourceType.Organization.toString(),
+        uniqueResourceIdsByType);
   }
 
   public static void addResourcesToR4FhirData(
@@ -164,8 +206,11 @@ public class R3ToR2DataConverterUtils {
       R4FhirData r4FhirData,
       LaunchDetails details,
       Set<Resource> resources,
-      String type) {
+      String type,
+      Map<String, List<String>> uniqueResourceIdsByType) {
     logger.info("Data id in addResourcesToR4FhirData:{}", dataId);
+
+    removeDuplicatesAndUpdateData(resources, type, uniqueResourceIdsByType);
 
     if (resources != null && !resources.isEmpty()) {
       if (type.contentEquals(ResourceType.Patient.toString())) {
@@ -205,7 +250,7 @@ public class R3ToR2DataConverterUtils {
             practitioners.add((Practitioner) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setPractitionersList(practitioners);
+          r4FhirData.addPractitionersList(practitioners);
         }
       } else if (type.contentEquals(ResourceType.Condition.toString())) {
 
@@ -236,8 +281,8 @@ public class R3ToR2DataConverterUtils {
               pregnancyConditions.add(c);
             }
           }
-          r4FhirData.setPregnancyConditions(pregnancyConditions);
-          r4FhirData.setConditions(conditionList);
+          r4FhirData.addPregnancyConditions(pregnancyConditions);
+          r4FhirData.addConditions(conditionList);
           r4FhirData.addEncounterDiagnosisConditions(encDiagList);
         }
       } else if (type.contentEquals(ResourceType.Immunization.toString())) {
@@ -310,7 +355,7 @@ public class R3ToR2DataConverterUtils {
             medList.add((Medication) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setMedicationList(medList);
+          r4FhirData.addMedicationList(medList);
         }
       } else if (type.contentEquals(ResourceType.ServiceRequest.toString())) {
 
@@ -322,7 +367,7 @@ public class R3ToR2DataConverterUtils {
             servReqList.add((ServiceRequest) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setServiceRequests(servReqList);
+          r4FhirData.addServiceRequests(servReqList);
         }
       } else if (type.contentEquals(ResourceType.Observation.toString())) {
 
@@ -351,6 +396,7 @@ public class R3ToR2DataConverterUtils {
             vitalObsList.add((Observation) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
+          r4FhirData.setVitalObs(vitalObsList);
         }
 
         logger.info(" Setting up the SocialHistory for R4FhirData ");
@@ -363,6 +409,15 @@ public class R3ToR2DataConverterUtils {
           List<Observation> occObs = new ArrayList<>();
           List<Observation> travelObs = new ArrayList<>();
           List<Observation> pregnancyObs = new ArrayList<>();
+          List<Observation> pregnancyStatusObs = new ArrayList<>();
+          List<Observation> lmpObs = new ArrayList<>();
+          List<Observation> postPartumObs = new ArrayList<>();
+          List<Observation> pregnancyOutcomeObs = new ArrayList<>();
+          List<Observation> homelessObs = new ArrayList<>();
+          List<Observation> disabilityObs = new ArrayList<>();
+          List<Observation> vaccineCredObs = new ArrayList<>();
+          List<Observation> residencyObs = new ArrayList<>();
+          List<Observation> nationalityObs = new ArrayList<>();
 
           for (Resource r : socObs) {
             Observation sochisObs = (Observation) r;
@@ -377,20 +432,83 @@ public class R3ToR2DataConverterUtils {
 
             if (sochisObs.hasCode() && isTravelObservation(sochisObs.getCode())) {
 
-              logger.info(" Found Occupation History Observation ");
+              logger.info(" Found Travel History Observation ");
               travelObs.add(sochisObs);
             }
 
             if (sochisObs.hasCode() && isPregnancyObservation(sochisObs.getCode())) {
 
-              logger.info(" Found Occupation History Observation ");
+              logger.info(" Found Pregnancy Observation ");
               pregnancyObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isPregnancyStatusObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Pregnancy Status Observation ");
+              pregnancyStatusObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isLastMenstrualPeriodObservation(sochisObs.getCode())) {
+
+              logger.info(" Found LMP Observation ");
+              lmpObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isPostPartumStatusObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Post Partum Status Observation ");
+              postPartumObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isPregnancyOutcomeObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Pregnancy Outcome Observation ");
+              pregnancyOutcomeObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isHomelessObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Homeless Observation ");
+              homelessObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isDisabilityObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Disability Observation ");
+              disabilityObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isVaccineCredObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Vaccine Credential Observation ");
+              vaccineCredObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isResidencyObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Residency Info Observation ");
+              residencyObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isNationalityObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Nationality Observation ");
+              nationalityObs.add(sochisObs);
             }
           }
 
-          r4FhirData.setOccupationObs(occObs);
-          r4FhirData.setTravelObs(travelObs);
-          r4FhirData.setPregnancyObs(pregnancyObs);
+          r4FhirData.addOccupationObs(occObs);
+          r4FhirData.addTravelObs(travelObs);
+          r4FhirData.addPregnancyObs(pregnancyObs);
+          r4FhirData.addPregnancyStatusObs(pregnancyStatusObs);
+          r4FhirData.addLmpObs(lmpObs);
+          r4FhirData.addPostPartumObs(postPartumObs);
+          r4FhirData.addPregnancyOutcomeObs(pregnancyOutcomeObs);
+          r4FhirData.addHomelessObs(homelessObs);
+          r4FhirData.addDisabilityObs(disabilityObs);
+          r4FhirData.addVaccineCredObs(vaccineCredObs);
+          r4FhirData.addResidencyObs(residencyObs);
+          r4FhirData.addNationalityObs(nationalityObs);
         }
 
       } else if (type.contentEquals(ResourceType.DiagnosticReport.toString())) {
@@ -403,7 +521,7 @@ public class R3ToR2DataConverterUtils {
             diagReportList.add((DiagnosticReport) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setDiagReports(diagReportList);
+          r4FhirData.addDiagReports(diagReportList);
         }
       } else {
         logger.error(
@@ -426,12 +544,17 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("11295-3")
-                    && c.getSystem().contentEquals("http://loinc.org"))
+            && ((c.getCode().contentEquals("11295-3") && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("11341-5")
+                    && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("21843-8")
+                    && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("74165-2")
+                    && c.getSystem().contains("http://loinc.org"))
                 || (c.getCode().contentEquals("224362002")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("364703007")
-                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+                    && c.getSystem().contains("http://snomed.info/sct")))) {
           return true;
         }
       }
@@ -450,20 +573,20 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("29762-2")
-                    && c.getSystem().contentEquals("http://loinc.org"))
-                || (c.getCode().contentEquals("161085007")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+            && (
+            /*(c.getCode().contentEquals("29762-2") && c.getSystem().contains("http://loinc.org")) */
+            (c.getCode().contentEquals("161085007")
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("161086008")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("420008001")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("46521000175102")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("34831000175105")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("443846001")
-                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+                    && c.getSystem().contains("http://snomed.info/sct")))) {
           return true;
         }
       }
@@ -482,10 +605,13 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("90767-5")
-                    && c.getSystem().contentEquals("http://loinc.org"))
+            && ((c.getCode().contentEquals("90767-5") && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("146799005")
+                    && c.getSystem().contains("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("60001007")
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("77386006")
-                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+                    && c.getSystem().contains("http://snomed.info/sct")))) {
           return true;
         }
       }
@@ -504,8 +630,199 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && c.getCode().contentEquals("77386006")
-            && c.getSystem().contentEquals("http://snomed.info/sct")) {
+            && c.getSystem().contains("http://snomed.info/sct")
+            && (c.getCode().contentEquals("77386006")
+                || c.getCode().contentEquals("146799005")
+                || c.getCode().contentEquals("60001007"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPregnancyStatusObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("82810-3")
+                && c.getSystem().contains("http://loinc.org")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isLastMenstrualPeriodObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("8665-2")
+                && c.getSystem().contains("http://loinc.org")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPostPartumStatusObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("249197004")
+                && c.getSystem().contains("http://snomed.info/sct")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPregnancyOutcomeObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://snomed.info/sct")
+            && ((c.getCode().contentEquals("17369002")
+                || c.getCode().contentEquals("21243004")
+                || c.getCode().contentEquals("237364002")
+                || c.getCode().contentEquals("237364002")
+                || c.getCode().contentEquals("237364002")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isHomelessObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://snomed.info/sct")
+            && (c.getCode().contentEquals("32911000") || c.getCode().contentEquals("105526001"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isDisabilityObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://loinc.org")
+            && (c.getCode().contentEquals("69856-3")
+                || c.getCode().contentEquals("69857-1")
+                || c.getCode().contentEquals("69858-9")
+                || c.getCode().contentEquals("69859-7")
+                || c.getCode().contentEquals("69860-5")
+                || c.getCode().contentEquals("69861-3"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isVaccineCredObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://loinc.org")
+            && (c.getCode().contentEquals("11370-4"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isResidencyObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://loinc.org")
+            && (c.getCode().contentEquals("77983-5"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isNationalityObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://snomed.info/sct")
+            && (c.getCode().contentEquals("186034007"))) {
           return true;
         }
       }
@@ -544,6 +861,41 @@ public class R3ToR2DataConverterUtils {
     }
 
     EcaUtils.updateDetailStatus(details, state);
+  }
+
+  private static void removeDuplicatesAndUpdateData(
+      Set<Resource> resources, String type, Map<String, List<String>> data) {
+
+    if (data == null) {
+      data = new HashMap<>();
+    }
+
+    if (type.equals(ResourceType.Observation.toString())) {
+      logger.debug(" Found Observation ");
+    }
+
+    // Get he initial list of Ids
+    List<String> dataIds = data.getOrDefault(type, new ArrayList<>());
+
+    if (resources != null && !resources.isEmpty()) {
+
+      resources.removeIf(
+          resource -> {
+            String resourceId = resource.getIdElement().getIdPart();
+            if (dataIds.contains(resourceId)) {
+              logger.info(
+                  "Removing {} resource with Id {} since they are already added to the R4FhirData object",
+                  type,
+                  resourceId);
+              return true;
+            } else {
+              dataIds.add(resourceId);
+              return false;
+            }
+          });
+
+      data.put(type, dataIds);
+    }
   }
 
   private static JobStatus getJobStatusForActionStatus(BsaActionStatusType status) {

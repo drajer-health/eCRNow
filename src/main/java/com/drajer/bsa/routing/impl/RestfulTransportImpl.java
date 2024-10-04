@@ -5,6 +5,7 @@ import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 import com.drajer.bsa.auth.RestApiAuthorizationHeaderIf;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.routing.DataTransportInterface;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -71,9 +72,9 @@ public class RestfulTransportImpl implements DataTransportInterface {
 
       logger.info(
           " Launch ReqId: {} X-Request-ID for Eicr Submission: {} X-Correlation-ID for Eicr Submission: {}",
-          data.getxRequestId(),
-          newXReqId,
-          data.getPhm().getxCorrelationId());
+          StringEscapeUtils.escapeJava(data.getxRequestId()),
+          StringEscapeUtils.escapeJava(newXReqId),
+          StringEscapeUtils.escapeJava(data.getPhm().getxCorrelationId()));
 
       final String json = constructJson(payload, data);
 
@@ -83,7 +84,7 @@ public class RestfulTransportImpl implements DataTransportInterface {
 
       final HttpEntity<String> request = new HttpEntity<>(json, headers);
 
-      logger.info(data.getHealthcareSetting().getRestApiUrl());
+      logger.info(StringEscapeUtils.escapeJava(data.getHealthcareSetting().getRestApiUrl()));
 
       ub = new URIBuilder(data.getHealthcareSetting().getRestApiUrl());
 

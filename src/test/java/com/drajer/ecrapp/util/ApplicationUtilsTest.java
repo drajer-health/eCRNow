@@ -190,6 +190,7 @@ public class ApplicationUtilsTest {
 
     Instant t =
         ApplicationUtils.calculateNewTimeForTimer(lowHours, lowMin, highHours, highMin, tz, d, ct);
+    long secs = t.getEpochSecond();
 
     assertNotNull(t);
 
@@ -202,6 +203,7 @@ public class ApplicationUtilsTest {
     st.set(Calendar.MINUTE, (60 - lowMin));
 
     Instant stTime = st.getTime().toInstant();
+    long stSeconds = stTime.getEpochSecond();
     assertTrue(t.getEpochSecond() >= stTime.getEpochSecond());
 
     Calendar ht = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -210,6 +212,7 @@ public class ApplicationUtilsTest {
     ht.set(Calendar.MINUTE, highMin);
 
     Instant htTime = ht.getTime().toInstant();
+    long htSeconds = htTime.getEpochSecond();
     assertTrue(t.getEpochSecond() <= htTime.getEpochSecond());
   }
 }

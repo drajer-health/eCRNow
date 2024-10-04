@@ -14,7 +14,7 @@ public class QueryConstants {
 
   public static final String SNOMED_CODE_SYSTEM = "http://snomed.info/sct";
 
-  private static final String[] OCCUPATION_LOINC_CODES = {"11295-3"};
+  private static final String[] OCCUPATION_LOINC_CODES = {"11295-3", "11341-5"};
 
   private static final String[] OCCUPATION_SNOMED_CODES = {"224362002", "364703007"};
   private static final String[] PREGNANCY_SNOMED_CODES = {"77386006"};

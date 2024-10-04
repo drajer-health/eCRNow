@@ -6,6 +6,7 @@ import com.drajer.sof.service.ClientDetailsService;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,8 +118,8 @@ public class ClientDetailsController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for deleting clientDetail",
-          xRequestIdHttpHeaderValue,
-          xCorrelationIdHttpHeaderValue);
+          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
 
       if (url == null || url.isEmpty()) {
         return new ResponseEntity<>(

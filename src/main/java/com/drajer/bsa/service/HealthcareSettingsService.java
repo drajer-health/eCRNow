@@ -47,4 +47,11 @@ public interface HealthcareSettingsService {
    * @return Returns the list of existing HealthcareSettings.
    */
   public List<HealthcareSetting> getAllHealthcareSettings();
+
+  /**
+   * Deletes the specified HealthcareSetting from the system.
+   *
+   * @param healthcareSetting The HealthcareSetting to be deleted.
+   */
+  void delete(HealthcareSetting healthcareSetting);
 }

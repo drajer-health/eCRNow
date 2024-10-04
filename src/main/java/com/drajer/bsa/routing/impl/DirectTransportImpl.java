@@ -4,9 +4,9 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.routing.DataTransportInterface;
 import com.drajer.bsa.service.RrReceiver;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -31,13 +31,13 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.search.FlagTerm;
 import javax.mail.util.ByteArrayDataSource;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /*
@@ -55,6 +55,9 @@ public class DirectTransportImpl implements DataTransportInterface {
   private static final String INBOX = "Inbox";
 
   @Autowired RrReceiver rrReceiver;
+
+  @Value("${bsa.output.directory:bsa-output}")
+  String logDirectory;
 
   public class DirectMimeMessage extends MimeMessage {
 
@@ -110,7 +113,8 @@ public class DirectTransportImpl implements DataTransportInterface {
             hs.getDirectRecipientAddress(),
             is,
             CDA_FILE_NAME,
-            data.getxCorrelationId());
+            data.getxCorrelationId(),
+            hs.getDirectTlsVersion());
 
         logger.info(" Finished sending the message using Direct ");
 
@@ -126,7 +130,8 @@ public class DirectTransportImpl implements DataTransportInterface {
             hs.getDirectRecipientAddress(),
             is,
             CDA_FILE_NAME,
-            data.getxCorrelationId());
+            data.getxCorrelationId(),
+            hs.getDirectTlsVersion());
       } else {
 
         logger.error(" Cannot send Direct message since both Direct Host and SMTP Urls are empty ");
@@ -149,7 +154,8 @@ public class DirectTransportImpl implements DataTransportInterface {
       String recipientAddr,
       InputStream is,
       String filename,
-      String correlationId)
+      String correlationId,
+      String directTlsVersion)
       throws Exception {
 
     Properties props = new Properties();
@@ -160,8 +166,13 @@ public class DirectTransportImpl implements DataTransportInterface {
     // Trust all certificates
     props.setProperty("mail.smtp.ssl.trust", "*");
 
-    //  Enable SSL Connections from the client.
+    // Enable SSL Connections from the client.
     props.setProperty("mail.smtp.ssl.enable", "true");
+
+    // Set TLS protocols
+    if (!StringUtils.isEmpty(directTlsVersion)) {
+      props.setProperty("mail.smtp.ssl.protocols", directTlsVersion);
+    }
 
     Session session = Session.getInstance(props, null);
 
@@ -231,23 +242,27 @@ public class DirectTransportImpl implements DataTransportInterface {
           hs.getDirectUser(),
           hs.getDirectPwd(),
           hs.getImapPort(),
-          data.getxCorrelationId());
+          data.getxCorrelationId(),
+          hs.getDirectTlsVersion());
 
-      logger.info(" Finished sending the message using Direct ");
+      logger.info(" Finished receiving the message using Direct ");
 
     } else if (!StringUtils.isEmpty(hs.getDirectHost())) {
+
+      logger.info("Using Imap URL {} to receive the data", hs.getDirectHost());
 
       readMailUsingImap(
           hs.getDirectHost(),
           hs.getDirectUser(),
           hs.getDirectPwd(),
           hs.getImapPort(),
-          data.getxCorrelationId());
+          data.getxCorrelationId(),
+          hs.getDirectTlsVersion());
 
     } else {
 
       logger.error(
-          " Cannot receive Direct message since both Direct Host and SMTP Urls are empty ");
+          " Cannot receive Direct message since both Direct Host and IMAP Urls are empty ");
     }
 
     logger.info(" Finish receiving process from Direct HISP ");
@@ -263,7 +278,12 @@ public class DirectTransportImpl implements DataTransportInterface {
    * @param coorleationId
    */
   public void readMailUsingImap(
-      String host, String username, String password, String port, String coorleationId) {
+      String host,
+      String username,
+      String password,
+      String port,
+      String coorleationId,
+      String directTlsVersion) {
 
     try {
 
@@ -276,6 +296,9 @@ public class DirectTransportImpl implements DataTransportInterface {
       props.put("mail.imap.auth", "true");
       props.put("mail.imap.ssl.enable", "true");
       props.put("mail.imap.ssl.trust", "*");
+      if (!StringUtils.isEmpty(directTlsVersion)) {
+        props.put("mail.imap.ssl.protocols", directTlsVersion);
+      }
 
       Session session = Session.getInstance(props, null);
 
@@ -322,21 +345,21 @@ public class DirectTransportImpl implements DataTransportInterface {
                 rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
                 data.setRrXml(rrXml);
 
-                String filename = UUID.randomUUID() + ".xml";
-                FileUtils.writeStringToFile(
-                    new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
+                String filename = logDirectory + "_" + UUID.randomUUID() + ".xml";
+                BsaServiceUtils.saveDataToFile(data.getRrXml(), filename);
 
                 // Invoke the rrReceiver Handler for handling Reportability Response.
                 logger.debug(" RrXML : {}", data.getRrXml());
 
                 rrReceiver.handleReportabilityResponse(data, mId);
               }
-
+              message.setFlag(Flags.Flag.SEEN, true);
               logger.info(
                   " Need to determine what to do with the response received from :  {}",
                   senderAddress);
             } else {
 
+              message.setFlag(Flags.Flag.SEEN, true);
               logger.info(" Not an XML attachment, so ignoring the multipart file ");
             }
           }

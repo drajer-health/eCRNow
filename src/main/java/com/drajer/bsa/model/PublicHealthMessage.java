@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +24,12 @@ import org.slf4j.LoggerFactory;
  * @author nbashyam
  */
 @Entity
-@Table(name = "ph_messages")
+@Table(
+    name = "ph_messages",
+    indexes = {
+      @Index(name = "idx_not_res_id", columnList = "notified_resource_id"),
+      @Index(name = "idx_kar_id", columnList = "kar_unique_id")
+    })
 @DynamicUpdate
 public class PublicHealthMessage {
 

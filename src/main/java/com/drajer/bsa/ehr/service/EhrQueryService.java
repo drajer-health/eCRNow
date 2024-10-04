@@ -47,8 +47,6 @@ public interface EhrQueryService {
 
   Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
 
-  Map<ResourceType, Set<Resource>> loadSecondaryResources(KarProcessingData kd);
-
   void createResource(KarProcessingData kd, Resource resource);
 
   void updateResource(KarProcessingData kd, Resource resource);
@@ -76,5 +74,6 @@ public interface EhrQueryService {
 
   public FhirContext getContext();
 
-  public String substituteContextParams(KarProcessingData data, String str);
+  public String substituteContextParams(
+      KarProcessingData data, String str, Boolean substitutionForConditionEvaluation);
 }

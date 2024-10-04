@@ -12,6 +12,7 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
@@ -19,9 +20,11 @@ import com.drajer.test.util.Utility;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -52,6 +55,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class R3ToR2DataConverterUtilsTest {
@@ -98,6 +102,7 @@ public class R3ToR2DataConverterUtilsTest {
 
   @Before
   public void setUp() throws Exception {
+    ReflectionTestUtils.setField(AESEncryption.class, "secretKey", "123");
 
     FhirContext fhirContext = FhirContext.forR4();
     medication =
@@ -271,6 +276,8 @@ public class R3ToR2DataConverterUtilsTest {
     Bundle bundle = new Bundle();
     Set<Resource> resources = new HashSet<>();
 
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+
     List<Resource> resourceList = new ArrayList<>();
     resourceList.add(patient);
     resourceList.add(condition);
@@ -287,7 +294,13 @@ public class R3ToR2DataConverterUtilsTest {
       resources.add(resource);
       String typeAsString = resource.toString().substring(22, resource.toString().indexOf('@'));
       r3ToR2DataConverterUtils.addResourcesToR4FhirData(
-          "98796", bundle, r4FhirData, launchDetails, resources, typeAsString);
+          "98796",
+          bundle,
+          r4FhirData,
+          launchDetails,
+          resources,
+          typeAsString,
+          uniqueResourceIdsByType);
       resources.remove(resource);
     }
   }

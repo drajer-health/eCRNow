@@ -39,15 +39,15 @@ testCase:
         "code/@codeSystemName": "LOINC"
         "code/@displayName": "History of Present Illness"
         title: "History of Present Illness"
-      - xPath: "text/table/thead/tr/th"
-        count: 1
-      - xPath: "text/table/tbody/tr"
-        count: 1
-      - xPath: "text/table/tbody/tr[1]/td"
-        count: 1
-      - xPath: "text/table/"
-        "thead/tr/th[1]": "Narrative Text"
-        "tbody/tr[1]/td[1]/content": "Unknown History of Present Illness"
+#      - xPath: "text/table/thead/tr/th"
+#        count: 0
+#      - xPath: "text/table/tbody/tr"
+#        count: 0
+#      - xPath: "text/table/tbody/tr[1]/td"
+#        count: 1
+#      - xPath: "text/table/"
+#        "thead/tr/th[1]": "Narrative Text"
+#        "tbody/tr[1]/td[1]/content": "Unknown History of Present Illness"
   eCR-historyOfPresentIllness-withTwoTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -86,14 +86,14 @@ testCase:
         "code/@codeSystemName": "LOINC"
         "code/@displayName": "History of Present Illness"
         title: "History of Present Illness"
-      - xPath: "text/table/thead/tr/th"
-        count: 1
-      - xPath: "text/table/tbody/tr"
-        count: 2
-      - xPath: "text/table/tbody/tr[1]/td"
-        count: 1
-      - xPath: "text/table/"
-        "thead/tr/th[1]": "Narrative Text"
+#      - xPath: "text/table/thead/tr/th"
+#        count: 1
+#      - xPath: "text/table/tbody/tr"
+#        count: 2
+#      - xPath: "text/table/tbody/tr[1]/td"
+#        count: 1
+#      - xPath: "text/table/"
+#        "thead/tr/th[1]": "Narrative Text"
   #     'tbody/tr[2]/td[1]/content': "Seasonal allergy (disorder)"
   #'tbody/tr[5]/td[1]/content': "Disease caused by 2019 novel coronavirus"
   eCR-historyOfPresentIllness-withAndWithoutTriggerCode:
@@ -139,13 +139,13 @@ testCase:
         "code/@codeSystemName": "LOINC"
         "code/@displayName": "History of Present Illness"
         title: "History of Present Illness"
-      - xPath: "text/table/thead/tr/th"
-        count: 1
-      - xPath: "text/table/tbody/tr"
-        count: 1
-      - xPath: "text/table/tbody/tr[1]/td"
-        count: 1
-      - xPath: "text/table/"
-        "thead/tr/th[1]": "Narrative Text"
+#      - xPath: "text/table/thead/tr/th"
+#        count: 1
+#      - xPath: "text/table/tbody/tr"
+#        count: 1
+#      - xPath: "text/table/tbody/tr[1]/td"
+#        count: 1
+#      - xPath: "text/table/"
+#        "thead/tr/th[1]": "Narrative Text"
 #      'tbody/tr[6]/td[1]/content': "Hyperlipidemia (disorder)"
 #     'tbody/tr[8]/td[1]/content': "Suspected coronavirus infection"

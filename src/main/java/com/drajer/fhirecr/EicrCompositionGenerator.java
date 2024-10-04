@@ -25,8 +25,8 @@ public class EicrCompositionGenerator {
     comp.setType(
         FhirGeneratorUtils.getCodeableConcept(
             FhirGeneratorConstants.LOINC_CS_URL,
-            FhirGeneratorConstants.COMP_TYPE_CODE,
-            FhirGeneratorConstants.COMP_TYPE_CODE_DISPLAY));
+            FhirGeneratorConstants.ECR_COMP_TYPE_CODE,
+            FhirGeneratorConstants.ECR_COMP_TYPE_CODE_DISPLAY));
 
     // Setup Patient.
     comp.getSubject().setResource(data.getPatient());

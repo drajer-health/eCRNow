@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
@@ -36,7 +37,8 @@ public class CloseOutEicrAction extends AbstractAction {
       state.getCloseOutEicrStatus().setActionId(getActionId());
 
       logger.info(
-          " Executing Close Out Eicr Action , Prior Execution State : = {}", details.getStatus());
+          " Executing Close Out Eicr Action , Prior Execution State : = {}",
+          StringEscapeUtils.escapeJava(details.getStatus()));
 
       // Handle Conditions
       Boolean conditionsMet = true;

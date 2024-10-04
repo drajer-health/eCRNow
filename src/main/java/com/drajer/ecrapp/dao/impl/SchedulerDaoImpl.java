@@ -3,6 +3,7 @@ package com.drajer.ecrapp.dao.impl;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.SchedulerDao;
 import com.drajer.ecrapp.model.ScheduledTasks;
+import java.util.Collections;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
@@ -27,5 +28,23 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
     criteria.add(Restrictions.like(TASK_INSTANCE, queryString, MatchMode.START));
 
     return criteria.list();
+  }
+
+  @Override
+  public List<ScheduledTasks> getScheduledTasks() {
+    Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
+
+    List<ScheduledTasks> scheduledTasks = criteria.list();
+
+    if (scheduledTasks != null && scheduledTasks.isEmpty()) {
+      return scheduledTasks;
+    }
+    return Collections.EMPTY_LIST;
+  }
+
+  @Override
+  public ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks) {
+    getSession().saveOrUpdate(scheduledTasks);
+    return scheduledTasks;
   }
 }

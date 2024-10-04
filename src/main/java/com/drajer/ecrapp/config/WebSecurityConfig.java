@@ -3,7 +3,9 @@ package com.drajer.ecrapp.config;
 import javax.servlet.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -16,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
+
+  @Autowired private ApplicationContext context;
 
   @Value("${token.validator.class}")
   private String tokenFilterClassName;
@@ -34,10 +38,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       logger.info("Token Filter class Name is not empty");
       Class<?> classInstance = Class.forName(tokenFilterClassName);
       logger.info(classInstance.getDeclaredMethods()[0].getName());
+
+      Filter customFilter =
+          (Filter) context.getAutowireCapableBeanFactory().autowire(classInstance, 1, true);
+
       http.csrf()
           .disable()
-          .addFilterAfter(
-              (Filter) classInstance.newInstance(), UsernamePasswordAuthenticationFilter.class)
+          .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
           .authorizeRequests()
           .antMatchers("/api/**")
           .permitAll()

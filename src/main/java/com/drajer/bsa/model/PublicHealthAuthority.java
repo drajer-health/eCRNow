@@ -81,6 +81,10 @@ public class PublicHealthAuthority implements FhirServerDetails {
   @Column(name = "auth_type", nullable = false, columnDefinition = "TEXT")
   private String authType;
 
+  /** The attribute represents the Key Alias for the Private Key to be used for signing. */
+  @Column(name = "backend_auth_key_alias", columnDefinition = "TEXT")
+  private String backendAuthKeyAlias;
+
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -184,6 +188,14 @@ public class PublicHealthAuthority implements FhirServerDetails {
   @Override
   public void setAuthType(String authType) {
     this.authType = authType;
+  }
+
+  public String getBackendAuthKeyAlias() {
+    return backendAuthKeyAlias;
+  }
+
+  public void setBackendAuthKeyAlias(String backendAuthKeyAlias) {
+    this.backendAuthKeyAlias = backendAuthKeyAlias;
   }
 
   public void log() {

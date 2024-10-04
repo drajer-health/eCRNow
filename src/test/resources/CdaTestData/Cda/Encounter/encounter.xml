@@ -28,7 +28,7 @@
 <encounter classCode="ENC" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.49"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.49" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Encounter/97953900/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="97953900"/>
 <id root="2.16.840.1.113883.4.4" extension="98314717"/>
 <code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"><originalText>
 <reference value="#encounter1"/>

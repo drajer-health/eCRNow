@@ -69,4 +69,13 @@ public class HealthcareSettingsServiceImpl implements HealthcareSettingsService 
   public List<HealthcareSetting> getAllHealthcareSettings() {
     return hsDao.getAllHealthcareSettings();
   }
+
+  /**
+   * Deletes the specified HealthcareSetting from the system.
+   *
+   * @param healthcareSetting The HealthcareSetting to be deleted.
+   */
+  public void delete(HealthcareSetting healthcareSetting) {
+    hsDao.delete(healthcareSetting);
+  }
 }

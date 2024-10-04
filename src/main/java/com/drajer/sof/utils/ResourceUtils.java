@@ -39,7 +39,7 @@ public class ResourceUtils {
                         .get())
             .collect(Collectors.toList());
 
-    logger.info("Sorted Resource List :{}", sorted);
+    logger.debug("Sorted Resource List :{}", sorted);
     return sorted;
   }
 }

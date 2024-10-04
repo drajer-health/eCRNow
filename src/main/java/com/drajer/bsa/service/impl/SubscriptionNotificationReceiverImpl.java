@@ -3,10 +3,12 @@ package com.drajer.bsa.service.impl;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.NotificationContextDao;
+import com.drajer.bsa.exceptions.InvalidLaunchContext;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
+import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
@@ -62,13 +64,15 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext) {
+      PatientLaunchContext launchContext)
+      throws InvalidLaunchContext {
 
     List<KarProcessingData> dataList = new ArrayList<>();
-    logger.info(" Stating to process re-launch notification ");
+    logger.info(" Starting to process launch notification ");
 
     NotificationContext nc =
-        SubscriptionUtils.getNotificationContext(notificationBundle, request, response);
+        SubscriptionUtils.getNotificationContext(
+            notificationBundle, request, response, false, launchContext);
 
     if (nc != null) {
 
@@ -190,18 +194,22 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext) {
+      PatientLaunchContext launchContext,
+      Boolean relaunch)
+      throws InvalidLaunchContext {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Stating to process notification ");
 
     NotificationContext nc =
-        SubscriptionUtils.getNotificationContext(notificationBundle, request, response);
+        SubscriptionUtils.getNotificationContext(
+            notificationBundle, request, response, true, launchContext);
 
     if (nc != null) {
 
       logger.info(" Notification Context exists for processing the notification ");
       nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
+      nc.setNotificationProcessingStatus(NotificationProcessingStatusType.RELAUNCHED.toString());
 
       if (launchContext != null && launchContext.getThrottleContext() != null)
         nc.setThrottleContext(launchContext.getThrottleContext());

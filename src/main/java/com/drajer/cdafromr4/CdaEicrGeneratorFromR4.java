@@ -4,6 +4,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public class CdaEicrGeneratorFromR4 {
         eICR.append(CdaBodyGenerator.generateCdaBody(data, details));
         eICR.append(CdaGeneratorUtils.getEndXMLHeaderForCdaDocument());
 
-        logger.debug("Created new eICR {}", eICR);
+        logger.debug("Created new eICR {}", StringEscapeUtils.escapeXml11(eICR.toString()));
 
       } else {
         String msg = "Fhir Data not ready/missing to be used for creating a CDA Document";

@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
 
 /**
  *
@@ -40,6 +41,10 @@ public class KnowledgeArtifactSummaryInfo {
 
   @Column(name = "kar_version", nullable = false, columnDefinition = "TEXT")
   private String karVersion;
+
+  @Column(name = "kar_available", nullable = true)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean karAvailable;
 
   public String getVersionUniqueId() {
     return this.karId + "|" + this.getKarVersion();
@@ -83,5 +88,13 @@ public class KnowledgeArtifactSummaryInfo {
 
   public void setKarVersion(String karVersion) {
     this.karVersion = karVersion;
+  }
+
+  public Boolean getKarAvailable() {
+    return karAvailable;
+  }
+
+  public void setKarAvailable(Boolean karAvailable) {
+    this.karAvailable = karAvailable;
   }
 }

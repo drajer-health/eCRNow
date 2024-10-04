@@ -147,7 +147,8 @@ public class FhirContextInitializerTest {
             fhirContext,
             mockDetails.getEhrServerURL(),
             mockDetails.getAccessToken(),
-            mockDetails.getxRequestId());
+            mockDetails.getxRequestId(),
+            null);
     assertTrue(fhirContext.getPerformanceOptions() != null);
     assertTrue(
         fhirContext

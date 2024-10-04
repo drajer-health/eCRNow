@@ -18,12 +18,13 @@
 	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>1.8</java.version>
 		<fhir.version>5.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
+		
 	</properties>
 
 
@@ -400,10 +401,21 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -498,6 +510,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.21.0</version>
+				<configuration>
+					<!-- Activate the use of TCP to transmit events to the plugin -->
+					<forkNode
+						implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+				</configuration>
 				<executions>
 					<execution>
 						<id>default-test</id>
@@ -510,6 +527,8 @@
 							<excludes>
 								<exclude>**/IT*.java</exclude>
 							</excludes>
+							<forkNode
+								implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
 						</configuration>
 					</execution>
 				</executions>
@@ -617,7 +636,9 @@
 					--add-opens=java.base/java.lang=ALL-UNNAMED
 					--add-opens=java.base/java.time=ALL-UNNAMED
 					--add-opens=java.base/java.time.format=ALL-UNNAMED
-					--add-opens java.base/java.text=ALL-UNNAMED
+					--add-opens
+					java.base/java.text=ALL-UNNAMED
+					--add-opens java.base/java.util.stream=ALL-UNNAMED
 				</argLine>
 
 

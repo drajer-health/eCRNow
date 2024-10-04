@@ -49,7 +49,6 @@ import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
@@ -266,8 +265,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<BundleEntryComponent> entries = new ArrayList<BundleEntryComponent>();
     entries.add(bundleEntry);
     Encounter en = new Encounter();
-    List<EncounterLocationComponent> locationList =
-        new ArrayList<Encounter.EncounterLocationComponent>();
+    List<EncounterLocationComponent> locationList = new ArrayList<EncounterLocationComponent>();
     locationList.add(loc);
     en.setLocation(locationList);
 
@@ -289,8 +287,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<BundleEntryComponent> entries = new ArrayList<BundleEntryComponent>();
     entries.add(bundleEntry);
     Encounter en = new Encounter();
-    List<EncounterLocationComponent> locationList =
-        new ArrayList<Encounter.EncounterLocationComponent>();
+    List<EncounterLocationComponent> locationList = new ArrayList<EncounterLocationComponent>();
     locationList.add(loc);
     en.setLocation(locationList);
 
@@ -432,7 +429,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     relationship.addCoding(coding);
     guardianContact.setRelationship(Collections.singletonList(relationship));
     contacts.add(guardianContact);
-    Patient.ContactComponent result = CdaFhirUtilities.getGuardianContact(contacts);
+    ContactComponent result = CdaFhirUtilities.getGuardianContact(contacts);
     assertEquals(guardianContact, result);
   }
 
@@ -554,7 +551,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetLanguage() {
-    List<Patient.PatientCommunicationComponent> comms = new ArrayList<>();
+    List<PatientCommunicationComponent> comms = new ArrayList<>();
     PatientCommunicationComponent patientCommunication = new PatientCommunicationComponent();
 
     CodeableConcept languageCodeableConcept = new CodeableConcept();
@@ -596,7 +593,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetLanguageForCodeSystem() {
-    List<Patient.PatientCommunicationComponent> comms = new ArrayList<>();
+    List<PatientCommunicationComponent> comms = new ArrayList<>();
     PatientCommunicationComponent patientCommunication = new PatientCommunicationComponent();
 
     CodeableConcept languageCodeableConcept = new CodeableConcept();
@@ -612,10 +609,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     patientCommunication.setLanguage(languageCodeableConcept);
     comms.add(patientCommunication);
 
-    Coding result =
+    Pair<Coding, Boolean> result =
         CdaFhirUtilities.getLanguageForCodeSystem(comms, "http://hl7.org/fhir/ValueSet/languages");
     assertNotNull(result);
-    assertEquals(language, result);
+    assertEquals(language, result.getValue0());
   }
 
   @Test
@@ -638,18 +635,18 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     cp3.setValue("a@b.com");
     cps.add(cp3);
 
-    String result = CdaFhirUtilities.getTelecomXml(cps, false);
+    String result = CdaFhirUtilities.getTelecomXml(cps, false, false);
 
     assertTrue(result.contains("(123)456-7890"));
     assertTrue(result.contains("(098)765-4321"));
-    assertFalse(result.contains("a@b.com"));
+    assertTrue(result.contains("a@b.com"));
 
-    String result2 = CdaFhirUtilities.getTelecomXml(cps, true);
+    String result2 = CdaFhirUtilities.getTelecomXml(cps, true, true);
     assertTrue(result2.contains("(123)456-7890"));
     assertFalse(result2.contains("(098)765-4321"));
     assertFalse(result2.contains("a@b.com"));
 
-    String result3 = CdaFhirUtilities.getTelecomXml(null, true);
+    String result3 = CdaFhirUtilities.getTelecomXml(null, true, true);
     String expected = "<telecom nullFlavor=\"NI\"/>";
     assertEquals(expected, result3.trim());
   }
@@ -852,7 +849,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-            cds, cdName, valueTrue, codeSystemUrl, csOptional);
+            cds, cdName, valueTrue, codeSystemUrl, csOptional, "");
 
     assertEquals(expectedXml.trim(), actualXml.trim());
   }
@@ -877,7 +874,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-            cds, cdName, valueTrue, codeSystemUrl, csOptional);
+            cds, cdName, valueTrue, codeSystemUrl, csOptional, "");
 
     assertEquals(expectedXml.trim(), actualXml.trim());
   }
@@ -956,7 +953,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     cds.add(new CodeableConcept().addCoding(coding).setText("High Observation"));
 
-    String cdName = "code";
     Boolean valueTrue = false;
 
     Boolean includeNullFlavor = true;
@@ -964,16 +960,50 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
             CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             cds,
-            cdName,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             valueTrue,
             includeNullFlavor);
 
     String expectedXml =
-        "<code code=\"HH\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"HH\"></code>\r\n"
+        "<interpretationCode code=\"HH\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"HH\"></interpretationCode>\r\n"
             + "";
 
     assertThat(actualXml).isNotNull().isNotEmpty();
     assertEquals(expectedXml.trim(), actualXml.trim());
+  }
+
+  @Test
+  public void testGetCodeableConceptXmlForMappedConceptDomain_WithOnlyText() {
+
+    List<CodeableConcept> cds = new ArrayList<>();
+    Coding coding = new Coding();
+    cds.add(new CodeableConcept().addCoding(coding).setText("interpretationCode text 1"));
+    cds.add(new CodeableConcept().addCoding(coding).setText("interpretationCode text 2"));
+
+    Boolean valueTrue = false;
+
+    Boolean includeNullFlavor = true;
+    String actualXml =
+        CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+            cds,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+            valueTrue,
+            includeNullFlavor);
+
+    String expectedXml =
+        "<interpretationCode nullFlavor=\"OTH\">\r\n"
+            + "<originalText>\r\n"
+            + "interpretationCode text 1</originalText>\r\n"
+            + "\r\n"
+            + "</interpretationCode>\r\n"
+            + "<interpretationCode nullFlavor=\"OTH\">\r\n"
+            + "<originalText>\r\n"
+            + "interpretationCode text 2</originalText>\r\n"
+            + "\r\n"
+            + "</interpretationCode>";
+    assertThat(actualXml).isNotNull().isNotEmpty();
+    assertXmlEquals(expectedXml, actualXml);
   }
 
   @Test
@@ -988,7 +1018,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     cds.add(new CodeableConcept().addCoding(coding).setText("High Observation"));
 
-    String cdName = "code";
     Boolean valueTrue = true;
 
     Boolean includeNullFlavor = true;
@@ -996,7 +1025,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
             CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             cds,
-            cdName,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             valueTrue,
             includeNullFlavor);
 
@@ -1096,13 +1125,23 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     String expectedXml =
         "<effectiveTime><low value=\"20220403153000-0400\"/><high value=\"20230403153000-0400\"/></effectiveTime>";
 
-    String actualXml = CdaFhirUtilities.getPeriodXml(period, "effectiveTime");
+    String actualXml = CdaFhirUtilities.getPeriodXml(period, "effectiveTime", false);
     actualXml = actualXml.replaceAll("\n", "");
     assertEquals(expectedXml.trim(), actualXml.trim());
 
+    Period period1 = new Period();
+
+    period1.setEndElement(new DateTimeType("2023-04-03T15:30:00-04:00"));
+    expectedXml =
+        "<effectiveTime> <low nullFlavor=\"NI\"/> <high value=\"20230403153000-0400\"/> </effectiveTime>";
+
+    actualXml = CdaFhirUtilities.getPeriodXml(period1, "effectiveTime", false);
+
+    assertXmlEquals(expectedXml, actualXml);
+
     // Test with a null Period object
     expectedXml = "<effectiveTime nullFlavor=\"NI\"/>";
-    actualXml = CdaFhirUtilities.getPeriodXml(null, "effectiveTime");
+    actualXml = CdaFhirUtilities.getPeriodXml(null, "effectiveTime", false);
     assertEquals(expectedXml.trim(), actualXml.trim());
   }
 
@@ -1119,7 +1158,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expectedXml.trim(), actualXml.trim());
 
     Quantity quantity1 = new Quantity(10.5);
-    String expectedXm1 = "<value xsi:type=\"PQ\" value=\"10.5\" unit=\"null\"/>" + "";
+    String expectedXm1 = "<value xsi:type=\"PQ\" value=\"10.5\" unit=\"1\"/>";
     String actualXml1 = CdaFhirUtilities.getQuantityXml(quantity1, "doseQuantity", true);
     assertEquals(expectedXm1.trim(), actualXml1.trim());
   }
@@ -1248,6 +1287,25 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGetStringForDates() {
+    Pair<Date, TimeZone> onset =
+        new Pair<>(new Date(1645778400000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T00:00:00Z
+    Pair<Date, TimeZone> abatement =
+        new Pair<>(new Date(1645864800000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-26T00:00:00Z
+    Pair<Date, TimeZone> recorded =
+        new Pair<>(new Date(1645833600000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T18:00:00Z
+
+    String expected =
+        "Sat Feb 26 08:40:00 UTC 2022|Sat Feb 26 00:00:00 UTC 2022|Fri Feb 25 08:40:00 UTC 2022";
+    String result = CdaFhirUtilities.getStringForDates(recorded, onset, abatement);
+
+    assertEquals(expected, result);
+  }
+
+  @Test
   public void testGetCombinationStringForCodeSystem_WithValue() {
     CodeableConcept codeableConcept = new CodeableConcept();
     Coding coding = new Coding();
@@ -1349,82 +1407,89 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @Test
   public void testGetStringForMedicationType() {
 
+    List<Medication> medList = null;
     Resource resource =
         (Resource)
             loadResourceDataFromFile(
                 MedicationRequest.class, "CdaTestData/Medication/medicationRequest.json");
 
-    String actual = CdaFhirUtilities.getStringForMedicationType(resource);
+    String actual = CdaFhirUtilities.getStringForMedicationType(resource, null);
     assertNotNull(actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationRequestAndReference() {
+    List<Medication> medList = null;
     MedicationRequest mr = new MedicationRequest();
     Reference med = new Reference("#med123");
     mr.setMedication(med);
     mr.setContained(getContained());
     String expected = "Unknown";
-    String actual = CdaFhirUtilities.getStringForMedicationType(mr);
+    String actual = CdaFhirUtilities.getStringForMedicationType(mr, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationRequestAndCodeableConcept() {
+    List<Medication> medList = null;
     MedicationRequest mr = new MedicationRequest();
     CodeableConcept cc = new CodeableConcept();
     Coding coding = new Coding().setCode("1234").setDisplay("Simvastatin");
     cc.addCoding(coding);
     mr.setMedication(cc);
     String expected = "Simvastatin";
-    String actual = CdaFhirUtilities.getStringForMedicationType(mr);
+    String actual = CdaFhirUtilities.getStringForMedicationType(mr, null);
     assertEquals(expected, actual);
   }
 
   @Test
   @Ignore
   public void testGetStringForMedicationTypeWithMedicationAdministrationAndReference() {
+    List<Medication> medList = null;
     MedicationAdministration ma = new MedicationAdministration();
     Reference med = new Reference("#medication");
     ma.setMedication(med);
     ma.setContained(getContained());
     String expected = "Metformin";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ma);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ma, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationAdministrationAndCodeableConcept() {
+    List<Medication> medList = null;
     MedicationAdministration ma = new MedicationAdministration();
     CodeableConcept cc = new CodeableConcept();
     Coding coding = new Coding().setCode("5678").setDisplay("Atorvastatin");
     cc.addCoding(coding);
     ma.setMedication(cc);
     String expected = "Atorvastatin";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ma);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ma, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationStatementAndReference() {
+    List<Medication> medList = null;
     MedicationStatement ms = new MedicationStatement();
     Reference med = new Reference("#med789");
     ms.setMedication(med);
     ms.setContained(getContained());
     String expected = "Unknown";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ms);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ms, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationStatementAndCodeableConcept() {
+    List<Medication> medList = null;
     MedicationStatement ms = new MedicationStatement();
     CodeableConcept cc = new CodeableConcept();
     Coding coding = new Coding().setCode("9012").setDisplay("Ibuprofen");
     cc.addCoding(coding);
     ms.setMedication(cc);
     String expected = "Ibuprofen";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ms);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ms, null);
     assertEquals(expected, actual);
   }
 
@@ -1552,7 +1617,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     "on-hold, suspended",
     "unknown, held",
     "draft, held",
-    "cancelled, held"
+    "cancelled, cancelled"
   })
   public void testGetStatusCodeForFhirMedStatusCodes(String input, String expectedOutput) {
 
@@ -1584,7 +1649,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertEquals("held", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("draft"));
 
-    assertEquals("held", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("cancelled"));
+    assertEquals("cancelled", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("cancelled"));
   }
 
   @Test
@@ -1690,11 +1755,14 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     Map<String, String> testData = new HashMap<>();
     testData.put(
-        "male", "<administrativeGenderCode code=\"M\" codeSystem=\"2.16.840.1.113883.5.1\"/>");
+        "male",
+        "<administrativeGenderCode code=\"M\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"male\"/>");
     testData.put(
-        "female", "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\"/>");
+        "female",
+        "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>");
     testData.put(
-        "other", "<administrativeGenderCode code=\"UN\" codeSystem=\"2.16.840.1.113883.5.1\"/>");
+        "other",
+        "<administrativeGenderCode code=\"UN\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"unknown\"/>");
 
     for (Map.Entry<String, String> entry : testData.entrySet()) {
       String actualXml =
@@ -1798,10 +1866,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expectedValue, actualValue);
 
     expectedValue =
-        "<effectiveTime>\r\n"
-            + "<low value=\"19700127212023+0000\"/>\r\n"
-            + "<high value=\"19700130045343+0000\"/>\r\n"
-            + "</effectiveTime>";
+        "<effectiveTime xsi:type=\"IVL_TS\"><low value=\"19700127212023+0000\"/> <high value=\"19700130045343+0000\"/> </effectiveTime>";
     actualValue =
         CdaFhirUtilities.getXmlForType(period, CdaGeneratorConstants.EFF_TIME_EL_NAME, true);
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
@@ -1876,7 +1941,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   public void testGetStringForTypeFromDateTimeType() {
     DateTimeType dateTime = new DateTimeType("2023-05-05T10:00:00-04:00");
     String result = CdaFhirUtilities.getStringForType(dateTime);
-    assertEquals("2023-05-05T10:00:00-04:00", result);
+    assertEquals("20230505100000-0400", result);
   }
 
   @Test
@@ -1890,7 +1955,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
                             .setStartElement(new DateTimeType("2023-05-01T00:00:00Z"))
                             .setEndElement(new DateTimeType("2023-05-31T23:59:59Z"))));
     String result = CdaFhirUtilities.getStringForType(timing);
-    assertEquals("Mon May 01 00:00:00 UTC 2023|Wed May 31 23:59:59 UTC 2023", result);
+    assertEquals("20230501000000+0000|20230531235959+0000", result);
   }
 
   @Test
@@ -1900,7 +1965,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
             .setStartElement(new DateTimeType("2023-05-01T00:00:00Z"))
             .setEndElement(new DateTimeType("2023-05-31T23:59:59Z"));
     String result = CdaFhirUtilities.getStringForType(period);
-    assertEquals("Mon May 01 00:00:00 UTC 2023|Wed May 31 23:59:59 UTC 2023", result);
+    assertEquals("20230501000000+0000|20230531235959+0000", result);
   }
 
   @Test
@@ -1984,7 +2049,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaGeneratorConstants.CODE_EL_NAME,
         true,
         CdaGeneratorConstants.FHIR_ICD10_CM_URL,
-        false,
+        true,
         "<code xsi:type=\"CD\" nullFlavor=\"OTH\"><translation code=\"15074-8\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Glucose [Moles/volume] in Blood\"/></value>");
 
     testGetXmlForTypeForCodeSystem(
@@ -2036,5 +2101,428 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         assertEquals(dataKey, output);
       }
     }
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtension() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+
+    String subExtUrl = "detailed";
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionListWithSubExtension1() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+
+    String subExtUrl = "detailed";
+
+    extension.setUrl(extUrl);
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+    subExtension.setUrl(subExtUrl);
+    subExtension.setValue(codingValue);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetRaceOrEthnicityXml() {
+
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
+    String subExtUrl = "ombCategory";
+    extension.setUrl(extUrl);
+
+    // Test with actual coding for ombCategory
+    Coding codingValue = new Coding();
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    subExtension.setValue(codingValue);
+    subExtension.setUrl(subExtUrl);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+
+    String retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.RACE_CODE_EL_NAME, extUrl);
+
+    String expectedXml =
+        "<raceCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>";
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    // Test for coding with only display in ombCategory
+    Coding codingValue1 = new Coding();
+    codingValue1.setDisplay("Latin American");
+    subExtension.setValue(codingValue1);
+    subExtension.setUrl(subExtUrl);
+
+    List<Extension> ex = new ArrayList<Extension>();
+    ex.add(subExtension);
+    extension.setExtension(ex);
+    exts.clear();
+    exts.add(extension);
+
+    expectedXml =
+        "<raceCode nullFlavor=\"OTH\">\n"
+            + "<originalText>Latin American</originalText>\n"
+            + "</raceCode>";
+
+    retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.RACE_CODE_EL_NAME, extUrl);
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    // Test with no ombCategory.
+    Extension subExtension1 = new Extension();
+    String subExtUrl1 = "text";
+    subExtension1.setValue(new StringType("LatinAmerican"));
+    subExtension1.setUrl(subExtUrl1);
+
+    ex.clear();
+    ex.add(subExtension1);
+
+    extension.setUrl(extUrl);
+    extension.setExtension(ex);
+
+    exts.clear();
+    exts.add(extension);
+
+    expectedXml =
+        "<raceCode nullFlavor=\"OTH\">\n"
+            + "<originalText>LatinAmerican</originalText>\n"
+            + "</raceCode>";
+
+    retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.RACE_CODE_EL_NAME, extUrl);
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    // Test with omb + Detailed
+    Extension subExtension2 = new Extension();
+    subExtension2.setValue(codingValue);
+    subExtension2.setUrl(subExtUrl);
+
+    ex.clear();
+    ex.add(subExtension2);
+
+    Extension subExtension3 = new Extension();
+    subExtension3.setValue(codingValue);
+    subExtension3.setUrl("detailed");
+
+    ex.add(subExtension3);
+
+    extension.setUrl(extUrl);
+    extension.setExtension(ex);
+
+    exts.clear();
+    exts.add(extension);
+
+    expectedXml =
+        "<raceCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\""
+            + " codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>"
+            + " <sdtc:raceCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\""
+            + " codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>";
+
+    retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.RACE_CODE_EL_NAME, extUrl);
+
+    retVal +=
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
+            exts,
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
+            CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_RACE_CODE);
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    logger.info(" Ret Val = {}", retVal);
+  }
+
+  @Test
+  public void testGetRaceOrEthnicityXml2() {
+
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+    String subExtUrl = "ombCategory";
+    extension.setUrl(extUrl);
+
+    // Test with actual coding for ombCategory
+    Coding codingValue = new Coding();
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    subExtension.setValue(codingValue);
+    subExtension.setUrl(subExtUrl);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+
+    String retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, extUrl);
+
+    String expectedXml =
+        "<ethnicGroupCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>";
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    // Test for coding with only display in ombCategory
+    Coding codingValue1 = new Coding();
+    codingValue1.setDisplay("Latin American");
+    subExtension.setValue(codingValue1);
+    subExtension.setUrl(subExtUrl);
+
+    List<Extension> ex = new ArrayList<Extension>();
+    ex.add(subExtension);
+    extension.setExtension(ex);
+    exts.clear();
+    exts.add(extension);
+
+    expectedXml =
+        "<ethnicGroupCode nullFlavor=\"OTH\">\n"
+            + "<originalText>Latin American</originalText>\n"
+            + "</ethnicGroupCode>";
+
+    retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, extUrl);
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    // Test with no ombCategory.
+    Extension subExtension1 = new Extension();
+    String subExtUrl1 = "text";
+    subExtension1.setValue(new StringType("LatinAmerican"));
+    subExtension1.setUrl(subExtUrl1);
+
+    ex.clear();
+    ex.add(subExtension1);
+
+    extension.setUrl(extUrl);
+    extension.setExtension(ex);
+
+    exts.clear();
+    exts.add(extension);
+
+    expectedXml =
+        "<ethnicGroupCode nullFlavor=\"OTH\">\n"
+            + "<originalText>LatinAmerican</originalText>\n"
+            + "</ethnicGroupCode>";
+
+    retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, extUrl);
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    // Test with omb + Detailed
+    Extension subExtension2 = new Extension();
+    subExtension2.setValue(codingValue);
+    subExtension2.setUrl(subExtUrl);
+
+    ex.clear();
+    ex.add(subExtension2);
+
+    Extension subExtension3 = new Extension();
+    subExtension3.setValue(codingValue);
+    subExtension3.setUrl("detailed");
+
+    ex.add(subExtension3);
+
+    extension.setUrl(extUrl);
+    extension.setExtension(ex);
+
+    exts.clear();
+    exts.add(extension);
+
+    expectedXml =
+        "<ethnicGroupCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\""
+            + " codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>"
+            + " <sdtc:ethnicGroupCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\""
+            + " codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>";
+
+    retVal =
+        CdaFhirUtilities.getRaceOrEthnicityXml(
+            exts, CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, extUrl);
+
+    retVal +=
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
+            exts,
+            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
+            CdaGeneratorConstants.OMB_ETHNICITY_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_ETHNIC_GROUP_CODE);
+
+    retVal = StringUtils.normalizeSpace(retVal).trim();
+    expectedXml = StringUtils.normalizeSpace(expectedXml).trim();
+
+    assertEquals(expectedXml, retVal);
+
+    logger.info(" Ret Val = {}", retVal);
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionListWithSubExtension2() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+    CodeableConcept valueCodeableConcept = new CodeableConcept();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+    String subExtUrl = "detailed";
+    extension.setUrl(extUrl);
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    valueCodeableConcept.addCoding(codingValue);
+
+    subExtension.setUrl(subExtUrl);
+    subExtension.setValue(valueCodeableConcept);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionWithOnlyExtUrl() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    String extUrl = "http://example.com/ext";
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem(CdaGeneratorConstants.FHIR_IDENTIFIER_TYPE_SYSTEM);
+    codingValue.setCode("MR");
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, "");
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue, result.get(0));
+  }
+
+  public void testGetStringForCodeableConcept_TextNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.setText("Display-Text");
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Display-Text", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNull() {
+    CodeableConcept cd = new CodeableConcept();
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Unknown", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNullAndCodingNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setSystem("http://loinc.org");
+    coding.setCode("15074-8");
+    coding.setDisplay("Glucose [Moles/volume] in Blood");
+
+    cd.addCoding(coding);
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_WithEmptyValue() {
+
+    assertEquals("Unknown", CdaFhirUtilities.getStringForCodeableConcept(null));
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_CodingListWithMultipleCodings() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding1 = new Coding();
+    coding1.setSystem("http://loinc.org");
+    coding1.setCode("15074-8");
+    coding1.setDisplay("Glucose [Moles/volume] in Blood-1");
+
+    Coding coding2 = new Coding();
+    coding2.setSystem("http://loinc.org");
+    coding2.setCode("15074-8");
+    coding2.setDisplay("Glucose [Moles/volume] in Blood-2");
+
+    cd.addCoding(coding1);
+    cd.addCoding(coding2);
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood-1 | Glucose [Moles/volume] in Blood-2", result);
   }
 }

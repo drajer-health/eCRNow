@@ -3,6 +3,7 @@ package com.drajer.cdafromr4;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
@@ -84,5 +85,33 @@ public class CdaEncounterGeneratorTest extends BaseGeneratorTest {
     String expectedCodeXml = "<code nullFlavor=\"NI\"/>";
     String actualCodeXml = CdaEncounterGenerator.getEncounterCodeXml(encounter, contentRef);
     assertEquals(expectedCodeXml.trim(), actualCodeXml.trim());
+
+    Encounter en1 = new Encounter();
+    Coding enClass1 = new Coding();
+    enClass1.setCode("AMB");
+    enClass1.setSystem(CdaGeneratorConstants.FHIR_ENCOUNTER_CLASS_URL);
+    en1.setClass_(enClass1);
+
+    expectedCodeXml =
+        "<code code=\"AMB\" codeSystem=\"2.16.840.1.113883.5.4\" codeSystemName=\"v3-ActCode\"><originalText><reference value=\"#test\"/></originalText></code>";
+
+    actualCodeXml = CdaEncounterGenerator.getEncounterCodeXml(en1, contentRef);
+    assertEquals(actualCodeXml.trim(), actualCodeXml.trim());
+
+    Encounter en2 = new Encounter();
+    List<CodeableConcept> cds2 = new ArrayList<>();
+    CodeableConcept codeableConcept2 = new CodeableConcept();
+    Coding coding2 = new Coding();
+    coding2.setCode("456");
+    coding2.setSystem("http://www.ama-assn.org/go/cpt");
+    codeableConcept2.addCoding(coding2);
+    cds2.add(codeableConcept2);
+    en2.setType(cds2);
+
+    expectedCodeXml =
+        "<code code=\"456\" codeSystem=\"2.16.840.1.113883.6.12\" codeSystemName=\"CPT\"><originalText><reference value=\"#test\"/></originalText></code>";
+
+    actualCodeXml = CdaEncounterGenerator.getEncounterCodeXml(en2, contentRef);
+    assertEquals(actualCodeXml.trim(), actualCodeXml.trim());
   }
 }

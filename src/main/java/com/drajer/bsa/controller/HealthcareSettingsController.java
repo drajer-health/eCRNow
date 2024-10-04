@@ -4,12 +4,14 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.sof.utils.Authorization;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +35,14 @@ public class HealthcareSettingsController {
   private static final String FHIR_VERSION = "fhirVersion";
   private static final String VALUE_URI = "valueUri";
   private static final String EXTENSION = "extension";
+  public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
 
   @Autowired Authorization authorization;
 
   @Autowired HealthcareSettingsService healthcareSettingsService;
+
+  @Value("${direct.tls.version}")
+  String directSmtpTlsVersion;
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsController.class);
 
@@ -89,6 +95,10 @@ public class HealthcareSettingsController {
             hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
           }
 
+          if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+            hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+          }
+
           for (int i = 0; i < innerExtension.length(); i++) {
             JSONObject urlExtension = innerExtension.getJSONObject(i);
             if (urlExtension.getString("url").equals("token")) {
@@ -132,6 +142,11 @@ public class HealthcareSettingsController {
 
     if (existingHsd == null || (existingHsd.getId().equals(hsDetails.getId()))) {
       logger.info("Saving the Client Details");
+
+      if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+        hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+      }
+
       healthcareSettingsService.saveOrUpdate(hsDetails);
       return new ResponseEntity<>(hsDetails, HttpStatus.OK);
     } else {
@@ -172,5 +187,38 @@ public class HealthcareSettingsController {
   @GetMapping("/api/healthcareSettings/")
   public List<HealthcareSetting> getAllHealthcareSettings() {
     return healthcareSettingsService.getAllHealthcareSettings();
+  }
+
+  /**
+   * Deletes a HealthcareSetting based on the provided FHIR Server URL.
+   *
+   * @param url The URL used to retrieve the HealthcareSetting.
+   * @return A ResponseEntity with a status message indicating the result of the delete operation.
+   */
+  @CrossOrigin
+  @DeleteMapping("/api/healthcareSettings")
+  public ResponseEntity<String> deleteHealthcareSettingsByUrl(@RequestParam("url") String url) {
+    try {
+      logger.info("Received URL: {} for deleting healthcareSettings", url);
+
+      if (url == null || url.isEmpty()) {
+        return ResponseEntity.badRequest().body("Requested FHIR URL is missing or empty");
+      }
+
+      HealthcareSetting healthcareSetting =
+          healthcareSettingsService.getHealthcareSettingByUrl(url);
+
+      if (healthcareSetting != null) {
+        healthcareSettingsService.delete(healthcareSetting);
+        return ResponseEntity.ok("HealthcareSetting deleted successfully");
+      }
+
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("HealthcareSetting not found");
+
+    } catch (Exception e) {
+      logger.error("Error in processing the request", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Error in processing the request");
+    }
   }
 }

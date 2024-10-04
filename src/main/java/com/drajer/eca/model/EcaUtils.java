@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterStatus;
@@ -325,7 +326,11 @@ public class EcaUtils {
 
       IGenericClient client =
           ci.createClient(
-              ctx, details.getEhrServerURL(), details.getAccessToken(), details.getxRequestId());
+              ctx,
+              details.getEhrServerURL(),
+              details.getAccessToken(),
+              details.getxRequestId(),
+              null);
 
       Encounter r4Encounter = null;
       ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;
@@ -344,7 +349,7 @@ public class EcaUtils {
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
             "Error in getting Encounter resource by Id: {}",
-            details.getEncounterId(),
+            StringEscapeUtils.escapeJava(details.getEncounterId()),
             resourceNotFoundException);
         WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
       }
@@ -414,7 +419,7 @@ public class EcaUtils {
       if (details.getStartDate() != null && details.getStartDate().before(thresholdDate)) {
         logger.info(
             " Suspending encounter {} as it is running more than {} days",
-            details.getEncounterId(),
+            StringEscapeUtils.escapeJava(details.getEncounterId()),
             appConfig.getSuspendThreshold());
         return true;
       }

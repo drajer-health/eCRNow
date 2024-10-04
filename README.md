@@ -4,7 +4,7 @@ For more information on electronic case reporting please refer to the following 
 
 * [More information on electronic case reporting (eCR)](https://ecr.aimsplatform.org)
 
-* [More background information on ecrNow FHIR App](https://ecr.aimsplatform.org/ecr-now-fhir-app)
+* [More background information on ecrNow FHIR App](https://ecr.aimsplatform.org/general/ecr-now-fhir-app)
 
 # 2. App Architecture #
 The app is architected as a Java Spring Boot app using Java Spring framework for the application layer, Hibernate and PostgreSQL for the backend technologies and ReactJS for the front end. The app can be instantiated as a micro service and containerized using Docker or other technologies for deployments.
@@ -64,7 +64,8 @@ The eCRNow-UI project and application is used to configure the eCRNow App. Altho
 ## 4.1 Pre-Requisites: ##
 The following technologies should have been installed on your machine where you will build, test and deploy your applications.
 
-* Java 8 or higher.
+* Java 8 for main / master branch.
+* Java 17 or higher should use the "java-17-master" branch.
 * PostgresSQL Database 10.x or higher.
 * NodeJS 12.4.1 or above
 * Maven 3.3.x or higher.
@@ -86,8 +87,7 @@ The following technologies should have been installed on your machine where you 
 **Backend:**
 
 File: src/main/resources/application.properties
-
-Change the database user name, password to reflect the database that was created in step 2 above.
+The database name and password along with an encryption key are passed as command line arguments or environment variables as detailed in Step 5 below. 
 
 *ERSD FILE LOCATION*
 
@@ -103,7 +103,8 @@ Currently this link only works state-side and if you are out of country, please 
 *SCHEMATRON FILE LOCATION*
 
 Change the Schematron File location to reflect where to find the actual eICR Schematron.
-The schematron file can be downloaded from https://gforge.hl7.org/gf/project/pher/scmsvn/?action=browse&path=%2Ftrunk%2FPHCASERPT_eICR%2Fschematron%2F with the appropriate HL7 authorization.
+CDA eICR R1.1 : The schematron file can be downloaded from https://github.com/HL7/CDA-phcaserpt-1.1.1/tree/main/validation .
+CDA eICR R3.1 : The schematron file can be downloaded from https://github.com/HL7/CDA-phcaserpt-1.1.1/tree/main/validation](https://github.com/HL7/CDA-phcaserpt-1.3.0/tree/CDA-phcaserpt-1.3.1/validation .
 
 *SCHEMA FILE LOCATION*
 
@@ -113,17 +114,30 @@ The attribute ```xsd.schemas.location``` has to be set to the CDA XSD with SDTC 
 Change the logfile location to reflect where you want to log the data.
 
 4. Build the App by running the following maven command.
+```
+mvn clean install -Djava.version=<JAVA VERSION>
+```
 
-```mvn clean install```
+For Java 8
+
+```
+mvn clean install -Djava.version=1.8
+```
+
+For Java 17
+
+```
+mvn clean install -Djava.version=17
+```
 
 5. Run the App using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -jar ./target/ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -jar ./target/ecr-now.war```
 
 The security.key is something that you can configure in the environment or your container approach and is used for encrypting sensitive information such as clientids, client secrets and direct transport account information in the database.
 
 NOTE: If you are using Windows system to run the application, then use the command formatted like below.
-```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" -jar .\target\ecr-now.war```
+```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" "-Djava.version=<JAVA VERSION>" -jar .\target\ecr-now.war```
 
 6. **App configuration for EHR server:** 
 
@@ -164,3 +178,4 @@ Organizations implementing in production settings should consider the following:
 1. Properly securing the app user interface if it is used within the enterprise and protecting access.
 2. Implement organization policies around database settings (ports), schemas, encryption.
 3. Implement other security best practices.
+

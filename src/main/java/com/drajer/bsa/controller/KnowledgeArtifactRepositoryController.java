@@ -1,6 +1,7 @@
 package com.drajer.bsa.controller;
 
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
+import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.service.KarService;
 import java.util.List;
@@ -110,6 +111,9 @@ public class KnowledgeArtifactRepositoryController {
   public ResponseEntity<List<KnowledgeArtifactStatus>> addKARStatus(
       @RequestBody List<KnowledgeArtifactStatus> karStatuses) {
     for (KnowledgeArtifactStatus karStatus : karStatuses) {
+
+      karStatus.setOutputFormat(
+          BsaTypes.getOutputContentType(karStatus.getOutputFormat().toString()));
       KnowledgeArtifactStatus existingKarStatus =
           karService.getKarStatusByKarIdAndKarVersion(
               karStatus.getKarId(), karStatus.getKarVersion(), karStatus.getHsId());

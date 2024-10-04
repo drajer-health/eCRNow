@@ -31,6 +31,7 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,9 @@ public class LoadingQueryDstu2Bundle {
   public Bundle createDSTU2Bundle(
       LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Date start, Date end) {
     Bundle bundle = new Bundle();
-    logger.info("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
+    logger.info(
+        "Initializing FHIR Context for Version:::: {}",
+        StringEscapeUtils.escapeJava(launchDetails.getFhirVersion()));
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
     IGenericClient client =

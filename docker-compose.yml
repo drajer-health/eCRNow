@@ -1,0 +1,44 @@
+version:3.8
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_container
+    environment:
+      POSTGRES_PASSWORD: ecrnow@2024
+      POSTGRES_DB: ecrnow
+    networks:
+      - ecrnow_network
+    ports:
+      - "5432:5432"
+
+  ecr-now:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecr-now
+    depends_on:
+      - postgres
+    networks:
+      - ecrnow_network
+    volumes:
+      - D://ecr-now:/config
+    environment:
+      - logging.file.name=/config/ecrNow.log
+      - ersd.file.location=/config/eRSDv2_specification_bundle.json
+      - schematron.file.location=/config/schematron/CDAR2_IG_PHCASERPT_R2_STU1.1_SCHEMATRON.sch
+      - xsd.schemas.location=/config/schemas/CDA_SDTC.xsd
+      - kar.directory=/config/kars
+      - bsa.output.directory=/config/bsa-output/
+      - custom-query.directory=/config/custom-queries
+      - jdbc.url=jdbc:postgresql://postgres_container:5432/ecrNow
+      - jdbc.username=postgres
+      - jdbc.password=ecr@2024
+      - security.key=test123
+    ports:
+      - "8081:8080"
+
+networks:
+  ecrnow_network:
+    driver: bridge
+    external: true
+    name: ecrnow_network

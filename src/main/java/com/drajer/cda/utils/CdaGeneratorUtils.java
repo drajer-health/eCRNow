@@ -226,6 +226,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForCD(
       String cdName, String code, String codeSystem, String codeSystemName, String displayName) {
+
     if (!StringUtils.isEmpty(displayName)) {
       return CdaGeneratorConstants.START_XMLTAG
           + cdName
@@ -338,6 +339,39 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getXmlForNFCDWithText(String cdName, String code, String text) {
+
+    String retVal = new String();
+
+    if (text != null && !text.isEmpty()) {
+
+      retVal =
+          CdaGeneratorConstants.START_XMLTAG
+              + cdName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.NF_OTH
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + CdaGeneratorConstants.NEW_LINE
+              + CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME, text)
+              + CdaGeneratorUtils.getXmlForEndElement(cdName);
+    } else {
+      retVal =
+          CdaGeneratorConstants.START_XMLTAG
+              + cdName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + code
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
+
+    return retVal;
+  }
+
   public static String getXmlForCD(String cdName, String code) {
     return CdaGeneratorConstants.START_XMLTAG
         + cdName
@@ -406,6 +440,23 @@ public class CdaGeneratorUtils {
         + code
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
+  }
+
+  public static String getXmlForNullCDWithText(String cdName, String code, String text) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + cdName
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + code
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+        + CdaGeneratorConstants.NEW_LINE
+        + getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
+        + text
+        + getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
+        + CdaGeneratorConstants.NEW_LINE
+        + getXmlForEndElement(cdName);
   }
 
   public static String getXmlForII(String root, String ext) {
@@ -531,6 +582,22 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getXmlForValueEffectiveTime(String elName, String value) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + elName
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.TS_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + value
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
   public static String getHl7StringForDate(Date value) {
 
     String s = "";
@@ -562,6 +629,47 @@ public class CdaGeneratorUtils {
       s +=
           CdaGeneratorConstants.START_XMLTAG
               + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.NF_NI
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
+
+    return s;
+  }
+
+  public static String getXmlForValueEffectiveTime(String elName, Date value, TimeZone t) {
+    String s = "";
+    if (value != null) {
+
+      String val = CdaGeneratorUtils.getStringForDateTime(value, t);
+
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.XSI_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.TS_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.VALUE_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + val
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+
+    } else {
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.XSI_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.TS_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -642,15 +750,23 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getXmlForTelecom(String telName, String telNo, String use) {
+  public static String getXmlForTelecom(String telName, String telNo, String use, Boolean fax) {
 
     String s = "";
+    String countryPrefix = "";
 
     String tel = digitPattern.matcher(telNo).replaceAll("");
     String finalTel = tel;
 
     if (tel.length() > 10) {
       finalTel = tel.substring(tel.length() - 10);
+      countryPrefix = tel.substring(0, tel.length() - 10);
+    }
+
+    String telprefix = "tel:" + (countryPrefix.isEmpty() ? "" : ("+" + countryPrefix)) + "(";
+
+    if (fax) {
+      telprefix = "fax:" + (countryPrefix.isEmpty() ? "" : ("+" + countryPrefix)) + "(";
     }
 
     if (!StringUtils.isEmpty(use) && finalTel.length() == 10) {
@@ -661,7 +777,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + "tel:("
+              + telprefix
               + finalTel.substring(0, 3)
               + ")"
               + finalTel.substring(3, 6)
@@ -682,7 +798,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + "tel:("
+              + telprefix
               + finalTel.substring(0, 3)
               + ")"
               + finalTel.substring(3, 6)
@@ -2078,6 +2194,9 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForValuePQ(String value, String units) {
+    String defaultUnits = StringUtils.isNotBlank(units) ? units : "1";
+    String escapedUnits = StringEscapeUtils.escapeXml10(defaultUnits);
+
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.VAL_EL_NAME
         + CdaGeneratorConstants.SPACE
@@ -2093,7 +2212,23 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.UNIT_WITH_EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
-        + StringEscapeUtils.escapeXml10(units)
+        + escapedUnits
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
+  public static String getXmlForValueBoolean(String val) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.BL_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + val
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }

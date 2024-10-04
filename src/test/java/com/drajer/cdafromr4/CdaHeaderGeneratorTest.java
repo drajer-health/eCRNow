@@ -76,6 +76,79 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGenerateXmlForDetailedEthnicityCode() {
+    List<Extension> extensions = new ArrayList<>();
+    extensions.add(
+        createExtension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "2178-2",
+            "Latin American"));
+
+    String expectedXml =
+        "<sdtc:ethnicGroupCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>\r\n";
+    String actualXml =
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
+            extensions,
+            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
+            CdaGeneratorConstants.OMB_ETHNICITY_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_ETHNIC_GROUP_CODE);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateXmlForDetailedRaceCode() {
+    List<Extension> extensions = new ArrayList<>();
+    extensions.add(
+        createExtension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "1072-8",
+            "Mexican American Indian"));
+
+    String expectedXml =
+        "<sdtc:raceCode code=\"1072-8\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Mexican American Indian\"/>\r\n";
+    String actualXml =
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
+            extensions,
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
+            CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_RACE_CODE);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateXmlForDetailedUnknownRaceCode() {
+    List<Extension> extensions = new ArrayList<>();
+    extensions.add(
+        createExtension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "ASKU",
+            "asked but unknown"));
+
+    String expectedXml = "<sdtc:raceCode nullFlavor=\"ASKU\"/>";
+    String actualXml =
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
+            extensions,
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
+            CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_RACE_CODE);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  private Extension createExtension(String extUrl, String code, String display) {
+    Extension extension = new Extension();
+    Coding codingValue = new Coding();
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode(code);
+    codingValue.setDisplay(display);
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+    return extension;
+  }
+
+  @Test
   public void testGetParticipantXml() {
     R4FhirData r4FhirData1 = new R4FhirData();
     Bundle bundle = loadBundleFromFile(PATIENT_RES_FILENAME);
@@ -93,6 +166,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
             + "<city>PleasantVille</city>\r\n"
+            + "<county>Rainbow</county>\r\n"
             + "<state>Vic</state>\r\n"
             + "<postalCode>3999</postalCode>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
@@ -105,8 +179,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</associatedPerson>\r\n"
             + "</associatedEntity>\r\n"
-            + "</participant>\r\n"
-            + "";
+            + "</participant>";
 
     String actualXml = CdaHeaderGenerator.getParticipantXml(contactComponents.get(0), coding);
 
@@ -165,7 +238,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</assignedPerson>\r\n"
             + "";
-    String actualXml = CdaHeaderGenerator.getPractitionerXml(practitioner);
+    String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner);
 
     assertThat(actualXml).isNotNull();
 
@@ -179,9 +252,10 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         (Organization) loadResourceDataFromFile(Organization.class, ORGANIZATION_FILENAME);
 
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Location/1\"/>\r\n"
+        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"1\"/>\r\n"
             + "<code nullFlavor=\"NI\"/>\r\n"
             + "<location>\r\n"
+            + "<name>South Wing, second floor</name>\r\n"
             + "<addr use=\"WP\">\r\n"
             + "<streetAddressLine>Galapagosweg 91, Building A</streetAddressLine>\r\n"
             + "<city>Den Burg</city>\r\n"
@@ -189,7 +263,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<postalCode>9105 PZ</postalCode>\r\n"
             + "<country>NLD</country>\r\n"
             + "</addr>\r\n"
-            + "</location>\r\n";
+            + "</location>";
 
     String actualXml = CdaHeaderGenerator.getLocationXml(location, organization, launchDetails);
 
@@ -203,9 +277,10 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         (Organization) loadResourceDataFromFile(Organization.class, ORGANIZATION_FILENAME);
 
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Organization/hl7\"/>\r\n"
+        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
             + "<code nullFlavor=\"NI\"/>\r\n"
             + "<location>\r\n"
+            + "<name>Health Level Seven International</name>\r\n"
             + "<addr>\r\n"
             + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
             + "<city nullFlavor=\"NI\"/>\r\n"
@@ -418,7 +493,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         (Organization) loadResourceDataFromFile(Organization.class, ORGANIZATION_FILENAME);
 
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Organization/hl7\"/>\r\n"
+        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
             + "<name>Health Level Seven International</name>\r\n"
             + "<telecom nullFlavor=\"NI\"/>\r\n"
             + "<addr>\r\n"
@@ -429,7 +504,8 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<country nullFlavor=\"NI\"/>\r\n"
             + "</addr>\r\n";
 
-    String actualXml = CdaHeaderGenerator.getOrganizationXml(organization, launchDetails, false);
+    String actualXml =
+        CdaHeaderGenerator.getOrganizationXml(organization, launchDetails, false, false);
 
     assertThat(actualXml).isNotNull();
     assertXmlEquals(expectedXml, actualXml);
@@ -448,7 +524,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<postalCode nullFlavor=\"NI\"/>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
             + "</addr>";
-    String actualXml = CdaHeaderGenerator.getOrganizationXml(null, launchDetails, false);
+    String actualXml = CdaHeaderGenerator.getOrganizationXml(null, launchDetails, false, false);
 
     assertThat(actualXml).isNotNull();
     assertXmlEquals(expectedXml, actualXml);
@@ -466,7 +542,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         "<custodian>\r\n"
             + "<assignedCustodian>\r\n"
             + "<representedCustodianOrganization>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Organization/hl7\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
             + "<name>Health Level Seven International</name>\r\n"
             + "<telecom nullFlavor=\"NI\"/>\r\n"
             + "<addr>\r\n"
@@ -512,7 +588,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     String expectedXml =
         "<componentOf>\r\n"
             + "<encompassingEncounter>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Encounter/97953900/_history/1\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"97953900\"/>\r\n"
             + "<id root=\"2.16.840.1.113883.4.4\" extension=\"98314717\"/>\r\n"
             + "<code code=\"IMP\" codeSystem=\"2.16.840.1.113883.5.4\" codeSystemName=\"v3-ActCode\" displayName=\"inpatient encounter\"></code>\r\n"
             + "<effectiveTime>\r\n"
@@ -537,7 +613,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</assignedPerson>\r\n"
             + "<representedOrganization>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Organization/hl7\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
             + "<name>Health Level Seven International</name>\r\n"
             + "<telecom nullFlavor=\"NI\"/>\r\n"
             + "<addr>\r\n"
@@ -552,9 +628,10 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</responsibleParty>\r\n"
             + "<location>\r\n"
             + "<healthCareFacility>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Location/1\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"1\"/>\r\n"
             + "<code nullFlavor=\"NI\"/>\r\n"
             + "<location>\r\n"
+            + "<name>South Wing, second floor</name>\r\n"
             + "<addr use=\"WP\">\r\n"
             + "<streetAddressLine>Galapagosweg 91, Building A</streetAddressLine>\r\n"
             + "<city>Den Burg</city>\r\n"
@@ -564,7 +641,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</addr>\r\n"
             + "</location>\r\n"
             + "<serviceProviderOrganization>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Organization/hl7\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
             + "<name>Health Level Seven International</name>\r\n"
             + "<telecom nullFlavor=\"NI\"/>\r\n"
             + "<addr>\r\n"
@@ -580,7 +657,6 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</encompassingEncounter>\r\n"
             + "</componentOf>\r\n"
             + "";
-
     String actualXml =
         CdaHeaderGenerator.getEncompassingEncounter(
             encounter, practMap, launchDetails, r4FhirData1);
@@ -629,7 +705,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</assignedPerson>\r\n"
             + "<representedOrganization>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Organization/hl7\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
             + "<name>Health Level Seven International</name>\r\n"
             + "<telecom nullFlavor=\"NI\"/>\r\n"
             + "<addr>\r\n"
@@ -644,9 +720,10 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</responsibleParty>\r\n"
             + "<location>\r\n"
             + "<healthCareFacility>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Location/1\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"1\"/>\r\n"
             + "<code nullFlavor=\"NI\"/>\r\n"
             + "<location>\r\n"
+            + "<name>South Wing, second floor</name>\r\n"
             + "<addr use=\"WP\">\r\n"
             + "<streetAddressLine>Galapagosweg 91, Building A</streetAddressLine>\r\n"
             + "<city>Den Burg</city>\r\n"
@@ -656,7 +733,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</addr>\r\n"
             + "</location>\r\n"
             + "<serviceProviderOrganization>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Organization/hl7\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
             + "<name>Health Level Seven International</name>\r\n"
             + "<telecom nullFlavor=\"NI\"/>\r\n"
             + "<addr>\r\n"
@@ -670,8 +747,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</healthCareFacility>\r\n"
             + "</location>\r\n"
             + "</encompassingEncounter>\r\n"
-            + "</componentOf>\r\n"
-            + "";
+            + "</componentOf>\r\n";
 
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid())
@@ -805,16 +881,19 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<given qualifier=\"PR\">Jill</given>\r\n"
             + "<family>Test</family>\r\n"
             + "</name>\r\n"
-            + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\"/>\r\n"
+            + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>\r\n"
             + "<birthTime value=\"20201027\"/>\r\n"
             + "<sdtc:deceasedInd value=\"false\"/>\r\n"
             + "<maritalStatusCode code=\"S\" codeSystem=\"2.16.840.1.113883.5.2\" codeSystemName=\"v3-MaritalStatus\" displayName=\"Never Married\"/>\r\n"
             + "<raceCode code=\"2028-9\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Asian\"/>\r\n"
             + "<ethnicGroupCode code=\"2186-5\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Not Hispanic or Latino\"/>\r\n"
             + "<guardian>\r\n"
+            + "<code nullFlavor=\"OTH\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.18.58\" codeSystemName=\"v2-0131\"/>\r\n"
+            + "</code>\r\n"
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
             + "<city>PleasantVille</city>\r\n"
+            + "<county>Rainbow</county>\r\n"
             + "<state>Vic</state>\r\n"
             + "<postalCode>3999</postalCode>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
@@ -907,7 +986,6 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     st1.setSystem("http://hl7.org/fhir/v3/NullFlavor");
     st1.setCode("UNK");
     st1.setDisplay("Unknown");
-
     Type tp1 = (Type) st1;
     subext1.setValue(tp1);
     ext1.addExtension(subext1);
@@ -950,7 +1028,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<versionNumber value=\"43\"/>\r\n"
             + "<recordTarget>\r\n"
             + "<patientRole>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Patient/a-11287.E-4237\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"a-11287.E-4237\"/>\r\n"
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>2221 HOME STREET</streetAddressLine>\r\n"
             + "<city>SALT LAKE CITY</city>\r\n"
@@ -1074,7 +1152,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</custodian>\r\n"
             + "<componentOf>\r\n"
             + "<encompassingEncounter>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Encounter/a-11287.stay-9787\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"a-11287.stay-9787\"/>\r\n"
             + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"a-11287.stay-9787\"/>\r\n"
             + "<code code=\"IMP\" codeSystem=\"2.16.840.1.113883.5.4\" codeSystemName=\"v3-ActCode\" displayName=\"inpatient encounter\"></code>\r\n"
             + "<effectiveTime>\r\n"

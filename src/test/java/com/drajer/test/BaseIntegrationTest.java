@@ -10,6 +10,7 @@ import com.drajer.test.util.WireMockHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
+import java.util.TimeZone;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -73,6 +74,7 @@ public abstract class BaseIntegrationTest {
 
   @Before
   public void setUp() throws Throwable {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();
     wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
     wireMockServer.resetMappings();

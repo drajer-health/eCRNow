@@ -5,12 +5,15 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "scheduled_tasks")
+@Table(
+    name = "scheduled_tasks",
+    indexes = {@Index(name = "idx_exec_time", columnList = "execution_time")})
 public class ScheduledTasks implements Serializable {
 
   @Id

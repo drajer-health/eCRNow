@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.gclient.IOperationProcessMsgMode;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
@@ -30,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -256,7 +258,7 @@ public class SubmitReport extends BsaAction {
           && !data.getHealthcareSetting().getTrustedThirdParty().isEmpty()) {
         logger.info(
             "Sending to trusted thrid party {}",
-            data.getHealthcareSetting().getTrustedThirdParty());
+            StringEscapeUtils.escapeJava(data.getHealthcareSetting().getTrustedThirdParty()));
         submitResources(
             resourcesToSubmit,
             data,
@@ -290,7 +292,9 @@ public class SubmitReport extends BsaAction {
       String submissionEndpoint) {
     logger.info("Ehr Query Service:{}", ehrService);
 
-    logger.info("SubmitResources called: sending data to {}", submissionEndpoint);
+    logger.info(
+        "SubmitResources called: sending data to {}",
+        StringEscapeUtils.escapeJava(submissionEndpoint));
     PublicHealthAuthority pha;
 
     if (submissionEndpoint.endsWith("/")) {
@@ -311,19 +315,25 @@ public class SubmitReport extends BsaAction {
     String token = "";
     if (pha != null) {
       logger.info(
-          "Attempting to retrieve TOKEN from PHA {} or {}", pha.getTokenUrl(), pha.getTokenUrl());
+          "Attempting to retrieve TOKEN from PHA {} or {}",
+          StringEscapeUtils.escapeJava(pha.getTokenUrl()),
+          StringEscapeUtils.escapeJava(pha.getTokenUrl()));
 
       JSONObject obj = authorizationUtils.getToken(pha);
 
       if (obj != null) {
         token = obj.getString("access_token");
-        logger.info(" Successfully retrieve token {}", token);
+        logger.debug(" Successfully retrieve token {}", token);
       } else {
-        logger.error(" Unable to retrieve access token for PHA: {}", pha.getFhirServerBaseURL());
+        logger.error(
+            " Unable to retrieve access token for PHA: {}",
+            StringEscapeUtils.escapeJava(pha.getFhirServerBaseURL()));
       }
 
     } else {
-      logger.warn("No PHA was found with submission endpoint {}", submissionEndpoint);
+      logger.warn(
+          "No PHA was found with submission endpoint {}",
+          StringEscapeUtils.escapeJava(submissionEndpoint));
       logger.warn("Continuing without auth token");
     }
 
@@ -341,7 +351,7 @@ public class SubmitReport extends BsaAction {
 
       IGenericClient client =
           fhirContextInitializer.createClient(
-              context, submissionEndpoint, token, data.getxRequestId());
+              context, submissionEndpoint, token, data.getxRequestId(), null);
 
       context.getRestfulClientFactory().setSocketTimeout(120 * 1000);
       context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
@@ -358,13 +368,17 @@ public class SubmitReport extends BsaAction {
       Object response = null;
       try {
 
-        logger.info(" Trying to invoke $process-message");
+        logger.info(" Trying to invoke $process-message to: {}", submissionEndpoint);
         response = operation.encodedJson().execute();
+        logger.info(" Response Received from process message ");
         responseBundle = (Bundle) response;
+      } catch (InvalidRequestException ex) {
+        String myResp = ex.getResponseBody();
+        logger.error(" ResponseBody : ", myResp);
+        return;
       } catch (RuntimeException re) {
-
         logger.error("Error calling $process-message endpoint", re);
-        logger.info("Response Object was {}", response);
+        logger.info("Response Object was {}", re);
         return;
       }
 

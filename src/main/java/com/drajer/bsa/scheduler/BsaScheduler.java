@@ -47,7 +47,7 @@ public class BsaScheduler {
             + "_"
             + karExecId.toString()
             + "_"
-            + java.util.UUID.randomUUID().toString();
+            + UUID.randomUUID().toString();
 
     logger.info(" Scheduling Job Id {} to be executed at : {}", jobId, t);
 

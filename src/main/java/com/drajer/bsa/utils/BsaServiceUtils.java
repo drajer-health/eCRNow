@@ -3,15 +3,20 @@ package com.drajer.bsa.utils;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.ecrapp.config.QueryReaderConfig;
+import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
@@ -21,6 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -76,10 +84,13 @@ public class BsaServiceUtils {
   Map<String, BsaActionStatus> actions;
 
   @Autowired Map<String, Bundle> eicrBundles;
+  
+  @Autowired private QueryReaderConfig queryReaderConfig;
 
   private static String DEBUG_DIRECTORY;
   private static IParser FHIR_JSON_PARSER;
   private static boolean SAVE_DEBUG_TO_FILES;
+  private static String TIMEZONE_QUERY;
 
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
   private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
@@ -89,6 +100,7 @@ public class BsaServiceUtils {
     DEBUG_DIRECTORY = debugDirectory;
     FHIR_JSON_PARSER = jsonParser;
     SAVE_DEBUG_TO_FILES = saveDebugToFiles;
+    TIMEZONE_QUERY = queryReaderConfig.getQuery("query.getTimezone");
   }
 
   public static String getFhirPathVariableString(String id) {
@@ -216,10 +228,12 @@ public class BsaServiceUtils {
       Resource resource,
       DataRequirement.DataRequirementCodeFilterComponent codeFilter,
       KarProcessingData kd) {
-    // find the attribute by the path element in the code filter: this may be a list of codes or
+    // find the attribute by the path element in the code filter: this may be a list
+    // of codes or
     // codableconcepts
     // if the filter is contains a valueset match against that
-    // if the filter contains codes match, against them -- at this stage the matches are ORs.  If
+    // if the filter contains codes match, against them -- at this stage the matches
+    // are ORs. If
     // the
     // vs or
     // any of the codes match its a match.
@@ -319,11 +333,16 @@ public class BsaServiceUtils {
 
         if (retInfo != null) {
 
-          logger.info(" Match Found for code {} | {}", retInfo.getValue0(), retInfo.getValue1());
+          logger.info(
+              " Match Found for Path {} and code {} | {}",
+              path,
+              retInfo.getValue0(),
+              retInfo.getValue1());
 
           if (mtc == null) {
             mtc = new MatchedTriggerCodes();
             mtc.setValueSet(vs.getUrl());
+            mtc.setValueSetOid(getValueSetOid(vs));
             mtc.setValueSetVersion(vs.getVersion());
             mtc.setMatchedPath(path);
             matchFound = true;
@@ -345,6 +364,24 @@ public class BsaServiceUtils {
     }
 
     return retVal;
+  }
+
+  private static String getValueSetOid(ValueSet vs) {
+
+    String vsOid = FhirGeneratorConstants.RCTC_OID;
+
+    if (vs.hasIdentifier()) {
+
+      List<Identifier> ids = vs.getIdentifier();
+
+      for (Identifier id : ids) {
+        if (id.hasSystem()
+            && id.getSystem().contentEquals(FhirGeneratorConstants.DOC_ID_SYSTEM)
+            && id.hasValue()) vsOid = id.getValue();
+      }
+    }
+
+    return vsOid;
   }
 
   public static Set<String> getMatchableCodes(CodeableConcept cc) {
@@ -707,14 +744,28 @@ public class BsaServiceUtils {
     return state;
   }
 
-  public static String getEncodedTriggerMatchStatus(CheckTriggerCodeStatusList ctc) {
+  public static String getEncodedTriggerMatchStatus(
+      CheckTriggerCodeStatusList ctc,
+      KarProcessingData kd,
+      String eicrId,
+      String actionId,
+      String actionType) {
     ObjectMapper mapper = new ObjectMapper();
 
     String state = null;
     try {
 
-      state = mapper.writeValueAsString(ctc);
+      for (CheckTriggerCodeStatus ctcs : ctc.getStatuses()) {
 
+        ctcs.setActionId(actionId);
+        ctcs.setActionType(BsaTypes.getActionType(actionType));
+        ctcs.setActionStatus(BsaActionStatusType.COMPLETED);
+        Set<String> eicrIds = new HashSet<String>();
+        eicrIds.add(eicrId);
+        ctcs.setOutputProduced(eicrIds);
+      }
+
+      state = mapper.writeValueAsString(ctc);
     } catch (JsonProcessingException e) {
 
       String msg = "Unable to update execution state";
@@ -723,5 +774,16 @@ public class BsaServiceUtils {
     }
 
     return state;
+  }
+
+  public static Instant convertInstantToDBTimezoneInstant(Instant t, TimeZoneDao dao) {
+
+    if (TIMEZONE_QUERY.isEmpty()) return t;
+    else {
+      ZoneId z = ZoneId.of(dao.getDatabaseTimezone(TIMEZONE_QUERY));
+      ZonedDateTime zdt = t.atZone(z);
+
+      return zdt.toInstant();
+    }
   }
 }

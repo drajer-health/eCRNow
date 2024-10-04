@@ -9,6 +9,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,9 @@ public class TokenFilter extends OncePerRequestFilter {
         clientDetailsService = webApplicationContext.getBean(ClientDetailsService.class);
       }
     }
-    log.info("Received Authorization Header========> {}", request.getHeader("Authorization"));
+    log.info(
+        "Received Authorization Header========> {}",
+        StringEscapeUtils.escapeJava(request.getHeader("Authorization")));
 
     // Read the Request body from the Request
     String requestBody =

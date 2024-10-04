@@ -1,0 +1,1681 @@
+{
+  "resourceType": "Bundle",
+  "entry": [ {
+    "resource": {
+      "resourceType": "Patient",
+      "id": "e9bd7100-48af-4c69-a557-c13235f72f74",
+      "meta": {
+        "versionId": "1"
+      },
+      "extension": [ {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2106-3",
+            "display": "White"
+          }
+        }, {
+          "url": "text",
+          "valueString": "White"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/ValueSet/detailed-race",
+        "extension": [ {
+          "url": "detailed",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "1072-8",
+            "display": "Mexican American Indian"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Mexican American Indian"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2135-2",
+            "display": "Hispanic or Latino"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Not Hispanic or Latino"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity",
+        "extension": [ {
+          "url": "detailed",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2178-2",
+            "display": "Latin American"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Latin American"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+        "valueCode": "F"
+      }, {
+        "url": "http://hl7.org/fhir/StructureDefinition/patient-religion",
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation",
+            "code": "1013",
+            "display": "Christian (non-Catholic, non-specific)"
+          } ],
+          "text": "Christian"
+        }
+      }, {
+        "url": "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
+        "valueAddress": {
+          "line": [ "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]" ],
+          "city": "New York City",
+          "district": "Northeast",
+          "state": "NY",
+          "postalCode": "10001",
+          "country": "US"
+        }
+      } ],
+      "identifier": [ {
+        "use": "usual",
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MR",
+            "display": "Medical Record Number"
+          } ]
+        },
+        "system": "http://hospital.smarthealthit.org",
+        "value": "34332234"
+      }, {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "SS",
+            "display": "Social Security Number"
+          } ]
+        },
+        "system": "http://hl7.org/fhir/sid/us-ssn",
+        "value": "12345"
+      } ],
+      "active": true,
+      "name": [ {
+        "use": "official",
+        "family": "Newman",
+        "given": [ "Alice", "C" ],
+        "prefix": [ "Mr." ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "(573)923-4567",
+        "use": "work"
+      }, {
+        "system": "phone",
+        "value": "(816)234-5123",
+        "use": "work"
+      }, {
+        "system": "phone",
+        "value": "(913)222-1324",
+        "use": "home"
+      }, {
+        "system": "phone",
+        "value": "(212)555-5554",
+        "use": "mobile"
+      }, {
+        "system": "email",
+        "value": "Alice.Newman@gmail.com"
+      } ],
+      "gender": "female",
+      "birthDate": "1980-11-15",
+      "deceasedBoolean": false,
+      "address": [ {
+        "line": [ "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]" ],
+        "city": "New York City",
+        "district": "Northeast",
+        "state": "NY",
+        "postalCode": "10001",
+        "country": "US",
+        "period": {
+          "start": "2023-07-05T00:00:00+00:00"
+        }
+      } ],
+      "maritalStatus": {
+        "coding": [ {
+          "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+          "code": "M",
+          "display": "Married"
+        } ],
+        "text": "Single"
+      },
+      "contact": [ {
+        "relationship": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+            "code": "N"
+          } ]
+        } ],
+        "name": {
+          "family": "Jacob",
+          "given": [ "Newman" ]
+        },
+        "telecom": [ {
+          "system": "phone",
+          "value": "(212)555-5553",
+          "use": "mobile"
+        }, {
+          "system": "email",
+          "value": "Jnewman@gmail.com"
+        } ],
+        "address": {
+          "line": [ "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]" ],
+          "city": "New York City",
+          "district": "Northeast",
+          "state": "NY",
+          "postalCode": "10001",
+          "country": "US",
+          "period": {
+            "start": "2023-07-05T00:00:00+00:00"
+          }
+        }
+      } ],
+      "communication": [ {
+        "language": {
+          "coding": [ {
+            "system": "urn:ietf:bcp:47",
+            "code": "en",
+            "display": "English"
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Condition",
+      "id": "e7a87935-d4e4-4ae0-b4b1-7b64901759fb",
+      "meta": {
+        "versionId": "1"
+      },
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        } ]
+      },
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "722546002",
+          "display": "Probable rabies (situation)"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "onsetDateTime": "2023-12-27T00:00:00+00:00",
+      "recordedDate": "2023-12-27T00:00:00+00:00"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Condition",
+      "id": "16a12ec8-085f-4bf5-87a7-4f5db6f3e535",
+      "meta": {
+        "versionId": "1"
+      },
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        } ]
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "77386006",
+          "display": "Patient currently pregnant (finding)"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice c Newman"
+      },
+      "abatementDateTime": "2024-08-30T00:00:00+00:00",
+      "recordedDate": "2024-01-02T00:00:00+00:00"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Condition",
+      "id": "8c4ddf5f-3efb-4285-becc-6456f2b31048",
+      "meta": {
+        "versionId": "1"
+      },
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        } ]
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "problem-list-item",
+          "display": "Problem List Item"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "1621000119101",
+          "display": "Chlamydia trachomatis infection in pregnancy (disorder)"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice c Newman"
+      },
+      "onsetDateTime": "2024-01-02T00:00:00+00:00",
+      "recordedDate": "2024-01-02T00:00:00+00:00"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Encounter",
+      "id": "1f43c338-0811-415a-b96b-3b5720e6a69a",
+      "meta": {
+        "versionId": "3"
+      },
+      "identifier": [ {
+        "use": "official",
+        "system": "https://github.com/synthetichealth/synthea",
+        "value": "539bad28-c13b-4807-96e2-33a16652c77f"
+      } ],
+      "status": "in-progress",
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "IMP",
+        "display": "inpatient encounter",
+        "userSelected": false
+      },
+      "type": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0004",
+          "code": "I",
+          "display": "Inpatient"
+        } ],
+        "text": "Inpatient"
+      } ],
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "participant": [ {
+        "type": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "REF",
+            "display": "referrer"
+          } ],
+          "text": "Referring Physician"
+        } ],
+        "period": {
+          "start": "2023-12-25T00:00:00+00:00"
+        },
+        "individual": {
+          "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+          "display": "Arthur James Smith"
+        }
+      }, {
+        "type": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "ATND",
+            "display": "attender"
+          } ],
+          "text": "Attending Physician"
+        } ],
+        "period": {
+          "start": "2023-12-25T00:00:00+00:00"
+        },
+        "individual": {
+          "reference": "Practitioner/d7134a56-18a5-41a6-82f9-393a77865da2",
+          "display": "Kristin Alice Carter"
+        }
+      } ],
+      "period": {
+        "start": "2023-12-25T00:00:00+00:00"
+      },
+      "reasonCode": [ {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "282752000",
+          "display": "Injury of eye region"
+        } ],
+        "text": "eye injury"
+      } ],
+      "location": [ {
+        "location": {
+          "reference": "Location/8614f9d9-af54-47b2-8da4-7bea05f8d032"
+        }
+      } ],
+      "serviceProvider": {
+        "reference": "Organization/380dcfda-7b18-40ee-881d-190993359319"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "MedicationRequest",
+      "id": "ef5acb44-0146-427f-a399-f5b1427789da",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "use": "official",
+        "system": "http://acme.org/prescriptions",
+        "value": "12345689"
+      } ],
+      "status": "completed",
+      "intent": "order",
+      "medicationCodeableConcept": {
+        "coding": [ {
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "code": "1870230",
+          "display": "NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector"
+        } ],
+        "text": "NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "authoredOn": "2023-12-27T00:00:00+00:00",
+      "requester": {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      },
+      "dosageInstruction": [ {
+        "route": {
+          "coding": [ {
+            "system": "http://ncimeta.nci.nih.gov",
+            "code": "C38276",
+            "display": "INTRAVENOUS"
+          } ]
+        },
+        "doseAndRate": [ {
+          "doseQuantity": {
+            "value": 1,
+            "unit": "ml",
+            "system": "http://unitsofmeasure.org",
+            "code": "mL"
+          }
+        } ]
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Immunization",
+      "id": "7ae40495-f4bc-438c-85a7-ce18d8658293",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:oid:1.3.6.1.4.1.21367.2005.3.7.1234"
+      } ],
+      "status": "completed",
+      "vaccineCode": {
+        "coding": [ {
+          "system": "http://hl7.org/fhir/sid/cvx",
+          "code": "18",
+          "display": "rabies vaccine, for intramuscular injection RETIRED CODE"
+        } ],
+        "text": "Rabies vaccine"
+      },
+      "patient": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "occurrenceDateTime": "2023-12-27T00:00:00+00:00",
+      "primarySource": true,
+      "location": {
+        "reference": "Location/8614f9d9-af54-47b2-8da4-7bea05f8d032",
+        "display": "PCP9114"
+      },
+      "expirationDate": "2024-02-15",
+      "performer": [ {
+        "function": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0443",
+            "code": "OP"
+          } ]
+        },
+        "actor": {
+          "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+        }
+      }, {
+        "function": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0443",
+            "code": "AP"
+          } ]
+        },
+        "actor": {
+          "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "ServiceRequest",
+      "id": "536b2fd1-6962-4362-9a27-fa5a0cf94df8",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "PLAC"
+          } ]
+        },
+        "system": "urn:oid:1.3.4.5.6.7",
+        "value": "2345234234234"
+      } ],
+      "status": "active",
+      "intent": "original-order",
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "89648-0",
+          "display": "Chlamydia trachomatis [Presence] in Throat by Organism specific culture"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "occurrenceDateTime": "2024-01-07T00:00:00+00:00",
+      "requester": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "bodySite": [ {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "5272005",
+          "display": "Skin structure of lateral portion of neck"
+        } ]
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "ServiceRequest",
+      "id": "1d312850-57f7-4c40-a83c-5c6b02fb1dde",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "PLAC"
+          } ]
+        },
+        "system": "urn:oid:1.3.4.5.6.7",
+        "value": "2345234234234"
+      } ],
+      "status": "active",
+      "intent": "order",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/request-category",
+          "code": "procedure",
+          "display": "Procedure"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://www.ama-assn.org/go/cpt",
+          "code": "99213",
+          "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least two of these three key components: An expanded problem focused history; An expanded problem focused examination; Medical decision making of low complexity."
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "occurrenceDateTime": "2024-01-07T00:00:00+00:00",
+      "requester": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "e8d37430-34f4-4cff-9807-585d73454882",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "https://www.acmeonline.com",
+        "value": "P73456090"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+      "issued": "2024-01-01T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+        "type": "Practitioner"
+      } ],
+      "result": [ {
+        "reference": "Observation/46e1fea4-ce38-4b0d-9514-f8518cf370b9"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "43962602-9bf2-4bd5-b7b7-549392c18e80",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "https://www.acmeonline.com",
+        "value": "P73456090"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "96910-5",
+          "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        } ],
+        "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+      "issued": "2024-01-01T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+        "type": "Practitioner"
+      } ],
+      "result": [ {
+        "reference": "Observation/36aa8224-2021-4ed2-8f2f-1f7227c57230"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "ac263c51-4350-4ebe-8ac3-f4315041a192",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "https://www.acmeonline.com",
+        "value": "P73456090"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+      "issued": "2024-01-01T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+        "type": "Practitioner"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "3357a141-dc4e-482b-951f-4be799a7ddbc",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "https://www.acmeonline.com",
+        "value": "P73456090"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "96910-5",
+          "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        } ],
+        "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+      "issued": "2024-01-01T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+        "type": "Practitioner"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "adfaa90d-5db7-42c1-99a0-dc72127a9e2e",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "CBC panel - Blood by Automated count"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+      "issued": "2024-01-01T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+        "type": "Practitioner"
+      } ],
+      "result": [ {
+        "reference": "Observation/d0aafda7-1eba-41be-8a0c-bdc9cfe9127a"
+      }, {
+        "reference": "Observation/3eb6aaa3-af28-4d33-842e-5ac496ea82b8"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "0220fde7-cf19-47b5-bf61-8f9a2bfa5513",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "https://www.acmeonline.com",
+        "value": "P73456090"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "96910-5",
+          "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+      "issued": "2024-01-01T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+        "type": "Practitioner"
+      } ],
+      "result": [ {
+        "reference": "Observation/f7e55c9f-0612-42e3-8e52-67f4f3a25712"
+      }, {
+        "reference": "Observation/535e7bf4-2ff6-40b4-89d3-dfff0ffdd622"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "330f301b-16cb-42e9-8ad3-f29900d5f3b7",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB"
+        } ]
+      } ],
+      "code": {
+        "text": "SARS coronavirus 2 Ag [Presence] in Respiratory sp"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-04-09T00:00:00+00:00",
+      "issued": "2024-04-09T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Organization/23dae8374a66fa1c9f9d95fae64d9b46a0661bfe"
+      }, {
+        "reference": "Practitioner/81415d03066ed4e2b8d754448ded73567939800b"
+      } ],
+      "result": [ {
+        "reference": "Observation/b9e0a76e-9b16-4f8e-8607-0ba69f8421eb"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "176c7458-7e49-4c4c-af0c-9f4e9c4b5394",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "https://www.acmeonline.com",
+        "value": "P73456090"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "96910-5",
+          "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        } ],
+        "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+      "issued": "2024-01-01T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+        "type": "Practitioner"
+      } ],
+      "result": [ {
+        "reference": "Observation/46e1fea4-ce38-4b0d-9514-f8518cf370b9"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "e83c4524-bfc7-4321-b5be-68546a15b6e9",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ],
+        "text": "Social History"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "29762-2",
+          "display": "Social history Narrative"
+        }, {
+          "system": "http://loinc.org",
+          "code": "72166-2",
+          "display": "Tobacco smoking status"
+        }, {
+          "system": "http://snomed.info/sct",
+          "code": "365980008",
+          "display": "Finding of tobacco use and exposure (finding)"
+        } ],
+        "text": "Smoking History"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "ALice C Newman"
+      },
+      "issued": "2023-12-30T00:00:00.000+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "valueCodeableConcept": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "449868002",
+          "display": "Smokes tobacco daily"
+        } ],
+        "text": "Every Day"
+      },
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "81228-9",
+            "display": "Tobacco product"
+          } ],
+          "text": "Type"
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "65568007",
+            "display": "Cigarette Smoker"
+          } ],
+          "text": "Cigarettes"
+        }
+      }, {
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "81228-9",
+            "display": "Tobacco product"
+          } ],
+          "text": "Type"
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "81703003",
+            "display": "Chews Tobacco"
+          } ],
+          "text": "Chew"
+        }
+      }, {
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "88029-4",
+            "display": "Tobacco use duration"
+          } ],
+          "text": "Years Used"
+        },
+        "valueQuantity": {
+          "value": 12.4,
+          "unit": "Years Used",
+          "system": "http://unitsofmeasure.org",
+          "code": "a"
+        }
+      }, {
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "8663-7",
+            "display": "Cigarettes smoked current (pack per day) - Reported"
+          }, {
+            "system": "http://snomed.info/sct",
+            "code": "266918002",
+            "display": "Tobacco smoking consumption (observable entity)"
+          } ],
+          "text": "Packs/Day"
+        },
+        "valueQuantity": {
+          "value": 0.3,
+          "unit": "Packs/Day",
+          "system": "http://snomed.info/sct",
+          "code": "228963008"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "645317d0-b90d-4026-ac26-3d28cb53c658",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "http://picassoemr.com/observation-travelhistory",
+        "value": "1865.18680-OBSERVATION-TRAVELHISTORY"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history"
+        } ],
+        "text": "Social History"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001"
+        } ],
+        "text": "Travel"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "LOC"
+          } ],
+          "text": "Location"
+        },
+        "valueCodeableConcept": {
+          "text": "Travel Location: China"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "810c0924-8e86-402b-93a2-3fea05944dd3",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ],
+        "text": "Social History"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001",
+          "display": "Travel"
+        } ],
+        "text": "Travel History"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "LOC",
+            "display": "Location"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "text": "Travelled abroad"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "6deef845-e6fb-4db1-8de9-d53aaa15e4cd",
+      "meta": {
+        "versionId": "2"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ],
+        "text": "Social History"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001",
+          "display": "Travel"
+        } ],
+        "text": "Travel History"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+            "code": "4154424",
+            "display": "Recent Travel Location"
+          }, {
+            "system": "http://snomed.info/sct",
+            "code": "161086008",
+            "display": "Recent countries visited (observable entity)"
+          } ],
+          "text": "Recent Travel Location"
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "223668000",
+            "display": "Italy (geographic location)",
+            "userSelected": false
+          } ],
+          "text": "Italy"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "f1da4975-a496-467f-b57f-2cd8458d0838",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ],
+        "text": "Social History"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001",
+          "display": "Travel"
+        } ],
+        "text": "Travel History"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "component": [ {
+        "extension": [ {
+          "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-address-extension",
+          "valueAddress": {
+            "line": [ "[\"1170 N Rancho Robles Rd\"]" ],
+            "city": "Oracle",
+            "state": "AZ",
+            "postalCode": "8562",
+            "country": "US"
+          }
+        } ],
+        "code": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "LOC",
+            "display": "Location"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "text": "1170 N Rancho Robles Rd ,Oracle"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "4e0cb073-7206-4004-a4e7-e0fce0695939",
+      "meta": {
+        "versionId": "1"
+      },
+      "identifier": [ {
+        "system": "http://picassoemr.com/observation-travelhistory",
+        "value": "1865.18592-OBSERVATION-TRAVELHISTORY"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history"
+        } ],
+        "text": "Social History"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001"
+        } ],
+        "text": "Travel"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "LOC"
+          } ],
+          "text": "Location"
+        },
+        "valueCodeableConcept": {
+          "text": "Travel to China in last 14 days"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+      "meta": {
+        "versionId": "2"
+      },
+      "identifier": [ {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": "9999993519"
+      } ],
+      "active": true,
+      "name": [ {
+        "family": "Smith",
+        "given": [ "Arthur", "James" ],
+        "prefix": [ "Dr." ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "(816)673-2878",
+        "use": "mobile"
+      }, {
+        "system": "email",
+        "value": "arthur.james73@gmail.com"
+      } ],
+      "address": [ {
+        "line": [ "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"5400 N Oak Trfy\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]" ],
+        "city": "New York City",
+        "district": "Manhattan",
+        "state": "NY",
+        "postalCode": "10001",
+        "country": "US"
+      } ],
+      "gender": "male"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "d7134a56-18a5-41a6-82f9-393a77865da2",
+      "meta": {
+        "versionId": "2"
+      },
+      "identifier": [ {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": "9999993519"
+      } ],
+      "active": true,
+      "name": [ {
+        "family": "Carter",
+        "given": [ "Kristin", "Alice" ],
+        "prefix": [ "Dr." ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "(816)674-2878",
+        "use": "mobile"
+      }, {
+        "system": "email",
+        "value": "Kristin.Carter@gmail.com"
+      } ],
+      "address": [ {
+        "line": [ "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"1234 Main St\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]" ],
+        "city": "New York City",
+        "state": "NY",
+        "postalCode": "64113",
+        "country": "US"
+      } ],
+      "gender": "male"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Location",
+      "id": "8614f9d9-af54-47b2-8da4-7bea05f8d032",
+      "meta": {
+        "versionId": "2"
+      },
+      "status": "active",
+      "name": "PCP9114",
+      "type": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+          "code": "HOSP",
+          "display": "Hospital"
+        } ],
+        "text": "Hospital"
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "(212)555-5554"
+      } ],
+      "address": {
+        "line": [ "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"5400 N Oak Trfy\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]" ],
+        "city": "New York City",
+        "state": "NY",
+        "postalCode": "10001",
+        "country": "US"
+      },
+      "position": {
+        "longitude": -70.898204,
+        "latitude": 42.499248
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Organization",
+      "id": "380dcfda-7b18-40ee-881d-190993359319",
+      "meta": {
+        "versionId": "1"
+      },
+      "active": true,
+      "type": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+          "code": "prov",
+          "display": "Healthcare Provider"
+        } ]
+      } ],
+      "name": "Model Hospital",
+      "telecom": [ {
+        "system": "phone",
+        "value": "(555)555-0013",
+        "use": "work"
+      } ],
+      "address": [ {
+        "line": [ "[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]" ],
+        "city": "Kansas City",
+        "state": "MO",
+        "postalCode": "64117",
+        "country": "US"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Medication",
+      "id": "c33a6d83-8e34-43ec-893e-094a91ff4806",
+      "meta": {
+        "versionId": "1.0"
+      },
+      "code": {
+        "coding": [ {
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "code": "1736854",
+          "display": "Cisplatin 50 MG Injection"
+        } ]
+      },
+      "status": "active"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "46e1fea4-ce38-4b0d-9514-f8518cf370b9",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "41432-6",
+          "display": "Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"
+        } ],
+        "text": "Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "valueCodeableConcept": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "115635005",
+          "display": "Balamuthia mandrillaris"
+        } ],
+        "text": "Balamuthia mandrillaris"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "535e7bf4-2ff6-40b4-89d3-dfff0ffdd622",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "87758-9",
+          "display": "Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"
+        } ],
+        "text": "Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice c Newman"
+      },
+      "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "valueString": "postive"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "d0aafda7-1eba-41be-8a0c-bdc9cfe9127a",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "6690-2",
+          "display": "Leukocytes [#/volume] in Blood by Automated count"
+        } ],
+        "text": "White Cell Count"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice c Newman"
+      },
+      "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+      "issued": "2024-01-05T00:00:00.000+00:00",
+      "valueQuantity": {
+        "value": 4.6,
+        "unit": "x10*9/L",
+        "system": "http://unitsofmeasure.org",
+        "code": "10*9/L"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "b9e0a76e-9b16-4f8e-8607-0ba69f8421eb",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "94558-4",
+          "display": "SARS coronavirus 2 Ag [Presence] in Respiratory specimen by"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+      },
+      "encounter": {
+        "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+      },
+      "effectiveDateTime": "2024-04-09T00:00:00+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "valueQuantity": {
+        "value": 22.0,
+        "unit": "mg",
+        "system": "http://unitsofmeasure.org",
+        "code": "mg"
+      },
+      "interpretation": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "A",
+          "display": "Abnormal"
+        } ]
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "3eb6aaa3-af28-4d33-842e-5ac496ea82b8",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "713-8",
+          "display": "Eosinophils/100 leukocytes in Blood by Automated count"
+        } ],
+        "text": "Eosinophils"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice c Newman"
+      },
+      "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "valueQuantity": {
+        "value": 20.0,
+        "unit": "%",
+        "system": "http://unitsofmeasure.org",
+        "code": "%"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "f7e55c9f-0612-42e3-8e52-67f4f3a25712",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "96910-5",
+          "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        } ],
+        "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice c Newman"
+      },
+      "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "valueString": "postive"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "36aa8224-2021-4ed2-8f2f-1f7227c57230",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "text": "Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"
+      },
+      "subject": {
+        "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+        "display": "Alice C Newman"
+      },
+      "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+      "performer": [ {
+        "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+      } ],
+      "valueCodeableConcept": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "115635005",
+          "display": "Balamuthia mandrillaris"
+        } ],
+        "text": "Balamuthia mandrillaris"
+      }
+    }
+  } ]
+}

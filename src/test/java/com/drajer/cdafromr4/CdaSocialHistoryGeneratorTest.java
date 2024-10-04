@@ -8,6 +8,9 @@ import com.drajer.test.util.TestUtils;
 import java.util.List;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Period;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -21,6 +24,8 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
 
   private static final String SOCIAL_HISTORY_CDA_FILE =
       "CdaTestData/Cda/SocialHistory/SocialHistory.xml";
+
+  private static final String TREAVEL_OBS_FILE1 = "CdaTestData/Observation/travelHistory.json";
   private static final String PREGNANCY_CONDITION_FILE =
       "CdaTestData/Condition/CondPregnancy_SCT_77386006.json";
   private static final String TRAVEL_OBS_FILE = "R4/Observation/ObsTravel_SCT.json";
@@ -62,6 +67,70 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGenerateTravelHistoryEntry() {
+
+    String expectedXml =
+        "<entry>\r\n"
+            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
+            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
+            + "<text>Travel history</text>\r\n"
+            + "<statusCode code=\"completed\"/>\r\n"
+            + "<effectiveTime>\r\n"
+            + "<low value=\"20220403153000-0400\"/>\r\n"
+            + "<high value=\"20230403153000-0400\"/>\r\n"
+            + "</effectiveTime>\r\n"
+            + "</act>\r\n"
+            + "</entry>\r\n"
+            + "";
+
+    Observation observation = new Observation();
+    Period period = new Period();
+    period.setStartElement(new DateTimeType("2022-04-03T15:30:00-04:00"));
+    period.setEndElement(new DateTimeType("2023-04-03T15:30:00-04:00"));
+
+    observation.setEffective(period);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+    String actualXml =
+        CdaSocialHistoryGenerator.generateTravelHistoryEntry(
+            observation, "Travel history", launchDetails);
+    assertXmlEquals(expectedXml.toString(), actualXml);
+  }
+
+  @Test
+  public void testGenerateTravelHistoryEntry1() {
+
+    String expectedXml =
+        "<entry>\r\n"
+            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
+            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
+            + "<text>Travel history</text>\r\n"
+            + "<statusCode code=\"completed\"/>\r\n"
+            + "<effectiveTime value=\"20230403153000-0400\"/>\r\n"
+            + "</act>\r\n"
+            + "</entry>\r\n"
+            + "";
+
+    Observation observation = new Observation();
+    DateTimeType dateTimeType = new DateTimeType("2023-04-03T15:30:00-04:00");
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    observation.setEffective(dateTimeType);
+
+    String actualXml =
+        CdaSocialHistoryGenerator.generateTravelHistoryEntry(
+            observation, "Travel history", launchDetails);
+    assertXmlEquals(expectedXml.toString(), actualXml);
+  }
+
+  @Test
   public void testGenerateEmptySocialHistorySection() {
     StringBuilder expectedXml = new StringBuilder();
     expectedXml.append("<component>").append(System.lineSeparator());
@@ -86,5 +155,17 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     assertNotNull(actualXml);
 
     assertXmlEquals(expectedXml.toString(), actualXml);
+  }
+
+  @Test
+  public void testGenerateParticipantWithAddressExtension() {
+
+    R4FhirData r4FhirData = new R4FhirData();
+
+    r4FhirData.setTravelObs(getObs(TREAVEL_OBS_FILE1));
+
+    String participantXml =
+        CdaSocialHistoryGenerator.generateParticipant(r4FhirData.getTravelObs().get(0));
+    assertNotNull(participantXml);
   }
 }

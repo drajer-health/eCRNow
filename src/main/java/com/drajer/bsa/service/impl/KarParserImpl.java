@@ -1,9 +1,11 @@
 package com.drajer.bsa.service.impl;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
+import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
 import com.drajer.bsa.kar.action.CheckResponse;
@@ -24,6 +26,7 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.model.KnowledgeArtifactSummaryInfo;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import com.drajer.bsa.routing.impl.RestfulTransportImpl;
@@ -106,7 +109,12 @@ public class KarParserImpl implements KarParser {
   private static final String VARIABLE_EXTENSION_URL =
       "http://hl7.org/fhir/StructureDefinition/variable";
 
+  private static final String US_SPECIFICATION_LIBRARY_PROFILE =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library";
+
   private static final String RCTC_DEFAULT_SYSTEM = "urn:ietf:rfc:3986";
+
+  private static final String VERSION3_ERSD = "3.";
 
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
@@ -153,10 +161,12 @@ public class KarParserImpl implements KarParser {
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
 
+  // The healthcare setting data access object
   @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
 
+  // The EHR query interface
   @Autowired EhrQueryService ehrInterface;
 
   @Autowired DirectTransportImpl directInterface;
@@ -168,6 +178,8 @@ public class KarParserImpl implements KarParser {
   @Autowired FhirContextInitializer fhirContextInitializer;
 
   @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
+
+  @Autowired TimeZoneDao timezoneDao;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -191,14 +203,18 @@ public class KarParserImpl implements KarParser {
 
   private static final String JSON_KAR_EXT = "json";
   private static final String RECEIVER_ADDRESS_URL =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress";
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-receiver-endpoint";
 
   private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
   private static final String LOCAL_HOST_REPO_NAME = "local-repo";
   private static final String PH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
+  private static final String MEDMORPH_QUERY_EXTENSION_URL =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String PH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
+  private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
 
   private static HashMap<String, String> actionClasses = new HashMap<>();
 
@@ -261,14 +277,20 @@ public class KarParserImpl implements KarParser {
   @Override
   public void loadKars() {
     loadKarsFromDirectory(karDirectory, LOCAL_HOST_REPO_BASE_URL, LOCAL_HOST_REPO_NAME);
-    persistLocalKars();
+    persistAndSyncLocalKars();
   }
 
-  public void persistLocalKars() {
+  public void persistAndSyncLocalKars() {
 
     logger.info(" Persisting Kars for each Repo ");
 
+    List<KnowledgeArtifactRepository> inActiveRepos = karService.getAllKARs();
+    Set<KnowledgeArtifactSummaryInfo> kars = new HashSet<>();
+
     for (Map.Entry<String, String> entry : localKarRepoUrlToName.entrySet()) {
+
+      // Clear before doing anything
+      kars.clear();
 
       logger.info("Adding entry for Url {} and Name {}", entry.getKey(), entry.getValue());
 
@@ -277,6 +299,8 @@ public class KarParserImpl implements KarParser {
       if (repo != null) {
         logger.info(" Adding Artifacts to existing repo {}", entry.getKey());
         repo.addKars(localKars.get(entry.getKey()));
+        kars = repo.getKarsInfo();
+        repo.setRepoStatus(true);
       } else {
 
         logger.info(" Repository for Url {} does not exist ", entry.getKey());
@@ -284,11 +308,48 @@ public class KarParserImpl implements KarParser {
         repo.setFhirServerURL(entry.getKey());
         repo.setRepoName(entry.getValue());
         repo.addKars(localKars.get(entry.getKey()));
+        kars = repo.getKarsInfo();
+        repo.setRepoStatus(true);
       }
+
+      // Update non existing KARS in the Repo.
+      kars.stream()
+          .forEach(
+              art -> {
+                if (!isArtifactLoaded(art, localKars.get(entry.getKey()))) {
+                  art.setKarAvailable(false);
+                }
+              });
+
+      // Remove the repos that are found since they will be active.
+      inActiveRepos.removeIf(
+          repoEntry -> {
+            String repoUrl = entry.getKey();
+            if (repoEntry.getFhirServerURL().contentEquals(repoUrl)) {
+              logger.info("Removing repo with Url {} since they are existing", repoUrl);
+              return true;
+            } else {
+              return false;
+            }
+          });
 
       // Save the repo.
       karService.saveOrUpdate(repo);
     }
+
+    logger.info(" Number of Repos to be disabled {}", inActiveRepos.size());
+    for (KnowledgeArtifactRepository r : inActiveRepos) {
+      r.setRepoStatus(false);
+      karService.saveOrUpdate(r);
+    }
+  }
+
+  private boolean isArtifactLoaded(KnowledgeArtifactSummaryInfo kar, Set<KnowledgeArtifact> arts) {
+
+    for (KnowledgeArtifact ka : arts) {
+      if (ka.getVersionUniqueId().contentEquals(kar.getVersionUniqueId())) return true;
+    }
+    return false;
   }
 
   public void loadKarsFromDirectory(String dirName, String repoUrl, String repoName) {
@@ -366,6 +427,30 @@ public class KarParserImpl implements KarParser {
           logger.info(" Processing Library");
 
           Library lib = (Library) comp.getResource();
+
+          // Add Version
+          if (lib.hasMeta() && lib.getMeta().hasProfile()) {
+
+            List<CanonicalType> profiles = lib.getMeta().getProfile();
+
+            for (CanonicalType prof : profiles) {
+
+              if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                  && lib.getMeta().hasVersionId()
+                  && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
+                logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
+                art.setKarVersion(lib.getMeta().getVersionId());
+                break;
+              } else if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                  && lib.hasVersion()
+                  && lib.getVersion().startsWith(VERSION3_ERSD)) {
+                logger.info(" Adding Version {} to KAR", lib.getVersion());
+                art.setKarVersion(lib.getVersion());
+                break;
+              }
+            }
+          }
+
           if (art.getKarName() == null) {
             art.setKarName(lib.getName());
           }
@@ -502,7 +587,9 @@ public class KarParserImpl implements KarParser {
         BsaAction action = getAction(cd.getCode());
         action.setActionId(act.getId(), plan.getUrl());
         action.setScheduler(scheduler);
+        action.setTimeZoneDao(timezoneDao);
         action.setJsonParser(jsonParser);
+        action.setXmlParser(FhirContext.forR4().newXmlParser());
         action.setRestTemplate(restTemplate);
         action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
@@ -531,7 +618,9 @@ public class KarParserImpl implements KarParser {
     CheckResponse action = (CheckResponse) getAction("check-response");
     action.setActionId("check-response", plan.getUrl());
     action.setScheduler(scheduler);
+    action.setTimeZoneDao(timezoneDao);
     action.setJsonParser(jsonParser);
+    action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setRestTemplate(restTemplate);
     action.setIgnoreTimers(ignoreTimers);
     action.setType(ActionType.CHECK_RESPONSE);
@@ -601,6 +690,7 @@ public class KarParserImpl implements KarParser {
 
   private void populateInputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
 
+    logger.info(" Action Id {}", action.getActionId());
     List<DataRequirement> drs = ac.getInput();
     action.setInputData(drs);
 
@@ -611,6 +701,10 @@ public class KarParserImpl implements KarParser {
 
         // Get Query Extensions to identify default queries.
         Extension queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+
+        if (queryExt == null) {
+          queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
+        }
 
         FhirQueryFilter query = new FhirQueryFilter();
         query.setResourceType(rt);
@@ -627,6 +721,10 @@ public class KarParserImpl implements KarParser {
 
         // Get Related Data Ids to reuse data already accessed.
         Extension relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+
+        if (relatedDataExt == null) {
+          relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
+        }
 
         if (relatedDataExt != null && relatedDataExt.getValue() != null) {
 
@@ -685,6 +783,7 @@ public class KarParserImpl implements KarParser {
     }
 
     action.setJsonParser(this.jsonParser);
+    action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setIgnoreTimers(this.ignoreTimers);
 
     if (action.getType() == ActionType.EVALUATE_MEASURE) {
@@ -757,7 +856,9 @@ public class KarParserImpl implements KarParser {
           BsaAction subAction = getAction(cd.getCode());
           subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
+          subAction.setTimeZoneDao(timezoneDao);
           subAction.setJsonParser(jsonParser);
+          subAction.setXmlParser(FhirContext.forR4().newXmlParser());
           subAction.setRestTemplate(restTemplate);
           subAction.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));

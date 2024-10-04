@@ -5,6 +5,7 @@ import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.sof.model.LaunchDetails;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -49,9 +50,9 @@ public class RestApiSender {
 
       logger.info(
           " Launch ReqId: {} X-Request-ID for Eicr Submission: {} X-Correlation-ID for Eicr Submission: {}",
-          ecr.getxRequestId(),
-          newXReqId,
-          ecr.getxCorrelationId());
+          StringEscapeUtils.escapeJava(ecr.getxRequestId()),
+          StringEscapeUtils.escapeJava(newXReqId),
+          StringEscapeUtils.escapeJava(ecr.getxCorrelationId()));
 
       final String json = constructJson(eicrXml, ecr);
 

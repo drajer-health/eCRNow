@@ -17,6 +17,11 @@ public class CdaHistoryOfPresentIllnessGenerator {
 
   public static String generateHistoryOfPresentIllnessSection(R4FhirData data) {
 
+    return generateEmptyHistoryOfPresentIllness();
+  }
+
+  public static String generateHPIData(R4FhirData data) {
+
     StringBuilder sb = new StringBuilder(2000);
 
     // Will have to wait to discuss with vendors on History of Present Illness and how to obtain
@@ -97,6 +102,69 @@ public class CdaHistoryOfPresentIllnessGenerator {
     // End Table.
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
+
+    // Complete the section end tags.
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
+
+    return sb.toString();
+  }
+
+  public static String generateEmptyHistoryOfPresentIllness() {
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(generateHpiHeader(CdaGeneratorConstants.NF_NI));
+
+    // Add Narrative Text
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TEXT_EL_NAME, "No History of Present Illness Information"));
+
+    sb.append(generateHpiEndHeader());
+
+    return sb.toString();
+  }
+
+  public static String generateHpiHeader(String nf) {
+
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the component and section end tags
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
+
+    if (!StringUtils.isEmpty(nf)) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForNFSection(
+              CdaGeneratorConstants.SECTION_EL_NAME, CdaGeneratorConstants.NF_NI));
+    } else {
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
+    }
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SEC_TEMPLATE_ID));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SEC_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SEC_CODE_NAME));
+
+    // Add Title
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TITLE_EL_NAME,
+            CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SEC_TITLE));
+
+    return sb.toString();
+  }
+
+  public static String generateHpiEndHeader() {
+
+    StringBuilder sb = new StringBuilder();
 
     // Complete the section end tags.
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));

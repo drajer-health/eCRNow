@@ -11,7 +11,11 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Immunization.ImmunizationPerformerComponent;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,14 +76,10 @@ public class CdaImmunizationGenerator {
       // add Body Rows
       int rowNum = 1;
       for (Immunization imm : imms) {
-        String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (imm.getVaccineCode() != null
-            && imm.getVaccineCode().getCodingFirstRep() != null
-            && !StringUtils.isEmpty(imm.getVaccineCode().getCodingFirstRep().getDisplay())) {
-
-          medDisplayName = imm.getVaccineCode().getCodingFirstRep().getDisplay();
-        }
+        String medDisplayName = CdaFhirUtilities.getStringForCodeableConcept(imm.getVaccineCode());
+        if (StringUtils.isEmpty(medDisplayName))
+          medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (imm.hasOccurrenceDateTimeType() && imm.getOccurrenceDateTimeType() != null) {
@@ -133,7 +133,9 @@ public class CdaImmunizationGenerator {
                 CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID,
                 CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), imm.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), imm.getIdElement().getIdPart()));
 
         // set status code
         sb.append(
@@ -185,7 +187,8 @@ public class CdaImmunizationGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_CVX_URL,
-                false);
+                false,
+                "");
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
@@ -198,6 +201,10 @@ public class CdaImmunizationGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
+
+        if (imm.hasPerformer()) {
+          sb.append(getXmlForPerformer(imm.getPerformer(), data));
+        }
 
         // End Tags for Entries
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MED_ACT_EL_NAME));
@@ -212,6 +219,34 @@ public class CdaImmunizationGenerator {
       sb.append(generateEmptyImmunizations());
     }
 
+    return sb.toString();
+  }
+
+  public static String getXmlForPerformer(
+      List<ImmunizationPerformerComponent> izcs, R4FhirData data) {
+
+    StringBuilder sb = new StringBuilder(400);
+    String functionCode = "";
+
+    if (izcs != null & data != null) {
+      for (ImmunizationPerformerComponent perf : izcs) {
+        Reference actor = perf.getActor();
+
+        if (actor != null
+            && actor.hasReferenceElement()
+            && actor.getReferenceElement().hasResourceType()
+            && ResourceType.fromCode(actor.getReferenceElement().getResourceType())
+                == ResourceType.Practitioner) {
+
+          Practitioner pract = data.getPractitionerById(actor.getReferenceElement().getIdPart());
+
+          if (pract != null) {
+            sb.append(CdaFhirUtilities.getPerformerXml(pract, functionCode));
+            return sb.toString();
+          }
+        }
+      }
+    }
     return sb.toString();
   }
 

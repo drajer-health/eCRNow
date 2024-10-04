@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
@@ -179,8 +180,8 @@ public class LaunchController {
 
     logger.info(
         "System launch request received for patientId: {} and encounterId: {}",
-        systemLaunch.getPatientId(),
-        systemLaunch.getEncounterId());
+        StringEscapeUtils.escapeJava(systemLaunch.getPatientId()),
+        StringEscapeUtils.escapeJava(systemLaunch.getEncounterId()));
 
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
@@ -328,8 +329,8 @@ public class LaunchController {
 
             logger.info(
                 "System launch was successful for patientId: {} and encounterId: {} with launchId: {}",
-                launchDetails.getLaunchPatientId(),
-                launchDetails.getEncounterId(),
+                StringEscapeUtils.escapeJava(launchDetails.getLaunchPatientId()),
+                StringEscapeUtils.escapeJava(launchDetails.getEncounterId()),
                 launchDetails.getId());
           } else {
             throw new ResponseStatusException(
@@ -360,8 +361,8 @@ public class LaunchController {
       HttpServletResponse response)
       throws Exception {
     if (launch != null && iss != null) {
-      logger.info("Received Launch Parameter::::: {}", launch);
-      logger.info("Received FHIR Server Base URL::::: {}", iss);
+      logger.info("Received Launch Parameter::::: {}", StringEscapeUtils.escapeJava(launch));
+      logger.info("Received FHIR Server Base URL::::: {}", StringEscapeUtils.escapeJava(iss));
       String uri =
           "https"
               + "://"
@@ -413,7 +414,9 @@ public class LaunchController {
           launchDetails.setLaunchType("SoF");
           String constructedAuthUrl =
               authorization.createAuthUrl(launchDetails, clientDetails, state);
-          logger.info("Constructed Authorization URL::::: {}", constructedAuthUrl);
+          logger.info(
+              "Constructed Authorization URL::::: {}",
+              StringEscapeUtils.escapeJava(constructedAuthUrl));
           authDetailsService.saveOrUpdate(launchDetails);
           response.sendRedirect(constructedAuthUrl);
         }
@@ -434,8 +437,8 @@ public class LaunchController {
       HttpServletResponse response)
       throws Exception {
     if (code != null && state != null) {
-      logger.info("Received Code Parameter::::: {}", code);
-      logger.info("Received State Parameter::::: {}", state);
+      logger.info("Received Code Parameter::::: {}", StringEscapeUtils.escapeJava(code));
+      logger.info("Received State Parameter::::: {}", StringEscapeUtils.escapeJava(state));
       logger.info("Reading the oAuth Details stored in HashMap using state value");
       LaunchDetails currentLaunchDetails =
           authDetailsService.getLaunchDetailsByState(Integer.parseInt(state));
@@ -444,7 +447,9 @@ public class LaunchController {
         currentLaunchDetails.setAuthorizationCode(code);
         JSONObject accessTokenObject = authorization.getAccessToken(currentLaunchDetails);
         if (accessTokenObject != null) {
-          logger.debug("Received Access Token::::: {}", accessTokenObject.getString(ACCESS_TOKEN));
+          logger.debug(
+              "Received Access Token::::: {}",
+              StringEscapeUtils.escapeJava(accessTokenObject.getString(ACCESS_TOKEN)));
           if (accessTokenObject.get(PATIENT) != null && accessTokenObject.get(ENCOUNTER) != null) {
             isPatientLaunched =
                 checkWithExistingPatientAndEncounter(
@@ -488,9 +493,9 @@ public class LaunchController {
     if (launchDetails != null) {
       logger.info(
           "Launch context found with Patient:::: {}, Encounter::::: {}, From EHR::::: {}",
-          patient,
-          encounter,
-          fhirServerUrl);
+          StringEscapeUtils.escapeJava(patient),
+          StringEscapeUtils.escapeJava(encounter),
+          StringEscapeUtils.escapeJava(fhirServerUrl));
       return true;
     } else {
       logger.info("Launch context not found");
@@ -534,7 +539,7 @@ public class LaunchController {
     IBaseResource encounterResource = null;
     String encounterError = "Error in getting Encounter resource by Id: " + encounterId;
 
-    logger.info("Getting Encounter data by ID {}", encounterId);
+    logger.info("Getting Encounter data by ID {}", StringEscapeUtils.escapeJava(encounterId));
 
     try {
       FhirContext fhirContext = fhirContextInitializer.getFhirContext(fhirVersion);

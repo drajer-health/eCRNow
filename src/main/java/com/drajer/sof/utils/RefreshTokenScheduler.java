@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ public class RefreshTokenScheduler {
     logger.info(
         "Job Scheduled to get AccessToken for every {} minutes for Client: {}",
         minutes,
-        authDetails.getClientId());
+        StringEscapeUtils.escapeJava(authDetails.getClientId()));
   }
 
   /** The Class RunnableTask. */
@@ -116,7 +117,9 @@ public class RefreshTokenScheduler {
    */
   public JSONObject getAccessTokenUsingLaunchDetails(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
-    logger.trace("Getting AccessToken for Client: {}", authDetails.getClientId());
+    logger.trace(
+        "Getting AccessToken for Client: {}",
+        StringEscapeUtils.escapeJava(authDetails.getClientId()));
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -179,7 +182,9 @@ public class RefreshTokenScheduler {
           tokenResponse = new JSONObject(responseBody);
         }
       }
-      logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
+      logger.trace(
+          "Received AccessToken for Client {}",
+          StringEscapeUtils.escapeJava(authDetails.getClientId()));
       if (Boolean.TRUE.equals(authDetails.getIsMultiTenantSystemLaunch())) {
         ClientDetails clientDetails =
             ActionRepo.getInstance()
@@ -193,7 +198,9 @@ public class RefreshTokenScheduler {
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the Client: {}", authDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the Client: {}",
+          StringEscapeUtils.escapeJava(authDetails.getClientId()),
+          e);
     }
     return tokenResponse;
   }
@@ -322,7 +329,9 @@ public class RefreshTokenScheduler {
         }
       }
 
-      logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
+      logger.trace(
+          "Received AccessToken for Client: {}",
+          StringEscapeUtils.escapeJava(clientDetails.getClientId()));
       ClientDetails existingClientDetails =
           ActionRepo.getInstance()
               .getClientDetailsService()

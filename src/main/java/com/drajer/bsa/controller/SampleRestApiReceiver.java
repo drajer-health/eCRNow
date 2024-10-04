@@ -3,6 +3,7 @@ package com.drajer.bsa.controller;
 import com.drajer.bsa.model.RestApiBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,12 @@ public class SampleRestApiReceiver {
 
     logger.info(
         "Payload received for fhirServerUrl: {}, patientId: {}, encounterId: {}, versionId: {}, requestId: {}, authorizationHeader: {}",
-        body.getFhirServerURL(),
-        body.getPatientId(),
-        body.getEncounterId(),
+        StringEscapeUtils.escapeJava(body.getFhirServerURL()),
+        StringEscapeUtils.escapeJava(body.getPatientId()),
+        StringEscapeUtils.escapeJava(body.getEncounterId()),
         body.getSubmittedVersionId(),
         request.getHeader("X-Request-ID"),
-        request.getHeader("Authorization"));
+        StringEscapeUtils.escapeJava(request.getHeader("Authorization")));
 
     logger.debug(" Payload is : {}", body.getPayload());
 

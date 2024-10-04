@@ -58,32 +58,43 @@ public class ScheduleJobConfiguration {
                 karProcessor.applyKarForScheduledJob(inst.getData());
 
                 logger.info(
-                    "Successfully Completed Executing Task for {}, Action Id: {}, KarExecutionStateId: {}",
+                    "Successfully Completed Executing Task for {}, Action Id: {}, KarExecutionStateId: {}, xRequestId : {}",
                     inst.getTaskAndInstance(),
                     inst.getData().getActionId(),
-                    inst.getData().getKarExecutionStateId());
+                    inst.getData().getKarExecutionStateId(),
+                    inst.getData().getxRequestId());
 
               } catch (ObjectDeletedException deletedException) {
 
                 logger.info(
-                    "Executing Task for {}, Action Id : {}, KarExecutionStateId : {}",
+                    "Error in Executing Task for {}, Action Id : {}, KarExecutionStateId : {}, xRequestId : {}",
                     inst.getTaskAndInstance(),
                     inst.getData().getActionId(),
-                    inst.getData().getKarExecutionStateId());
+                    inst.getData().getKarExecutionStateId(),
+                    inst.getData().getxRequestId());
 
               } catch (Exception e) {
-
                 if (ctx.getExecution().consecutiveFailures >= timerRetries) {
                   logger.error(
-                      "Error in executing Task for {}, Action Id : {}, KarExecutionStateId : {}, removing the timer after {} retries",
+                      "Error in executing Task for {}, Action Id : {}, KarExecutionStateId : {}, xRequestId : {} removing the timer after {} retries",
                       inst.getTaskAndInstance(),
                       inst.getData().getActionId(),
                       inst.getData().getKarExecutionStateId(),
+                      inst.getData().getxRequestId(),
                       ctx.getExecution().consecutiveFailures,
                       e);
                 } else {
-                  ApplicationUtils.handleException(
-                      e, "Error in completing the Execution, retry in 5 minutes.", LogLevel.ERROR);
+                  String msg =
+                      "Error in executing Task for "
+                          + inst.getTaskAndInstance()
+                          + " Action Id : "
+                          + inst.getData().getActionId()
+                          + " KarExecutionStateId : "
+                          + inst.getData().getKarExecutionStateId()
+                          + " xRequestId : "
+                          + inst.getData().getxRequestId()
+                          + " , retry in 5 minutes";
+                  ApplicationUtils.handleException(e, msg, LogLevel.ERROR);
                   throw e;
                 }
               } finally {

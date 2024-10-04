@@ -7,6 +7,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
+import java.util.Date;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +57,17 @@ public class TerminateReporting extends BsaAction {
 
       actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
-      // Set the Status of the notification context to complete.
+      // Set the Status of the notification context to suspended.
       logger.info(
-          " Updating Notification Context for Patient Id {}, NC Id {} to Completed.",
+          " Updating Notification Context for Patient Id {}, NC Id {} to Suspended.",
           data.getNotificationContext().getPatientId(),
           data.getNotificationContext().getId());
+
       data.getNotificationContext()
           .setNotificationProcessingStatus(NotificationProcessingStatusType.SUSPENDED.toString());
+
+      // Set the end time of NC as current time when we are suspending the Encounter.
+      data.getNotificationContext().setEncounterEndTime(new Date());
 
     } else {
 

@@ -46,36 +46,28 @@ testCase:
       - xPath: "text/table/thead/tr/th"
         count: 2
       - xPath: "text/table/tbody/tr"
-        count: 1
+        count: 11
       - xPath: "text/table/tbody/tr[1]/td"
         count: 2
       - xPath: "text/table/"
         "thead/tr/th[1]": "Planned Observation"
         "thead/tr/th[2]": "Planned Observation Date"
-        "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[1]/td[1]/content": "High Flow Nasal Cannula"
       #      'tbody/tr[1]/td[2]/content': "20200501014501"
       - xPath: "entry"
-        count: 1
+        count: 11
       - xPath: "entry/observation/templateId"
-        count: 3
+        count: 23
       - xPath: "entry/observation/id"
-        count: 1
+        count: 11
       - xPath: "entry/observation/"
         "@classCode": "OBS"
         "@moodCode": "RQO"
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"
-        #      'code/@displayName': "Coronavirus Panel"
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
   eCR-POT-withOutTriggerCode:
@@ -112,7 +104,6 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - xPath: ""
-        "@nullFlavor": "NI"
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.2.10"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.2.10"
         "templateId[2]/@extension": "2014-06-09"
@@ -121,7 +112,9 @@ testCase:
         "code/@codeSystemName": "LOINC"
         "code/@displayName": "Treatment Plan"
         "title": "Plan of Treatment"
-        "text": "No Plan Of Treatment Information"
+      - xPath: "text/table/thead/tr/th"
+        count: 2
+   
   eCR-LabOrder-FullECR-WithNonCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -161,20 +154,20 @@ testCase:
       - xPath: "text/table/thead/tr/th"
         count: 2
       - xPath: "text/table/tbody/tr"
-        count: 1
+        count: 4
       - xPath: "text/table/tbody/tr[1]/td"
         count: 2
       - xPath: "text/table/"
         "thead/tr/th[1]": "Planned Observation"
         "thead/tr/th[2]": "Planned Observation Date"
-        "tbody/tr[1]/td[1]/content": "Bordetella Pertussis Culture"
+        "tbody/tr[1]/td[1]/content": "Clostridium difficile Toxin"
         
       #      'tbody/tr[1]/td[2]/content': "20200501014501"
       - xPath: "entry"
-        count: 1
+        count: 4
         #entry-1
       - xPath: "entry[1]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[1]/observation/id"
         count: 1
         "@classCode": "OBS"
@@ -182,14 +175,10 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
+    
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "11585-7"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+      
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
@@ -232,21 +221,21 @@ testCase:
       - xPath: "text/table/thead/tr/th"
         count: 2
       - xPath: "text/table/tbody/tr"
-        count: 4
+        count: 6
       - xPath: "text/table/tbody/tr[1]/td"
         count: 2
       - xPath: "text/table/"
         "thead/tr/th[1]": "Planned Observation"
         "thead/tr/th[2]": "Planned Observation Date"
         "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[2]/td[1]/content": "Coronavirus (COVID-19) Screen"
-        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[3]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[4]/td[1]/content": "Coronavirus (COVID-19) Screen"
     #      'tbody/tr[1]/td[2]/content': "20200501014501"
         
       #      'tbody/tr[1]/td[2]/content': "20200501014501"
       - xPath: "entry"
-        count: 4
+        count: 6
         #entry-1
       - xPath: "entry[1]/observation/templateId"
         count: 3
@@ -271,7 +260,7 @@ testCase:
   #      'effectiveTime/@value': "20200501014501" 
    #entry-2
       - xPath: "entry[2]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[2]/observation/id"
         count: 1
       - xPath: "entry[2]/observation/"  
@@ -280,20 +269,14 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94500-6"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3
       - xPath: "entry[3]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[3]/observation/id"
         count: 1
       - xPath: "entry[3]/observation/"  
@@ -302,15 +285,9 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
+       
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
     #entry-4
@@ -328,7 +305,7 @@ testCase:
         "templateId[3]/@extension": "2016-12-01"
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
+        "code/@code": "94500-6"
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
@@ -374,21 +351,21 @@ testCase:
       - xPath: "text/table/thead/tr/th"
         count: 2
       - xPath: "text/table/tbody/tr"
-        count: 4
+        count: 6
       - xPath: "text/table/tbody/tr[1]/td"
         count: 2
       - xPath: "text/table/"
         "thead/tr/th[1]": "Planned Observation"
         "thead/tr/th[2]": "Planned Observation Date"
         "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[2]/td[1]/content": "Coronavirus (COVID-19) Screen"
-        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[3]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[4]/td[1]/content": "Coronavirus (COVID-19) Screen"
     #      'tbody/tr[1]/td[2]/content': "20200501014501"
         
       #      'tbody/tr[1]/td[2]/content': "20200501014501"
       - xPath: "entry"
-        count: 4
+        count: 6
         #entry-1
       - xPath: "entry[1]/observation/templateId"
         count: 3
@@ -413,7 +390,7 @@ testCase:
   #      'effectiveTime/@value': "20200501014501" 
    #entry-2
       - xPath: "entry[2]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[2]/observation/id"
         count: 1
       - xPath: "entry[2]/observation/"  
@@ -422,20 +399,13 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94500-6"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3
       - xPath: "entry[3]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[3]/observation/id"
         count: 1
       - xPath: "entry[3]/observation/"  
@@ -444,14 +414,10 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
+        
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+  
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
@@ -470,7 +436,7 @@ testCase:
         "templateId[3]/@extension": "2016-12-01"
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
+        "code/@code": "94500-6"
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
@@ -516,21 +482,21 @@ testCase:
       - xPath: "text/table/thead/tr/th"
         count: 2
       - xPath: "text/table/tbody/tr"
-        count: 4
+        count: 6
       - xPath: "text/table/tbody/tr[1]/td"
         count: 2
       - xPath: "text/table/"
         "thead/tr/th[1]": "Planned Observation"
         "thead/tr/th[2]": "Planned Observation Date"
         "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[2]/td[1]/content": "Bordetella Pertussis Culture"
-        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[3]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[4]/td[1]/content": "Bordetella Pertussis Culture"
     #      'tbody/tr[1]/td[2]/content': "20200501014501"
         
       #      'tbody/tr[1]/td[2]/content': "20200501014501"
       - xPath: "entry"
-        count: 4
+        count: 6
         #entry-1
       - xPath: "entry[1]/observation/templateId"
         count: 3
@@ -566,14 +532,12 @@ testCase:
         "templateId[2]/@extension": "2014-06-09"        
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "11585-7"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"    
+      
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3
       - xPath: "entry[3]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[3]/observation/id"
         count: 1
       - xPath: "entry[3]/observation/"  
@@ -582,20 +546,16 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
+    
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+   
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
     #entry-4
       - xPath: "entry[4]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[4]/observation/id"
         count: 1
       - xPath: "entry[4]/observation/"  
@@ -604,14 +564,12 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
+        
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
+        "code/@code": "11585-7"
         "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@codeSystemName": "LOINC"     
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
  #      'effectiveTime/@value': "20200501014501"
@@ -654,21 +612,21 @@ testCase:
       - xPath: "text/table/thead/tr/th"
         count: 2
       - xPath: "text/table/tbody/tr"
-        count: 4
+        count: 6
       - xPath: "text/table/tbody/tr[1]/td"
         count: 2
       - xPath: "text/table/"
         "thead/tr/th[1]": "Planned Observation"
         "thead/tr/th[2]": "Planned Observation Date"
         "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[2]/td[1]/content": "Bordetella Pertussis Culture"
-        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
-        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[3]/td[1]/content": "Mumps Antibody IgG"
+        "tbody/tr[4]/td[1]/content": "Bordetella Pertussis Culture"
     #      'tbody/tr[1]/td[2]/content': "20200501014501"
         
       #      'tbody/tr[1]/td[2]/content': "20200501014501"
       - xPath: "entry"
-        count: 4
+        count: 6
         #entry-1
       - xPath: "entry[1]/observation/templateId"
         count: 3
@@ -693,7 +651,7 @@ testCase:
   #      'effectiveTime/@value': "20200501014501" 
    #entry-2
       - xPath: "entry[2]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[2]/observation/id"
         count: 1
       - xPath: "entry[2]/observation/"  
@@ -702,20 +660,14 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"        
-        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
-        #      'id/@extension': "311539773"
-        "code/@code": "11585-7"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC" 
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508" 
+        
+      
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3
       - xPath: "entry[3]/observation/templateId"
-        count: 3
+        count: 2
       - xPath: "entry[3]/observation/id"
         count: 1
       - xPath: "entry[3]/observation/"  
@@ -724,14 +676,7 @@ testCase:
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
         "templateId[2]/@extension": "2014-06-09"
-        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
-        "templateId[3]/@extension": "2016-12-01"
-        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
-        #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
-        "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "LOINC"      
-        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
@@ -750,7 +695,7 @@ testCase:
         "templateId[3]/@extension": "2016-12-01"
         #      'id/@root': "2.16.840.1.113883.1.1.1.1"
         #      'id/@extension': "311539773"
-        "code/@code": "94531-1"
+        "code/@code": "11585-7"
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"

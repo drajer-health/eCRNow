@@ -1,0 +1,863 @@
+{
+  "resourceType": "Bundle",
+  "entry": [ {
+    "resource": {
+      "resourceType": "Patient",
+      "id": "26495",
+      "meta": {
+        "versionId": "4",
+        "lastUpdated": "2024-07-10T10:20:21.264+00:00",
+        "source": "#CpLnr7C7yg7Saz9P",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2028-9",
+            "display": "Asian"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Asian"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2186-5",
+            "display": "Not Hispanic or Latino"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Not Hispanic or Latino"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+        "valueCode": "M"
+      }, {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720606757570
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Patient-10584"
+      } ],
+      "active": true,
+      "name": [ {
+        "use": "official",
+        "text": "Mr Hello Kitty",
+        "family": "Kitty",
+        "given": [ "Hello" ],
+        "prefix": [ "Mr" ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "5558426014",
+        "use": "home",
+        "rank": 1
+      } ],
+      "gender": "male",
+      "birthDate": "2000-07-10",
+      "deceasedBoolean": false,
+      "address": [ {
+        "text": "2222 Home Street SALT LAKE CITY UT 84101 US",
+        "line": [ "2222 Home Street" ],
+        "city": "SALT LAKE CITY",
+        "state": "UT",
+        "postalCode": "84101",
+        "country": "US"
+      } ],
+      "maritalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+          "code": "S",
+          "display": "Never Married"
+        } ]
+      },
+      "contact": [ {
+        "relationship": [ {
+          "text": "Guardian"
+        } ],
+        "name": {
+          "text": "Martha Mum",
+          "family": "Mum",
+          "given": [ "Martha" ]
+        },
+        "telecom": [ {
+          "system": "phone",
+          "value": "3343042665",
+          "use": "home"
+        } ],
+        "address": {
+          "text": "2222 Home Street SALT LAKE CITY UT 84101 US",
+          "line": [ "2222 Home Street" ],
+          "city": "SALT LAKE CITY",
+          "state": "UT",
+          "postalCode": "84101",
+          "country": "US"
+        }
+      } ],
+      "communication": [ {
+        "language": {
+          "coding": [ {
+            "system": "urn:ietf:bcp:47",
+            "code": "en",
+            "display": "English (US)"
+          } ],
+          "text": "English (US)"
+        },
+        "preferred": true
+      } ],
+      "managingOrganization": {
+        "reference": "Organization/18852"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Condition",
+      "id": "26507",
+      "meta": {
+        "versionId": "2",
+        "lastUpdated": "2024-07-10T10:25:48.502+00:00",
+        "source": "#0JxoqeM1qC8mwkou",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><p><b>Diagnosis</b>: Poisoning by unspecified narcotics, assault, initial encounter</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Category</b>: Encounter Diagnosis</p><p><b>Severity</b>: Severe</p><p><b>Recorded Date</b>: 2024-07-10T06:23:58Z</p></div>"
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720607084250
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Condition-11260"
+      } ],
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        } ]
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
+        } ]
+      } ],
+      "severity": {
+        "coding": [ {
+          "system": "http://www.snomed.org/",
+          "code": "24484000",
+          "display": "Severe"
+        } ],
+        "text": "Severe"
+      },
+      "code": {
+        "coding": [ {
+          "system": "http://hl7.org/fhir/sid/icd-10-cm",
+          "code": "T40.603A",
+          "display": "Poisoning by unspecified narcotics, assault, initial encounter"
+        } ],
+        "text": "Poisoning by unspecified narcotics, assault, initial encounter"
+      },
+      "subject": {
+        "reference": "Patient/26495"
+      },
+      "encounter": {
+        "reference": "Encounter/26503"
+      },
+      "recordedDate": "2024-07-10T06:23:58Z",
+      "recorder": {
+        "reference": "Practitioner/18863"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Encounter",
+      "id": "26503",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2024-07-10T10:24:08.150+00:00",
+        "source": "#x5NbI7RbrYpEkEdO",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720606983187
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Encounter-11744"
+      } ],
+      "status": "in-progress",
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "AMB",
+        "display": "ambulatory"
+      },
+      "type": [ {
+        "text": "Progress Note"
+      } ],
+      "subject": {
+        "reference": "Patient/26495"
+      },
+      "participant": [ {
+        "type": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "PPRF",
+            "display": "primary performer"
+          } ]
+        } ],
+        "period": {
+          "start": "2024-07-10T06:22:00Z",
+          "end": "2024-07-10T23:59:59Z"
+        },
+        "individual": {
+          "reference": "Practitioner/18858"
+        }
+      } ],
+      "period": {
+        "start": "2024-07-10T06:22:00Z"
+      },
+      "reasonCode": [ {
+        "text": "Consultation"
+      } ],
+      "location": [ {
+        "location": {
+          "reference": "Location/18854"
+        }
+      } ],
+      "serviceProvider": {
+        "reference": "Organization/18852"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "26501",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2024-07-10T10:13:58.531+00:00",
+        "source": "#0X4zvga0zShT8eS7",
+        "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-travel-history" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720606374027
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "TravelHistory-10382"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001",
+          "display": "Travel"
+        } ],
+        "text": "Travel History"
+      },
+      "subject": {
+        "reference": "Patient/26495"
+      },
+      "effectivePeriod": {
+        "start": "2024-07-01T00:00:00Z",
+        "end": "2024-07-05T00:00:00Z"
+      },
+      "performer": [ {
+        "reference": "Practitioner/18863"
+      } ],
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "LOC",
+            "display": "Location"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "urn:oid:1.0.3166.1",
+            "code": "AFG",
+            "display": "AFGHANISTAN  (Country)"
+          } ],
+          "text": "The patient travelled to Afghanistan in the current month."
+        }
+      }, {
+        "code": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "280147009",
+            "display": "Type of activity (attribute)"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "urn:oid:2.16.840.1.114222.4.5.274",
+            "code": "PHC386",
+            "display": "Business"
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "26500",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2024-07-10T10:13:14.438+00:00",
+        "source": "#hkLKypdKsgV1beZe",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-occupation" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720606329707
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Occupation-10342"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "11341-5",
+          "display": "History of Occupation"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/26495"
+      },
+      "effectivePeriod": {
+        "start": "2021-07-10T06:12:00Z"
+      },
+      "issued": "2024-07-10T06:12:09Z",
+      "performer": [ {
+        "reference": "Practitioner/18863"
+      } ],
+      "valueCodeableConcept": {
+        "text": "Accountants and auditors"
+      },
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "86188-0",
+            "display": "History of Occupation industry"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "text": "Accounting, tax preparation, bookkeeping, and payroll services"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "26501",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2024-07-10T10:13:58.531+00:00",
+        "source": "#0X4zvga0zShT8eS7",
+        "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-travel-history" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720606374027
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "TravelHistory-10382"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001",
+          "display": "Travel"
+        } ],
+        "text": "Travel History"
+      },
+      "subject": {
+        "reference": "Patient/26495"
+      },
+      "effectivePeriod": {
+        "start": "2024-07-01T00:00:00Z",
+        "end": "2024-07-05T00:00:00Z"
+      },
+      "performer": [ {
+        "reference": "Practitioner/18863"
+      } ],
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "LOC",
+            "display": "Location"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "urn:oid:1.0.3166.1",
+            "code": "AFG",
+            "display": "AFGHANISTAN  (Country)"
+          } ],
+          "text": "The patient travelled to Afghanistan in the current month."
+        }
+      }, {
+        "code": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "280147009",
+            "display": "Type of activity (attribute)"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "urn:oid:2.16.840.1.114222.4.5.274",
+            "code": "PHC386",
+            "display": "Business"
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "18858",
+      "meta": {
+        "versionId": "2",
+        "lastUpdated": "2023-10-12T09:32:33.081+00:00",
+        "source": "#pQtofABdH7UoxN4H",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhir.curemd.com:3000/extensions/ResourceInputTime",
+        "valueDecimal": 1697103093360
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Practitioner-72"
+      }, {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": "5265467386"
+      } ],
+      "active": true,
+      "name": [ {
+        "text": "Dr Laura Crawley",
+        "family": "Crawley",
+        "given": [ "Laura" ],
+        "prefix": [ "Dr" ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "5558426098"
+      }, {
+        "system": "fax",
+        "value": "5558426098"
+      }, {
+        "system": "email",
+        "value": "lauracrawley@gmail.com"
+      } ],
+      "address": [ {
+        "text": "647 Tara Rd NJ WASHINGTON NORTH KINGSTOWN US",
+        "line": [ "647 Tara Rd" ],
+        "city": "NORTH KINGSTOWN",
+        "district": "WASHINGTON",
+        "state": "NJ",
+        "postalCode": "02852",
+        "country": "US"
+      } ],
+      "gender": "female",
+      "birthDate": "1994-09-12"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "18863",
+      "meta": {
+        "versionId": "9",
+        "lastUpdated": "2024-06-07T08:13:35.294+00:00",
+        "source": "#o1XW3pzET4nveOqx",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1717747950260
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Practitioner-78"
+      }, {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": "5265467386"
+      } ],
+      "active": true,
+      "name": [ {
+        "text": "Ms Amanda Asigned",
+        "family": "Asigned",
+        "given": [ "Amanda" ],
+        "prefix": [ "Ms" ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "5557770123"
+      }, {
+        "system": "fax",
+        "value": "5557770987"
+      }, {
+        "system": "email",
+        "value": "provider@email.com"
+      } ],
+      "address": [ {
+        "text": "1234 Provider Street HOUSTON HARRIS UT 77002 US",
+        "line": [ "1234 Provider Street" ],
+        "city": "HOUSTON",
+        "district": "HARRIS",
+        "state": "UT",
+        "postalCode": "77002",
+        "country": "US"
+      } ],
+      "gender": "female",
+      "birthDate": "1986-08-12"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Location",
+      "id": "18854",
+      "meta": {
+        "versionId": "4",
+        "lastUpdated": "2024-04-23T06:47:13.077+00:00",
+        "source": "#2WGPBq6xpsVYdC6s",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1713854769763
+      }, {
+        "url": "https://fhirjson.curemd.net/extensions/LocationTimeFormat",
+        "valueString": "12-Hours"
+      }, {
+        "url": "https://fhirjson.curemd.net/extensions/LocationTimeZone",
+        "valueString": "Central Standard Time"
+      }, {
+        "url": "https://fhirjson.curemd.net/extensions/LocationDaylightSaving",
+        "valueBoolean": false
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Location-19"
+      } ],
+      "status": "active",
+      "name": "Pandora",
+      "description": "Pandora",
+      "mode": "instance",
+      "type": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+          "code": "OF",
+          "display": "Outpatient facility"
+        } ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "5085485311"
+      }, {
+        "system": "fax",
+        "value": "5085485301"
+      }, {
+        "system": "email",
+        "value": "fh@gmail.com"
+      } ],
+      "address": {
+        "text": "345 House my test location NEW YORK CITY NEW YORK NY 10001 US",
+        "line": [ "345 House", "my test location" ],
+        "city": "NEW YORK CITY",
+        "district": "NEW YORK",
+        "state": "NY",
+        "postalCode": "10001",
+        "country": "US"
+      },
+      "managingOrganization": {
+        "reference": "Organization/18852"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Organization",
+      "id": "18852",
+      "meta": {
+        "versionId": "7",
+        "lastUpdated": "2024-05-20T06:47:58.726+00:00",
+        "source": "#kXTzif6sxmX9jI6D",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1716187615957
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Organization-2"
+      }, {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": "1245319599"
+      } ],
+      "active": true,
+      "type": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+          "code": "prov",
+          "display": "Healthcare Provider"
+        } ]
+      } ],
+      "name": "Neighborhood Physicians",
+      "telecom": [ {
+        "system": "phone",
+        "value": "5555551004"
+      }, {
+        "system": "fax",
+        "value": "5555551004"
+      }, {
+        "system": "email",
+        "value": "provider@email.com"
+      }, {
+        "system": "url",
+        "value": "mark.com"
+      } ],
+      "address": [ {
+        "text": "30 Davis Road BEAVERTON CRAVEN OR 97006 US",
+        "line": [ "30 Davis Road" ],
+        "city": "BEAVERTON",
+        "district": "CRAVEN",
+        "state": "OR",
+        "postalCode": "97006",
+        "country": "US"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "26501",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2024-07-10T10:13:58.531+00:00",
+        "source": "#0X4zvga0zShT8eS7",
+        "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-travel-history" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720606374027
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "TravelHistory-10382"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "420008001",
+          "display": "Travel"
+        } ],
+        "text": "Travel History"
+      },
+      "subject": {
+        "reference": "Patient/26495"
+      },
+      "effectivePeriod": {
+        "start": "2024-07-01T00:00:00Z",
+        "end": "2024-07-05T00:00:00Z"
+      },
+      "performer": [ {
+        "reference": "Practitioner/18863"
+      } ],
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "LOC",
+            "display": "Location"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "urn:oid:1.0.3166.1",
+            "code": "AFG",
+            "display": "AFGHANISTAN  (Country)"
+          } ],
+          "text": "The patient travelled to Afghanistan in the current month."
+        }
+      }, {
+        "code": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "280147009",
+            "display": "Type of activity (attribute)"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "urn:oid:2.16.840.1.114222.4.5.274",
+            "code": "PHC386",
+            "display": "Business"
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "26500",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2024-07-10T10:13:14.438+00:00",
+        "source": "#hkLKypdKsgV1beZe",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-occupation" ],
+        "tag": [ {
+          "system": "https://www.curemd.com/tenant",
+          "code": "CMDGO"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhirjson.curemd.net/extensions/ResourceInputTime",
+        "valueDecimal": 1720606329707
+      } ],
+      "identifier": [ {
+        "system": "https://www.curemd.com/system-identifier/CMDGO",
+        "value": "Occupation-10342"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "11341-5",
+          "display": "History of Occupation"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/26495"
+      },
+      "effectivePeriod": {
+        "start": "2021-07-10T06:12:00Z"
+      },
+      "issued": "2024-07-10T06:12:09Z",
+      "performer": [ {
+        "reference": "Practitioner/18863"
+      } ],
+      "valueCodeableConcept": {
+        "text": "Accountants and auditors"
+      },
+      "component": [ {
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "86188-0",
+            "display": "History of Occupation industry"
+          } ]
+        },
+        "valueCodeableConcept": {
+          "text": "Accounting, tax preparation, bookkeeping, and payroll services"
+        }
+      } ]
+    }
+  } ]
+}

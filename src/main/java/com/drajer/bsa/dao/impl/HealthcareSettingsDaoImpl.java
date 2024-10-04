@@ -41,6 +41,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
+
   /**
    * Method to create or update a HealthcareSetting.
    *
@@ -157,5 +158,10 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
     criteria.add(Restrictions.eq("hsId", id));
 
     return criteria.list();
+  }
+
+  @Override
+  public void delete(HealthcareSetting healthcareSetting) {
+    getSession().delete(healthcareSetting);
   }
 }

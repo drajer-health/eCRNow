@@ -90,7 +90,7 @@ public class KarProcessorImpl implements KarProcessor {
     // Get Kar for processing.
     KnowledgeArtifact kar = data.getKar();
     NotificationContext nc = data.getNotificationContext();
-    String namedEvent = nc.getTriggerEvent();
+    String namedEvent = nc.getActualTriggerEvent();
     data.setExecutionSequenceId(nc.getId().toString());
     data.setEhrQueryService(ehrInterface);
     data.setKarExecutionStateService(karExecutionStateService);
@@ -99,6 +99,7 @@ public class KarProcessorImpl implements KarProcessor {
     // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
     PublicHealthMessage phm = getPublicHealthMessage(nc, data);
     if (phm != null && phm.getTriggerMatchStatus() != null) {
+      data.setPhm(phm);
       data.setPreviousTriggerMatchStatus(
           BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
     }
@@ -182,6 +183,7 @@ public class KarProcessorImpl implements KarProcessor {
         // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
         PublicHealthMessage phm = getPublicHealthMessage(nc, kd);
         if (phm != null && phm.getTriggerMatchStatus() != null) {
+          kd.setPhm(phm);
           kd.setPreviousTriggerMatchStatus(
               BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
         }
@@ -201,8 +203,9 @@ public class KarProcessorImpl implements KarProcessor {
 
           for (KnowledgeArtifactStatus ks : stat) {
 
-            if (ks.getIsActive().booleanValue()
-                && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
+            if ( // ks.getIsActive().booleanValue() && -- Do not check to allow inactive KAR based
+            // timers to execute.
+            ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
 
               logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
               kd.setKarStatus(ks);

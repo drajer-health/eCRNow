@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -30,7 +31,7 @@ public class RequestMDCFilter implements Filter {
       throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) request;
 
-    logger.debug("Start to handle request: {}", req.getRequestURI());
+    logger.debug("Start to handle request: {}", StringEscapeUtils.escapeJava(req.getRequestURI()));
 
     String requestId = req.getHeader(X_REQUEST_ID_HEADER);
     final String correlationId = req.getHeader(X_CORRELATION_ID_HEADER);
@@ -42,30 +43,38 @@ public class RequestMDCFilter implements Filter {
       if (StringUtils.isBlank(requestId)) {
 
         requestId = UUID.randomUUID().toString();
-        logger.info("No X-Request-ID header found; creating new requestId: {}", requestId);
+        logger.info(
+            "No X-Request-ID header found; creating new requestId: {}",
+            StringEscapeUtils.escapeJava(requestId));
 
       } else {
-        logger.info("Using given X-Request-ID header for requestId: {}", requestId);
+        logger.info(
+            "Using given X-Request-ID header for requestId: {}",
+            StringEscapeUtils.escapeJava(requestId));
       }
 
       if (StringUtils.isBlank(correlationId)) {
         logger.info("No X-Correlation-ID header found.");
       } else {
-        logger.info("Using given X-Correlation-ID header for correlationId: {}", correlationId);
+        logger.info(
+            "Using given X-Correlation-ID header for correlationId: {}",
+            StringEscapeUtils.escapeJava(correlationId));
       }
 
       if (StringUtils.isBlank(domainLogicalDomainId)) {
         logger.info("No X-Domain-LogicalDomain-ID header found.");
       } else {
-        logger.info("Using given X-Domain-LogicalDomain-ID from header: {}", domainLogicalDomainId);
+        logger.info(
+            "Using given X-Domain-LogicalDomain-ID from header: {}",
+            StringEscapeUtils.escapeJava(domainLogicalDomainId));
       }
 
       logger.info(
           "Request {} being handled for requestId {} associated to correlationId {} for domain {}",
           req.getRequestURI(),
-          requestId,
-          correlationId,
-          domainLogicalDomainId);
+          StringEscapeUtils.escapeJava(requestId),
+          StringEscapeUtils.escapeJava(correlationId),
+          StringEscapeUtils.escapeJava(domainLogicalDomainId));
 
       if (MDC.get(MDC_REQUEST_ID_KEY) == null) {
         MDC.put(MDC_REQUEST_ID_KEY, requestId);
@@ -83,17 +92,18 @@ public class RequestMDCFilter implements Filter {
     } finally {
       logger.info(
           "Request {} completed for requestId {} associated to correlationId {} for domain {}",
-          req.getRequestURI(),
-          requestId,
-          correlationId,
-          domainLogicalDomainId);
+          StringEscapeUtils.escapeJava(req.getRequestURI()),
+          StringEscapeUtils.escapeJava(requestId),
+          StringEscapeUtils.escapeJava(correlationId),
+          StringEscapeUtils.escapeJava(domainLogicalDomainId));
 
       MDC.remove(MDC_REQUEST_ID_KEY);
       MDC.remove(MDC_CORRELATION_ID_KEY);
       MDC.remove(MDC_DOMAIN_LOGICAL_DOMAIN_ID);
     }
 
-    logger.debug("Completed handling request: {}", req.getRequestURI());
+    logger.debug(
+        "Completed handling request: {}", StringEscapeUtils.escapeJava(req.getRequestURI()));
   }
 
   @Override

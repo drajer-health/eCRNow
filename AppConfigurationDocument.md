@@ -99,7 +99,10 @@ off hours (non peak hours). This kind of configuration can be achieved by the Of
 ## 2.12 Configuring EHR Product Name and Version
 
 EHR implementers can configure the EHR Product name and version that the ecrNowApp interfaces with using the two application properties
-ehr.product.name and ehr.product.version.
+
+* ehr.product.name="EHR Product Name: for e.g., AthenaOne, AthenaPractice, CernerMillenium"
+* ehr.product.version="EHR ProductVersion"
+
 If these are present in the application.properties, then an author participant is added to the CDA eICR to convey this information.
 If it is not present, the author is not added. 
 
@@ -109,6 +112,20 @@ eCRNow App implementers can configure the their name and software version used f
 for system integrators and other vendors who are working on behalf of the healthcare organization and want to distinguish their eICRs 
 from other vendors and/or other healthcare organizations.
 These are configured using two application properties namely 
-ecrnow.implementer.name and ecrnow.implementer.version
+
+* ecrnow.implementer.name="Implementer Organization Name: for e.g., Athena, Oracle" 
+* ecrnow.implementer.version=3.1.5
+
+By default the version should be set to the App Release version.
 If these are present in the application.properties, then an author participant is added to the CDA eICR to convey this information.
 If it is not present, the author is not added. 
+
+## 2.13 Configuring startup time delay to allow application to settle down from loading necessary data 
+
+There are times during startup when the application loads ERSD/KARs, CQL libraries etc, and there is spike in memory and CPU usage.
+When the application is booting up, it is better to delay launching patients until the application has completely booted up.
+To control the timing there is an application property that specifies the number of seconds to wait before accepting launchPatient requests.
+
+* startup.timedelay=10 
+
+The above introduces a delay of 10 seconds before accepting launch patient requests.  

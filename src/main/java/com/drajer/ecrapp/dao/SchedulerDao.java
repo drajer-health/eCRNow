@@ -6,4 +6,8 @@ import java.util.List;
 public interface SchedulerDao {
 
   List<ScheduledTasks> getScheduledTasks(String actionType, String launchId);
+
+  ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks);
+
+  List<ScheduledTasks> getScheduledTasks();
 }

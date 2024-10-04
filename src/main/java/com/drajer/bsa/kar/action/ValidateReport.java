@@ -106,9 +106,12 @@ public class ValidateReport extends BsaAction {
 
     String cda = data.getSubmittedCdaData();
 
-    // IF there are no exceptions then no need to set status.
-    // Validator errors will be put into the log file.
-    // There should not be any errors in production.
+    logger.info(
+        " Starting validating eICR for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
+        data.getNotificationContext().getPatientId(),
+        data.getNotificationContext().getNotificationResourceId(),
+        data.getNotificationContext().getxRequestId(),
+        data.getNotificationContext().getxCorrelationId());
 
     if (!StringUtils.isEmpty(cda)) return CdaValidatorUtil.validateEicrXMLData(cda);
     else return false;
@@ -138,7 +141,12 @@ public class ValidateReport extends BsaAction {
 
         String request = jsonParser.encodeResourceToString(r);
 
-        logger.debug(" Data to be validated : {}", request);
+        logger.info(
+            " Starting validating FHIR eICR for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
+            data.getNotificationContext().getPatientId(),
+            data.getNotificationContext().getNotificationResourceId(),
+            data.getNotificationContext().getxRequestId(),
+            data.getNotificationContext().getxCorrelationId());
 
         if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
           ResponseEntity<String> response =
@@ -166,7 +174,7 @@ public class ValidateReport extends BsaAction {
           addValidatedOutputById(data, r);
           data.addActionOutput(actionId, r);
         }
-      } // for
+      } // for each resource to be validated
 
     } catch (Exception e) {
 

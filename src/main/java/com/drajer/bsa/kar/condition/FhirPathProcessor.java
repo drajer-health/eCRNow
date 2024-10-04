@@ -159,7 +159,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public String resolveContextVariables(
       String exp, EhrQueryService ehrService, KarProcessingData kd) {
 
-    return ehrService.substituteContextParams(kd, exp);
+    return ehrService.substituteContextParams(kd, exp, true);
   }
 
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> filterResources(
@@ -340,6 +340,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       for (DataRequirementCodeFilterComponent drcf : drcfs) {
 
         if ((drcf.getPath().toLowerCase().contains("code")
+                || drcf.getPath().contains("reasonCode")
                 || drcf.getPath().contains("value")
                 || drcf.getPath().equals("medication"))
             && drcf.getValueSet() != null) {

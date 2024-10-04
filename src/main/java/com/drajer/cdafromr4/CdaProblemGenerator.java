@@ -9,6 +9,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class CdaProblemGenerator {
       List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_2_TITLE);
+      list.add(CdaGeneratorConstants.PROB_TABLE_COL_3_TITLE);
       sb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
               list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
@@ -77,14 +79,10 @@ public class CdaProblemGenerator {
       // Add Body Rows
       int rowNum = 1;
       for (Condition prob : conds) {
-        String probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (prob.getCode() != null
-            && prob.getCode().getCodingFirstRep() != null
-            && !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
-
-          probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
-        }
+        String probDisplayName = CdaFhirUtilities.getStringForCodeableConcept(prob.getCode());
+        if (StringUtils.isEmpty(probDisplayName))
+          probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
@@ -113,6 +111,18 @@ public class CdaProblemGenerator {
               CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
               CdaGeneratorConstants.TABLE_ACTIVE_STATUS);
         }
+
+        // Add dates
+        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(prob.getOnset());
+        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(prob.getAbatement());
+        Pair<Date, TimeZone> recordedDate = null;
+        if (prob.hasRecordedDateElement()) {
+          recordedDate =
+              new Pair<>(prob.getRecordedDate(), prob.getRecordedDateElement().getTimeZone());
+        }
+
+        String probDates = CdaFhirUtilities.getStringForDates(onset, abatement, recordedDate);
+        bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_3_BODY_CONTENT, probDates);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum;
@@ -180,7 +190,7 @@ public class CdaProblemGenerator {
         Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(pr.getOnset());
         Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
         Pair<Date, TimeZone> recordedDate = null;
-        if (pr.getRecordedDateElement() != null) {
+        if (pr.hasRecordedDateElement()) {
           recordedDate =
               new Pair<>(pr.getRecordedDate(), pr.getRecordedDateElement().getTimeZone());
         }
@@ -206,7 +216,9 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), pr.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), pr.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -241,7 +253,8 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.VAL_EL_NAME,
                 true,
                 CdaGeneratorConstants.FHIR_SNOMED_URL,
-                false);
+                false,
+                "");
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
@@ -254,8 +267,12 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
-        logger.debug("Add Trigger Codes to Problem Observation if applicable {}", pr.getId());
-        sb.append(addTriggerCodes(details, pr, onset, abatement));
+        logger.debug(
+            "Add Trigger Codes to Problem Observation if applicable {}",
+            pr.getIdElement().getIdPart());
+        sb.append(
+            addTriggerCodes(
+                details, pr.getCode(), onset, abatement, pr.getIdElement().getIdPart()));
 
         logger.debug("Completed adding Trigger Codes ");
 
@@ -278,9 +295,10 @@ public class CdaProblemGenerator {
 
   public static String addTriggerCodes(
       LaunchDetails details,
-      Condition cond,
+      CodeableConcept cd,
       Pair<Date, TimeZone> onset,
-      Pair<Date, TimeZone> abatement) {
+      Pair<Date, TimeZone> abatement,
+      String id) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -295,12 +313,23 @@ public class CdaProblemGenerator {
     for (MatchedTriggerCodes mtc : mtcs) {
 
       // Add each code as an entry relationship observation
-      CodeableConcept cd = cond.getCode();
       List<CodeableConcept> cds = new ArrayList<>();
       if (cd != null) cds.add(cd);
 
       Set<String> matchedCodesFromCc =
           mtc.hasMatchedTriggerCodesFromCodeableConcept("Condition", cds);
+
+      Set<String> encMatchedCodes = mtc.hasMatchedTriggerCodesFromCodeableConcept("Encounter", cds);
+
+      if (encMatchedCodes != null && !encMatchedCodes.isEmpty()) {
+
+        if (matchedCodesFromCc != null) {
+          matchedCodesFromCc.addAll(encMatchedCodes);
+        } else {
+          matchedCodesFromCc = new HashSet<>();
+          matchedCodesFromCc.addAll(encMatchedCodes);
+        }
+      }
 
       if (matchedCodesFromCc != null && !matchedCodesFromCc.isEmpty()) {
 
@@ -331,7 +360,7 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId()));
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(

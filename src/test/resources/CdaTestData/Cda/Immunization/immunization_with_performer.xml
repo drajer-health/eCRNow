@@ -1,0 +1,67 @@
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1" extension="2015-08-01"/>
+<code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>
+<title>IMMUNIZATIONS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Vaccine Name</th>
+<th>Vaccination Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="vaccine1">Rabies vaccine</content>
+</td>
+<td>
+<content ID="vaccinationDate1">Wed Dec 27 00:00:00 UTC 2023</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
+<templateId root="2.16.840.1.113883.10.20.22.4.52"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="7ae40495-f4bc-438c-85a7-ce18d8658293"/>
+<statusCode code="completed"/>
+<effectiveTime value="20231227000000+0000"/>
+<consumable>
+<manufacturedProduct classCode="MANU">
+<templateId root="2.16.840.1.113883.10.20.22.4.54"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.54" extension="2014-06-09"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+<code code="18" codeSystem="2.16.840.1.113883.12.292" codeSystemName="CVX" displayName="rabies vaccine, for intramuscular injection RETIRED CODE"></code>
+</manufacturedMaterial>
+</manufacturedProduct>
+</consumable>
+<performer typeCode="PRF">
+<assignedEntity>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>Oak Street</streetAddressLine>
+<city>New York City</city>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+</assignedEntity>
+</performer>
+</substanceAdministration>
+</entry>
+</section>
+</component>

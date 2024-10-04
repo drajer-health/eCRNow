@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -520,10 +521,10 @@ public class ApplicationUtils {
     try (DataOutputStream outStream =
         new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
 
-      logger.debug("Writing data to file: {}", fileName);
+      logger.debug("Writing data to file: {}", StringEscapeUtils.escapeJava(fileName));
       outStream.writeBytes(data);
     } catch (IOException e) {
-      logger.debug("Unable to write data to file: {}", fileName, e);
+      logger.debug("Unable to write data to file: {}", StringEscapeUtils.escapeJava(fileName), e);
     }
   }
 
@@ -533,7 +534,7 @@ public class ApplicationUtils {
 
     if (v != null && v.hasUseContext() && v.getUseContext() != null) {
 
-      logger.debug("Checking Value Set Id {}", v.getId());
+      logger.debug("Checking Value Set Id {}", StringEscapeUtils.escapeJava(v.getId()));
 
       List<UsageContext> ucs = v.getUseContext();
 

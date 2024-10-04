@@ -56,4 +56,11 @@ public interface HealthcareSettingsDao {
    * @return Returns the list of KnowledgeArtifactStatus by Healthcare Setting Id.
    */
   public List<KnowledgeArtifactStatus> getKarsActiveByHsId(Integer id);
+
+  /**
+   * Deletes the specified HealthcareSetting from the system.
+   *
+   * @param healthcareSetting The HealthcareSetting to be deleted.
+   */
+  void delete(HealthcareSetting healthcareSetting);
 }

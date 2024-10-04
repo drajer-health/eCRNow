@@ -94,7 +94,7 @@ public class CdaMedicationGenerator {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (med.hasMedication() && med.getMedication() != null) {
-          medDisplayName = CdaFhirUtilities.getStringForMedicationType(med);
+          medDisplayName = CdaFhirUtilities.getStringForMedicationType(med, medList);
         }
 
         String dt = null;
@@ -124,7 +124,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                med.getId(),
+                med.getIdElement().getIdPart(),
                 med.getMedication(),
                 med.getEffective(),
                 medstatus,
@@ -142,7 +142,7 @@ public class CdaMedicationGenerator {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (medAdm.hasMedication() && medAdm.getMedication() != null) {
-          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medAdm);
+          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medAdm, medList);
         }
 
         String dt = null;
@@ -176,7 +176,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                medAdm.getId(),
+                medAdm.getIdElement().getIdPart(),
                 medAdm.getMedication(),
                 medAdm.getEffective(),
                 medstatus,
@@ -196,7 +196,7 @@ public class CdaMedicationGenerator {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (medReq.hasMedication() && medReq.getMedication() != null) {
-          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medReq);
+          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medReq, medList);
         }
 
         DateTimeType startDate = null;
@@ -260,7 +260,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                medReq.getId(),
+                medReq.getIdElement().getIdPart(),
                 medReq.getMedication(),
                 null,
                 medstatus,
@@ -331,16 +331,31 @@ public class CdaMedicationGenerator {
 
     // Set up Effective Time for start and End time.
     if (effectiveTime != null) {
-      sb.append(
-          CdaFhirUtilities.getXmlForType(
-              effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+
+      if (effectiveTime instanceof DateTimeType) {
+        DateTimeType d = (DateTimeType) effectiveTime;
+        String val = CdaGeneratorUtils.getStringForDateTime(d.getValue(), d.getTimeZone());
+        sb.append(
+            CdaGeneratorUtils.getXmlForPartialValueIVLWithTS(
+                CdaGeneratorConstants.EFF_TIME_EL_NAME,
+                val,
+                CdaGeneratorConstants.TIME_LOW_EL_NAME));
+
+      } else {
+        sb.append(
+            CdaFhirUtilities.getXmlForType(
+                effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
+      }
     } else if (startDate != null) {
+      String val =
+          CdaGeneratorUtils.getStringForDateTime(startDate.getValue(), startDate.getTimeZone());
       sb.append(
-          CdaFhirUtilities.getDateTimeTypeXml(startDate, CdaGeneratorConstants.EFF_TIME_EL_NAME));
+          CdaGeneratorUtils.getXmlForPartialValueIVLWithTS(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, val, CdaGeneratorConstants.TIME_LOW_EL_NAME));
     } else {
       sb.append(
-          CdaGeneratorUtils.getXmlForNullEffectiveTime(
-              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+          CdaGeneratorUtils.getXmlForValueIVLWithTS(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, "", ""));
     }
 
     // Set up Effective Time for Frequency.
@@ -351,12 +366,17 @@ public class CdaMedicationGenerator {
       if (dosage.hasDoseAndRate()
           && dosage.getDoseAndRateFirstRep() != null
           && dosage.getDoseAndRateFirstRep().hasDose()
-          && dosage.getDoseAndRateFirstRep().getDose() != null)
+          && dosage.getDoseAndRateFirstRep().getDose() != null) {
         ds =
             CdaFhirUtilities.getXmlForType(
                 dosage.getDoseAndRateFirstRep().getDose(),
                 CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME,
                 false);
+      } else {
+        ds =
+            CdaFhirUtilities.getQuantityXml(
+                dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
+      }
 
       if (dosage.hasTiming()
           && dosage.getTiming() != null
