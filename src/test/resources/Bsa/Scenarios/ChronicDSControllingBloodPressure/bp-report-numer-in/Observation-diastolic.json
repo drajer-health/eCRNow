@@ -1,6 +1,6 @@
 {
   "resourceType": "Observation",
-  "id": "bp-report-numer-in",
+  "id": "bp-report-numer-in-diastolic",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/StructureDefinition/vitalsigns"
@@ -32,7 +32,7 @@
   },
   "effectiveDateTime": "2019-01-17T12:30:00",
   "encounter": {
-    "reference": "Encounter/bp-report-numer-in"
+    "reference": "Encounter/bp-report-numer-in-systolic"
   },
   "interpretation": [
     {

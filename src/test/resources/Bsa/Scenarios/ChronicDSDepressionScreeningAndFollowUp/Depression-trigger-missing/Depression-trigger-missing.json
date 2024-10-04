@@ -1,39 +1,11 @@
 {
   "resourceType": "Patient",
-  "id": "diabetes-report-numer-in",
+  "id": "Depression-trigger-missing",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-patient"
     ]
   },
-  "extension": [
-    {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-      "extension": [
-        {
-          "url": "ombCategory",
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2106-3",
-            "display": "White"
-          }
-        }
-      ]
-    },
-    {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-      "extension": [
-        {
-          "url": "ombCategory",
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2135-2",
-            "display": "Hispanic or Latino"
-          }
-        }
-      ]
-    }
-  ],
   "identifier": [
     {
       "use": "usual",
@@ -66,7 +38,7 @@
     }
   ],
   "gender": "female",
-  "birthDate": "1975-06-13",
+  "birthDate": "1976-06-13",
   "address": [
     {
       "use": "home",

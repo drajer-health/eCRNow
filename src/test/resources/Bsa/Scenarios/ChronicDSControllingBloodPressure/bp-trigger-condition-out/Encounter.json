@@ -1,6 +1,6 @@
 {
   "resourceType": "Encounter",
-  "id": "bp-trigger-condition-out",
+  "id": "bp-trigger-condition-out-encounter",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-encounter"

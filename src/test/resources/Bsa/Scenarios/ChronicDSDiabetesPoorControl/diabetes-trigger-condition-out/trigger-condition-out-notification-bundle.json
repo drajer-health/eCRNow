@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9011/fhir/Subscription/encounter-end"
+                "reference" : "http://localhost:9010/fhir/Subscription/encounter-end"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9011/fhir/Encounter/diabetes-trigger-condition-out-Encounter",
+        "fullUrl" : "http://localhost:9010/fhir/Encounter/diabetes-trigger-condition-out-Encounter",
         "resource" : {
           "resourceType": "Encounter",
           "id": "diabetes-trigger-condition-out",

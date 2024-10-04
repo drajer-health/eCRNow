@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9011/fhir/Subscription/encounter-end"
+                "reference" : "http://localhost:9010/fhir/Subscription/encounter-end"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9011/fhir/Encounter/http://hl7.org/fhir/us/ecr/StructureDefinition/bp-report-ip-out",
+        "fullUrl" : "http://localhost:9010/fhir/Encounter/http://hl7.org/fhir/us/ecr/StructureDefinition/bp-report-ip-out",
         "resource" : {
           "resourceType": "Encounter",
           "id": "bp-report-ip-out",
