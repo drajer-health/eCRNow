@@ -108,7 +108,8 @@ public class HcsReportCreator extends ReportCreator {
     SOCIAL_HISTORY,
     MEDICAL_EQUIPMENT,
     CARE_TEAM,
-    GOAL
+    GOAL,
+    CARE_PLAN
   }
 
   @Override
@@ -514,12 +515,17 @@ public class HcsReportCreator extends ReportCreator {
     // Add Care Team section.
     sc = getSection(SectionTypeEnum.CARE_TEAM, kd);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Device, kd, sc, resTobeAdded);
+    addEntries(ResourceType.CareTeam, kd, sc, resTobeAdded);
 
     // Add Goals section.
     sc = getSection(SectionTypeEnum.GOAL, kd);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Device, kd, sc, resTobeAdded);
+    addEntries(ResourceType.Goal, kd, sc, resTobeAdded);
+
+    // Add Care Plan section.
+    sc = getSection(SectionTypeEnum.CARE_PLAN, kd);
+    if (sc != null) scs.add(sc);
+    addEntries(ResourceType.CarePlan, kd, sc, resTobeAdded);
 
     // Finalize the sections.
     comp.setSection(scs);
@@ -714,6 +720,14 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+      case CARE_PLAN:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
