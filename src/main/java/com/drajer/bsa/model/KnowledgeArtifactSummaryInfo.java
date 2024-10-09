@@ -1,11 +1,6 @@
 package com.drajer.bsa.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 
@@ -43,7 +38,7 @@ public class KnowledgeArtifactSummaryInfo {
   private String karVersion;
 
   @Column(name = "kar_available", nullable = true)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean karAvailable;
 
   public String getVersionUniqueId() {

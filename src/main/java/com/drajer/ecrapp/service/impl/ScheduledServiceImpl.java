@@ -4,7 +4,7 @@ import com.drajer.ecrapp.dao.SchedulerDao;
 import com.drajer.ecrapp.model.ScheduledTasks;
 import com.drajer.ecrapp.service.SchedulerService;
 import java.util.List;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

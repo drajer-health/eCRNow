@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import net.minidev.json.JSONArray;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.text.StringEscapeUtils;

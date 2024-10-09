@@ -2,10 +2,9 @@ package com.drajer.sof.utils;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
-public class WebConfiguration extends WebMvcConfigurerAdapter {
+public class WebConfiguration implements WebMvcConfigurer {
 
   private static final String FORWARD_SLASH = "forward:/";
 

@@ -5,8 +5,11 @@ import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
 import java.util.UUID;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,8 +56,15 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
    */
   @Override
   public List<KarExecutionState> getAllKarExecutionStates() {
-    Criteria criteria = getSession().createCriteria(KarExecutionState.class);
-    return criteria.addOrder(Order.desc("id")).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<KarExecutionState> cq = cb.createQuery(KarExecutionState.class);
+    Root<KarExecutionState> root = cq.from(KarExecutionState.class);
+
+    Query<KarExecutionState> q = getSession().createQuery(cq);
+    cq.orderBy(cb.desc(root.get("id")));
+
+    return q.getResultList();
   }
 
   /** @param state - KarExecutionState that needs to be deleted. */

@@ -3,12 +3,16 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.dao.AbstractDao;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,57 +49,97 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public Integer getMaxVersionId(PublicHealthMessage message) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    criteria.add(Restrictions.eq(FHIR_SERVER_URL, message.getFhirServerBaseUrl()));
-    criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_ID, message.getNotifiedResourceId()));
-    criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_TYPE, message.getNotifiedResourceType()));
-    criteria.add(Restrictions.eq(PATIENT_ID, message.getPatientId()));
-    criteria.add(Restrictions.eq(KAR_UNIQUE_ID, message.getKarUniqueId()));
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
 
-    criteria.addOrder(Order.desc(SUBMITTED_VERSION_NUMBER));
-    criteria.setMaxResults(1);
+    Predicate criteria =
+            cb.and(
+                    cb.equal(root.get(FHIR_SERVER_URL), message.getFhirServerBaseUrl()),
+                    cb.equal(root.get(NOTIFIED_RESOURCE_ID), message.getNotifiedResourceId()),
+                    cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), message.getNotifiedResourceType()),
+                    cb.equal(root.get(PATIENT_ID), message.getPatientId()),
+                    cb.equal(root.get(KAR_UNIQUE_ID), message.getKarUniqueId()));
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get(SUBMITTED_VERSION_NUMBER)));
 
-    PublicHealthMessage result = (PublicHealthMessage) criteria.uniqueResult();
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
-    if (result != null) {
-      return result.getSubmittedVersionNumber();
-    }
-    return 0;
+    return q.uniqueResultOptional().map(PublicHealthMessage::getSubmittedVersionNumber).orElse(0);
   }
 
   @Override
   public PublicHealthMessage getByCorrelationId(String coorelId) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    criteria.add(Restrictions.eq(X_CORRELATION_ID, coorelId));
-    return (PublicHealthMessage) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    cq.where(cb.equal(root.get(X_CORRELATION_ID), coorelId));
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   @Override
   public List<PublicHealthMessage> getPublicHealthMessage(Map<String, String> searchParams) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    prepareCriteria(criteria, searchParams);
-    return criteria.addOrder(Order.desc(SUBMITTED_VERSION_NUMBER)).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
+
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get(SUBMITTED_VERSION_NUMBER)));
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   @Override
   public List<PublicHealthMessage> getByXRequestId(String xRequestId) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    criteria.add(Restrictions.eq(X_REQUEST_ID, xRequestId));
-    return criteria.addOrder(Order.desc("id")).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    cq.where(cb.equal(root.get(X_REQUEST_ID), xRequestId));
+    cq.orderBy(cb.desc(root.get("id")));
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   @Override
   public PublicHealthMessage getBySubmittedMessageId(String messageId) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    criteria.add(Restrictions.eq(SUBMITTED_MESSAGE_ID, messageId));
-    return (PublicHealthMessage) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    cq.where(cb.equal(root.get(SUBMITTED_MESSAGE_ID), messageId));
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   @Override
   public PublicHealthMessage getByResponseMessageId(String id) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    criteria.add(Restrictions.eq(RESPONSE_MESSAGE_ID, id));
-    return (PublicHealthMessage) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    cq.where(cb.equal(root.get(RESPONSE_MESSAGE_ID), id));
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   @Override
@@ -105,64 +149,74 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public PublicHealthMessage getBySubmittedDataId(String subId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    cq.where(cb.equal(root.get(SUBMITTED_DATA_ID), subId));
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    criteria.add(Restrictions.eq(SUBMITTED_DATA_ID, subId));
-
-    return (PublicHealthMessage) criteria.uniqueResult();
+    return q.uniqueResult();
   }
 
-  public static void prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
+  public static List<Predicate> preparePredicate(
+          CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
+    List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(SUBMITTED_DATA_ID) != null) {
-      criteria.add(Restrictions.eq(SUBMITTED_DATA_ID, searchParams.get(SUBMITTED_DATA_ID)));
+      predicates.add(cb.equal(root.get(SUBMITTED_DATA_ID), searchParams.get(SUBMITTED_DATA_ID)));
     }
     if (searchParams.get(SUBMITTED_VERSION_NUMBER) != null) {
-      criteria.add(
-          Restrictions.eq(SUBMITTED_VERSION_NUMBER, searchParams.get(SUBMITTED_VERSION_NUMBER)));
+      predicates.add(
+              cb.equal(root.get(SUBMITTED_VERSION_NUMBER), searchParams.get(SUBMITTED_VERSION_NUMBER)));
     }
     if (searchParams.get(RESPONSE_DATA_ID) != null) {
-      criteria.add(Restrictions.eq(RESPONSE_DATA_ID, searchParams.get(RESPONSE_DATA_ID)));
+      predicates.add(cb.equal(root.get(RESPONSE_DATA_ID), searchParams.get(RESPONSE_DATA_ID)));
     }
     if (searchParams.get(FHIR_SERVER_URL) != null) {
-      criteria.add(Restrictions.eq(FHIR_SERVER_URL, searchParams.get(FHIR_SERVER_URL)));
+      predicates.add(cb.equal(root.get(FHIR_SERVER_URL), searchParams.get(FHIR_SERVER_URL)));
     }
     if (searchParams.get(PATIENT_ID) != null) {
-      criteria.add(Restrictions.eq(PATIENT_ID, searchParams.get(PATIENT_ID)));
+      predicates.add(cb.equal(root.get(PATIENT_ID), searchParams.get(PATIENT_ID)));
     }
     if (searchParams.get(ENCOUNTER_ID) != null) {
-      criteria.add(Restrictions.eq(ENCOUNTER_ID, searchParams.get(ENCOUNTER_ID)));
+      predicates.add(cb.equal(root.get(ENCOUNTER_ID), searchParams.get(ENCOUNTER_ID)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_ID) != null) {
-      criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_ID, searchParams.get(NOTIFIED_RESOURCE_ID)));
+      predicates.add(
+              cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_TYPE) != null) {
-      criteria.add(
-          Restrictions.eq(NOTIFIED_RESOURCE_TYPE, searchParams.get(NOTIFIED_RESOURCE_TYPE)));
+      predicates.add(
+              cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
     }
     if (searchParams.get(KAR_UNIQUE_ID) != null) {
-      criteria.add(Restrictions.eq(KAR_UNIQUE_ID, searchParams.get(KAR_UNIQUE_ID)));
+      predicates.add(cb.equal(root.get(KAR_UNIQUE_ID), searchParams.get(KAR_UNIQUE_ID)));
     }
     if (searchParams.get(SUBMITTED_MESSAGE_ID) != null) {
-      criteria.add(Restrictions.eq(SUBMITTED_MESSAGE_ID, searchParams.get(SUBMITTED_MESSAGE_ID)));
+      predicates.add(
+              cb.equal(root.get(SUBMITTED_MESSAGE_ID), searchParams.get(SUBMITTED_MESSAGE_ID)));
     }
     if (searchParams.get(X_REQUEST_ID) != null) {
-      criteria.add(Restrictions.eq(X_REQUEST_ID, searchParams.get(X_REQUEST_ID)));
+      predicates.add(cb.equal(root.get(X_REQUEST_ID), searchParams.get(X_REQUEST_ID)));
     }
     if (searchParams.get(X_CORRELATION_ID) != null) {
-      criteria.add(Restrictions.eq(X_CORRELATION_ID, searchParams.get(X_CORRELATION_ID)));
+      predicates.add(cb.equal(root.get(X_CORRELATION_ID), searchParams.get(X_CORRELATION_ID)));
     }
     if (searchParams.get(RESPONSE_MESSAGE_ID) != null) {
-      criteria.add(Restrictions.eq(RESPONSE_MESSAGE_ID, searchParams.get(RESPONSE_MESSAGE_ID)));
+      predicates.add(
+              cb.equal(root.get(RESPONSE_MESSAGE_ID), searchParams.get(RESPONSE_MESSAGE_ID)));
     }
     if (searchParams.get(RESPONSE_PROCESSING_INS) != null) {
-      criteria.add(
-          Restrictions.eq(RESPONSE_PROCESSING_INS, searchParams.get(RESPONSE_PROCESSING_INS)));
+      predicates.add(
+              cb.equal(root.get(RESPONSE_PROCESSING_INS), searchParams.get(RESPONSE_PROCESSING_INS)));
     }
     if (searchParams.get(RESPONSE_PROCESSING_STATUS) != null) {
-      criteria.add(
-          Restrictions.eq(
-              RESPONSE_PROCESSING_STATUS, searchParams.get(RESPONSE_PROCESSING_STATUS)));
+      predicates.add(
+              cb.equal(
+                      root.get(RESPONSE_PROCESSING_STATUS), searchParams.get(RESPONSE_PROCESSING_STATUS)));
     }
+
+    return predicates;
   }
 }
