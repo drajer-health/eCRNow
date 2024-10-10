@@ -35,6 +35,7 @@ import org.springframework.retry.support.RetryTemplate;
       "com.drajer.bsa"
     })
 @Import(HibernateConfiguration.class)
+@Configuration
 @EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class SpringConfiguration {
 
