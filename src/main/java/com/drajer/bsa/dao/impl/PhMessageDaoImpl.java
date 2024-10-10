@@ -11,19 +11,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
+import org.hibernate.query.Query;
+
+import static com.drajer.ecrapp.dao.impl.EicrDaoImpl.RESPONSE_DOC_ID;
 
 @Repository
 @Transactional
@@ -52,88 +50,90 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   public List<PublicHealthMessage> getPhMessageData(
       Map<String, String> searchParams, boolean summaryFlag) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+    predicates.add(
+            cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("id")));
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
-    prepareCriteria(criteria, searchParams);
-    applySummaryFlagProjection(criteria, summaryFlag);
-
-    List<PublicHealthMessage> phMessage = criteria.list();
-
-    if (phMessage != null) {
-      return phMessage;
-    }
-    return null;
+    return q.getResultList();
   }
 
   public List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("id")));
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
-    List<String> selectedProperties = getSelectedProperties();
-    ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
-
-    criteria.setProjection(projectionList);
-    prepareCriteria(criteria, searchParams);
-
-    criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
-
-    List<PublicHealthMessage> phMessage = criteria.list();
-
-    if (phMessage != null) {
-      return phMessage;
-    }
-    return null;
+    return q.getResultList();
   }
 
-  public static void prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
+  public static List<Predicate> preparePredicate(
+          CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
+    List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(FHIR_SERVER_BASE_URL) != null) {
-      criteria.add(Restrictions.eq(FHIR_SERVER_BASE_URL, searchParams.get(FHIR_SERVER_BASE_URL)));
+      predicates.add(
+              cb.equal(root.get(FHIR_SERVER_BASE_URL), searchParams.get(FHIR_SERVER_BASE_URL)));
     }
     if (searchParams.get(PATIENT_ID) != null) {
-      criteria.add(Restrictions.eq(PATIENT_ID, searchParams.get(PATIENT_ID)));
+      predicates.add(cb.equal(root.get(PATIENT_ID), searchParams.get(PATIENT_ID)));
     }
     if (searchParams.get(X_REQUEST_ID) != null) {
-      criteria.add(Restrictions.eq(X_REQUEST_ID, searchParams.get(X_REQUEST_ID)));
+      predicates.add(cb.equal(root.get(X_REQUEST_ID), searchParams.get(X_REQUEST_ID)));
     }
     if (searchParams.get(ENCOUNTER_ID) != null) {
-      criteria.add(Restrictions.eq(ENCOUNTER_ID, searchParams.get(ENCOUNTER_ID)));
+      predicates.add(cb.equal(root.get(ENCOUNTER_ID), searchParams.get(ENCOUNTER_ID)));
     }
     if (searchParams.get(SUBMITTED_DATA_ID) != null) {
-      criteria.add(Restrictions.eq(SUBMITTED_DATA_ID, searchParams.get(SUBMITTED_DATA_ID)));
+      predicates.add(cb.equal(root.get(SUBMITTED_DATA_ID), searchParams.get(SUBMITTED_DATA_ID)));
     }
     if (searchParams.get(VERSION) != null) {
-      criteria.add(Restrictions.eq(VERSION, searchParams.get(VERSION)));
+      predicates.add(cb.equal(root.get(VERSION), searchParams.get(VERSION)));
     }
     if (searchParams.get(RESPONSE_DATA_ID) != null) {
-      criteria.add(Restrictions.eq(RESPONSE_DATA_ID, searchParams.get(RESPONSE_DATA_ID)));
+      predicates.add(cb.equal(root.get(RESPONSE_DATA_ID), searchParams.get(RESPONSE_DATA_ID)));
     }
     if (searchParams.get(RESPONSE_PROCESSING_INSTRUCTION) != null) {
-      criteria.add(
-          Restrictions.eq(
-              RESPONSE_PROCESSING_INSTRUCTION, searchParams.get(RESPONSE_PROCESSING_INSTRUCTION)));
+      predicates.add(
+              cb.equal(
+                      root.get(RESPONSE_PROCESSING_INSTRUCTION),
+                      searchParams.get(RESPONSE_PROCESSING_INSTRUCTION)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_ID) != null) {
-      criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_ID, searchParams.get(NOTIFIED_RESOURCE_ID)));
+      predicates.add(
+              cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_TYPE) != null) {
-      criteria.add(
-          Restrictions.eq(NOTIFIED_RESOURCE_TYPE, searchParams.get(NOTIFIED_RESOURCE_TYPE)));
+      predicates.add(
+              cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
     }
     if (searchParams.get(KAR_UNIQUE_ID) != null) {
-      criteria.add(Restrictions.eq(KAR_UNIQUE_ID, searchParams.get(KAR_UNIQUE_ID)));
+      predicates.add(cb.equal(root.get(KAR_UNIQUE_ID), searchParams.get(KAR_UNIQUE_ID)));
     }
     if (searchParams.get(NOTIFICATION_ID) != null) {
-      criteria.add(Restrictions.eq(NOTIFICATION_ID, searchParams.get(NOTIFICATION_ID)));
+      predicates.add(cb.equal(root.get(NOTIFICATION_ID), searchParams.get(NOTIFICATION_ID)));
     }
     if (searchParams.get(X_CORRELATION_ID) != null) {
-      criteria.add(Restrictions.eq(X_CORRELATION_ID, searchParams.get(X_CORRELATION_ID)));
+      predicates.add(cb.equal(root.get(X_CORRELATION_ID), searchParams.get(X_CORRELATION_ID)));
     }
     if (searchParams.get(SUBMISSION_TIME) != null
         && searchParams.get(RESPONSE_RECEIVED_TIME) != null) {
-
-      Conjunction conjunction1 = Restrictions.conjunction();
-      Conjunction conjunction2 = Restrictions.conjunction();
-      Disjunction disjunction = Restrictions.disjunction();
 
       String submissionTimeString = searchParams.get(SUBMISSION_TIME);
       String responseReceivedTimeString = searchParams.get(RESPONSE_RECEIVED_TIME);
@@ -146,83 +146,114 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
       } catch (ParseException e) {
         logger.error("Exception while converting into date format", e);
       }
-      conjunction1.add(Restrictions.ge(SUBMISSION_TIME, submissionTimeDate));
-      conjunction1.add(Restrictions.le(SUBMISSION_TIME, responseReceivedTimeDate));
+      Predicate disjPred =
+              cb.or(
+                      cb.and(
+                              cb.greaterThanOrEqualTo(root.get(SUBMISSION_TIME), submissionTimeDate),
+                              cb.lessThanOrEqualTo(root.get(SUBMISSION_TIME), responseReceivedTimeDate)),
+                      cb.and(
+                              cb.greaterThanOrEqualTo(root.get(RESPONSE_RECEIVED_TIME), submissionTimeDate),
+                              cb.lessThanOrEqualTo(
+                                      root.get(RESPONSE_RECEIVED_TIME), responseReceivedTimeDate)));
 
-      conjunction2.add(Restrictions.ge(RESPONSE_RECEIVED_TIME, submissionTimeDate));
-      conjunction2.add(Restrictions.le(RESPONSE_RECEIVED_TIME, responseReceivedTimeDate));
-
-      disjunction.add(conjunction1);
-      disjunction.add(conjunction2);
-
-      criteria.add(disjunction);
+      predicates.add(disjPred);
     }
+
+    return predicates;
   }
 
   @Override
   public List<PublicHealthMessage> getPhMessageByXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    applySummaryFlagProjection(criteria, summaryFlag);
-    criteria.add(Restrictions.in(X_REQUEST_ID, xRequestIds));
-    return criteria.addOrder(Order.desc("id")).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    Expression<String> xRequestIdExpression = root.get(X_REQUEST_ID);
+    Predicate xRequestIdPredicate = xRequestIdExpression.in(xRequestIds);
+    cq.where(xRequestIdPredicate);
+    cq.orderBy(cb.desc(root.get("id")));
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   // @Override
   public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    applySummaryFlagProjection(criteria, summaryFlag);
-
-    Disjunction disjunction = Restrictions.disjunction();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+    List<Predicate> predicates = new ArrayList<Predicate>();
     for (String xRequestId : xRequestIds) {
-      disjunction.add(Restrictions.ilike(X_REQUEST_ID, xRequestId, MatchMode.ANYWHERE));
+      predicates.add(cb.like(cb.lower(root.get(X_REQUEST_ID)), xRequestId));
     }
-    criteria.add(disjunction);
-    return criteria.addOrder(Order.desc("id")).list();
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
+
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("id")));
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
-  private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
+  /*private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
     ProjectionList projectionList = Projections.projectionList();
     for (String propertyName : selectedProperties) {
       projectionList.add(Projections.property(propertyName), propertyName);
     }
     return projectionList;
-  }
+  }*/
 
   @Override
   public List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData) {
 
-    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     UUID id = publicHealthMessageData.getId();
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+    Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
     if (id != null) {
-      criteria.add(Restrictions.eq(ID, id));
+      predicates.add(cb.equal(root.get(ID), id));
     } else {
 
       String fhirServerBaseUrl = publicHealthMessageData.getFhirServerBaseUrl();
       if (fhirServerBaseUrl != null) {
-        criteria.add(Restrictions.eq(FHIR_SERVER_BASE_URL, fhirServerBaseUrl));
+        predicates.add(cb.equal(root.get(FHIR_SERVER_BASE_URL), fhirServerBaseUrl));
       }
 
       String notifiedResourceId = publicHealthMessageData.getNotifiedResourceId();
       if (notifiedResourceId != null) {
-        criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_ID, notifiedResourceId));
+        predicates.add(cb.equal(root.get(NOTIFIED_RESOURCE_ID), notifiedResourceId));
       }
 
       String patientId = publicHealthMessageData.getPatientId();
       if (patientId != null) {
-        criteria.add(Restrictions.eq(PATIENT_ID, patientId));
+        predicates.add(cb.equal(root.get(PATIENT_ID), patientId));
       }
 
       Integer submittedVersionNumber = publicHealthMessageData.getSubmittedVersionNumber();
       if (submittedVersionNumber != null) {
-        criteria.add(Restrictions.eq(SUBMITTED_VERSION_NUMBER, submittedVersionNumber));
+        predicates.add(cb.equal(root.get(SUBMITTED_VERSION_NUMBER), submittedVersionNumber));
       }
     }
 
-    return criteria.list();
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
+
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
+
+    Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   @Override
@@ -230,37 +261,38 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     getSession().delete(message);
   }
 
-  private List<String> getSelectedProperties() {
-    return Arrays.asList(
-        "id",
-        "fhirServerBaseUrl",
-        "patientId",
-        "encounterId",
-        "notifiedResourceId",
-        "notifiedResourceType",
-        "karUniqueId",
-        "notificationId",
-        "xCorrelationId",
-        "xRequestId",
-        "submittedMessageType",
-        "submittedDataId",
-        "submittedVersionNumber",
-        "submittedMessageId",
-        "submissionMessageStatus",
-        "submissionTime",
-        "responseMessageType",
-        "responseDataId",
-        "responseMessageId",
-        "responseProcessingInstruction",
-        "responseProcessingStatus",
-        "responseReceivedTime",
-        "responseEhrDocRefId",
-        "initiatingAction",
-        "patientLinkerId",
-        "lastUpdated");
+  private CompoundSelection<Object[]> getSelectedProperties(
+          CriteriaBuilder cb, Root<PublicHealthMessage> root) {
+    return cb.array(
+            root.get("id"),
+            root.get("fhirServerBaseUrl"),
+            root.get("patientId"),
+            root.get("encounterId"),
+            root.get("notifiedResourceId"),
+            root.get("notifiedResourceType"),
+            root.get("karUniqueId"),
+            root.get("notificationId"),
+            root.get("xCorrelationId"),
+            root.get("xRequestId"),
+            root.get("submittedMessageType"),
+            root.get("submittedDataId"),
+            root.get("submittedVersionNumber"),
+            root.get("submittedMessageId"),
+            root.get("submissionMessageStatus"),
+            root.get("submissionTime"),
+            root.get("responseMessageType"),
+            root.get("responseDataId"),
+            root.get("responseMessageId"),
+            root.get("responseProcessingInstruction"),
+            root.get("responseProcessingStatus"),
+            root.get("responseReceivedTime"),
+            root.get("responseEhrDocRefId"),
+            root.get("initiatingAction"),
+            root.get("patientLinkerId"),
+            root.get("lastUpdated"));
   }
 
-  private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {
+  /*private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {
     if (summaryFlag) {
       List<String> selectedProperties = getSelectedProperties();
       ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
@@ -269,5 +301,5 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
       criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
     }
-  }
+  }*/
 }

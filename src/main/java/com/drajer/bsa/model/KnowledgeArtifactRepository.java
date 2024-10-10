@@ -7,17 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -58,7 +48,7 @@ public class KnowledgeArtifactRepository {
   private String repoName;
 
   @Column(name = "repo_status", nullable = true)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean repoStatus;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

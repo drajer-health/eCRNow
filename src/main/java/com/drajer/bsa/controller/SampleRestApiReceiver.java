@@ -1,8 +1,8 @@
 package com.drajer.bsa.controller;
 
 import com.drajer.bsa.model.RestApiBody;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;

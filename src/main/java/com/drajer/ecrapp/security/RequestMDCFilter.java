@@ -2,8 +2,8 @@ package com.drajer.ecrapp.security;
 
 import java.io.IOException;
 import java.util.UUID;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;

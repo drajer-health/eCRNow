@@ -3,6 +3,7 @@ package com.drajer.ecrapp.dao.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 import com.drajer.bsa.dao.impl.PhMessageDaoImpl;
@@ -14,16 +15,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.hibernate.Criteria;
+//import org.hibernate.Criteria;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.ProjectionList;
+//import org.hibernate.criterion.ProjectionList;
+import org.hibernate.query.Query;
+import org.hibernate.query.criteria.CriteriaDefinition;
+import org.hibernate.query.criteria.HibernateCriteriaBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,7 +44,20 @@ public class PhMessageDaoTest {
 
   @Mock private Session session;
 
-  @Mock private Criteria criteria;
+  @Mock private EntityManagerFactory emf;
+
+  @Mock private EntityManager em;
+
+  @Mock private Query query;
+
+  @Mock private CriteriaBuilder cb;
+
+  @Mock private CriteriaQuery<PublicHealthMessage> cq;
+
+  @Mock Root<PublicHealthMessage> root;
+
+  @Mock
+  Path<Object> xRequestIdExpression;
 
   @InjectMocks private PhMessageDaoImpl phMessageDaoImpl;
 
@@ -52,10 +73,16 @@ public class PhMessageDaoTest {
         TestUtils.readFileContents(SEARCH_PARAM_FILE, new TypeReference<Map<String, String>>() {});
 
     Mockito.lenient().when(sessionFactory.getCurrentSession()).thenReturn(session);
-    Mockito.lenient().when(session.createCriteria(PublicHealthMessage.class)).thenReturn(criteria);
+    Mockito.lenient().when(session.getEntityManagerFactory()).thenReturn(emf);
+    Mockito.lenient().when(emf.createEntityManager()).thenReturn(em);
+    Mockito.lenient().when(em.getCriteriaBuilder()).thenReturn(cb);
+    Mockito.lenient().when(cb.createQuery(PublicHealthMessage.class)).thenReturn(cq);
+    Mockito.lenient().when(cq.from(PublicHealthMessage.class)).thenReturn(root);
+    Mockito.lenient().when(root.get(anyString())).thenReturn(xRequestIdExpression);
     mockProjectionAndCriteria();
 
-    Mockito.lenient().when(criteria.list()).thenReturn(expectedPublicHealthMessages);
+    Mockito.lenient().when(session.createQuery(any(CriteriaQuery.class))).thenReturn(query);
+    Mockito.lenient().when(query.getResultList()).thenReturn(expectedPublicHealthMessages);
   }
 
   @Test
@@ -117,9 +144,9 @@ public class PhMessageDaoTest {
   }
 
   private void mockProjectionAndCriteria() {
-    Mockito.lenient().when(criteria.setProjection(any(ProjectionList.class))).thenReturn(criteria);
+    /*Mockito.lenient().when(criteria.setProjection(any(ProjectionList.class))).thenReturn(criteria);
     Mockito.lenient().when(criteria.setResultTransformer(any())).thenReturn(criteria);
     Mockito.lenient().when(criteria.add(any())).thenReturn(criteria);
-    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);
+    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);*/
   }
 }

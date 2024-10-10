@@ -4,10 +4,13 @@ import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -32,22 +35,30 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public KnowledgeArtifactRepository getKARByUrl(String url) {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
-    criteria.add(Restrictions.eq("fhirServerURL", url));
-    return (KnowledgeArtifactRepository) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactRepository> cq =
+            cb.createQuery(KnowledgeArtifactRepository.class);
+    Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
+    cq.where(cb.equal(root.get("fhirServerURL"), url));
+
+    Query<KnowledgeArtifactRepository> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   @Override
   public List<KnowledgeArtifactRepository> getAllKARs() {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class, "repos");
-    criteria.add(Restrictions.eq("repoStatus", true));
-    // criteria.createAlias("repos.karsInfo", "karInfo");
-    // criteria.add(Restrictions.eq("karInfo.karAvailable", true));
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactRepository> cq =
+            cb.createQuery(KnowledgeArtifactRepository.class);
+    Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
 
-    List<KnowledgeArtifactRepository> kars = criteria.addOrder(Order.desc("id")).list();
+    Query<KnowledgeArtifactRepository> q = getSession().createQuery(cq);
+    cq.orderBy(cb.desc(root.get("id")));
 
-    kars = removeKarsNotAvailable(kars);
-    return kars;
+    return q.getResultList();
   }
 
   private List<KnowledgeArtifactRepository> removeKarsNotAvailable(
@@ -68,22 +79,37 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(Integer hsId) {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
-    criteria.add(Restrictions.eq("hsId", hsId));
-    List<KnowledgeArtifactStatus> kars = criteria.list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
+    Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
+    cq.where(cb.equal(root.get("hsId"), hsId));
+
+    Query<KnowledgeArtifactStatus> q = getSession().createQuery(cq);
+
     logger.info("Getting KAR Status by hsId. ");
-    return kars;
+
+    return q.getResultList();
   }
 
   @Override
   public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(
       String karId, String karVersion, Integer hsId) {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
-    criteria.add(Restrictions.eq("versionUniqueKarId", karId + "|" + karVersion));
-    criteria.add(Restrictions.eq("hsId", hsId));
-    KnowledgeArtifactStatus kars = (KnowledgeArtifactStatus) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
+    Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
+
+    Predicate criteria =
+            cb.and(
+                    cb.equal(root.get("launchPatientId"), karId + "|" + karVersion),
+                    cb.equal(root.get("hsId"), hsId));
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("docVersion")));
+
+    Query<KnowledgeArtifactStatus> q = getSession().createQuery(cq);
     logger.info("Getting KAR Status by using karId and karVersion. ");
 
-    return kars;
+    return q.uniqueResult();
   }
 }

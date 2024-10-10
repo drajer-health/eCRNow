@@ -4,7 +4,7 @@ import com.drajer.bsa.dao.PublicHealthAuthorityDao;
 import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.bsa.service.PublicHealthAuthorityService;
 import java.util.List;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

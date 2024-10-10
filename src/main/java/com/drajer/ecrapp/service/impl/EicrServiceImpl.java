@@ -24,7 +24,7 @@ import com.drajer.sof.utils.RefreshTokenScheduler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
