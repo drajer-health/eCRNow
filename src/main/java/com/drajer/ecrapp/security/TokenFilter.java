@@ -2,13 +2,13 @@ package com.drajer.ecrapp.security;
 
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.service.ClientDetailsService;
-import java.io.IOException;
-import java.util.stream.Collectors;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.stream.Collectors;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;

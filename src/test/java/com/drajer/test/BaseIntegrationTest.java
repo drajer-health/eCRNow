@@ -90,9 +90,9 @@ public abstract class BaseIntegrationTest {
 
       // Hardcode FHIR URL to match clientDetail to avoid mistakes in test data file.
       String fhirUrl =
-              clientDetails != null
-                      ? clientDetails.getFhirServerBaseURL()
-                      : URL + wireMockHttpPort + fhirBaseUrl;
+          clientDetails != null
+              ? clientDetails.getFhirServerBaseURL()
+              : URL + wireMockHttpPort + fhirBaseUrl;
       JSONObject jsonObject = new JSONObject(systemLaunchPayload);
       jsonObject.put("fhirServerURL", fhirUrl);
       systemLaunchPayload = jsonObject.toString();

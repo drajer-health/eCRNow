@@ -38,7 +38,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactRepository> cq =
-            cb.createQuery(KnowledgeArtifactRepository.class);
+        cb.createQuery(KnowledgeArtifactRepository.class);
     Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
     cq.where(cb.equal(root.get("fhirServerURL"), url));
 
@@ -52,7 +52,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactRepository> cq =
-            cb.createQuery(KnowledgeArtifactRepository.class);
+        cb.createQuery(KnowledgeArtifactRepository.class);
     Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
 
     Query<KnowledgeArtifactRepository> q = getSession().createQuery(cq);
@@ -101,9 +101,9 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
     Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
 
     Predicate criteria =
-            cb.and(
-                    cb.equal(root.get("launchPatientId"), karId + "|" + karVersion),
-                    cb.equal(root.get("hsId"), hsId));
+        cb.and(
+            cb.equal(root.get("launchPatientId"), karId + "|" + karVersion),
+            cb.equal(root.get("hsId"), hsId));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get("docVersion")));
 

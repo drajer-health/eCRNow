@@ -3,8 +3,8 @@ package com.drajer.bsa.service.impl;
 import com.drajer.bsa.dao.PublicHealthAuthorityDao;
 import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.bsa.service.PublicHealthAuthorityService;
-import java.util.List;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

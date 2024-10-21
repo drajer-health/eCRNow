@@ -11,27 +11,22 @@ import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.sof.model.PublicHealthMessageData;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-//import org.hibernate.Criteria;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-//import org.hibernate.criterion.ProjectionList;
 import org.hibernate.query.Query;
-import org.hibernate.query.criteria.CriteriaDefinition;
-import org.hibernate.query.criteria.HibernateCriteriaBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,8 +51,7 @@ public class PhMessageDaoTest {
 
   @Mock Root<PublicHealthMessage> root;
 
-  @Mock
-  Path<Object> xRequestIdExpression;
+  @Mock Path<Object> xRequestIdExpression;
 
   @InjectMocks private PhMessageDaoImpl phMessageDaoImpl;
 

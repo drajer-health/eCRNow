@@ -37,10 +37,10 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
     CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
     Root<LaunchDetails> root = cq.from(LaunchDetails.class);
     Predicate criteria =
-            cb.and(
-                    cb.equal(root.get("ehrServerURL"), fhirServerUrl),
-                    cb.equal(root.get("launchPatientId"), patient),
-                    cb.equal(root.get("encounterId"), encounter));
+        cb.and(
+            cb.equal(root.get("ehrServerURL"), fhirServerUrl),
+            cb.equal(root.get("launchPatientId"), patient),
+            cb.equal(root.get("encounterId"), encounter));
     cq.where(criteria);
 
     Query<LaunchDetails> q = getSession().createQuery(cq);

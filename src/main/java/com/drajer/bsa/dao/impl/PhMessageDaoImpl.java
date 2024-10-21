@@ -1,27 +1,25 @@
 package com.drajer.bsa.dao.impl;
 
+import static com.drajer.ecrapp.dao.impl.EicrDaoImpl.RESPONSE_DOC_ID;
+
 import com.drajer.bsa.dao.PhMessageDao;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.sof.model.PublicHealthMessageData;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.*;
-import org.hibernate.transform.Transformers;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.*;
-import org.hibernate.query.Query;
-
-import static com.drajer.ecrapp.dao.impl.EicrDaoImpl.RESPONSE_DOC_ID;
 
 @Repository
 @Transactional
@@ -56,7 +54,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
     List<Predicate> predicates = preparePredicate(cb, root, searchParams);
     predicates.add(
-            cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+        cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
     Predicate[] predArr = new Predicate[predicates.size()];
     predArr = predicates.toArray(predArr);
     Predicate criteria = cb.and(predArr);
@@ -84,12 +82,12 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   }
 
   public static List<Predicate> preparePredicate(
-          CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
+      CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
     List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(FHIR_SERVER_BASE_URL) != null) {
       predicates.add(
-              cb.equal(root.get(FHIR_SERVER_BASE_URL), searchParams.get(FHIR_SERVER_BASE_URL)));
+          cb.equal(root.get(FHIR_SERVER_BASE_URL), searchParams.get(FHIR_SERVER_BASE_URL)));
     }
     if (searchParams.get(PATIENT_ID) != null) {
       predicates.add(cb.equal(root.get(PATIENT_ID), searchParams.get(PATIENT_ID)));
@@ -111,17 +109,17 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     }
     if (searchParams.get(RESPONSE_PROCESSING_INSTRUCTION) != null) {
       predicates.add(
-              cb.equal(
-                      root.get(RESPONSE_PROCESSING_INSTRUCTION),
-                      searchParams.get(RESPONSE_PROCESSING_INSTRUCTION)));
+          cb.equal(
+              root.get(RESPONSE_PROCESSING_INSTRUCTION),
+              searchParams.get(RESPONSE_PROCESSING_INSTRUCTION)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_ID) != null) {
       predicates.add(
-              cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
+          cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_TYPE) != null) {
       predicates.add(
-              cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
+          cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
     }
     if (searchParams.get(KAR_UNIQUE_ID) != null) {
       predicates.add(cb.equal(root.get(KAR_UNIQUE_ID), searchParams.get(KAR_UNIQUE_ID)));
@@ -147,14 +145,14 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
         logger.error("Exception while converting into date format", e);
       }
       Predicate disjPred =
-              cb.or(
-                      cb.and(
-                              cb.greaterThanOrEqualTo(root.get(SUBMISSION_TIME), submissionTimeDate),
-                              cb.lessThanOrEqualTo(root.get(SUBMISSION_TIME), responseReceivedTimeDate)),
-                      cb.and(
-                              cb.greaterThanOrEqualTo(root.get(RESPONSE_RECEIVED_TIME), submissionTimeDate),
-                              cb.lessThanOrEqualTo(
-                                      root.get(RESPONSE_RECEIVED_TIME), responseReceivedTimeDate)));
+          cb.or(
+              cb.and(
+                  cb.greaterThanOrEqualTo(root.get(SUBMISSION_TIME), submissionTimeDate),
+                  cb.lessThanOrEqualTo(root.get(SUBMISSION_TIME), responseReceivedTimeDate)),
+              cb.and(
+                  cb.greaterThanOrEqualTo(root.get(RESPONSE_RECEIVED_TIME), submissionTimeDate),
+                  cb.lessThanOrEqualTo(
+                      root.get(RESPONSE_RECEIVED_TIME), responseReceivedTimeDate)));
 
       predicates.add(disjPred);
     }
@@ -262,34 +260,34 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   }
 
   private CompoundSelection<Object[]> getSelectedProperties(
-          CriteriaBuilder cb, Root<PublicHealthMessage> root) {
+      CriteriaBuilder cb, Root<PublicHealthMessage> root) {
     return cb.array(
-            root.get("id"),
-            root.get("fhirServerBaseUrl"),
-            root.get("patientId"),
-            root.get("encounterId"),
-            root.get("notifiedResourceId"),
-            root.get("notifiedResourceType"),
-            root.get("karUniqueId"),
-            root.get("notificationId"),
-            root.get("xCorrelationId"),
-            root.get("xRequestId"),
-            root.get("submittedMessageType"),
-            root.get("submittedDataId"),
-            root.get("submittedVersionNumber"),
-            root.get("submittedMessageId"),
-            root.get("submissionMessageStatus"),
-            root.get("submissionTime"),
-            root.get("responseMessageType"),
-            root.get("responseDataId"),
-            root.get("responseMessageId"),
-            root.get("responseProcessingInstruction"),
-            root.get("responseProcessingStatus"),
-            root.get("responseReceivedTime"),
-            root.get("responseEhrDocRefId"),
-            root.get("initiatingAction"),
-            root.get("patientLinkerId"),
-            root.get("lastUpdated"));
+        root.get("id"),
+        root.get("fhirServerBaseUrl"),
+        root.get("patientId"),
+        root.get("encounterId"),
+        root.get("notifiedResourceId"),
+        root.get("notifiedResourceType"),
+        root.get("karUniqueId"),
+        root.get("notificationId"),
+        root.get("xCorrelationId"),
+        root.get("xRequestId"),
+        root.get("submittedMessageType"),
+        root.get("submittedDataId"),
+        root.get("submittedVersionNumber"),
+        root.get("submittedMessageId"),
+        root.get("submissionMessageStatus"),
+        root.get("submissionTime"),
+        root.get("responseMessageType"),
+        root.get("responseDataId"),
+        root.get("responseMessageId"),
+        root.get("responseProcessingInstruction"),
+        root.get("responseProcessingStatus"),
+        root.get("responseReceivedTime"),
+        root.get("responseEhrDocRefId"),
+        root.get("initiatingAction"),
+        root.get("patientLinkerId"),
+        root.get("lastUpdated"));
   }
 
   /*private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {

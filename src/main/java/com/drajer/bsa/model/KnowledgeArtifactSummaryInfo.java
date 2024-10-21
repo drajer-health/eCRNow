@@ -2,7 +2,6 @@ package com.drajer.bsa.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
 
 /**
  *

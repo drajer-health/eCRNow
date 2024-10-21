@@ -55,12 +55,12 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
 
     Predicate criteria =
-            cb.and(
-                    cb.equal(root.get(FHIR_SERVER_URL), message.getFhirServerBaseUrl()),
-                    cb.equal(root.get(NOTIFIED_RESOURCE_ID), message.getNotifiedResourceId()),
-                    cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), message.getNotifiedResourceType()),
-                    cb.equal(root.get(PATIENT_ID), message.getPatientId()),
-                    cb.equal(root.get(KAR_UNIQUE_ID), message.getKarUniqueId()));
+        cb.and(
+            cb.equal(root.get(FHIR_SERVER_URL), message.getFhirServerBaseUrl()),
+            cb.equal(root.get(NOTIFIED_RESOURCE_ID), message.getNotifiedResourceId()),
+            cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), message.getNotifiedResourceType()),
+            cb.equal(root.get(PATIENT_ID), message.getPatientId()),
+            cb.equal(root.get(KAR_UNIQUE_ID), message.getKarUniqueId()));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get(SUBMITTED_VERSION_NUMBER)));
 
@@ -160,7 +160,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
   }
 
   public static List<Predicate> preparePredicate(
-          CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
+      CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
     List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(SUBMITTED_DATA_ID) != null) {
@@ -168,7 +168,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
     }
     if (searchParams.get(SUBMITTED_VERSION_NUMBER) != null) {
       predicates.add(
-              cb.equal(root.get(SUBMITTED_VERSION_NUMBER), searchParams.get(SUBMITTED_VERSION_NUMBER)));
+          cb.equal(root.get(SUBMITTED_VERSION_NUMBER), searchParams.get(SUBMITTED_VERSION_NUMBER)));
     }
     if (searchParams.get(RESPONSE_DATA_ID) != null) {
       predicates.add(cb.equal(root.get(RESPONSE_DATA_ID), searchParams.get(RESPONSE_DATA_ID)));
@@ -184,18 +184,18 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
     }
     if (searchParams.get(NOTIFIED_RESOURCE_ID) != null) {
       predicates.add(
-              cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
+          cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_TYPE) != null) {
       predicates.add(
-              cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
+          cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
     }
     if (searchParams.get(KAR_UNIQUE_ID) != null) {
       predicates.add(cb.equal(root.get(KAR_UNIQUE_ID), searchParams.get(KAR_UNIQUE_ID)));
     }
     if (searchParams.get(SUBMITTED_MESSAGE_ID) != null) {
       predicates.add(
-              cb.equal(root.get(SUBMITTED_MESSAGE_ID), searchParams.get(SUBMITTED_MESSAGE_ID)));
+          cb.equal(root.get(SUBMITTED_MESSAGE_ID), searchParams.get(SUBMITTED_MESSAGE_ID)));
     }
     if (searchParams.get(X_REQUEST_ID) != null) {
       predicates.add(cb.equal(root.get(X_REQUEST_ID), searchParams.get(X_REQUEST_ID)));
@@ -205,16 +205,16 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
     }
     if (searchParams.get(RESPONSE_MESSAGE_ID) != null) {
       predicates.add(
-              cb.equal(root.get(RESPONSE_MESSAGE_ID), searchParams.get(RESPONSE_MESSAGE_ID)));
+          cb.equal(root.get(RESPONSE_MESSAGE_ID), searchParams.get(RESPONSE_MESSAGE_ID)));
     }
     if (searchParams.get(RESPONSE_PROCESSING_INS) != null) {
       predicates.add(
-              cb.equal(root.get(RESPONSE_PROCESSING_INS), searchParams.get(RESPONSE_PROCESSING_INS)));
+          cb.equal(root.get(RESPONSE_PROCESSING_INS), searchParams.get(RESPONSE_PROCESSING_INS)));
     }
     if (searchParams.get(RESPONSE_PROCESSING_STATUS) != null) {
       predicates.add(
-              cb.equal(
-                      root.get(RESPONSE_PROCESSING_STATUS), searchParams.get(RESPONSE_PROCESSING_STATUS)));
+          cb.equal(
+              root.get(RESPONSE_PROCESSING_STATUS), searchParams.get(RESPONSE_PROCESSING_STATUS)));
     }
 
     return predicates;

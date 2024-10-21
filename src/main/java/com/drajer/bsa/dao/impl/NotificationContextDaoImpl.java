@@ -96,11 +96,11 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     Root<NotificationContext> root = cq.from(NotificationContext.class);
 
     Predicate criteria =
-            cb.and(
-                    cb.equal(root.get("fhirServerBaseURL"), url),
-                    cb.equal(root.get("patientId"), patientId),
-                    cb.equal(root.get("notificationResourceId"), notificationResourceId),
-                    cb.equal(root.get("notificationResourceType"), notificationResourceType));
+        cb.and(
+            cb.equal(root.get("fhirServerBaseURL"), url),
+            cb.equal(root.get("patientId"), patientId),
+            cb.equal(root.get("notificationResourceId"), notificationResourceId),
+            cb.equal(root.get("notificationResourceType"), notificationResourceType));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get("docVersion")));
 

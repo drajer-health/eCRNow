@@ -52,10 +52,10 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     Root<Eicr> root = cq.from(Eicr.class);
 
     Predicate criteria =
-            cb.and(
-                    cb.equal(root.get(FHIR_SERVER_URL), eicr.getFhirServerUrl()),
-                    cb.equal(root.get("launchPatientId"), eicr.getLaunchPatientId()),
-                    cb.equal(root.get(ENCOUNTER_ID), eicr.getEncounterId()));
+        cb.and(
+            cb.equal(root.get(FHIR_SERVER_URL), eicr.getFhirServerUrl()),
+            cb.equal(root.get("launchPatientId"), eicr.getLaunchPatientId()),
+            cb.equal(root.get(ENCOUNTER_ID), eicr.getEncounterId()));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get("docVersion")));
 
@@ -105,7 +105,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     Root<Eicr> root = cq.from(Eicr.class);
     List<Predicate> predicates = preparePredicate(cb, root, searchParams);
     predicates.add(
-            cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+        cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
 
     Predicate[] predArr = new Predicate[predicates.size()];
     predArr = predicates.toArray(predArr);
@@ -145,7 +145,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public static List<Predicate> preparePredicate(
-          CriteriaBuilder cb, Root<Eicr> root, Map<String, String> searchParams) {
+      CriteriaBuilder cb, Root<Eicr> root, Map<String, String> searchParams) {
     List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(EICR_DOC_ID) != null) {

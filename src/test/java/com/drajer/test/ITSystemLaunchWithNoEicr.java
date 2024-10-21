@@ -9,13 +9,12 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
-import java.io.IOException;
-import java.util.*;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.io.IOException;
+import java.util.*;
 import org.hibernate.query.Query;
 import org.junit.Before;
 import org.junit.Test;

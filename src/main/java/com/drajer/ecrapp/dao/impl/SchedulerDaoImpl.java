@@ -30,9 +30,9 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
     String queryString = actionType + "_" + launchId + "_";
 
     Predicate criteria =
-            cb.and(
-                    cb.equal(root.get(TASK_NAME), "EICRTask"),
-                    cb.like(root.get("launchPatientId"), queryString));
+        cb.and(
+            cb.equal(root.get(TASK_NAME), "EICRTask"),
+            cb.like(root.get("launchPatientId"), queryString));
     cq.where(criteria);
 
     Query<ScheduledTasks> q = getSession().createQuery(cq);

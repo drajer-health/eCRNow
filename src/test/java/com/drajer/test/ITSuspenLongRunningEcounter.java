@@ -9,15 +9,14 @@ import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -50,8 +49,7 @@ public class ITSuspenLongRunningEcounter extends BaseIntegrationTest {
   private Map<String, String> testData;
   private Map<String, ?> allResourceMapping;
   private Map<String, ?> allOtherMapping;
-  @Autowired
-  private SessionFactory sessionFactory;
+  @Autowired private SessionFactory sessionFactory;
 
   protected Session getSession() {
     return sessionFactory.getCurrentSession();
