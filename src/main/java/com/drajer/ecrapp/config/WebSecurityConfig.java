@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -45,14 +44,15 @@ public class WebSecurityConfig {
           (Filter) context.getAutowireCapableBeanFactory().autowire(classInstance, 1, true);
 
       http.securityMatcher("/api/**")
-          .csrf(Customizer.withDefaults())
+          .csrf(csrf -> csrf.disable())
           .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
-          .authorizeRequests()
+          .authorizeHttpRequests()
           .anyRequest()
           .authenticated();
+
     } else {
       logger.info("Token Filter class Name is empty");
-      http.csrf(Customizer.withDefaults()).authorizeRequests().anyRequest().permitAll();
+      http.csrf(csrf -> csrf.disable()).authorizeRequests().anyRequest().permitAll();
     }
 
     return http.build();

@@ -182,10 +182,10 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
       EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
       CriteriaBuilder cb = em.getCriteriaBuilder();
       CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-
-      Query<Eicr> q = getSession().createQuery(cq);
-
-      return q.getResultList();
+      Root<Eicr> root = cq.from(Eicr.class);
+      cq.select(root);
+      Query<Eicr> query = session.createQuery(cq);
+      return query.getResultList();
     } catch (Exception e) {
       logger.error("Exception retrieving EICR ", e);
       fail("Something went wrong retrieving EICR, check the log");

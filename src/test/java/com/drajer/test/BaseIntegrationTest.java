@@ -10,6 +10,7 @@ import com.drajer.test.util.WireMockHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.TimeZone;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -58,7 +60,10 @@ public abstract class BaseIntegrationTest {
   protected Transaction tx = null;
   protected HttpHeaders headers = new HttpHeaders();
 
-  protected static final TestRestTemplate restTemplate = new TestRestTemplate();
+  @Autowired private RestTemplateBuilder restTemplateBuilder; // Autowire RestTemplateBuilder
+
+  //  protected TestRestTemplate restTemplate;
+  protected TestRestTemplate restTemplate;
   protected static final ObjectMapper mapper = new ObjectMapper();
 
   protected static final String URL = "http://localhost:";
@@ -70,6 +75,12 @@ public abstract class BaseIntegrationTest {
 
   @Before
   public void setUp() throws Throwable {
+    restTemplate =
+        new TestRestTemplate(
+            restTemplateBuilder
+                .setConnectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
+                .setReadTimeout(Duration.ofSeconds(600)) // Set read timeout
+            );
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();
     wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
@@ -125,9 +136,11 @@ public abstract class BaseIntegrationTest {
     // Insert ClientDetails Row
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<String> entity = new HttpEntity<>(clientDetailString, headers);
+
     ResponseEntity<String> response =
         restTemplate.exchange(
             createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
+
     clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
 
     assertEquals("Failed to save client details", HttpStatus.OK, response.getStatusCode());

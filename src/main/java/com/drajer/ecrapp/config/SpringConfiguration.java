@@ -73,7 +73,6 @@ public class SpringConfiguration {
 
     return template;
   }
-
   // Needed for the evaluator configuration
   @Bean
   public FhirContext fhirContext() {
