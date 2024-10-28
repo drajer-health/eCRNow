@@ -1,4 +1,4 @@
-version:3.8
+version: "3.8"
 services:
   postgres:
     image: postgres:15
@@ -6,8 +6,8 @@ services:
     environment:
       POSTGRES_PASSWORD: ecrnow@2024
       POSTGRES_DB: ecrnow
-    networks:
-      - ecrnow_network
+    #networks:
+    #  - ecrnow_network
     ports:
       - "5432:5432"
 
@@ -18,10 +18,10 @@ services:
     container_name: ecr-now
     depends_on:
       - postgres
-    networks:
-      - ecrnow_network
+    #networks:
+    #  - ecrnow_network
     volumes:
-      - D://ecr-now:/config
+      - /var/lib/postgresql/data
     environment:
       - logging.file.name=/config/ecrNow.log
       - ersd.file.location=/config/eRSDv2_specification_bundle.json
@@ -37,8 +37,8 @@ services:
     ports:
       - "8081:8080"
 
-networks:
-  ecrnow_network:
-    driver: bridge
-    external: true
-    name: ecrnow_network
+#networks:
+#  ecrnow_network:
+#    driver: bridge
+#    external: true
+#    name: ecrnow_network

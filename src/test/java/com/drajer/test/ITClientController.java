@@ -106,7 +106,7 @@ public class ITClientController extends BaseIntegrationTest {
 
     // Fetch the row
     String getUrl = clientUrl + "/" + clientDetails.getId();
-    response = invokeClientDetailAPI(clientDetailPayload, getUrl, HttpMethod.GET);
+    response = invokeGetClientDetailAPI(getUrl, HttpMethod.GET);
     ClientDetails actualClientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -124,7 +124,7 @@ public class ITClientController extends BaseIntegrationTest {
 
     // Fetch the row
     String getUrl = clientUrl + "?url=" + clientDetails.getFhirServerBaseURL();
-    response = invokeClientDetailAPI(clientDetailPayload, getUrl, HttpMethod.GET);
+    response = invokeGetClientDetailAPI(getUrl, HttpMethod.GET);
     ClientDetails actualClientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -149,7 +149,7 @@ public class ITClientController extends BaseIntegrationTest {
 
     // Fetch the row
     String getUrl = clientUrl + "/";
-    response = invokeClientDetailAPI(clientDetailPayload, getUrl, HttpMethod.GET);
+    response = invokeGetClientDetailAPI(getUrl, HttpMethod.GET);
 
     List<ClientDetails> clientList =
         (List<ClientDetails>) mapper.readValue(response.getBody(), List.class);
@@ -203,6 +203,12 @@ public class ITClientController extends BaseIntegrationTest {
       String testSaveClientData, String url, HttpMethod post) {
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<String> entity = new HttpEntity<>(testSaveClientData, headers);
+    return restTemplate.exchange(url, post, entity, String.class);
+  }
+
+  private ResponseEntity<String> invokeGetClientDetailAPI(String url, HttpMethod post) {
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    HttpEntity<String> entity = new HttpEntity<>(headers);
     return restTemplate.exchange(url, post, entity, String.class);
   }
 

@@ -46,7 +46,6 @@ public class CdaParserConstants {
   }
 
   public static final String DEFAULT_XPATH = "/ClinicalDocument";
-
   // RR data
   public static final String RR_DOC_CODE = "88085-6";
   public static final String RR_DOC_CODE_SYSTEM = "http://loinc.org";
