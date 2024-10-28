@@ -1,5 +1,6 @@
 package com.drajer.cdafromr4;
 
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import org.hl7.fhir.r4.model.Patient;
@@ -14,7 +15,8 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
   public void testGenerateCdaBodyWithEmptyComponent() {
     String expectedXml =
         "<component>\r\n" + "<structuredBody>\r\n" + "</structuredBody>\r\n" + "</component>";
-    String actualXml = CdaBodyGenerator.generateCdaBody(null, null);
+    String actualXml =
+        CdaBodyGenerator.generateCdaBody(null, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -23,7 +25,9 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
   public void testGenerateCdaBodyWithEmptyData() {
     R4FhirData r4FhirData = createEmptyR4FhirData();
     String expectedXml = TestUtils.getFileContentAsString(EMPTY_SECTION_BODY_CDA_FILE);
-    String actualXml = CdaBodyGenerator.generateCdaBody(r4FhirData, null);
+    String actualXml =
+        CdaBodyGenerator.generateCdaBody(
+            r4FhirData, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertXmlEquals(expectedXml, actualXml);
   }

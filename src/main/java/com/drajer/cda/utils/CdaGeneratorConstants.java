@@ -91,6 +91,7 @@ public class CdaGeneratorConstants {
 
   public static final String PUBLIC_HEALTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2";
   public static final String PUBLIC_HEALTH_EXT = "2016-12-01";
+  public static final String PUBLIC_HEALTH_EXT_R31 = "2022-05-01";
   public static final String PH_DOC_CODE = "55751-2";
   public static final String PH_DOC_DISPLAY_NAME = "Initial Public Health Case Report";
 
@@ -453,6 +454,8 @@ public class CdaGeneratorConstants {
   public static final String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.15.2.3.2";
   public static final String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT = "2016-12-01";
+  public static final String PLANNED_PROC_TRIGGER_TEMPLATE = "2.16.840.1.113883.10.20.15.2.3.42";
+  public static final String PLANNED_PROC_TRIGGER_TEMPLATE_EXT = "2021-01-01";
   public static final String QRDA_LAB_RESULTS_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.40";
   public static final String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.24.3.38";
@@ -943,6 +946,10 @@ public class CdaGeneratorConstants {
       "http://terminology.hl7.org/CodeSystem/v2-0131";
   public static final String DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
       "http://hl7.org/fhir/patient-contact-relationship";
+
+  // CDA eICR versions supported
+  public static final String CDA_EICR_VERSION_R11 = "CDA_R11";
+  public static final String CDA_EICR_VERSION_R31 = "CDA_R31";
 
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();

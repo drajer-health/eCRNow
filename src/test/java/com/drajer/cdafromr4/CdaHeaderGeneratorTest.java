@@ -70,7 +70,9 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     when(actionRepoMock.getEicrRRService()).thenReturn(eicrRRServiceMock);
     when(eicrRRServiceMock.getMaxVersionId(any(Eicr.class))).thenReturn(1);
 
-    String actualXml = CdaHeaderGenerator.createCdaHeader(r4Data, launchDetails, eicr);
+    String actualXml =
+        CdaHeaderGenerator.createCdaHeader(
+            r4Data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertNotNull(actualXml);
   }

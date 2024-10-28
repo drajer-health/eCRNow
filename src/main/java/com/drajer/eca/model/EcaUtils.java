@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
@@ -164,14 +165,18 @@ public class EcaUtils {
 
         logger.info("Creating eICR based on FHIR DSTU2");
         Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-        eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
+        eICR =
+            Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(
+                dstu2Data, details, ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
       } else if (data instanceof R4FhirData) {
 
         logger.info("Creating eICR based on FHIR R4");
         R4FhirData r4Data = (R4FhirData) data;
 
-        eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
+        eICR =
+            CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+                r4Data, details, ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
       } else {
 

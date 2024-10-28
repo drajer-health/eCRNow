@@ -11,7 +11,7 @@ public class Dstu2CdaBodyGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaBodyGenerator.class);
 
-  public static String generateCdaBody(Dstu2FhirData data, LaunchDetails details) {
+  public static String generateCdaBody(Dstu2FhirData data, LaunchDetails details, String version) {
 
     StringBuilder eICRBody = new StringBuilder(200);
 

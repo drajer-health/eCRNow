@@ -123,7 +123,8 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
         .thenReturn(labSection);
 
     String actualXml =
-        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(data, launchDetails, eicr);
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     // saveDataToFile(actualXml,
     // "C://codebase/eCRNow/src/test/resources/CdaTestData/Eicr/eicr.xml");
@@ -158,7 +159,8 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
         .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
 
     String actualXml =
-        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, launchDetails, eicr);
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            r4Data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     ApplicationUtils.saveDataToFile(actualXml, "./Eicr.xml");
 
@@ -168,7 +170,9 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testConvertR4FhirBundleToCdaEicrWithNullData() {
 
-    String result = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(null, null, null);
+    String result =
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            null, null, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertThat(result).isEmpty();
   }
@@ -178,7 +182,9 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
     assertThrows(
         RuntimeException.class,
-        () -> CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(new R4FhirData(), null, null));
+        () ->
+            CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+                new R4FhirData(), null, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11));
   }
 
   private R4FhirData createR4FhirData(String file) {

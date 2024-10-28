@@ -32,13 +32,14 @@ public class Dstu2CdaHeaderGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaHeaderGenerator.class);
 
-  public static String createCdaHeader(Dstu2FhirData data, LaunchDetails details, Eicr ecr) {
+  public static String createCdaHeader(
+      Dstu2FhirData data, LaunchDetails details, Eicr ecr, String version) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
     if (data != null) {
 
-      eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
+      eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument(version));
 
       String docId = CdaGeneratorUtils.getGuid();
       eICRHeader.append(CdaGeneratorUtils.getXmlForII(docId));

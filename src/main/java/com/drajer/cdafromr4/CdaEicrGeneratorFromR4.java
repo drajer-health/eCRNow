@@ -15,7 +15,7 @@ public class CdaEicrGeneratorFromR4 {
   private CdaEicrGeneratorFromR4() {}
 
   public static String convertR4FhirBundletoCdaEicr(
-      R4FhirData data, LaunchDetails details, Eicr ecr) {
+      R4FhirData data, LaunchDetails details, Eicr ecr, String version) {
 
     StringBuilder eICR = new StringBuilder();
 
@@ -28,8 +28,8 @@ public class CdaEicrGeneratorFromR4 {
 
       if (Boolean.TRUE.equals(data.hasRequiredDataForEicr())) {
         logger.info("Bundle has required data for Eicr");
-        eICR.append(CdaHeaderGenerator.createCdaHeader(data, details, ecr));
-        eICR.append(CdaBodyGenerator.generateCdaBody(data, details));
+        eICR.append(CdaHeaderGenerator.createCdaHeader(data, details, ecr, version));
+        eICR.append(CdaBodyGenerator.generateCdaBody(data, details, version));
         eICR.append(CdaGeneratorUtils.getEndXMLHeaderForCdaDocument());
 
         logger.debug("Created new eICR {}", StringEscapeUtils.escapeXml11(eICR.toString()));

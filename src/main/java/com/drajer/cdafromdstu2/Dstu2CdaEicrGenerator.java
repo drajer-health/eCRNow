@@ -20,7 +20,7 @@ public class Dstu2CdaEicrGenerator {
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaEicrGenerator.class);
 
   public static String convertDstu2FhirBundletoCdaEicr(
-      Dstu2FhirData data, LaunchDetails details, Eicr ecr) {
+      Dstu2FhirData data, LaunchDetails details, Eicr ecr, String version) {
 
     StringBuilder eICR = new StringBuilder();
 
@@ -52,8 +52,8 @@ public class Dstu2CdaEicrGenerator {
           }
         }
 
-        eICR.append(Dstu2CdaHeaderGenerator.createCdaHeader(data, details, ecr));
-        eICR.append(Dstu2CdaBodyGenerator.generateCdaBody(data, details));
+        eICR.append(Dstu2CdaHeaderGenerator.createCdaHeader(data, details, ecr, version));
+        eICR.append(Dstu2CdaBodyGenerator.generateCdaBody(data, details, version));
         eICR.append(CdaGeneratorUtils.getEndXMLHeaderForCdaDocument());
       }
 

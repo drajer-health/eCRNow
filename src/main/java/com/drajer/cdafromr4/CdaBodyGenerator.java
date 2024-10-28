@@ -13,7 +13,7 @@ public class CdaBodyGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaBodyGenerator.class);
 
-  public static String generateCdaBody(R4FhirData data, LaunchDetails details) {
+  public static String generateCdaBody(R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder eICRBody = new StringBuilder();
 

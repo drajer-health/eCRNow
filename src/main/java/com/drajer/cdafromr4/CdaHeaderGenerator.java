@@ -41,7 +41,7 @@ public class CdaHeaderGenerator {
   private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  private static String SW_APP_VERSION = "Version 3.1.5";
+  private static String SW_APP_VERSION = "Version 3.1.6";
   private static String SW_APP_NAME = "ecrNowApp";
   private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
@@ -80,13 +80,14 @@ public class CdaHeaderGenerator {
         : DEFAULT_PROPERTIES_FILE;
   }
 
-  public static String createCdaHeader(R4FhirData data, LaunchDetails details, Eicr ecr) {
+  public static String createCdaHeader(
+      R4FhirData data, LaunchDetails details, Eicr ecr, String version) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
     if (data != null) {
 
-      eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
+      eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument(version));
 
       // Set the clinical document id.
       String docId = CdaGeneratorUtils.getGuid();
