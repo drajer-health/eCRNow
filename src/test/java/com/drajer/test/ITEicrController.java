@@ -136,7 +136,12 @@ public class ITEicrController extends BaseIntegrationTest {
   private ResponseEntity<String> invokeEicrAPI(String requestBody, String url, HttpMethod method) {
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.add("X-Request-ID", "test-eicr-apis-junit-test");
-    HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+    HttpEntity<String> entity;
+    if (method == HttpMethod.GET) {
+      entity = new HttpEntity<>(headers);
+    } else {
+      entity = new HttpEntity<>(requestBody, headers);
+    }
     return restTemplate.exchange(url, method, entity, String.class);
   }
 

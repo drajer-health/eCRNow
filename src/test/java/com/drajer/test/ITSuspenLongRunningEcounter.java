@@ -9,12 +9,17 @@ import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +28,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 
@@ -43,6 +49,11 @@ public class ITSuspenLongRunningEcounter extends BaseIntegrationTest {
   private Map<String, String> testData;
   private Map<String, ?> allResourceMapping;
   private Map<String, ?> allOtherMapping;
+  @Autowired private SessionFactory sessionFactory;
+
+  protected Session getSession() {
+    return sessionFactory.getCurrentSession();
+  }
 
   public ITSuspenLongRunningEcounter(
       String testCaseId,
@@ -204,9 +215,15 @@ public class ITSuspenLongRunningEcounter extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
+      EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+      Root<LaunchDetails> root = cq.from(LaunchDetails.class);
+      cq.where(cb.equal(root.get("xRequestId"), testCaseId));
+
+      Query<LaunchDetails> q = getSession().createQuery(cq);
+
+      launchDetails = q.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);

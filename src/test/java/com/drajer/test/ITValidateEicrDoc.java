@@ -1,6 +1,10 @@
 package com.drajer.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.ActionRepo;
@@ -8,7 +12,12 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.util.*;
+import com.drajer.test.util.TestDataGenerator;
+import com.drajer.test.util.TestUtils;
+import com.drajer.test.util.WireMockHelper;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +30,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,6 +75,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public void launchTestSetUp() throws Throwable {
     logger.info("Executing Test: {}", testCaseId);
     tx = session.beginTransaction();
+    launchDetails = new LaunchDetails();
+    launchDetails.setStatus("COMPLETED");
 
     // Data Setup
     createClientDetails(testData.get("ClientDataToBeSaved"));
@@ -162,10 +171,15 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
-
+      CriteriaBuilder builder = session.getCriteriaBuilder();
+      CriteriaQuery<LaunchDetails> query = builder.createQuery(LaunchDetails.class);
+      Root<LaunchDetails> root = query.from(LaunchDetails.class);
+      query.select(root).where(builder.equal(root.get("xRequestId"), testCaseId));
+      launchDetails = session.createQuery(query).uniqueResult();
+      if (launchDetails == null) {
+        logger.error("LaunchDetails not found for testCaseId: {}", testCaseId);
+        fail("LaunchDetails not found, check the testCaseId.");
+      }
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);
 
