@@ -30,7 +30,7 @@ public class FhirGeneratorConstants {
   public static final String HCS_COMP_TYPE_CODE = "75619-7";
   public static final String HCS_COMP_TYPE_CODE_DISPLAY = "National Health Care Surveys report";
   public static final String CCRR_COMP_TYPE_CODE = "72134-0";
-  public static final String CCRR_COMP_TYPE_CODE_DISPLAY = "Cancer Event report";
+  public static final String CCRR_COMP_TYPE_CODE_DISPLAY = "Central Cancer Registry Report";
 
   // Composition section codes commonly used.
   public static final String CHIEF_COMPLAINT_SECTION_LOINC_CODE = "10154-3";
@@ -98,16 +98,16 @@ public class FhirGeneratorConstants {
 
   public static final String PRIMARY_CANCER_CONDITION_SECTION_CODE = "363346000";
   public static final String PRIMARY_CANCER_CONDITION_SECTION_CODE_DISPLAY =
-      "Primary Cancer Condition narrative";
+      "Malignant tumour";
   public static final String SECONDARY_CANCER_CONDITION_SECTION_CODE = "128462008";
   public static final String SECONDARY_CANCER_CONDITION_SECTION_CODE_DISPLAY =
-      "Secondary Cancer Condition narrative";
+      "Secondary cancer";
   public static final String CANCER_STAGE_GROUP_SECTION_CODE = "21908-9";
   public static final String CANCER_STAGE_GROUP_SECTION_CODE_DISPLAY =
-      "Cancer Stage Group narrative";
+      "Stage group.clinical Cancer";
   public static final String CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE = "1217123003";
   public static final String CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE_DISPLAY =
-      "Cancer Radio Therapy Course Summary narrative";
+      "Radiotherapy course of treatment";
   public static final String ODH_SECTION_CODE = "74165-2";
   public static final String ODH_SECTION_CODE_DISPLAY = "ODH Data narrative";
 }

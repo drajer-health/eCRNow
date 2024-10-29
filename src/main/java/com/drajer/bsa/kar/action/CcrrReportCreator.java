@@ -8,13 +8,20 @@ import com.drajer.bsa.model.BsaTypes.SectionTypeEnum;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.ReportGenerationUtils;
+import com.drajer.cdafromr4.CdaHeaderGenerator;
 import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.drajer.fhirecr.FhirGeneratorUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +71,9 @@ import org.springframework.beans.factory.annotation.Value;
 public class CcrrReportCreator extends ReportCreator {
 
   private final Logger logger = LoggerFactory.getLogger(CcrrReportCreator.class);
+  public static final Logger slogger = LoggerFactory.getLogger(CcrrReportCreator.class);
+  
+  public CcrrReportCreator() {}
 
   public static final String DEFAULT_VERSION = "1";
   public static final String BUNDLE_REL_URL = "Bundle/";
@@ -104,14 +114,35 @@ public class CcrrReportCreator extends ReportCreator {
   public static final String ODH_USUAL_WORK_PROFILE =
       "http://hl7.org/fhir/us/odh/StructureDefinition/odh-UsualWork";
 
-  @Value("${ehr.product.name:Unknown-Ehr-Product}")
-  private String ehrProductName;
+  private static final String EHR_PRODUCT_NAME = "ehr.product.name";
+  private static final String EHR_PRODUCT_VERSION = "ehr.product.version";
+  private static final String EHR_VENDOR_NAME = "ehr.name";
+  
+ //Map to hold Application Properties
+ public static HashMap<String, String> appProps = new HashMap<>();
 
-  @Value("${ehr.product.version:Unknown-Version}")
-  private String ehrProductVersion;
+ static {
+   loadProperties();
+ }
 
-  @Value("${ehr.name:Unknown-Ehr}")
-  private String ehrName;
+ public static void loadProperties() {
+   String propertiesFileName = "application.properties";
+
+   try (InputStream input =
+		   CcrrReportCreator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
+     
+	   if (input != null) {
+       Properties properties = new Properties();
+       properties.load(input);
+       appProps.putAll((Map) properties);
+
+     } else {
+       slogger.error("Properties file {} not found in classpath!", propertiesFileName);
+     }
+   } catch (IOException e) {
+     slogger.error("Error loading properties file :{} ", e);
+   }
+ }
 
   @Override
   public Resource createReport(
@@ -297,9 +328,9 @@ public class CcrrReportCreator extends ReportCreator {
     // Set source.
     MessageSourceComponent msc = new MessageSourceComponent();
 
-    msc.setName(ehrName);
-    msc.setSoftware(ehrProductName);
-    msc.setVersion(ehrProductVersion);
+    msc.setName(appProps.get(EHR_VENDOR_NAME));
+    msc.setSoftware(appProps.get(EHR_PRODUCT_NAME));
+    msc.setVersion(appProps.get(EHR_PRODUCT_VERSION));
     msc.setEndpoint(kd.getHealthcareSetting().getFhirServerBaseURL());
     header.setSource(msc);
 
@@ -806,7 +837,7 @@ public class CcrrReportCreator extends ReportCreator {
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
-    val.setDivAsString("Not Generated automatically in this version");
+    val.setDivAsString("Not Generated automatically");
     sc.setText(val);
   }
 
