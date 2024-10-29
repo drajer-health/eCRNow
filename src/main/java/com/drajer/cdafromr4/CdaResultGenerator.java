@@ -1766,4 +1766,10 @@ public class CdaResultGenerator {
     }
     return null; // Indicate no matching code found
   }
+
+  public static Object generateR31ResultsSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

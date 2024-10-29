@@ -14,7 +14,7 @@ public class CdaReasonForVisitGenerator {
 
   private CdaReasonForVisitGenerator() {}
 
-  public static String generateReasonForVisitSection(R4FhirData data) {
+  public static String generateReasonForVisitSection(R4FhirData data, String version) {
 
     StringBuilder sb = new StringBuilder(2000);
 

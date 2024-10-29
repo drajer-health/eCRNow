@@ -343,7 +343,7 @@ public class R3ToR2DataConverterUtils {
             medStatementList.add((MedicationStatement) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setMedications(medStatementList);
+          r4FhirData.setMedicationStatements(medStatementList);
         }
       } else if (type.contentEquals(ResourceType.Medication.toString())) {
 

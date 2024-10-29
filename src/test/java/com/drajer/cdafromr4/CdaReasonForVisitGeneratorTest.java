@@ -2,6 +2,7 @@ package com.drajer.cdafromr4;
 
 import static org.junit.Assert.*;
 
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.test.util.TestUtils;
 import org.hl7.fhir.r4.model.Encounter;
 import org.junit.Test;
@@ -19,7 +20,9 @@ public class CdaReasonForVisitGeneratorTest extends BaseGeneratorTest {
     Encounter encounter = (Encounter) loadResourceDataFromFile(Encounter.class, FILENAME);
     r4FhirData.setEncounter(encounter);
     String expectedXml = TestUtils.getFileContentAsString(REASON_FOR_VISIT_CDA_FILE);
-    String actualXml = CdaReasonForVisitGenerator.generateReasonForVisitSection(r4FhirData);
+    String actualXml =
+        CdaReasonForVisitGenerator.generateReasonForVisitSection(
+            r4FhirData, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
     assertNotNull(actualXml);
 
     assertXmlEquals(expectedXml, actualXml);

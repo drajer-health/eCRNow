@@ -38,7 +38,7 @@ public class CdaMedicationGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
     List<Medication> medList = data.getMedicationList();
-    List<MedicationStatement> meds = data.getMedications();
+    List<MedicationStatement> meds = data.getMedicationStatements();
     List<MedicationAdministration> medAdms = data.getMedicationAdministrations();
     List<MedicationRequest> medReqs = getValidMedicationRequests(data, medList);
 
@@ -661,5 +661,11 @@ public class CdaMedicationGenerator {
     }
 
     return mr;
+  }
+
+  public static Object generateR31MedicationsAdministeredSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

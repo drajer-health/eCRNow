@@ -176,7 +176,7 @@ public class EcrReportCreator extends ReportCreator {
 
       logger.info(" Creating a CDA R31 Eicr Report ");
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
+      Bundle contentBundle = getCdaR31Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource

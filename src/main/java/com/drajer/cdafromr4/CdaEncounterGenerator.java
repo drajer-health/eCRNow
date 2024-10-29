@@ -26,7 +26,8 @@ public class CdaEncounterGenerator {
 
   private CdaEncounterGenerator() {}
 
-  public static String generateEncounterSection(R4FhirData data, LaunchDetails details) {
+  public static String generateEncounterSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder sb = new StringBuilder(2000);
     Encounter encounter = data.getEncounter();

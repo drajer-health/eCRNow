@@ -118,7 +118,7 @@ public class LoadingQueryR4Bundle {
       List<MedicationStatement> medStatementsList =
           r4ResourcesData.getMedicationStatementData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      r4FhirData.setMedications(medStatementsList);
+      r4FhirData.setMedicationStatements(medStatementsList);
       for (MedicationStatement medStatement : medStatementsList) {
         BundleEntryComponent medStatementEntry =
             new BundleEntryComponent().setResource(medStatement);

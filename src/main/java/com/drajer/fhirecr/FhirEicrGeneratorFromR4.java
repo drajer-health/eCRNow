@@ -63,7 +63,7 @@ public class FhirEicrGeneratorFromR4 {
             data.getDiagReports().add((DiagnosticReport) ent.getResource());
           } else if (ent.getResource() instanceof MedicationStatement) {
             logger.info(" Bundle contains MedicationStatement ");
-            data.getMedications().add((MedicationStatement) ent.getResource());
+            data.getMedicationStatements().add((MedicationStatement) ent.getResource());
           } else if (ent.getResource() instanceof Immunization) {
             logger.info(" Bundle contains Immunization ");
             data.getImmunizations().add((Immunization) ent.getResource());

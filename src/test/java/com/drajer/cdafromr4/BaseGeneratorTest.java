@@ -174,7 +174,7 @@ public class BaseGeneratorTest {
     r4FhirData.setConditions(conditions);
     r4FhirData.setImmunizations(immunizations);
     r4FhirData.setLabResults(observations);
-    r4FhirData.setMedications(medicationStatements);
+    r4FhirData.setMedicationStatements(medicationStatements);
     r4FhirData.setMedicationRequests(medicationRequests);
     r4FhirData.setMedicationList(medications);
     r4FhirData.setMedicationAdministrations(medicationAdministrations);

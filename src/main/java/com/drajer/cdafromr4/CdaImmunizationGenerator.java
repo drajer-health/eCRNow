@@ -291,4 +291,10 @@ public class CdaImmunizationGenerator {
 
     return sb.toString();
   }
+
+  public static Object generateR31ImmunizationSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

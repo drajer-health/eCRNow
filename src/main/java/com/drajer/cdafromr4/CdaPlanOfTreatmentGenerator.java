@@ -23,7 +23,8 @@ public class CdaPlanOfTreatmentGenerator {
 
   private CdaPlanOfTreatmentGenerator() {}
 
-  public static String generatePlanOfTreatmentSection(R4FhirData data, LaunchDetails details) {
+  public static String generatePlanOfTreatmentSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -499,5 +500,11 @@ public class CdaPlanOfTreatmentGenerator {
     }
 
     return drs;
+  }
+
+  public static Object generateR31PlanOfTreatmentSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

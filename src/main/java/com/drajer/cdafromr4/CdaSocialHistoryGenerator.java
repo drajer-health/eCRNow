@@ -620,4 +620,10 @@ public class CdaSocialHistoryGenerator {
 
     return sb.toString();
   }
+
+  public static Object generateR31SocialHistorySection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

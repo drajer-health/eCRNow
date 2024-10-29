@@ -3109,4 +3109,33 @@ public class CdaFhirUtilities {
     }
     return sb.toString();
   }
+  
+  public static String getDisplayStringForPeriod(Period pd) {
+	  if (pd != null) {
+		  	if(pd.hasStart()) 
+		  		return CdaGeneratorUtils.getStringForDateTime(pd.getStart(), pd.getStartElement().getTimeZone());
+		  	else if(pd.hasEnd())
+		  		return CdaGeneratorUtils.getStringForDateTime(pd.getEnd(), pd.getEndElement().getTimeZone());
+		  	else 
+		  		return CdaGeneratorConstants.UNKNOWN_VALUE;
+	  } else {
+		  return CdaGeneratorConstants.UNKNOWN_VALUE;
+	  }
+  }
+  
+  public static String getDisplayStringForCoding(Coding code) {
+	  
+	  if(code != null && code.hasDisplay() && !code.getDisplay().isEmpty()) {
+		  return code.getDisplay();
+	  }
+	  else if(code != null && code.hasSystem() && code.hasCode()){
+		  return code.getSystem() + "|" + code.getCode();
+	  }
+	  else if(code != null && code.hasCode()) {
+		  return code.getCode();
+	  }
+	  // Nothing worked, so use unknown value.
+	  return CdaGeneratorConstants.UNKNOWN_VALUE;
+	  
+  }
 }

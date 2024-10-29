@@ -15,7 +15,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
 
   private CdaHistoryOfPresentIllnessGenerator() {}
 
-  public static String generateHistoryOfPresentIllnessSection(R4FhirData data) {
+  public static String generateHistoryOfPresentIllnessSection(R4FhirData data, String version) {
 
     return generateEmptyHistoryOfPresentIllness();
   }
