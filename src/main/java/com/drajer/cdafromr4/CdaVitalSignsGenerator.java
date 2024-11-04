@@ -23,7 +23,8 @@ public class CdaVitalSignsGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaVitalSignsGenerator.class);
 
-  public static String generateVitalsSection(R4FhirData data, LaunchDetails details) {
+  public static String generateVitalsSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder hsb = new StringBuilder(5000);
     StringBuilder sb = new StringBuilder(2000);
@@ -318,7 +319,8 @@ public class CdaVitalSignsGenerator {
             CdaGeneratorConstants.CODE_EL_NAME,
             false,
             CdaGeneratorConstants.FHIR_LOINC_URL,
-            false, contentRef));
+            false,
+            contentRef));
 
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(

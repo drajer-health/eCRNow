@@ -54,7 +54,8 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
             CdaGeneratorUtils.getXmlForEffectiveTime(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn("<effectiveTime value=\"20200428194229+0000\"/>");
 
-    String actualXml = CdaResultGenerator.generateResultsSection(fhirData, launchDetails);
+    String actualXml =
+        CdaResultGenerator.generateResultsSection(fhirData, launchDetails, "CDA_R11");
 
     logger.info(" Actual XML ", actualXml);
 

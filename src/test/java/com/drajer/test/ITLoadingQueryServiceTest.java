@@ -194,7 +194,8 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
               break;
             case "MedicationStatement":
               assertNotNull(r4FhirData.getMedicationStatements());
-              assertEquals(resourceName, resourceCount, r4FhirData.getMedicationStatements().size());
+              assertEquals(
+                  resourceName, resourceCount, r4FhirData.getMedicationStatements().size());
               break;
           }
         }

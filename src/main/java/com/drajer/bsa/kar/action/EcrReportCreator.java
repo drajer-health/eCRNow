@@ -172,7 +172,8 @@ public class EcrReportCreator extends ReportCreator {
 
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
-    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30) {
+    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30
+        || kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R31) {
 
       logger.info(" Creating a CDA R31 Eicr Report ");
       reportingBundle = createReportingBundle(profile);
@@ -367,6 +368,17 @@ public class EcrReportCreator extends ReportCreator {
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
+
+    // Save data to File for debugging.
+    String outputFileName =
+        KarProcessingData.LOADING_QUERY_FILE_NAME
+            + "_"
+            + kd.getNotificationContext().getPatientId()
+            + "_"
+            + kd.getNotificationContext().getNotificationResourceId();
+
+    BsaServiceUtils.saveFhirResourceToFile(data.getValue0().getData(), outputFileName);
+
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R31);

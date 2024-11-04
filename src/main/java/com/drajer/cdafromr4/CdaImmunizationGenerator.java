@@ -25,7 +25,8 @@ public class CdaImmunizationGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaImmunizationGenerator.class);
 
-  public static String generateImmunizationSection(R4FhirData data, LaunchDetails details) {
+  public static String generateImmunizationSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder sb = new StringBuilder(2000);
 

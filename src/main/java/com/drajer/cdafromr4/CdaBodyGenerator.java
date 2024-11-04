@@ -23,51 +23,71 @@ public class CdaBodyGenerator {
 
     if (data != null) {
 
-      logger.info("Starting Problem generation ");
-      eICRBody.append(CdaProblemGenerator.generateProblemSection(data, details, version));
-
-      logger.info("Starting Encounter generation ");
-      eICRBody.append(CdaEncounterGenerator.generateEncounterSection(data, details, version));
-
       if (version.contentEquals("CDA_R31")) {
-        logger.info("Starting Medication Administered Section generation ");
+
+        logger.info("Starting Problem generation ");
+        eICRBody.append(CdaProblemGenerator.generateProblemSection(data, details, version));
+
+        logger.info("Starting Encounter generation ");
+        eICRBody.append(CdaEncounterGenerator.generateEncounterSection(data, details, version));
+
+        logger.info("Starting R31 Medication Administered Section generation ");
         eICRBody.append(
             CdaMedicationGenerator.generateR31MedicationsAdministeredSection(
                 data, details, version));
 
-        logger.info("Starting R31 Immunization Section generation ");
+        logger.info("Starting R31 Medications Section generation ");
         eICRBody.append(
-            CdaImmunizationGenerator.generateR31ImmunizationSection(data, details, version));
+            CdaMedicationGenerator.generateR31MedicationsSection(data, details, version));
+
+        logger.info("Starting Immunization Section generation ");
+        eICRBody.append(
+            CdaImmunizationGenerator.generateImmunizationSection(data, details, version));
 
         logger.info("Starting R31 Result Section generation ");
-        eICRBody.append(CdaResultGenerator.generateR31ResultsSection(data, details, version));
+        eICRBody.append(CdaResultGenerator.generateResultsSection(data, details, version));
 
         logger.info("Starting R31 Chief Complaint Section generation ");
         eICRBody.append(
             CdaChiefComplaintGenerator.generateChiefComplaintSection(data, details, version));
 
-        logger.info("Starting R31 Social History Section generation ");
+        logger.info("Starting R31 Plan Of Treatment Section generation ");
         eICRBody.append(
-            CdaSocialHistoryGenerator.generateR31SocialHistorySection(data, details, version));
+            CdaPlanOfTreatmentGenerator.generatePlanOfTreatmentSection(data, details, version));
 
-        logger.info("Starting Plan Of Treatment Section generation ");
-        eICRBody.append(
-            CdaPlanOfTreatmentGenerator.generateR31PlanOfTreatmentSection(data, details, version));
+        logger.info("Starting R31 Social History Section generation ");
+        //     eICRBody.append(
+        //       CdaSocialHistoryGenerator.generateR31SocialHistorySection(data, details, version));
 
         logger.info("Starting R31 Pregnancy Section generation ");
-        eICRBody.append(CdaPregnancyGenerator.generatePregnancySection(data, details, version));
+        //  eICRBody.append(CdaPregnancyGenerator.generatePregnancySection(data, details, version));
 
         logger.info("Starting R31 ODH Data Section generation ");
-        eICRBody.append(CdaOdhDataGenerator.generateOdhSection(data, details, version));
+        //  eICRBody.append(CdaOdhDataGenerator.generateOdhSection(data, details, version));
+
+        logger.info("Starting R31 Procedure Section generation ");
+        //  eICRBody.append(CdaProcedureGenerator.generateProcedureSection(data, details, version));
+
+        logger.info("Starting R31 Vitals generation ");
+        //  eICRBody.append(CdaVitalSignGenerator.generateVitalsSection(data, details, version));
+
       } else {
+
+        logger.info("Starting Problem generation ");
+        eICRBody.append(CdaProblemGenerator.generateProblemSection(data, details, version));
+
+        logger.info("Starting Encounter generation ");
+        eICRBody.append(CdaEncounterGenerator.generateEncounterSection(data, details, version));
+
         logger.info("Starting Result Section generation ");
-        eICRBody.append(CdaResultGenerator.generateResultsSection(data, details));
+        eICRBody.append(CdaResultGenerator.generateResultsSection(data, details, version));
 
         logger.info("Starting Medication Administered Section generation ");
         eICRBody.append(CdaMedicationGenerator.generateMedicationSection(data, details));
 
         logger.info("Starting Immunization Section generation ");
-        eICRBody.append(CdaImmunizationGenerator.generateImmunizationSection(data, details));
+        eICRBody.append(
+            CdaImmunizationGenerator.generateImmunizationSection(data, details, version));
 
         logger.info("Starting Social History Section generation ");
         eICRBody.append(CdaSocialHistoryGenerator.generateSocialHistorySection(data, details));

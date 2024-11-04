@@ -8,10 +8,8 @@ import com.drajer.bsa.model.BsaTypes.SectionTypeEnum;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.ReportGenerationUtils;
-import com.drajer.cdafromr4.CdaHeaderGenerator;
 import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.drajer.fhirecr.FhirGeneratorUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -66,13 +64,12 @@ import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 public class CcrrReportCreator extends ReportCreator {
 
   private final Logger logger = LoggerFactory.getLogger(CcrrReportCreator.class);
   public static final Logger slogger = LoggerFactory.getLogger(CcrrReportCreator.class);
-  
+
   public CcrrReportCreator() {}
 
   public static final String DEFAULT_VERSION = "1";
@@ -117,32 +114,32 @@ public class CcrrReportCreator extends ReportCreator {
   private static final String EHR_PRODUCT_NAME = "ehr.product.name";
   private static final String EHR_PRODUCT_VERSION = "ehr.product.version";
   private static final String EHR_VENDOR_NAME = "ehr.name";
-  
- //Map to hold Application Properties
- public static HashMap<String, String> appProps = new HashMap<>();
 
- static {
-   loadProperties();
- }
+  // Map to hold Application Properties
+  public static HashMap<String, String> appProps = new HashMap<>();
 
- public static void loadProperties() {
-   String propertiesFileName = "application.properties";
+  static {
+    loadProperties();
+  }
 
-   try (InputStream input =
-		   CcrrReportCreator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
-     
-	   if (input != null) {
-       Properties properties = new Properties();
-       properties.load(input);
-       appProps.putAll((Map) properties);
+  public static void loadProperties() {
+    String propertiesFileName = "application.properties";
 
-     } else {
-       slogger.error("Properties file {} not found in classpath!", propertiesFileName);
-     }
-   } catch (IOException e) {
-     slogger.error("Error loading properties file :{} ", e);
-   }
- }
+    try (InputStream input =
+        CcrrReportCreator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
+
+      if (input != null) {
+        Properties properties = new Properties();
+        properties.load(input);
+        appProps.putAll((Map) properties);
+
+      } else {
+        slogger.error("Properties file {} not found in classpath!", propertiesFileName);
+      }
+    } catch (IOException e) {
+      slogger.error("Error loading properties file :{} ", e);
+    }
+  }
 
   @Override
   public Resource createReport(
@@ -456,7 +453,7 @@ public class CcrrReportCreator extends ReportCreator {
     if (practs != null && !practs.isEmpty()) resTobeAdded.addAll(practs);
 
     // Add title
-    comp.setTitle(FhirGeneratorConstants.CCRR_COMP_TYPE_CODE_DISPLAY);
+    comp.setTitle(FhirGeneratorConstants.CCRR_COMP_SECTION_TITLE);
 
     // Add Organization
     Organization org = ReportCreationUtilities.getOrganization(kd);

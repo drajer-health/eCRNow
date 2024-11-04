@@ -901,7 +901,7 @@ public class R3ToR2DataConverterUtils {
   private static JobStatus getJobStatusForActionStatus(BsaActionStatusType status) {
 
     if (status == BsaActionStatusType.COMPLETED) return JobStatus.COMPLETED;
-    else if (status == BsaActionStatusType.ABORTED) return JobStatus.ABORTED;
+    else if (status == BsaActionStatusType.SUSPENDED) return JobStatus.SUSPENDED;
     else if (status == BsaActionStatusType.FAILED) return JobStatus.ABORTED;
     else if (status == BsaActionStatusType.IN_PROGRESS) return JobStatus.IN_PROGRESS;
     else if (status == BsaActionStatusType.NOT_STARTED) return JobStatus.NOT_STARTED;

@@ -15,6 +15,8 @@ import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.simulator.ContentDataSimulator;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -502,5 +504,26 @@ public class BaseGeneratorTest {
         .getMatchTriggerStatus()
         .setMatchedCodes(Collections.singletonList(matchedTriggerCodes));
     return patientExecutionState;
+  }
+
+  public String getAbsoluteFilePath(String partialPath) {
+
+    // URL res = getClass().getClassLoader().getResource(partialPath);
+
+    File file = null;
+    try {
+      // 	file = Paths.get(res.toURI()).toFile();
+
+      file = new ClassPathResource(partialPath).getFile();
+      // } catch (URISyntaxException e) {
+      //	e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    String absolutePath = file.getAbsolutePath();
+
+    return absolutePath;
   }
 }

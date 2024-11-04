@@ -212,6 +212,11 @@ public class CdaGeneratorConstants {
       "History of Present Illness";
   public static final String HISTORY_OF_PRESENT_ILLNESS_SEC_TITLE = "History of Present Illness";
 
+  public static final String CHIEF_COMPLAINT_SEC_TEMPLATE_ID = "1.3.6.1.4.1.19376.1.5.3.1.1.13.2.1";
+  public static final String CHIEF_COMPLAINT_SEC_CODE = "10154-3";
+  public static final String CHIEF_COMPLAINT_SEC_CODE_NAME = "CHIEF COMPLAINT";
+  public static final String CHIEF_COMPLAINT_SEC_TITLE = "CHIEF COMPLAINT";
+
   // Encounter Related Information
   public static final String EO_ENC_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.22";
   public static final String ENC_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.22.1";
@@ -557,6 +562,9 @@ public class CdaGeneratorConstants {
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE =
       "2.16.840.1.113883.10.20.15.2.3.2";
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT = "2016-12-01";
+  public static final String PLANNED_PROCEDURE_TRIGGER_CODE_TEMPLATE =
+      "2.16.840.1.113883.10.20.15.2.3.42";
+  public static final String PLANNED_PROCEDURE_TRIGGER_CODE_TEMPLATE_EXT = "2021-01-01";
   public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID_EXT = "2016-12-01";
   public static final String TRAVEL_HISTORY_SNOMED_CODE = "420008001";
   public static final String TRAVEL_HISTORY_SNOMED_CODE_DISPLAY = "Travel";
@@ -909,6 +917,10 @@ public class CdaGeneratorConstants {
   public static final String MED_TABLE_COL_1_BODY_CONTENT = "medication";
   public static final String MED_TABLE_COL_2_TITLE = "Medication Start Date";
   public static final String MED_TABLE_COL_2_BODY_CONTENT = "medicationDate";
+  public static final String MED_COL_1_TITLE = "Medication Name";
+  public static final String MED_COL_1_BODY_CONTENT = "med";
+  public static final String MED_COL_2_TITLE = "Medication Start Date";
+  public static final String MED_COL_2_BODY_CONTENT = "medDate";
   public static final String IMM_TABLE_COL_1_TITLE = "Vaccine Name";
   public static final String IMM_TABLE_COL_1_BODY_CONTENT = "vaccine";
   public static final String IMM_TABLE_COL_2_TITLE = "Vaccination Date";

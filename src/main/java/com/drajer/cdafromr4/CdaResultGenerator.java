@@ -44,7 +44,8 @@ public class CdaResultGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaResultGenerator.class);
 
-  public static String generateResultsSection(R4FhirData data, LaunchDetails details) {
+  public static String generateResultsSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder hsb = new StringBuilder(5000);
     StringBuilder textEntries = new StringBuilder(2000);

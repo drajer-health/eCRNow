@@ -119,7 +119,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
         .thenReturn("<effectiveTime value=\"20240819101316\"/>");
 
     PowerMockito.mockStatic(CdaResultGenerator.class);
-    PowerMockito.when(CdaResultGenerator.generateResultsSection(data, launchDetails))
+    PowerMockito.when(CdaResultGenerator.generateResultsSection(data, launchDetails, "CDA_R11"))
         .thenReturn(labSection);
 
     String actualXml =

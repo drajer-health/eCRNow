@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
@@ -331,24 +330,23 @@ public class R4FhirData extends FhirData {
     this.immunizations = immunizations;
   }
 
-  
   public List<MedicationStatement> getMedicationStatements() {
-	return medicationStatements;
-}
+    return medicationStatements;
+  }
 
-public void setMedicationStatements(List<MedicationStatement> medicationStatements) {
-	this.medicationStatements = medicationStatements;
-}
+  public void setMedicationStatements(List<MedicationStatement> medicationStatements) {
+    this.medicationStatements = medicationStatements;
+  }
 
-public List<MedicationDispense> getMedicationDispenses() {
-	return medicationDispenses;
-}
+  public List<MedicationDispense> getMedicationDispenses() {
+    return medicationDispenses;
+  }
 
-public void setMedicationDispenses(List<MedicationDispense> medicationDispenses) {
-	this.medicationDispenses = medicationDispenses;
-}
+  public void setMedicationDispenses(List<MedicationDispense> medicationDispenses) {
+    this.medicationDispenses = medicationDispenses;
+  }
 
-public List<MedicationRequest> getMedicationRequests() {
+  public List<MedicationRequest> getMedicationRequests() {
     return medicationRequests;
   }
 
@@ -605,14 +603,14 @@ public List<MedicationRequest> getMedicationRequests() {
         + jurisdictions
         + "]";
   }
-  
+
   public Map<String, Medication> getMedicationMap() {
-	  Map<String, Medication> medMap = new HashMap<>();
-	  if(medicationList != null && !medicationList.isEmpty()) {
-		  for(Medication m : medicationList) {
-			  medMap.put(m.getIdElement().getIdPart(), m);
-	     }
-	  }
-	  return medMap;
+    Map<String, Medication> medMap = new HashMap<>();
+    if (medicationList != null && !medicationList.isEmpty()) {
+      for (Medication m : medicationList) {
+        medMap.put(m.getIdElement().getIdPart(), m);
+      }
+    }
+    return medMap;
   }
 }

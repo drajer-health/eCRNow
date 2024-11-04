@@ -468,4 +468,10 @@ public class CdaProblemGenerator {
 
     return sb.toString();
   }
+
+  public static Object generate31ProblemSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

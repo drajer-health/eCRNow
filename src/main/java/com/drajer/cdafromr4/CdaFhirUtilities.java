@@ -3109,33 +3109,93 @@ public class CdaFhirUtilities {
     }
     return sb.toString();
   }
-  
+
   public static String getDisplayStringForPeriod(Period pd) {
-	  if (pd != null) {
-		  	if(pd.hasStart()) 
-		  		return CdaGeneratorUtils.getStringForDateTime(pd.getStart(), pd.getStartElement().getTimeZone());
-		  	else if(pd.hasEnd())
-		  		return CdaGeneratorUtils.getStringForDateTime(pd.getEnd(), pd.getEndElement().getTimeZone());
-		  	else 
-		  		return CdaGeneratorConstants.UNKNOWN_VALUE;
-	  } else {
-		  return CdaGeneratorConstants.UNKNOWN_VALUE;
-	  }
+    if (pd != null) {
+      if (pd.hasStart())
+        return CdaGeneratorUtils.getStringForDateTime(
+            pd.getStart(), pd.getStartElement().getTimeZone());
+      else if (pd.hasEnd())
+        return CdaGeneratorUtils.getStringForDateTime(
+            pd.getEnd(), pd.getEndElement().getTimeZone());
+      else return CdaGeneratorConstants.UNKNOWN_VALUE;
+    } else {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
   }
-  
+
+  public static String getDisplayStringForCodeableConcept(List<CodeableConcept> codes) {
+
+    if (codes != null) {
+
+      for (CodeableConcept cc : codes) {
+
+        String s = getDisplayStringForCodeableConcept(cc);
+
+        if (!s.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE)) return s;
+      }
+    }
+
+    // Nothing worked, so use unknown value.
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getDisplayStringForCodeableConcept(CodeableConcept code) {
+
+    if (code != null) {
+      if (code.hasText() && !code.getText().isEmpty()) return code.getText();
+
+      if (code.hasCoding() && !code.getCoding().isEmpty()) {
+
+        for (Coding c : code.getCoding()) {
+
+          if (c.hasDisplay() && !c.getDisplay().isEmpty()) {
+            return c.getDisplay();
+          }
+        }
+
+        // No display names, so use the system + code or just code
+        if (code.getCodingFirstRep().hasSystem() && code.getCodingFirstRep().hasCode()) {
+          return code.getCodingFirstRep().getSystem() + "|" + code.getCodingFirstRep().getCode();
+        }
+      }
+    }
+
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
   public static String getDisplayStringForCoding(Coding code) {
-	  
-	  if(code != null && code.hasDisplay() && !code.getDisplay().isEmpty()) {
-		  return code.getDisplay();
-	  }
-	  else if(code != null && code.hasSystem() && code.hasCode()){
-		  return code.getSystem() + "|" + code.getCode();
-	  }
-	  else if(code != null && code.hasCode()) {
-		  return code.getCode();
-	  }
-	  // Nothing worked, so use unknown value.
-	  return CdaGeneratorConstants.UNKNOWN_VALUE;
-	  
+
+    if (code != null && code.hasDisplay() && !code.getDisplay().isEmpty()) {
+      return code.getDisplay();
+    } else if (code != null && code.hasSystem() && code.hasCode()) {
+      return code.getSystem() + "|" + code.getCode();
+    } else if (code != null && code.hasCode()) {
+      return code.getCode();
+    }
+    // Nothing worked, so use unknown value.
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static Boolean isCodePresent(List<CodeableConcept> cds, String code, String codeSystem) {
+
+    Boolean retVal = false;
+    if (cds != null && !cds.isEmpty()) {
+
+      for (CodeableConcept cc : cds) {
+        if (cc.hasCoding() && !cc.getCoding().isEmpty()) {
+
+          List<Coding> codings = cc.getCoding();
+          for (Coding c : codings) {
+            if (c.getCode().contentEquals(code) && c.getSystem().contentEquals(codeSystem)) {
+              logger.info(" Found code {} and codesystem {}", code, codeSystem);
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    return retVal;
   }
 }

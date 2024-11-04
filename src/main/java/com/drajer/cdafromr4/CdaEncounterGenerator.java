@@ -585,4 +585,10 @@ public class CdaEncounterGenerator {
     }
     return codeXml;
   }
+
+  public static Object generate31EncounterSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
