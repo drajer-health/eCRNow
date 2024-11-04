@@ -31,7 +31,8 @@ public class CdaSocialHistoryGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaSocialHistoryGenerator.class);
 
-  public static String generateSocialHistorySection(R4FhirData data, LaunchDetails details) {
+  public static String generateSocialHistorySection(
+      R4FhirData data, LaunchDetails details, String version) {
     logger.info("LaunchDetails in generateSocialHistorySection:{}", details);
 
     StringBuilder sb = new StringBuilder(2000);
@@ -43,8 +44,14 @@ public class CdaSocialHistoryGenerator {
     CodeType birthSex =
         CdaFhirUtilities.getCodeExtension(
             data.getPatient().getExtension(), CdaGeneratorConstants.FHIR_USCORE_BIRTHSEX_EXT_URL);
-    List<Observation> pregObs = data.getPregnancyObs();
-    List<Condition> pregCond = data.getPregnancyConditions();
+    List<Observation> pregObs = new ArrayList<>();
+    List<Condition> pregCond = new ArrayList<>();
+
+    if (version.contentEquals(CdaGeneratorConstants.CDA_EICR_VERSION_R11)) {
+      pregCond = data.getPregnancyConditions();
+      pregObs = data.getPregnancyObs();
+    }
+
     List<Observation> travelHistory = data.getTravelObs();
     List<Observation> occHistory = data.getOccupationObs();
 
@@ -349,6 +356,8 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.MOOD_CODE_DEF));
 
     sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID));
+    sb.append(
         CdaGeneratorUtils.getXmlForTemplateId(
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID,
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID_EXT));
@@ -400,7 +409,7 @@ public class CdaSocialHistoryGenerator {
     return sb.toString();
   }
 
-  public static String generatePregnancyEntry(Condition cond, LaunchDetails details) {
+  public static String generatePregnancyObservationEntry(Condition cond, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -456,6 +465,26 @@ public class CdaSocialHistoryGenerator {
           CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
     }
 
+    return sb.toString();
+  }
+
+  public static String generatePregnancyEntry(Condition cond, LaunchDetails details) {
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(generatePregnancyObservationEntry(cond, details));
+
+    sb.append(generateEddEntryRelationship(cond));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    return sb.toString();
+  }
+
+  public static String generateEddEntryRelationship(Condition cond) {
+
+    StringBuilder sb = new StringBuilder();
+
     DateTimeType estimatedDate = null;
 
     if (cond.getOnset() instanceof Period) {
@@ -479,8 +508,7 @@ public class CdaSocialHistoryGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
     }
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
     return sb.toString();
   }
 

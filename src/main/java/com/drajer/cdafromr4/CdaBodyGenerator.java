@@ -56,11 +56,11 @@ public class CdaBodyGenerator {
             CdaPlanOfTreatmentGenerator.generatePlanOfTreatmentSection(data, details, version));
 
         logger.info("Starting R31 Social History Section generation ");
-        //     eICRBody.append(
-        //       CdaSocialHistoryGenerator.generateR31SocialHistorySection(data, details, version));
+        eICRBody.append(
+            CdaSocialHistoryGenerator.generateSocialHistorySection(data, details, version));
 
         logger.info("Starting R31 Pregnancy Section generation ");
-        //  eICRBody.append(CdaPregnancyGenerator.generatePregnancySection(data, details, version));
+        eICRBody.append(CdaPregnancyGenerator.generatePregnancySection(data, details, version));
 
         logger.info("Starting R31 ODH Data Section generation ");
         //  eICRBody.append(CdaOdhDataGenerator.generateOdhSection(data, details, version));
@@ -69,7 +69,7 @@ public class CdaBodyGenerator {
         //  eICRBody.append(CdaProcedureGenerator.generateProcedureSection(data, details, version));
 
         logger.info("Starting R31 Vitals generation ");
-        //  eICRBody.append(CdaVitalSignGenerator.generateVitalsSection(data, details, version));
+        eICRBody.append(CdaVitalSignsGenerator.generateVitalsSection(data, details, version));
 
       } else {
 
@@ -90,7 +90,8 @@ public class CdaBodyGenerator {
             CdaImmunizationGenerator.generateImmunizationSection(data, details, version));
 
         logger.info("Starting Social History Section generation ");
-        eICRBody.append(CdaSocialHistoryGenerator.generateSocialHistorySection(data, details));
+        eICRBody.append(
+            CdaSocialHistoryGenerator.generateSocialHistorySection(data, details, version));
 
         logger.info("Starting Plan Of Treatment Section generation ");
         eICRBody.append(

@@ -2841,6 +2841,26 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static DateTimeType getDateTimeExtensionValue(
+      List<Extension> extensions, String extensionUrl) {
+
+    if (extensions == null || extensions.isEmpty()) {
+      return null;
+    }
+
+    for (Extension extension : extensions) {
+      if (extension.hasUrl()
+          && extension.getUrl().equals(extensionUrl)
+          && extension.hasValue()
+          && extension.getValue() instanceof DateTimeType) {
+        logger.debug("Found Address Extension at top level.");
+        return (DateTimeType) extension.getValue();
+      }
+    }
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
+    return null;
+  }
+
   public static String getTravelHistoryAddressXml(Address addr) {
     StringBuilder addrString = new StringBuilder(200);
 
@@ -3110,6 +3130,37 @@ public class CdaFhirUtilities {
     return sb.toString();
   }
 
+  public static String getXmlForAuthorTime(DateTimeType dt) {
+
+    if (dt == null) {
+      return "";
+    }
+
+    return getXmlForAuthorTimeValues(dt.getValue(), dt.getTimeZone());
+  }
+
+  public static String getXmlForAuthorTimeValues(Date d, TimeZone t) {
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_EL_NAME, d, t));
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NA));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
+
+    return sb.toString();
+  }
+
+  public static String getXmlForAuthorTime(InstantType dt) {
+    if (dt == null) {
+      return "";
+    }
+
+    return getXmlForAuthorTimeValues(dt.getValue(), dt.getTimeZone());
+  }
+
   public static String getDisplayStringForPeriod(Period pd) {
     if (pd != null) {
       if (pd.hasStart())
@@ -3197,5 +3248,24 @@ public class CdaFhirUtilities {
     }
 
     return retVal;
+  }
+
+  public static Boolean isCodeableConceptPresentInValueSet(String valueset, CodeableConcept code) {
+
+    if (valueset == null || code == null) return false;
+
+    if (code.hasCoding()) {
+
+      List<Coding> cds = code.getCoding();
+
+      for (Coding cd : cds) {
+
+        if (cd.hasCode() && CdaGeneratorConstants.isCodePresentInValueSet(valueset, cd.getCode())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

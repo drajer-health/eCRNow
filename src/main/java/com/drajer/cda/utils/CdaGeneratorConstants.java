@@ -3,6 +3,7 @@ package com.drajer.cda.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
@@ -551,8 +552,18 @@ public class CdaGeneratorConstants {
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.200";
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID_EXT = "2016-06-01";
   public static final String PREGNANCY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.8";
+  public static final String PREGNANCY_SUPPLEMENTAL_OBS_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.22.4.293";
+  public static final String PREGNANCY_SUPPLEMENTAL_OBS_TEMPLATE_ID_EXT = "2018-04-01";
 
   public static final String PREGNANCY_EDOD_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.1";
+  public static final String PREGNANCY_SUPPLEMENTAL_EDOD_OBS_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.22.4.297";
+  public static final String PREGNANCY_SUPPLEMENTAL_EDOD_OBS_TEMPLATE_ID_EXT = "2018-04-01";
+  public static final String PREGNANCY_SUPPLEMENTAL_GEST_AGE_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.22.4.280";
+  public static final String PREGNANCY_SUPPLEMENTAL_GEST_AGE_TEMPLATE_ID_EXT = "2018-04-01";
+
   public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.1";
   public static final String PLANNED_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.44";
   public static final String PLANNED_OBS_TEMPLATE_ID_EXT = "2014-06-09";
@@ -572,10 +583,30 @@ public class CdaGeneratorConstants {
   public static final String BIRTH_SEX_DISPLAY = "Birth Sex";
   public static final String PREGNANCY_CONDITION_DISPLAY = "Pregnancy Condition";
   public static final String PREGNANCY_OBSERVATION_DISPLAY = "Pregnancy Observation";
+  public static final String LAST_MENSTRUAL_PERIOD_DISPLAY = "Last Menstrual Period";
   public static final String OCCUPATION_HISTORY_DISPLAY = "Occupation History";
   public static final String TRAVEL_HISTORY_DISPLAY = "Travel History";
   public static final String BIRTH_SEX_CODESYSTEM_OID = "2.16.840.1.113883.5.1";
   public static final String BIRTH_SEX_CODESYSTEM_NAME = "Administrative Gender";
+
+  public static final String PREGNANCY_SECTION_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.80";
+  public static final String PREGNANCY_SECTION_TEMPLATE_ID_EXT = "2018-04-01";
+  public static final String PREGNANCY_SECTION_CODE = "90767-5";
+  public static final String PREGNANCY_SECTION_NAME = "Pregnancy summary Document";
+  public static final String PREGNANCY_SECTION_TITLE = "Pregnancy Section";
+  public static final String LMP_TEMPLATE_ID = "2.16.840.1.113883.10.20.30.3.34";
+  public static final String LMP_TEMPLATE_ID_EXT = "2014-06-09";
+  public static final String LMP_CODE = "8665-2";
+  public static final String LMP_DISPLAY = "Last Menstrual Period";
+  public static final String PP_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.285";
+  public static final String PP_TEMPLATE_ID_EXT = "2018-04-01";
+  public static final String PP_CODE = "249197004";
+  public static final String PP_DISPLAY =
+      "Maternal condition during puerperium (observable entity)";
+  public static final String PREG_OUTCOME_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.284";
+  public static final String PREG_OUTCOME_TEMPLATE_ID_EXT = "2018-04-01";
+  public static final String PREG_OUTCOME_CODE = "63893-2";
+  public static final String PREG_OUTCOME_DISPLAY = "Outcome of Pregnancy";
 
   public static final String PREGNANCY_ESTIMATED_DELIVERY_DATE_CODE = "11778-8";
   public static final String PREGNANCY_ESTIMATED_DELIVERY_DATE_CODESYSTEM_OID =
@@ -933,6 +964,11 @@ public class CdaGeneratorConstants {
   public static final String SOC_HISTORY_TABLE_COL_1_BODY_CONTENT = "socContent";
   public static final String SOC_HISTORY_TABLE_COL_2_TITLE = "Social History Observation Result";
   public static final String SOC_HISTORY_TABLE_COL_2_BODY_CONTENT = "socObservationResult";
+  public static final String PREGNANCY_OBSERVATION_TABLE_COL_1_TITLE = "Pregnancy Information";
+  public static final String PREGNANCY_OBSERVATION_TABLE_COL_1_BODY_CONTENT = "pregInfo";
+  public static final String PREGNANCY_OBSERVATION_TABLE_COL_2_TITLE = "Observed Pregnancy Result";
+  public static final String PREGNANCY_OBSERVATION_TABLE_COL_2_BODY_CONTENT = "pregResult";
+  public static final String PREGNANCY_STATUS = "Pregnancy Status";
   public static final String POT_OBS_TABLE_COL_1_TITLE = "Planned Observation";
   public static final String POT_OBS_TABLE_COL_1_BODY_CONTENT = "potObsContent";
   public static final String POT_OBS_TABLE_COL_2_TITLE = "Planned Observation Date";
@@ -959,6 +995,11 @@ public class CdaGeneratorConstants {
   public static final String DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
       "http://hl7.org/fhir/patient-contact-relationship";
 
+  public static final String EstimatedDateofDeliveryValueset = "2.16.840.1.113883.11.20.9.81";
+  public static final String EstimatedDateofDeliveryExtUrl =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-date-determined-extension";
+  public static final String GestationalAgeEstimatedValueset = "2.16.840.1.113883.11.20.9.82";
+
   // CDA eICR versions supported
   public static final String CDA_EICR_VERSION_R11 = "CDA_R11";
   public static final String CDA_EICR_VERSION_R31 = "CDA_R31";
@@ -969,6 +1010,8 @@ public class CdaGeneratorConstants {
   private static HashMap<String, Pair<String, String>> dstu2oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> dstu2uriMap = new HashMap<>();
   private static HashMap<String, HashMap<String, String>> fhirToCdaTerminologyMap = new HashMap<>();
+
+  private static HashMap<String, HashSet<String>> valueSetToCodes = new HashMap<>();
 
   // Map to hold OID to Name
   private static HashMap<String, String> oidNameMap = new HashMap<>();
@@ -1026,9 +1069,65 @@ public class CdaGeneratorConstants {
             });
       }
 
+      InputStream vsFile =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("EstimatedDateofDeliveryValueset.properties");
+      {
+        Properties prop4 = new Properties();
+        prop4.load(vsFile);
+
+        prop4.forEach(
+            (key, value) -> {
+              if (valueSetToCodes.containsKey(EstimatedDateofDeliveryValueset)) {
+                valueSetToCodes.get(EstimatedDateofDeliveryValueset).add((String) key);
+              } else {
+                valueSetToCodes.put(EstimatedDateofDeliveryValueset, new HashSet<String>());
+                valueSetToCodes.get(EstimatedDateofDeliveryValueset).add((String) key);
+              }
+            });
+      }
+
+      InputStream gsFile =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("GestationalAgeEstimatedValueset.properties");
+      {
+        Properties prop5 = new Properties();
+        prop5.load(vsFile);
+
+        prop5.forEach(
+            (key, value) -> {
+              if (valueSetToCodes.containsKey(GestationalAgeEstimatedValueset)) {
+                valueSetToCodes.get(GestationalAgeEstimatedValueset).add((String) key);
+              } else {
+                valueSetToCodes.put(GestationalAgeEstimatedValueset, new HashSet<String>());
+                valueSetToCodes.get(GestationalAgeEstimatedValueset).add((String) key);
+              }
+            });
+      }
+
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
     }
+  }
+
+  public static Boolean isCodePresentInValueSet(String valueset, String code) {
+
+    if (valueSetToCodes != null && valueSetToCodes.containsKey(valueset)) {
+
+      String found =
+          valueSetToCodes
+              .get(valueset)
+              .stream()
+              .filter(value -> code.contentEquals(value))
+              .findAny()
+              .orElse(null);
+
+      if (found != null) return true;
+    }
+
+    return false;
   }
 
   /**

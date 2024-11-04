@@ -6,6 +6,7 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.eca.model.EcaUtils;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.MatchTriggerStatus;
@@ -272,12 +273,14 @@ public class R3ToR2DataConverterUtils {
                     .getCodingFirstRep()
                     .getCode()
                     .contentEquals("encounter-diagnosis")) {
+            	logger.info(" Adding Encounter Diagnosis ");
               encDiagList.add(c);
             }
 
             data.addEntry(new BundleEntryComponent().setResource(r));
 
             if (c.hasCode() && isPregnancyCondition(c.getCode())) {
+            	logger.info(" Adding Pregnancy Condition ");
               pregnancyConditions.add(c);
             }
           }
@@ -392,7 +395,7 @@ public class R3ToR2DataConverterUtils {
         ArrayList<Observation> vitalObsList = new ArrayList<>();
         if (vitalObs != null && !vitalObs.isEmpty()) {
 
-          for (Resource r : labObs) {
+          for (Resource r : vitalObs) {
             vitalObsList.add((Observation) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
@@ -403,7 +406,9 @@ public class R3ToR2DataConverterUtils {
         Set<Resource> socObs =
             ReportGenerationUtils.filterObservationsByCategory(
                 resources, ObservationCategory.SOCIALHISTORY.toCode());
+
         ArrayList<Observation> socObsList = new ArrayList<>();
+
         if (socObs != null && !socObs.isEmpty()) {
 
           List<Observation> occObs = new ArrayList<>();
@@ -672,7 +677,7 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("8665-2")
+            && ((c.getCode().contentEquals(CdaGeneratorConstants.LMP_CODE)
                 && c.getSystem().contains("http://loinc.org")))) {
           return true;
         }

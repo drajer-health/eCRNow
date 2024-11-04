@@ -50,7 +50,8 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     String actualXml =
-        CdaSocialHistoryGenerator.generateSocialHistorySection(r4FhirData, launchDetails);
+        CdaSocialHistoryGenerator.generateSocialHistorySection(
+            r4FhirData, launchDetails, "CDA_R11");
 
     assertNotNull(actualXml);
 
