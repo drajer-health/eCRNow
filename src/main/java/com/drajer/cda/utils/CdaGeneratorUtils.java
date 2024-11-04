@@ -127,7 +127,7 @@ public class CdaGeneratorUtils {
         + "\n";
   }
 
-  public static String getXmlHeaderForClinicalDocument() {
+  public static String getXmlHeaderForClinicalDocument(String version) {
     String xmlHeader =
         CdaGeneratorConstants.DOC_HEADER_XML + CdaGeneratorConstants.CLINICAL_DOC_HEADER_XML;
 
@@ -152,10 +152,18 @@ public class CdaGeneratorUtils {
     xmlHeader +=
         getXmlForTemplateId(
             CdaGeneratorConstants.CCDA_CCD_TEMPLATE_ID1, CdaGeneratorConstants.US_REALM_HEADER_EXT);
-    xmlHeader +=
-        getXmlForTemplateId(
-            CdaGeneratorConstants.PUBLIC_HEALTH_TEMPLATE_ID,
-            CdaGeneratorConstants.PUBLIC_HEALTH_EXT);
+
+    if (version.contentEquals(CdaGeneratorConstants.CDA_EICR_VERSION_R11)) {
+      xmlHeader +=
+          getXmlForTemplateId(
+              CdaGeneratorConstants.PUBLIC_HEALTH_TEMPLATE_ID,
+              CdaGeneratorConstants.PUBLIC_HEALTH_EXT);
+    } else {
+      xmlHeader +=
+          getXmlForTemplateId(
+              CdaGeneratorConstants.PUBLIC_HEALTH_TEMPLATE_ID,
+              CdaGeneratorConstants.PUBLIC_HEALTH_EXT_R31);
+    }
 
     return xmlHeader;
   }
@@ -592,6 +600,22 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + value
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
+  public static String getXmlForNullValueEffectiveTime(String elName, String value) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + elName
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.TS_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + value
         + CdaGeneratorConstants.DOUBLE_QUOTE

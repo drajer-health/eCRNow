@@ -165,7 +165,7 @@ testCase:
       - xPath: "author/assignedAuthor/addr"
         count: 4
       - xPath: "author/assignedAuthor/telecom"
-        count: 3
+        count: 6
       - xPath: "author/assignedAuthor/"
         "id/@root": "2.16.840.1.113883.4.6"
         "id/@extension": "123456789"

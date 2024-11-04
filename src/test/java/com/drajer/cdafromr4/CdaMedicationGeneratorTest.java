@@ -67,7 +67,7 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
             + "<text>No Medication Administered Information</text>\r\n"
             + "</section>\r\n"
             + "</component>";
-    String actualXml = CdaMedicationGenerator.generateEmptyMedications();
+    String actualXml = CdaMedicationGenerator.generateEmptyMedicationsAdministeredSection();
 
     assertXmlEquals(expectedXml, actualXml);
   }

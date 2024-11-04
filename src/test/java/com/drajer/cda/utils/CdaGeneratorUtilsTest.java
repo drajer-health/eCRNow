@@ -364,7 +364,8 @@ public class CdaGeneratorUtilsTest {
             + "<templateId root=\"2.16.840.1.113883.10.20.22.1.1\"/>\n"
             + "<templateId root=\"2.16.840.1.113883.10.20.22.1.1\" extension=\"2015-08-01\"/>\n"
             + "<templateId root=\"2.16.840.1.113883.10.20.15.2\" extension=\"2016-12-01\"/>\n";
-    String actualResult = CdaGeneratorUtils.getXmlHeaderForClinicalDocument();
+    String version = CdaGeneratorConstants.CDA_EICR_VERSION_R11;
+    String actualResult = CdaGeneratorUtils.getXmlHeaderForClinicalDocument(version);
     assertEquals(expectedResult, actualResult);
   }
 

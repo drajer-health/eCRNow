@@ -51,7 +51,9 @@ public class CdaEncounterGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getGuid())
         .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
 
-    String actualXml = CdaEncounterGenerator.generateEncounterSection(r4FhirData, launchDetails);
+    String actualXml =
+        CdaEncounterGenerator.generateEncounterSection(
+            r4FhirData, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertNotNull(actualXml);
     assertEquals(

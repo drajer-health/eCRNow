@@ -37,7 +37,8 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     String actualXml =
-        CdaPlanOfTreatmentGenerator.generatePlanOfTreatmentSection(r4Data, launchDetails);
+        CdaPlanOfTreatmentGenerator.generatePlanOfTreatmentSection(
+            r4Data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertNotNull(actualXml);
 

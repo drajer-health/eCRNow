@@ -41,7 +41,7 @@ public class CdaHeaderGenerator {
   private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  private static String SW_APP_VERSION = "Version 3.1.5";
+  private static String SW_APP_VERSION = "Version 3.1.6";
   private static String SW_APP_NAME = "ecrNowApp";
   private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
@@ -80,13 +80,14 @@ public class CdaHeaderGenerator {
         : DEFAULT_PROPERTIES_FILE;
   }
 
-  public static String createCdaHeader(R4FhirData data, LaunchDetails details, Eicr ecr) {
+  public static String createCdaHeader(
+      R4FhirData data, LaunchDetails details, Eicr ecr, String version) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
     if (data != null) {
 
-      eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
+      eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument(version));
 
       // Set the clinical document id.
       String docId = CdaGeneratorUtils.getGuid();
@@ -134,7 +135,12 @@ public class CdaHeaderGenerator {
               details.getAssigningAuthorityId(),
               String.valueOf(details.getSetId())));
 
-      Integer vernum = ActionRepo.getInstance().getEicrRRService().getMaxVersionId(ecr);
+      Integer vernum = 0;
+      if (version.contains("3.")) {
+
+      } else {
+        vernum = ActionRepo.getInstance().getEicrRRService().getMaxVersionId(ecr);
+      }
 
       if (vernum == 0) {
         eICRHeader.append(
@@ -452,19 +458,16 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
     Address addr = null;
     sb.append(CdaFhirUtilities.getAddressXml(addr));
+    List<ContactPoint> cps = null;
+    sb.append(CdaFhirUtilities.getTelecomXml(cps, true, false));
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(
             CdaGeneratorConstants.ASSIGNED_AUTHORING_DEVICE_EL_NAME));
     sb.append(
-        CdaGeneratorUtils.getXmlForElementWithAttribute(
-            CdaGeneratorConstants.MANU_MODEL_NAME_EL_NAME,
-            CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL,
-            manufacturer));
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.MANU_MODEL_NAME_EL_NAME, manufacturer));
     sb.append(
-        CdaGeneratorUtils.getXmlForElementWithAttribute(
-            CdaGeneratorConstants.SOFTWARE_NAME_EL_NAME,
-            CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL,
-            swversion));
+        CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.SOFTWARE_NAME_EL_NAME, swversion));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(

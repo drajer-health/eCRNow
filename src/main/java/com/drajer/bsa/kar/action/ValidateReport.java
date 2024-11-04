@@ -148,13 +148,30 @@ public class ValidateReport extends BsaAction {
             data.getNotificationContext().getxRequestId(),
             data.getNotificationContext().getxCorrelationId());
 
-        if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
-          ResponseEntity<String> response =
-              restTemplate.postForEntity(validatorEndpoint, request, String.class);
-          logger.debug(response.getBody());
-          outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
-        } else {
-          logger.warn("No validation endpoint set. Skipping validation");
+        try {
+          if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
+            ResponseEntity<String> response =
+                restTemplate.postForEntity(validatorEndpoint, request, String.class);
+            logger.debug(response.getBody());
+            outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
+          } else {
+            logger.warn("No validation endpoint set. Skipping validation");
+          }
+        } catch (Exception e) {
+
+          actStatus.setActionStatus(BsaActionStatusType.FAILED);
+
+          // Dont hold the output back from submission if the validator endpoint is not valid.
+          // For now, go ahead and add the output as being valid.
+          addValidatedOutputById(data, r);
+          data.addActionOutput(actionId, r);
+
+          outcome
+              .addIssue()
+              .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
+              .setDiagnostics(
+                  "Failed to validate the resource using the validator endpoint provided. Error was: {}"
+                      + e.getMessage());
         }
 
         if (Boolean.TRUE.equals(ActionUtils.operationOutcomeHasErrors(outcome))) {

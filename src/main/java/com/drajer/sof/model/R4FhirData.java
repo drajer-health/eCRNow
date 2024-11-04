@@ -1,7 +1,9 @@
 package com.drajer.sof.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
@@ -11,6 +13,7 @@ import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
+import org.hl7.fhir.r4.model.MedicationDispense;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
@@ -56,9 +59,10 @@ public class R4FhirData extends FhirData {
   private List<Observation> residencyObs;
   private List<Observation> nationalityObs;
   private List<Immunization> immunizations;
-  private List<MedicationStatement> medications;
+  private List<MedicationStatement> medicationStatements;
   private List<MedicationRequest> medicationRequests;
   private List<MedicationAdministration> medicationAdministrations;
+  private List<MedicationDispense> medicationDispenses;
   private List<Medication> medicationList;
   private List<ServiceRequest> serviceRequests;
   private List<Procedure> procedureList;
@@ -134,9 +138,10 @@ public class R4FhirData extends FhirData {
     pregnancyObs = new ArrayList<>();
     occupationObs = new ArrayList<>();
     immunizations = new ArrayList<>();
-    medications = new ArrayList<>();
+    medicationStatements = new ArrayList<>();
     medicationRequests = new ArrayList<>();
     medicationAdministrations = new ArrayList<>();
+    medicationDispenses = new ArrayList<>();
     serviceRequests = new ArrayList<>();
     medicationList = new ArrayList<>();
     procedureList = new ArrayList<>();
@@ -325,12 +330,20 @@ public class R4FhirData extends FhirData {
     this.immunizations = immunizations;
   }
 
-  public List<MedicationStatement> getMedications() {
-    return medications;
+  public List<MedicationStatement> getMedicationStatements() {
+    return medicationStatements;
   }
 
-  public void setMedications(List<MedicationStatement> medications) {
-    this.medications = medications;
+  public void setMedicationStatements(List<MedicationStatement> medicationStatements) {
+    this.medicationStatements = medicationStatements;
+  }
+
+  public List<MedicationDispense> getMedicationDispenses() {
+    return medicationDispenses;
+  }
+
+  public void setMedicationDispenses(List<MedicationDispense> medicationDispenses) {
+    this.medicationDispenses = medicationDispenses;
   }
 
   public List<MedicationRequest> getMedicationRequests() {
@@ -570,12 +583,14 @@ public class R4FhirData extends FhirData {
         + occupationObs
         + ", immunizations="
         + immunizations
-        + ", medications="
-        + medications
+        + ", medicationStatements="
+        + medicationStatements
         + ", medicationRequests="
         + medicationRequests
         + ", medicationAdministrations="
         + medicationAdministrations
+        + ", medicationDispenses="
+        + medicationDispenses
         + ", medicationList="
         + medicationList
         + ", serviceRequests="
@@ -587,5 +602,15 @@ public class R4FhirData extends FhirData {
         + ", jurisdictions="
         + jurisdictions
         + "]";
+  }
+
+  public Map<String, Medication> getMedicationMap() {
+    Map<String, Medication> medMap = new HashMap<>();
+    if (medicationList != null && !medicationList.isEmpty()) {
+      for (Medication m : medicationList) {
+        medMap.put(m.getIdElement().getIdPart(), m);
+      }
+    }
+    return medMap;
   }
 }

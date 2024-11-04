@@ -107,7 +107,7 @@ public class ContentDataSimulator {
       }
 
       r4Data.setLabResults(observations);
-      r4Data.setMedications(medicationStatements);
+      r4Data.setMedicationStatements(medicationStatements);
       r4Data.setMedicationRequests(mrs);
       r4Data.setMedicationList(medications);
 

@@ -30,7 +30,8 @@ public class CdaProblemGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaProblemGenerator.class);
 
-  public static String generateProblemSection(R4FhirData data, LaunchDetails details) {
+  public static String generateProblemSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -466,5 +467,11 @@ public class CdaProblemGenerator {
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
 
     return sb.toString();
+  }
+
+  public static Object generate31ProblemSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

@@ -25,7 +25,8 @@ public class CdaImmunizationGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaImmunizationGenerator.class);
 
-  public static String generateImmunizationSection(R4FhirData data, LaunchDetails details) {
+  public static String generateImmunizationSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -290,5 +291,11 @@ public class CdaImmunizationGenerator {
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
 
     return sb.toString();
+  }
+
+  public static Object generateR31ImmunizationSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

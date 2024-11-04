@@ -31,7 +31,7 @@ public class CdaImmunizationGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
     String actualXml =
         CdaImmunizationGenerator.generateImmunizationSection(
-            immunizationResourceData, launchDetails);
+            immunizationResourceData, launchDetails, "CDA_R11");
     assertXmlEquals(expectedXml, actualXml);
   }
 
@@ -64,7 +64,7 @@ public class CdaImmunizationGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
     String actualXml =
         CdaImmunizationGenerator.generateImmunizationSection(
-            immunizationResourceData, launchDetails);
+            immunizationResourceData, launchDetails, "CDA_R11");
     assertXmlEquals(expectedXml, actualXml);
   }
 }

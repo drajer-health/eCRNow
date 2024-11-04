@@ -44,7 +44,8 @@ public class CdaResultGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaResultGenerator.class);
 
-  public static String generateResultsSection(R4FhirData data, LaunchDetails details) {
+  public static String generateResultsSection(
+      R4FhirData data, LaunchDetails details, String version) {
 
     StringBuilder hsb = new StringBuilder(5000);
     StringBuilder textEntries = new StringBuilder(2000);
@@ -1765,5 +1766,11 @@ public class CdaResultGenerator {
       }
     }
     return null; // Indicate no matching code found
+  }
+
+  public static Object generateR31ResultsSection(
+      R4FhirData data, LaunchDetails details, String version) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

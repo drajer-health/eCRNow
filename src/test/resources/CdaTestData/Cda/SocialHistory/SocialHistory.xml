@@ -164,6 +164,7 @@
 </entry>
 <entry>
 <observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.38"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.38" extension="2015-08-01"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="123"/>
 <code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail"><translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>

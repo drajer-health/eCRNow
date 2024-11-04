@@ -2841,6 +2841,26 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static DateTimeType getDateTimeExtensionValue(
+      List<Extension> extensions, String extensionUrl) {
+
+    if (extensions == null || extensions.isEmpty()) {
+      return null;
+    }
+
+    for (Extension extension : extensions) {
+      if (extension.hasUrl()
+          && extension.getUrl().equals(extensionUrl)
+          && extension.hasValue()
+          && extension.getValue() instanceof DateTimeType) {
+        logger.debug("Found Address Extension at top level.");
+        return (DateTimeType) extension.getValue();
+      }
+    }
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
+    return null;
+  }
+
   public static String getTravelHistoryAddressXml(Address addr) {
     StringBuilder addrString = new StringBuilder(200);
 
@@ -3108,5 +3128,144 @@ public class CdaFhirUtilities {
       }
     }
     return sb.toString();
+  }
+
+  public static String getXmlForAuthorTime(DateTimeType dt) {
+
+    if (dt == null) {
+      return "";
+    }
+
+    return getXmlForAuthorTimeValues(dt.getValue(), dt.getTimeZone());
+  }
+
+  public static String getXmlForAuthorTimeValues(Date d, TimeZone t) {
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_EL_NAME, d, t));
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NA));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
+
+    return sb.toString();
+  }
+
+  public static String getXmlForAuthorTime(InstantType dt) {
+    if (dt == null) {
+      return "";
+    }
+
+    return getXmlForAuthorTimeValues(dt.getValue(), dt.getTimeZone());
+  }
+
+  public static String getDisplayStringForPeriod(Period pd) {
+    if (pd != null) {
+      if (pd.hasStart())
+        return CdaGeneratorUtils.getStringForDateTime(
+            pd.getStart(), pd.getStartElement().getTimeZone());
+      else if (pd.hasEnd())
+        return CdaGeneratorUtils.getStringForDateTime(
+            pd.getEnd(), pd.getEndElement().getTimeZone());
+      else return CdaGeneratorConstants.UNKNOWN_VALUE;
+    } else {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+  }
+
+  public static String getDisplayStringForCodeableConcept(List<CodeableConcept> codes) {
+
+    if (codes != null) {
+
+      for (CodeableConcept cc : codes) {
+
+        String s = getDisplayStringForCodeableConcept(cc);
+
+        if (!s.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE)) return s;
+      }
+    }
+
+    // Nothing worked, so use unknown value.
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getDisplayStringForCodeableConcept(CodeableConcept code) {
+
+    if (code != null) {
+      if (code.hasText() && !code.getText().isEmpty()) return code.getText();
+
+      if (code.hasCoding() && !code.getCoding().isEmpty()) {
+
+        for (Coding c : code.getCoding()) {
+
+          if (c.hasDisplay() && !c.getDisplay().isEmpty()) {
+            return c.getDisplay();
+          }
+        }
+
+        // No display names, so use the system + code or just code
+        if (code.getCodingFirstRep().hasSystem() && code.getCodingFirstRep().hasCode()) {
+          return code.getCodingFirstRep().getSystem() + "|" + code.getCodingFirstRep().getCode();
+        }
+      }
+    }
+
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getDisplayStringForCoding(Coding code) {
+
+    if (code != null && code.hasDisplay() && !code.getDisplay().isEmpty()) {
+      return code.getDisplay();
+    } else if (code != null && code.hasSystem() && code.hasCode()) {
+      return code.getSystem() + "|" + code.getCode();
+    } else if (code != null && code.hasCode()) {
+      return code.getCode();
+    }
+    // Nothing worked, so use unknown value.
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static Boolean isCodePresent(List<CodeableConcept> cds, String code, String codeSystem) {
+
+    Boolean retVal = false;
+    if (cds != null && !cds.isEmpty()) {
+
+      for (CodeableConcept cc : cds) {
+        if (cc.hasCoding() && !cc.getCoding().isEmpty()) {
+
+          List<Coding> codings = cc.getCoding();
+          for (Coding c : codings) {
+            if (c.getCode().contentEquals(code) && c.getSystem().contentEquals(codeSystem)) {
+              logger.info(" Found code {} and codesystem {}", code, codeSystem);
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    return retVal;
+  }
+
+  public static Boolean isCodeableConceptPresentInValueSet(String valueset, CodeableConcept code) {
+
+    if (valueset == null || code == null) return false;
+
+    if (code.hasCoding()) {
+
+      List<Coding> cds = code.getCoding();
+
+      for (Coding cd : cds) {
+
+        if (cd.hasCode() && CdaGeneratorConstants.isCodePresentInValueSet(valueset, cd.getCode())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

@@ -70,7 +70,9 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     when(actionRepoMock.getEicrRRService()).thenReturn(eicrRRServiceMock);
     when(eicrRRServiceMock.getMaxVersionId(any(Eicr.class))).thenReturn(1);
 
-    String actualXml = CdaHeaderGenerator.createCdaHeader(r4Data, launchDetails, eicr);
+    String actualXml =
+        CdaHeaderGenerator.createCdaHeader(
+            r4Data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertNotNull(actualXml);
   }
@@ -330,9 +332,10 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<postalCode nullFlavor=\"NI\"/>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
             + "</addr>\r\n"
+            + "<telecom nullFlavor=\"NI\"/>\r\n"
             + "<assignedAuthoringDevice>\r\n"
-            + "<manufacturerModelName displayName=\"manfacture\"/>\r\n"
-            + "<softwareName displayName=\"1.0v\"/>\r\n"
+            + "<manufacturerModelName>manfacture</manufacturerModelName>\r\n"
+            + "<softwareName>1.0v</softwareName>\r\n"
             + "</assignedAuthoringDevice>\r\n"
             + "</assignedAuthor>\r\n"
             + "</author>\r\n"

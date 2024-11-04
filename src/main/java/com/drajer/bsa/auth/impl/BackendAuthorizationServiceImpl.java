@@ -84,7 +84,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("scope", scopes);
+    // map.add("scope", scopes);
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
@@ -178,8 +178,8 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
       return Jwts.builder()
           .setHeaderParam("typ", "JWT")
-          .setHeaderParam("kid", "178DCA01A4118728949830333DE0DF58C1CA7BBF")
-          .setHeaderParam("alg", "RS384")
+          // .setHeaderParam("kid", "178DCA01A4118728949830333DE0DF58C1CA7BBF")
+          .setHeaderParam("alg", "RS256")
           .setHeaderParam("x5t", x5tValue)
           .setIssuer(clientId)
           .setSubject(clientId)
@@ -192,7 +192,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
                   System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
           .setId(UUID.randomUUID().toString())
           // .signWith(key)
-          .signWith(SignatureAlgorithm.RS384, key)
+          .signWith(SignatureAlgorithm.RS256, key)
           .compact();
     } catch (IOException
         | NoSuchAlgorithmException
