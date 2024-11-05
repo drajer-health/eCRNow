@@ -112,5 +112,4 @@ public class FhirGeneratorConstants {
 
   public static final String CARE_PLAN_SECTION_LOINC_CODE = "18776-5";
   public static final String CARE_PLAN_SECTION_LOINC_CODE_DISPLAY = "Care Plan Section narrative";
-
 }
