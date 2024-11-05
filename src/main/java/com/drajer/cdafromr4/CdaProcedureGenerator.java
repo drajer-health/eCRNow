@@ -136,7 +136,7 @@ public class CdaProcedureGenerator {
     }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
 
     table.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
     procEntries.append(sb.toString());
@@ -209,7 +209,7 @@ public class CdaProcedureGenerator {
     }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PROC_ACT_EL_NAME));
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
 
     table.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
     procEntries.append(sb.toString());
