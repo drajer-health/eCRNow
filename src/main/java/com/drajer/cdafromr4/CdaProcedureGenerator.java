@@ -188,7 +188,7 @@ public class CdaProcedureGenerator {
     bodyvals.put(CdaGeneratorConstants.PROC_TABLE_COL_1_BODY_CONTENT, display);
     sb.append(
         CdaFhirUtilities.getCodeableConceptXml(
-            proc.getCode(), CdaGeneratorConstants.CODE_EL_NAME, Integer.toString(rowNum)));
+            proc.getCode(), CdaGeneratorConstants.CODE_EL_NAME, ""));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(

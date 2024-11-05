@@ -88,6 +88,7 @@ public final class BsaTypes {
     SOCIAL_HISTORY,
     MEDICAL_EQUIPMENT,
     CARE_TEAM,
+    CARE_PLAN,
     GOAL,
     CHIEF_COMPLAINT,
     HISTORY_OF_PRESENT_ILLNESS,
