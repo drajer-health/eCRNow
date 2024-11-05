@@ -46,14 +46,15 @@ public class CdaSocialHistoryGenerator {
             data.getPatient().getExtension(), CdaGeneratorConstants.FHIR_USCORE_BIRTHSEX_EXT_URL);
     List<Observation> pregObs = new ArrayList<>();
     List<Condition> pregCond = new ArrayList<>();
+    List<Observation> occHistory = new ArrayList<>();
 
     if (version.contentEquals(CdaGeneratorConstants.CDA_EICR_VERSION_R11)) {
       pregCond = data.getPregnancyConditions();
       pregObs = data.getPregnancyObs();
+      occHistory = data.getOccupationObs();
     }
 
     List<Observation> travelHistory = data.getTravelObs();
-    List<Observation> occHistory = data.getOccupationObs();
 
     if (birthSex != null
         || (pregObs != null && !pregObs.isEmpty())

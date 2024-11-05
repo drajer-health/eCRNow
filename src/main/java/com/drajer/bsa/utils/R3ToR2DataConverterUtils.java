@@ -273,14 +273,14 @@ public class R3ToR2DataConverterUtils {
                     .getCodingFirstRep()
                     .getCode()
                     .contentEquals("encounter-diagnosis")) {
-            	logger.info(" Adding Encounter Diagnosis ");
+              logger.info(" Adding Encounter Diagnosis ");
               encDiagList.add(c);
             }
 
             data.addEntry(new BundleEntryComponent().setResource(r));
 
             if (c.hasCode() && isPregnancyCondition(c.getCode())) {
-            	logger.info(" Adding Pregnancy Condition ");
+              logger.info(" Adding Pregnancy Condition ");
               pregnancyConditions.add(c);
             }
           }

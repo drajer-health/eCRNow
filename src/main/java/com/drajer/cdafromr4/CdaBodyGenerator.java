@@ -63,10 +63,10 @@ public class CdaBodyGenerator {
         eICRBody.append(CdaPregnancyGenerator.generatePregnancySection(data, details, version));
 
         logger.info("Starting R31 ODH Data Section generation ");
-        //  eICRBody.append(CdaOdhDataGenerator.generateOdhSection(data, details, version));
+        eICRBody.append(CdaOdhDataGenerator.generateOdhSection(data, details, version));
 
         logger.info("Starting R31 Procedure Section generation ");
-        //  eICRBody.append(CdaProcedureGenerator.generateProcedureSection(data, details, version));
+        eICRBody.append(CdaProcedureGenerator.generateProcedureSection(data, details, version));
 
         logger.info("Starting R31 Vitals generation ");
         eICRBody.append(CdaVitalSignsGenerator.generateVitalsSection(data, details, version));
