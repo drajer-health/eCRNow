@@ -103,6 +103,7 @@
 <postalCode nullFlavor="NI"/>
 <country nullFlavor="NI"/>
 </addr>
+<telecom nullFlavor="NI"/>
 <assignedAuthoringDevice>
 <manufacturerModelName displayName="Example-Ehr"/>
 <softwareName displayName="1.0.0"/>
@@ -119,6 +120,7 @@
 <postalCode nullFlavor="NI"/>
 <country nullFlavor="NI"/>
 </addr>
+<telecom nullFlavor="NI"/>
 <assignedAuthoringDevice>
 <manufacturerModelName displayName="ecrNowApp"/>
 <softwareName displayName="Version 3.1.5"/>
@@ -135,6 +137,7 @@
 <postalCode nullFlavor="NI"/>
 <country nullFlavor="NI"/>
 </addr>
+<telecom nullFlavor="NI"/>
 <assignedAuthoringDevice>
 <manufacturerModelName displayName="System-Integrator"/>
 <softwareName displayName="3.1.5"/>

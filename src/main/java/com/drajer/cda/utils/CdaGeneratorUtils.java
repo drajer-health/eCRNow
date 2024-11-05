@@ -1119,6 +1119,42 @@ public class CdaGeneratorUtils {
     return retVal;
   }
 
+  public static String getXmlForValueIVLWithTS(
+      String elName, Pair<Date, TimeZone> low, Pair<Date, TimeZone> high) {
+
+    String retVal =
+        CdaGeneratorConstants.START_XMLTAG
+            + elName
+            + CdaGeneratorConstants.SPACE
+            + CdaGeneratorConstants.XSI_TYPE
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.IVL_TS_TYPE
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
+
+    if (low != null)
+      retVal +=
+          CdaGeneratorUtils.getXmlForEffectiveTime(
+              CdaGeneratorConstants.TIME_LOW_EL_NAME, low.getValue0(), low.getValue1());
+    else
+      retVal +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI);
+
+    if (high != null)
+      retVal +=
+          CdaGeneratorUtils.getXmlForEffectiveTime(
+              CdaGeneratorConstants.TIME_HIGH_EL_NAME, high.getValue0(), high.getValue1());
+    else
+      retVal +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_HIGH_EL_NAME, CdaGeneratorConstants.NF_NI);
+
+    retVal += CdaGeneratorUtils.getXmlForEndElement(elName);
+
+    return retVal;
+  }
+
   public static String getXmlForLowIVLWithTSWithNFHigh(String elName, String value) {
     String s = "";
 

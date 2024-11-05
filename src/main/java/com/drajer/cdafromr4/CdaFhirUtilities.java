@@ -52,6 +52,7 @@ import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Type;
@@ -797,6 +798,25 @@ public class CdaFhirUtilities {
 
     logger.debug("Did not find entry for ID {} Type : {}", id, type);
     return null;
+  }
+
+  public static Boolean isCodeableConceptPresentForCodeSystem(
+      CodeableConcept cc, String codeSystemUrl) {
+
+    Boolean foundCodeSystem = false;
+
+    if (cc != null && cc.hasCoding()) {
+
+      for (Coding c : cc.getCoding()) {
+
+        if (c.hasSystem() && c.getSystem().contentEquals(codeSystemUrl)) {
+
+          foundCodeSystem = true;
+          break;
+        }
+      }
+    }
+    return foundCodeSystem;
   }
 
   public static Boolean isCodingPresentForCodeSystem(List<Coding> codings, String codeSystemUrl) {
@@ -2361,12 +2381,17 @@ public class CdaFhirUtilities {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
+        Pair<Date, TimeZone> low = new Pair<>(d.getValue(), d.getTimeZone());
+        val += CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, low, null);
 
       } else if (dt instanceof Period) {
         Period pt = (Period) dt;
 
-        val += getPeriodXml(pt, elName, false);
+        Pair<Date, TimeZone> low = null;
+        Pair<Date, TimeZone> high = null;
+        if (pt.hasStart()) low = new Pair<>(pt.getStart(), pt.getStartElement().getTimeZone());
+        if (pt.hasEnd()) high = new Pair<>(pt.getEnd(), pt.getEndElement().getTimeZone());
+        val += CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, low, high);
       } else if (dt instanceof Timing) {
 
         Timing t = (Timing) (dt);
@@ -2376,7 +2401,6 @@ public class CdaFhirUtilities {
         }
       }
 
-      logger.debug(PRINTING_THE_CLASS_NAME, dt.getClass());
       return val;
     }
 
@@ -2841,6 +2865,25 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static Boolean getBooleanExtensionValue(List<Extension> extensions, String extensionUrl) {
+    if (extensions == null || extensions.isEmpty()) {
+      return false;
+    }
+
+    for (Extension extension : extensions) {
+      if (extension.hasUrl()
+          && extension.getUrl().equals(extensionUrl)
+          && extension.hasValue()
+          && extension.getValue() instanceof BooleanType) {
+        logger.debug("Found Address Extension at top level.");
+        BooleanType retVal = (BooleanType) extension.getValueAsPrimitive().getValue();
+        return retVal.getValue();
+      }
+    }
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
+    return false;
+  }
+
   public static DateTimeType getDateTimeExtensionValue(
       List<Extension> extensions, String extensionUrl) {
 
@@ -3267,5 +3310,36 @@ public class CdaFhirUtilities {
     }
 
     return false;
+  }
+
+  public static String getXmlForSpecimen(Specimen spec) {
+
+    StringBuilder sb = new StringBuilder();
+
+    if (spec != null && spec.hasType()) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+              CdaGeneratorConstants.SPECIMEN_EL_NAME, CdaGeneratorConstants.TYPE_CODE_SPECIMEN));
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+              CdaGeneratorConstants.SPECIMEN_ROLE_EL_NAME,
+              CdaGeneratorConstants.SPECIMEN_ROLE_CLASS_CODE));
+      sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+      sb.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SPECIMEN_PLAYING_ENTITY));
+
+      List<CodeableConcept> cds = new ArrayList<>();
+      cds.add(spec.getType());
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SPECIMEN_PLAYING_ENTITY));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SPECIMEN_ROLE_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SPECIMEN_EL_NAME));
+    }
+
+    return sb.toString();
   }
 }

@@ -339,11 +339,11 @@ public class CdaPregnancyGenerator {
 
           Map<String, String> bodyvals = new LinkedHashMap<>();
           bodyvals.put(
-              CdaGeneratorConstants.PREGNANCY_OBSERVATION_TABLE_COL_1_BODY_CONTENT,
+              CdaGeneratorConstants.PREGNANCY_LMP_OBSERVATION_TABLE_COL_1_BODY_CONTENT,
               CdaGeneratorConstants.LAST_MENSTRUAL_PERIOD_DISPLAY);
 
           bodyvals.put(
-              CdaGeneratorConstants.PREGNANCY_OBSERVATION_TABLE_COL_2_BODY_CONTENT,
+              CdaGeneratorConstants.PREGNANCY_LMP_OBSERVATION_TABLE_COL_2_BODY_CONTENT,
               CdaFhirUtilities.getStringForType(comp.getValue()));
 
           rowNum++;
