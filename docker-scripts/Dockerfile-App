@@ -1,0 +1,39 @@
+FROM centos:latest
+MAINTAINER eCRNOW App Only
+
+RUN cd /etc/yum.repos.d/
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
+RUN yum update -y
+RUN yum install java-1.8.0-openjdk -y
+
+ENV TZ=${TZ:-'America/New_York'}
+
+RUN echo "America/New_York" > /etc/timezone
+
+# Configure Application directory
+RUN mkdir -p /opt/app
+
+RUN java -version
+
+RUN echo "export PATH=$PATH" > /etc/environment
+
+COPY target/ecr-now.war /opt/app/eCRNow.war
+
+# Configure application config path and log location
+ENV app_mnt=/mnt
+ENV app_db=ecrnow-db
+ENV app_db_port=5432
+ENV app_db_name=postgres
+ENV app_db_user=postgres
+ENV app_db_pwd=postgres
+ENV secret_key=0123445678093435
+
+RUN echo "Log Folder:  $app_log  Database Connection Host: ${app_db}  Port: ${app_db_port}  Name: ${app_db_name} "
+
+WORKDIR /opt/app
+
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-Dspring.profiles.active=docker",  "-jar", "eCRNow.war"]
