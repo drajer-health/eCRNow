@@ -35,6 +35,7 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,10 @@ public class PatientLaunchController {
   @Autowired EhrQueryService ehrService;
 
   @Autowired SubscriptionNotificationReceiver notificationReceiver;
+
+  /** The token refresh threshold value for refreshing access tokens */
+  @Value("${token.refresh.threshold:25}")
+  private Integer tokenRefreshThreshold;
 
   private final Logger logger = LoggerFactory.getLogger(PatientLaunchController.class);
 
@@ -358,6 +363,7 @@ public class PatientLaunchController {
     kd.setHealthcareSetting(hs);
     kd.setNotificationContext(new NotificationContext());
     kd.getNotificationContext().setxRequestId(requestId);
+    kd.setTokenRefreshThreshold(tokenRefreshThreshold);
     Resource res =
         ehrService.getResourceById(kd, ResourceType.Encounter.toString(), context.getEncounterId());
     nb.addEntry(new BundleEntryComponent().setResource(res));

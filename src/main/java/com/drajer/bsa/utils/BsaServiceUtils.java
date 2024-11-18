@@ -757,7 +757,7 @@ public class BsaServiceUtils {
 
   public static Instant convertInstantToDBTimezoneInstant(Instant t, TimeZoneDao dao) {
 
-    if (TIMEZONE_QUERY.isEmpty()) return t;
+    if (TIMEZONE_QUERY != null && TIMEZONE_QUERY.isEmpty()) return t;
     else {
       ZoneId z = ZoneId.of(dao.getDatabaseTimezone(TIMEZONE_QUERY));
       ZonedDateTime zdt = t.atZone(z);

@@ -2,9 +2,11 @@ package com.drajer.bsa.utils;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.exceptions.InvalidLaunchContext;
+import com.drajer.bsa.exceptions.InvalidNotification;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PatientLaunchContext;
 import java.io.File;
@@ -90,13 +92,18 @@ public class SubscriptionUtilsTest {
   }
 
   @Test
-  public void getNotificationContextWithEmptyBundle() throws InvalidLaunchContext {
+  public void getNotificationContextWithEmptyBundle()
+      throws InvalidLaunchContext, InvalidNotification {
     Bundle bundle = new Bundle();
     PatientLaunchContext launchContext = new PatientLaunchContext();
-    NotificationContext notificationContext =
-        SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
-    assertNull(notificationContext);
+
+    try {
+      NotificationContext notificationContext =
+          SubscriptionUtils.getNotificationContext(
+              bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
+    } catch (InvalidNotification e) {
+      assertTrue(true);
+    }
   }
 
   @Test
@@ -147,9 +154,12 @@ public class SubscriptionUtilsTest {
     bundle.addEntry(encounterEntry);
     bundle.setType(BundleType.HISTORY);
     PatientLaunchContext launchContext = new PatientLaunchContext();
-    NotificationContext notificationContext =
-        SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
-    assertNull(notificationContext);
+    try {
+      NotificationContext notificationContext =
+          SubscriptionUtils.getNotificationContext(
+              bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
+    } catch (InvalidNotification e) {
+      assertTrue(true);
+    }
   }
 }

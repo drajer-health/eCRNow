@@ -235,15 +235,6 @@
             },
             "dosage":{
                "text":"500mg IV q6h x 3 days",
-               "route":{
-                  "coding":[
-                     {
-                        "system":"http://snomed.info/sct",
-                        "code":"47625008",
-                        "display":"Intravenous route (qualifier value)"
-                     }
-                  ]
-               },
                "method":{
                   "text":"IV Push"
                },
@@ -371,23 +362,6 @@
                         }
                      ],
                      "text":"sedation"
-                  },
-                  "route":{
-                     "coding":[
-                        {
-                           "system":"https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
-                           "code":"318172",
-                           "display":"IV Push",
-                           "userSelected":true
-                        },
-                        {
-                           "system":"http://snomed.info/sct",
-                           "code":"47625008",
-                           "display":"Intravenous route (qualifier value)",
-                           "userSelected":false
-                        }
-                     ],
-                     "text":"IV Push"
                   },
                   "doseAndRate":[
                      {
@@ -525,23 +499,6 @@
                         }
                      ],
                      "text":"wheezing"
-                  },
-                  "route":{
-                     "coding":[
-                        {
-                           "system":"https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
-                           "code":"318178",
-                           "display":"NEB",
-                           "userSelected":true
-                        },
-                        {
-                           "system":"http://snomed.info/sct",
-                           "code":"447694001",
-                           "display":"Respiratory tract route (qualifier value)",
-                           "userSelected":false
-                        }
-                     ],
-                     "text":"NEB"
                   },
                   "doseAndRate":[
                      {
@@ -738,23 +695,6 @@
                         "text":"every 12 hr"
                      }
                   },
-                  "route":{
-                     "coding":[
-                        {
-                           "system":"https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
-                           "code":"318173",
-                           "display":"IV Piggyback",
-                           "userSelected":true
-                        },
-                        {
-                           "system":"http://snomed.info/sct",
-                           "code":"47625008",
-                           "display":"Intravenous route (qualifier value)",
-                           "userSelected":false
-                        }
-                     ],
-                     "text":"IV Piggyback"
-                  },
                   "doseAndRate":[
                      {
                         "doseQuantity":{
@@ -892,23 +832,6 @@
                         ],
                         "text":"BID"
                      }
-                  },
-                  "route":{
-                     "coding":[
-                        {
-                           "system":"https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
-                           "code":"318185",
-                           "display":"Oral",
-                           "userSelected":true
-                        },
-                        {
-                           "system":"http://snomed.info/sct",
-                           "code":"26643006",
-                           "display":"Oral route (qualifier value)",
-                           "userSelected":false
-                        }
-                     ],
-                     "text":"Oral"
                   },
                   "doseAndRate":[
                      {
@@ -1058,23 +981,6 @@
                         "text":"Daily"
                      }
                   },
-                  "route":{
-                     "coding":[
-                        {
-                           "system":"https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
-                           "code":"318185",
-                           "display":"Oral",
-                           "userSelected":true
-                        },
-                        {
-                           "system":"http://snomed.info/sct",
-                           "code":"26643006",
-                           "display":"Oral route (qualifier value)",
-                           "userSelected":false
-                        }
-                     ],
-                     "text":"Oral"
-                  },
                   "doseAndRate":[
                      {
                         "doseQuantity":{
@@ -1222,23 +1128,6 @@
                         ],
                         "text":"Daily"
                      }
-                  },
-                  "route":{
-                     "coding":[
-                        {
-                           "system":"https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
-                           "code":"318185",
-                           "display":"Oral",
-                           "userSelected":true
-                        },
-                        {
-                           "system":"http://snomed.info/sct",
-                           "code":"26643006",
-                           "display":"Oral route (qualifier value)",
-                           "userSelected":false
-                        }
-                     ],
-                     "text":"Oral"
                   },
                   "doseAndRate":[
                      {

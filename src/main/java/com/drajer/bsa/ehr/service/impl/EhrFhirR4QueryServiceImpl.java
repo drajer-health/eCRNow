@@ -471,15 +471,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     data.getHealthcareSetting().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime));
 
     hsDao.saveOrUpdate(data.getHealthcareSetting());
-
-    /**
-     * data.getNotificationContext().setEhrAccessToken(accessToken);
-     * data.getNotificationContext().setEhrAccessTokenExpiryDuration(expirationDuration);
-     * data.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime));
-     */
-
-    // Save both Notification Context and Healthcare Setting.
-
   }
 
   /**

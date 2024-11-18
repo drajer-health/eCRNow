@@ -20,14 +20,10 @@ import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
-import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
-import com.drajer.bsa.model.HealthcareSetting;
-import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.model.KnowledgeArtifactSummaryInfo;
-import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import com.drajer.bsa.routing.impl.RestfulTransportImpl;
 import com.drajer.bsa.scheduler.BsaScheduler;
@@ -513,20 +509,6 @@ public class KarParserImpl implements KarParser {
     }
 
     return CdaGeneratorConstants.RCTC_OID;
-  }
-
-  private KarProcessingData makeData(HealthcareSetting hs, KnowledgeArtifact art) {
-
-    KarProcessingData kd = new KarProcessingData();
-    kd.setHealthcareSetting(hs);
-    kd.setKar(art);
-    kd.setEhrQueryService(ehrInterface);
-    kd.setNotificationContext(new NotificationContext());
-    KnowledgeArtifactStatus knowledgeArtifactStatus = new KnowledgeArtifactStatus();
-    knowledgeArtifactStatus.setIsActive(true);
-    knowledgeArtifactStatus.setSubscriptionsEnabled(true);
-    kd.setKarStatus(knowledgeArtifactStatus);
-    return kd;
   }
 
   private void addArtifactForPersistence(KnowledgeArtifact art, String repoUrl, String repoName) {

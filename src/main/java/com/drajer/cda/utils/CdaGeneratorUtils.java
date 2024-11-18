@@ -2364,6 +2364,30 @@ public class CdaGeneratorUtils {
     return s;
   }
 
+  public static String getXmlForNFCDWithTranslation(
+      String elName, String code, String codeSystem, String codeSystemName, String displayName) {
+    String s =
+        CdaGeneratorConstants.START_XMLTAG
+            + elName
+            + CdaGeneratorConstants.SPACE
+            + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.NF_OTH
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
+
+    s +=
+        getXmlForCD(
+            CdaGeneratorConstants.TRANSLATION_EL_NAME,
+            code,
+            codeSystem,
+            codeSystemName,
+            displayName);
+    s += getXmlForEndElement(elName);
+
+    return s;
+  }
+
   public static String getXmlForValueCDTranslation(
       String code, String codeSystem, String codeSystemName, String displayName) {
     String s =

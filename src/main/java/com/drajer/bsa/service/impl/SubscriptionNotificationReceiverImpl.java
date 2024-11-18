@@ -4,6 +4,7 @@ import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.exceptions.InvalidLaunchContext;
+import com.drajer.bsa.exceptions.InvalidNotification;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,10 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
   @Qualifier("jsonParser")
   IParser jsonParser;
 
+  /** The token refresh threshold value for refreshing access tokens */
+  @Value("${token.refresh.threshold:25}")
+  private Integer tokenRefreshThreshold;
+
   private final Logger logger = LoggerFactory.getLogger(SubscriptionNotificationReceiverImpl.class);
 
   /** The method that processes the notification. */
@@ -65,7 +71,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       HttpServletRequest request,
       HttpServletResponse response,
       PatientLaunchContext launchContext)
-      throws InvalidLaunchContext {
+      throws InvalidLaunchContext, InvalidNotification {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Starting to process launch notification ");
@@ -131,6 +137,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                   kd.setKarStatus(ks);
                   kd.setxRequestId(nc.getxRequestId());
                   kd.setxCorrelationId(nc.getxCorrelationId());
+                  kd.setTokenRefreshThreshold(tokenRefreshThreshold);
 
                   if (nc.getNotifiedResource() != null) {
                     logger.info("Adding notified resource to the set of inputs ");
@@ -196,7 +203,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       HttpServletResponse response,
       PatientLaunchContext launchContext,
       Boolean relaunch)
-      throws InvalidLaunchContext {
+      throws InvalidLaunchContext, InvalidNotification {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Stating to process notification ");
@@ -263,6 +270,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                   kd.setKarStatus(ks);
                   kd.setxRequestId(nc.getxRequestId());
                   kd.setxCorrelationId(nc.getxCorrelationId());
+                  kd.setTokenRefreshThreshold(tokenRefreshThreshold);
 
                   if (nc.getNotifiedResource() != null) {
                     logger.info("Adding notified resource to the set of inputs ");
@@ -281,9 +289,11 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                   dataList.add(kd);
                 } else {
 
-                  logger.error(
-                      " Unable to process notification, as the KAR is not found {}",
-                      ks.getVersionUniqueKarId());
+                  String err =
+                      " Unable to process notification, as the KAR is not found {}"
+                          + ks.getVersionUniqueKarId();
+                  logger.error(err);
+                  throw new InvalidNotification(err);
                 }
 
               } else {
@@ -295,26 +305,34 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
             }
 
           } else {
-            logger.error(
-                " Cannot proceed with the processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.");
+            String err =
+                " Cannot proceed with the processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.";
+            logger.error(err);
+            throw new InvalidNotification(err);
           }
 
         } else {
 
-          logger.error(
-              " Cannot proceed with the processing because the Healthcare Settings does not exist for {}",
-              nc.getFhirServerBaseUrl());
+          String err =
+              " Cannot proceed with the processing because the Healthcare Settings does not exist for {}"
+                  + nc.getFhirServerBaseUrl();
+          logger.error(err);
+          throw new InvalidNotification(err);
         }
 
       } catch (Exception e) {
 
         logger.error(" Error during processing of notification.", e);
+        throw e;
       }
 
     } else {
 
       logger.error(
           " Cannot process notification because the Notification context is not derivable. ");
+
+      throw new InvalidNotification(
+          "Cannot process notification because the Notification context is not derivable.");
     }
 
     logger.info(" End processing notification ");

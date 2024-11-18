@@ -788,6 +788,7 @@ public class CdaGeneratorConstants {
   public static final String ENTRY_REL_NAME = "entryRelationship";
   public static final String CODE_EL_NAME = "code";
   public static final String TARGET_SITE_CODE_EL_NAME = "targetSiteCode";
+  public static final String ROUTE_CODE_EL_NAME = "routeCode";
   public static final String QUALIFIER_EL_NAME = "qualifier";
   public static final String METHOD_CODE_EL_NAME = "methodCode";
   public static final String TITLE_EL_NAME = "title";

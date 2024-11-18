@@ -122,6 +122,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   @Test
   public void testEicrDocument() throws Exception {
+
+    logger.info("Running Test Case Id: {}", testCaseId);
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
@@ -154,6 +156,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
               + ".xml";
       ApplicationUtils.saveDataToFile(eICRXml, fileName);
 
+      logger.info("Validating Xml for Test Case Id: {} with fileName: {}", testCaseId, fileName);
       validateXml(eicrXmlDoc);
     } else {
       fail("Eicr Not found");

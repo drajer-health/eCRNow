@@ -79,6 +79,10 @@ public class KarProcessorImpl implements KarProcessor {
   @Qualifier("jsonParser")
   IParser jsonParser;
 
+  /** The token refresh threshold value for refreshing access tokens */
+  @Value("${token.refresh.threshold:25}")
+  private Integer tokenRefreshThreshold;
+
   /**
    * The method that applies a KAR to a specific notification context.
    *
@@ -179,6 +183,7 @@ public class KarProcessorImpl implements KarProcessor {
         kd.setxRequestId(data.getxRequestId());
         kd.setxCorrelationId(nc.getxCorrelationId());
         kd.setJobType(data.getJobType());
+        kd.setTokenRefreshThreshold(tokenRefreshThreshold);
 
         // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
         PublicHealthMessage phm = getPublicHealthMessage(nc, kd);

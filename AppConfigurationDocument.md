@@ -130,3 +130,8 @@ To control the timing there is an application property that specifies the number
 * startup.timedelay=10 
 
 The above introduces a delay of 10 seconds before accepting launch patient requests.  
+
+## 2.14 Configuring Token Refresh threshold
+
+This value is used to refresh the access token before it expires, the value is supposed to be in seconds and will be subtracted from the access token expiration time. 
+* token.refresh.threshold=15
