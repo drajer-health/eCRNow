@@ -21,7 +21,9 @@
 <td>
 <content ID="problemStatus1">Active</content>
 </td>
- <td> <content ID="problemDate1">Wed May 13 19:04:28 UTC 2020|Wed May 13 19:04:00 UTC 2020|Unknown</content> </td>
+<td>
+<content ID="problemDate1">Wed May 13 19:04:28 UTC 2020|Wed May 13 19:04:00 UTC 2020|Unknown</content>
+</td>
 </tr>
 </tbody>
 </table>
@@ -48,7 +50,10 @@
 <low value="20200513190400+0000"/>
 <high nullFlavor="NI"/>
 </effectiveTime>
-<value xsi:type="CD" code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Disease caused by 2019-nCoV"><translation code="U07.1" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="2019-nCoV acute respiratory disease"/>
+<value xsi:type="CD" code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Disease caused by 2019-nCoV"><originalText>
+<reference value="#problem1"/>
+</originalText>
+<translation code="U07.1" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="2019-nCoV acute respiratory disease"/>
 </value>
 </observation>
 </entryRelationship>

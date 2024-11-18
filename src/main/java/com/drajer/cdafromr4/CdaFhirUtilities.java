@@ -1335,6 +1335,24 @@ public class CdaFhirUtilities {
     return sb;
   }
 
+  public static String getCodeableConceptXmlForValueWithValueSetAndVersion(
+      CodeableConcept cd,
+      String cdName,
+      String contentRef,
+      String valueset,
+      String valuesetversion) {
+    String sb = "";
+    if (cd != null && cd.hasCoding()) {
+      sb += getCodingXmlForValue(cd.getCoding(), cdName, contentRef);
+    } else if (cd != null && cd.hasText()) {
+      sb += CdaGeneratorUtils.getXmlForValueString(cd.getText());
+    } else {
+      sb += CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI);
+    }
+
+    return sb;
+  }
+
   public static String getCodingXmlForValue(List<Coding> codes, String cdName, String contentRef) {
 
     StringBuilder sb = new StringBuilder(200);
@@ -2805,6 +2823,113 @@ public class CdaFhirUtilities {
     return retval.toString();
   }
 
+  public static String getXmlForMatchedCodesWithValueSetAndVersion(
+      String elementName,
+      Set<String> matchedCodes,
+      String valueSet,
+      String valuesetVersion,
+      CodeableConcept cc,
+      String contentRef,
+      Boolean valueElem) {
+
+    StringBuilder retval = new StringBuilder();
+    StringBuilder translations = new StringBuilder();
+
+    Boolean foundCodings = false;
+
+    if (cc != null && cc.hasCoding()) {
+
+      String dispName = cc.getText();
+
+      List<Coding> cds = cc.getCoding();
+
+      for (Coding cd : cds) {
+
+        if (cd.hasCode() && matchedCodes.contains(cd.getCode()) && !foundCodings) {
+
+          logger.debug(" Found a Coding that is in the trigger code matches. ");
+          if (cd.hasDisplay()) dispName = cd.getDisplay();
+
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(cd.getSystem());
+
+          if (Boolean.FALSE.equals(valueElem)
+              && csd != null
+              && !csd.getValue0().isEmpty()
+              && !csd.getValue1().isEmpty()) {
+            foundCodings = true;
+            retval.append(
+                CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
+                    elementName,
+                    cd.getCode(),
+                    csd.getValue0(),
+                    csd.getValue1(),
+                    valueSet,
+                    valuesetVersion,
+                    dispName));
+
+            if (!contentRef.isEmpty())
+              retval.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
+
+          } else if (Boolean.TRUE.equals(valueElem)
+              && csd != null
+              && !csd.getValue0().isEmpty()
+              && !csd.getValue1().isEmpty()) {
+
+            foundCodings = true;
+            retval.append(
+                CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
+                    elementName,
+                    cd.getCode(),
+                    csd.getValue0(),
+                    csd.getValue1(),
+                    valueSet,
+                    valuesetVersion,
+                    dispName));
+          }
+
+        } else {
+
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(cd.getSystem());
+
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
+
+            if (cd.hasDisplay()) dispName = cd.getDisplay();
+
+            // Create Translations.
+            translations.append(
+                CdaGeneratorUtils.getXmlForCD(
+                    CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                    cd.getCode(),
+                    csd.getValue0(),
+                    csd.getValue1(),
+                    dispName));
+          }
+        } // create translation
+      } // for all codings
+    } // if codeable concept != null
+
+    if (Boolean.TRUE.equals(foundCodings)) {
+      retval.append(translations.toString());
+      retval.append(CdaGeneratorUtils.getXmlForEndElement(elementName));
+    } else {
+
+      String dispName = "";
+      if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
+
+      if (Boolean.FALSE.equals(valueElem)) {
+        retval.append(
+            CdaFhirUtilities.getCodeableConceptXml(
+                cc, CdaGeneratorConstants.CODE_EL_NAME, contentRef));
+      } else if (Boolean.TRUE.equals(valueElem)) {
+        retval.append(
+            CdaFhirUtilities.getCodeableConceptXmlForValue(
+                cc, CdaGeneratorConstants.CODE_EL_NAME, contentRef));
+      }
+    }
+
+    return retval.toString();
+  }
+
   public static String getStatusCodeForFhirMedStatusCodes(String val) {
 
     if (val.equalsIgnoreCase("active")
@@ -3091,6 +3216,16 @@ public class CdaFhirUtilities {
                 CdaGeneratorConstants.RACE_CODE_SYSTEM,
                 CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
                 re.getDisplay()));
+      } else if (doesCodingHaveOtherRace(re)) {
+
+        str.append(
+            CdaGeneratorUtils.getXmlForNFCDWithTranslation(
+                elName,
+                re.getCode(),
+                CdaGeneratorConstants.RACE_CODE_SYSTEM,
+                CdaGeneratorConstants.RACE_CODE_SYSTEM,
+                re.getDisplay()));
+
       } else {
         str.append(CdaGeneratorUtils.getXmlForNullCD(elName, re.getCode()));
       }
@@ -3117,6 +3252,13 @@ public class CdaFhirUtilities {
     if (coding != null
         && coding.hasCode()
         && (coding.getCode().contentEquals("ASKU") || coding.getCode().contentEquals("UNK"))) {
+      return true;
+    } else return false;
+  }
+
+  public static boolean doesCodingHaveOtherRace(Coding coding) {
+
+    if (coding != null && coding.hasCode() && (coding.getCode().contentEquals("2131-1"))) {
       return true;
     } else return false;
   }

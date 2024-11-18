@@ -63,7 +63,7 @@ public class NotificationContextController {
 
     List<NotificationContext> contexts =
         notificationContextService.getNotificationContextData(
-            null, fhirServerUrl, patientId, notificationResourceId);
+            null, fhirServerUrl, notificationResourceId, patientId);
 
     if (contexts.isEmpty()) {
       return ResponseEntity.noContent().build();

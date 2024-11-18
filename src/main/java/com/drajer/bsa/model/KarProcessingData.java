@@ -171,6 +171,9 @@ public class KarProcessingData {
   /** The type of job to be executed on the infrastructure */
   private BsaJobType jobType;
 
+  /** The token refresh threshold value for refreshing access tokens */
+  private Integer tokenRefreshThreshold;
+
   public void addActionOutput(String actionId, Resource res) {
 
     if (actionOutputData.containsKey(actionId)) {
@@ -673,6 +676,14 @@ public class KarProcessingData {
     this.jobType = jobType;
   }
 
+  public Integer getTokenRefreshThreshold() {
+    return tokenRefreshThreshold;
+  }
+
+  public void setTokenRefreshThreshold(Integer tokenRefreshThreshold) {
+    this.tokenRefreshThreshold = tokenRefreshThreshold;
+  }
+
   public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
 
     boolean returnVal = false;
@@ -701,7 +712,8 @@ public class KarProcessingData {
   public boolean hasValidAccessToken() {
 
     // Check to see if the token is at least valid for 20 seconds before reusing the token.
-    Date expirationTimeThreshold = Date.from(new Date().toInstant().plusSeconds(20));
+    Date expirationTimeThreshold =
+        Date.from(new Date().toInstant().plusSeconds(tokenRefreshThreshold));
     Date tokenExpirationTime = this.getHealthcareSetting().getEhrAccessTokenExpirationTime();
 
     if (tokenExpirationTime != null

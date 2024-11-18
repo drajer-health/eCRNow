@@ -398,6 +398,14 @@ public class CdaMedicationGenerator {
               CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
     }
 
+    // Add Route Code
+    if (dosage != null) {
+      if (dosage.hasRoute() && dosage.getRoute().hasCoding()) {
+        sb.append(
+            CdaFhirUtilities.getCodeableConceptXml(
+                dosage.getRoute(), CdaGeneratorConstants.ROUTE_CODE_EL_NAME, ""));
+      }
+    }
     // add Dose quantity
     sb.append(ds);
 

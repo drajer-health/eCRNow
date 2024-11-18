@@ -1,6 +1,7 @@
 package com.drajer.bsa.utils;
 
 import com.drajer.bsa.exceptions.InvalidLaunchContext;
+import com.drajer.bsa.exceptions.InvalidNotification;
 import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PatientLaunchContext;
@@ -95,7 +96,7 @@ public class SubscriptionUtils {
       HttpServletResponse response,
       Boolean relaunch,
       PatientLaunchContext launchContext)
-      throws InvalidLaunchContext {
+      throws InvalidLaunchContext, InvalidNotification {
 
     NotificationContext nc = null;
 
@@ -238,23 +239,29 @@ public class SubscriptionUtils {
                   nc.setEhrLaunchContext(
                       objectMapper.writeValueAsString(launchContext.getEhrLaunchContext()));
                 } catch (JsonProcessingException e) {
-                  logger.error("Unable to set the Launch Context in the Notification Context ");
+                  String err = "Unable to set the Context in the Notification Context table";
+                  logger.error(err);
+                  throw new InvalidNotification(err);
                 }
               }
 
             } else {
 
-              logger.error(
-                  "Fhir Server Url received is not valid for further processing, Url Value : {}",
-                  (fhirServerUrl != null) ? fhirServerUrl : "Null Value");
+              String error =
+                  "Fhir Server Url received is not valid for further processing, Url Value : {}"
+                      + ((fhirServerUrl != null) ? fhirServerUrl : "Null Value");
+              logger.error(error);
+              throw new InvalidNotification(error);
             }
 
           } else { // if resourceType is not the same
 
-            logger.error(
-                " Resource Type Received {}, does not match Resource Type Expected {}",
-                res.getResourceType().getDeclaringClass(),
-                ResourceType.fromCode(resourceType).getDeclaringClass());
+            String error =
+                " Resource Type Received {}, does not match Resource Type Expected {}"
+                    + res.getResourceType().getDeclaringClass()
+                    + ResourceType.fromCode(resourceType).getDeclaringClass();
+            logger.error(error);
+            throw new InvalidNotification(error);
           }
         } else {
           String error = "Resource not found for type: " + resourceType;
@@ -262,17 +269,23 @@ public class SubscriptionUtils {
           String possibleCauses =
               error
                   + ", Check for accurate PatientId, Encounter or Notified Resource Id or an Expired Authorization Token";
-          throw new InvalidLaunchContext(possibleCauses);
+          throw new InvalidNotification(possibleCauses);
         }
 
       } else {
 
         logger.error(" Bundle does not pass the necessary checks for processing. ");
+
+        throw new InvalidNotification(
+            "Bundle does not pass the necessary checks for processing, check the event-notification code.");
       }
 
     } else {
 
       logger.error(" Bundle does not have necessary data to process the notification. ");
+
+      throw new InvalidNotification(
+          "Bundle does not have necessary data to process the notification.");
     }
 
     return nc;

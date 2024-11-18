@@ -79,39 +79,18 @@ public class CdaProblemGenerator {
 
       // Add Body Rows
       int rowNum = 1;
+      StringBuilder probObsXml = new StringBuilder();
       for (Condition prob : conds) {
 
         String probDisplayName = CdaFhirUtilities.getStringForCodeableConcept(prob.getCode());
-        if (StringUtils.isEmpty(probDisplayName))
-          probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
+        if (probDisplayName.isEmpty()) probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
 
-        if (prob.hasClinicalStatus()
-            && prob.getClinicalStatus().hasCoding()
-            && prob.getClinicalStatus().getCodingFirstRep() != null
-            && !StringUtils.isEmpty(prob.getClinicalStatus().getCodingFirstRep().getCode())
-            && (prob.getClinicalStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .contentEquals(ConditionClinical.RESOLVED.toCode())
-                || prob.getClinicalStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .contentEquals(ConditionClinical.INACTIVE.toCode())
-                || prob.getClinicalStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .contentEquals(ConditionClinical.REMISSION.toCode()))) {
-          bodyvals.put(
-              CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
-              CdaGeneratorConstants.TABLE_RESOLVED_STATUS);
-        } else {
-          bodyvals.put(
-              CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
-              CdaGeneratorConstants.TABLE_ACTIVE_STATUS);
-        }
+        // Add Problem Status
+        Pair<String, String> probStatus = getProblemStatusStrings(prob);
+        bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT, probStatus.getValue0());
 
         // Add dates
         Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(prob.getOnset());
@@ -126,6 +105,10 @@ public class CdaProblemGenerator {
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_3_BODY_CONTENT, probDates);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+
+        // Get Concern Act and Observation
+        probObsXml.append(
+            getProblemActEntryXml(prob, details, version, probStatus.getValue1(), rowNum));
         ++rowNum;
       }
 
@@ -135,152 +118,8 @@ public class CdaProblemGenerator {
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
-      for (Condition pr : conds) {
-        // Add the Entries.
-        sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
-
-        // Add the problem Concern Act
-        sb.append(
-            CdaGeneratorUtils.getXmlForAct(
-                CdaGeneratorConstants.ACT_EL_NAME,
-                CdaGeneratorConstants.ACT_CLASS_CODE,
-                CdaGeneratorConstants.MOOD_CODE_DEF));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_CONCERN_TEMPLATE_ID));
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.PROB_CONCERN_TEMPLATE_ID,
-                CdaGeneratorConstants.PROB_CONCERN_TEMPLATE_ID_EXT));
-
-        sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
-        sb.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.CODE_EL_NAME,
-                CdaGeneratorConstants.PROB_CONC_ACT_CODE,
-                CdaGeneratorConstants.HL7_ACT_CLASS_OID,
-                CdaGeneratorConstants.HL7_ACT_CLASS_NAME,
-                CdaGeneratorConstants.PROB_CONC_ACT_NAME));
-
-        if (pr.hasClinicalStatus()
-            && pr.getClinicalStatus().hasCoding()
-            && pr.getClinicalStatus().getCodingFirstRep() != null
-            && !StringUtils.isEmpty(pr.getClinicalStatus().getCodingFirstRep().getCode())
-            && (pr.getClinicalStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .contentEquals(ConditionClinical.RESOLVED.toCode())
-                || pr.getClinicalStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .contentEquals(ConditionClinical.INACTIVE.toCode())
-                || pr.getClinicalStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .contentEquals(ConditionClinical.REMISSION.toCode()))) {
-          sb.append(
-              CdaGeneratorUtils.getXmlForCD(
-                  CdaGeneratorConstants.STATUS_CODE_EL_NAME,
-                  CdaGeneratorConstants.COMPLETED_STATUS));
-        } else {
-          sb.append(
-              CdaGeneratorUtils.getXmlForCD(
-                  CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
-        }
-
-        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(pr.getOnset());
-        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
-        Pair<Date, TimeZone> recordedDate = null;
-        if (pr.hasRecordedDateElement()) {
-          recordedDate =
-              new Pair<>(pr.getRecordedDate(), pr.getRecordedDateElement().getTimeZone());
-        }
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, recordedDate, abatement, true));
-
-        // Add the Problem Observation
-        sb.append(
-            CdaGeneratorUtils.getXmlForEntryRelationship(
-                CdaGeneratorConstants.ENTRY_REL_SUBJ_CODE));
-        sb.append(
-            CdaGeneratorUtils.getXmlForAct(
-                CdaGeneratorConstants.OBS_ACT_EL_NAME,
-                CdaGeneratorConstants.OBS_CLASS_CODE,
-                CdaGeneratorConstants.MOOD_CODE_DEF));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID));
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
-                CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), pr.getIdElement().getIdPart()));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForCDWithoutEndTag(
-                CdaGeneratorConstants.CODE_EL_NAME,
-                CdaGeneratorConstants.DIAGNOSIS_SNOMED,
-                CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
-                CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
-                CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
-        sb.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.TRANSLATION_EL_NAME,
-                CdaGeneratorConstants.DIAGNOSIS_LOINC,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-                CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
-
-        List<CodeableConcept> cds = new ArrayList<>();
-        cds.add(pr.getCode());
-
-        String codeXml =
-            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-                cds,
-                CdaGeneratorConstants.VAL_EL_NAME,
-                true,
-                CdaGeneratorConstants.FHIR_SNOMED_URL,
-                false,
-                "");
-
-        if (!codeXml.isEmpty()) {
-          sb.append(codeXml);
-        } else {
-          sb.append(
-              CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
-        }
-
-        // End Tag for Entry Relationship
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
-
-        logger.debug(
-            "Add Trigger Codes to Problem Observation if applicable {}",
-            pr.getIdElement().getIdPart());
-        sb.append(
-            addTriggerCodes(
-                details, pr.getCode(), onset, abatement, pr.getIdElement().getIdPart()));
-
-        logger.debug("Completed adding Trigger Codes ");
-
-        // End Tags for Entries
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
-      }
+      // Add entries
+      sb.append(probObsXml.toString());
 
       // Complete the section end tags.
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -469,9 +308,307 @@ public class CdaProblemGenerator {
     return sb.toString();
   }
 
-  public static Object generate31ProblemSection(
-      R4FhirData data, LaunchDetails details, String version) {
-    // TODO Auto-generated method stub
-    return null;
+  public static Pair<String, String> getProblemStatusStrings(Condition prob) {
+
+    if (prob.hasClinicalStatus()
+        && prob.getClinicalStatus().hasCoding()
+        && prob.getClinicalStatus().getCodingFirstRep() != null
+        && !StringUtils.isEmpty(prob.getClinicalStatus().getCodingFirstRep().getCode())
+        && (prob.getClinicalStatus()
+                .getCodingFirstRep()
+                .getCode()
+                .contentEquals(ConditionClinical.RESOLVED.toCode())
+            || prob.getClinicalStatus()
+                .getCodingFirstRep()
+                .getCode()
+                .contentEquals(ConditionClinical.INACTIVE.toCode())
+            || prob.getClinicalStatus()
+                .getCodingFirstRep()
+                .getCode()
+                .contentEquals(ConditionClinical.REMISSION.toCode()))) {
+      return new Pair<String, String>(
+          CdaGeneratorConstants.TABLE_RESOLVED_STATUS, CdaGeneratorConstants.COMPLETED_STATUS);
+    } else {
+      return new Pair<String, String>(
+          CdaGeneratorConstants.TABLE_ACTIVE_STATUS, CdaGeneratorConstants.ACTIVE_STATUS);
+    }
+  }
+
+  public static String getProblemActEntryXml(
+      Condition cond, LaunchDetails details, String version, String probStatus, int rowNum) {
+
+    StringBuilder sb = new StringBuilder(500);
+
+    // Add the Entries.
+    sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
+
+    // Add the problem Concern Act
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.ACT_EL_NAME,
+            CdaGeneratorConstants.ACT_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_CONCERN_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.PROB_CONCERN_TEMPLATE_ID,
+            CdaGeneratorConstants.PROB_CONCERN_TEMPLATE_ID_EXT));
+
+    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.PROB_CONC_ACT_CODE,
+            CdaGeneratorConstants.HL7_ACT_CLASS_OID,
+            CdaGeneratorConstants.HL7_ACT_CLASS_NAME,
+            CdaGeneratorConstants.PROB_CONC_ACT_NAME));
+
+    sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, probStatus));
+
+    Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(cond.getOnset());
+    Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(cond.getAbatement());
+    Pair<Date, TimeZone> recordedDate =
+        CdaFhirUtilities.getActualDate(cond.getRecordedDateElement());
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForIVLWithTS(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, recordedDate, abatement, true));
+    // Add the Problem Observation
+    sb.append(
+        CdaGeneratorUtils.getXmlForEntryRelationship(CdaGeneratorConstants.ENTRY_REL_SUBJ_CODE));
+
+    sb.append(getProblemObservationXml(details, cond, rowNum));
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
+
+    // End Tags for Entries
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
+  }
+
+  private static String getProblemObservationXml(
+      LaunchDetails details, Condition cond, int rowNum) {
+
+    StringBuilder sb = new StringBuilder();
+
+    // Add the Problem Observation
+    logger.info(" Patient State = {}", details.getStatus());
+    // Check if the code matches a trigger code
+    Set<String> matchedCodesFromCc = getMatchedCodes(details, cond.getCode(), "Condition");
+
+    // Find if there is a match
+    String valCodeXml = "";
+    if (matchedCodesFromCc != null && !matchedCodesFromCc.isEmpty()) {
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForActWithNegationInd(
+              CdaGeneratorConstants.OBS_ACT_EL_NAME,
+              CdaGeneratorConstants.OBS_CLASS_CODE,
+              CdaGeneratorConstants.MOOD_CODE_DEF,
+              "false",
+              true));
+
+      sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID));
+      sb.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
+              CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
+      sb.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID,
+              CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
+
+      String contentRef =
+          CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+
+      valCodeXml =
+          CdaFhirUtilities.getXmlForMatchedCodesWithValueSetAndVersion(
+              CdaGeneratorConstants.VAL_EL_NAME,
+              matchedCodesFromCc,
+              details.getRctcOid(),
+              details.getRctcVersion(),
+              cond.getCode(),
+              contentRef,
+              true);
+
+    } else {
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForAct(
+              CdaGeneratorConstants.OBS_ACT_EL_NAME,
+              CdaGeneratorConstants.OBS_CLASS_CODE,
+              CdaGeneratorConstants.MOOD_CODE_DEF));
+
+      sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID));
+      sb.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
+              CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
+
+      List<String> urls = new ArrayList<>();
+      urls.add(CdaGeneratorConstants.FHIR_SNOMED_URL);
+      urls.add(CdaGeneratorConstants.FHIR_ICD10_CM_URL);
+      urls.add(CdaGeneratorConstants.FHIR_ICD9_CM_URL);
+
+      valCodeXml =
+          getCodeableConceptXml(
+              cond.getCode(), CdaGeneratorConstants.VAL_EL_NAME, true, details, urls, rowNum);
+    }
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_SNOMED,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.TRANSLATION_EL_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_LOINC,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(cond.getOnset());
+    Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(cond.getAbatement());
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForIVLWithTS(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
+
+    // Add Value element
+    sb.append(valCodeXml);
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+
+    return sb.toString();
+  }
+
+  public static String getValueCodeXmlFromMatchedCode(
+      Set<String> matchedCodes, LaunchDetails details, int rowNum, CodeableConcept cd) {
+
+    StringBuilder sb = new StringBuilder();
+    if (matchedCodes != null && !matchedCodes.isEmpty()) {
+
+      matchedCodes
+          .stream()
+          .filter(Objects::nonNull)
+          .findFirst()
+          .ifPresent(
+              matchCode -> {
+                logger.debug("Starting to add trigger code that was matched {}", matchCode);
+
+                String[] parts = matchCode.split("\\|");
+
+                logger.debug("Parts [0] = {}", parts[0]);
+
+                Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+
+                logger.debug("Retrieved CSD Values");
+                logger.debug("Retrieved CSD Values {}, {}", csd.getValue0(), csd.getValue1());
+
+                String contentRef =
+                    CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+                sb.append(
+                    CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
+                        parts[1],
+                        csd.getValue0(),
+                        csd.getValue1(),
+                        details.getRctcOid(),
+                        details.getRctcVersion(),
+                        contentRef));
+                logger.debug("Constructed Value CD {}", sb.toString());
+              });
+    }
+    return sb.toString();
+  }
+
+  public static Set<String> getMatchedCodes(
+      LaunchDetails details, CodeableConcept cc, String resourceType) {
+
+    Set<String> matchedCodesFromCc = new HashSet<>();
+
+    // Add each code as an entry relationship observation
+    List<CodeableConcept> cds = new ArrayList<>();
+    if (cc != null) cds.add(cc);
+
+    PatientExecutionState state = null;
+
+    state = ApplicationUtils.getDetailStatus(details);
+
+    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+
+    for (MatchedTriggerCodes mtc : mtcs) {
+
+      Set<String> mcc = mtc.hasMatchedTriggerCodesFromCodeableConcept(resourceType, cds);
+
+      if (mcc != null) {
+        logger.info(" Matched codes found {}", mcc.size());
+        matchedCodesFromCc.addAll(mcc);
+      } else {
+        logger.info(" No Matched codes found ");
+      }
+    }
+
+    return matchedCodesFromCc;
+  }
+
+  public static String getCodeableConceptXml(
+      CodeableConcept cd,
+      String elName,
+      Boolean valElem,
+      LaunchDetails details,
+      List<String> urls,
+      int rowNum) {
+
+    String s = "";
+
+    if (cd != null) {
+
+      List<CodeableConcept> cds = new ArrayList<>();
+      cds.add(cd);
+      String contentRef =
+          CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+
+      for (String st : urls) {
+
+        s +=
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                cds, CdaGeneratorConstants.VAL_EL_NAME, true, st, false, contentRef);
+
+        if (s != null && !s.isEmpty()) {
+          logger.debug(" Found code for code system {}", st);
+          break;
+        }
+      }
+
+      if (s == null || s.isEmpty()) {
+
+        logger.debug(" Creating generic xml for code ");
+        s += CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true);
+      }
+
+    } else {
+      s +=
+          CdaGeneratorUtils.getXmlForNullValueCD(
+              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI);
+    }
+    return s;
   }
 }

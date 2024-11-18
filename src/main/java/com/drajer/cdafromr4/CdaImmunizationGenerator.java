@@ -155,6 +155,12 @@ public class CdaImmunizationGenerator {
                   CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
         }
 
+        if (imm.hasRoute() && imm.getRoute().hasCoding()) {
+          sb.append(
+              CdaFhirUtilities.getCodeableConceptXml(
+                  imm.getRoute(), CdaGeneratorConstants.ROUTE_CODE_EL_NAME, ""));
+        }
+
         if (imm.hasDoseQuantity()) {
           sb.append(
               CdaFhirUtilities.getQuantityXml(

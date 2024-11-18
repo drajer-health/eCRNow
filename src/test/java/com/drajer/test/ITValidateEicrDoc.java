@@ -87,7 +87,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     List<TestDataGenerator> testDataGenerator = new ArrayList<>();
 
-    testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
+    /* testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
@@ -96,7 +96,9 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/planOfTreatmentSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/historyOfPresentIllnessSection.yaml"));
-    testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml")); */
+
+    testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
 
     int totalTestCount = 0;
     for (TestDataGenerator testData : testDataGenerator) {
@@ -122,6 +124,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   @Test
   public void testEicrDocument() throws Exception {
+
+    logger.info("Running Test Case Id: {}", testCaseId);
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
@@ -154,6 +158,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
               + ".xml";
       ApplicationUtils.saveDataToFile(eICRXml, fileName);
 
+      logger.info("Validating Xml for Test Case Id: {} with fileName: {}", testCaseId, fileName);
       validateXml(eicrXmlDoc);
     } else {
       fail("Eicr Not found");

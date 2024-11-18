@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import com.drajer.bsa.exceptions.InvalidLaunchContext;
+import com.drajer.bsa.exceptions.InvalidNotification;
 import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.utils.SubscriptionUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.Test;
 class SubscriptionUtilsTest {
 
   @Test
-  public void getNotificationContextTest() throws InvalidLaunchContext {
+  public void getNotificationContextTest() throws InvalidLaunchContext, InvalidNotification {
 
     String resourceName = "Bsa/NotificationBundleEncounterClose.json";
 

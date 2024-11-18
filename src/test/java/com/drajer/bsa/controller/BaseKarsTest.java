@@ -125,15 +125,21 @@ public class BaseKarsTest extends BaseIntegrationTest {
         this.stubHelper.mockReceiveEicr(bundle);
       }
 
-      PatientLaunchContext launchContext = null;
-      List<KarProcessingData> dataList =
-          notificationReceiver.processNotification(
-              bundle,
-              mock(HttpServletRequest.class),
-              mock(HttpServletResponse.class),
-              launchContext);
+      Boolean reportBundleGenerated = false;
+      List<KarProcessingData> dataList = null;
+      try {
+        PatientLaunchContext launchContext = null;
+        dataList =
+            notificationReceiver.processNotification(
+                bundle,
+                mock(HttpServletRequest.class),
+                mock(HttpServletResponse.class),
+                launchContext);
+      } catch (Exception e) {
+        reportBundleGenerated = false;
+      }
 
-      Boolean reportBundleGenerated =
+      reportBundleGenerated =
           this.reportBundleGenerated(
               dataList, this.testCaseInfo.getName(), this.testCaseInfo.getPlanDefUrl());
 
