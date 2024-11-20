@@ -93,12 +93,6 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-<dependency>
-    <groupId>jakarta.xml.bind</groupId>
-    <artifactId>jakarta.xml.bind-api</artifactId>
-    <version>2.3.2</version>
-</dependency>
-
 		<!--mssql -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
@@ -119,6 +113,21 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>4.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.interceptor</groupId>
 			<artifactId>javax.interceptor-api</artifactId>
