@@ -2,7 +2,7 @@ package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.ecrapp.dao.AbstractDao;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
 

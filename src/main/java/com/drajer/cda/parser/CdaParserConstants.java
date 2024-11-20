@@ -1,7 +1,5 @@
 package com.drajer.cda.parser;
 
-import java.util.Iterator;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
@@ -60,6 +58,7 @@ public class CdaParserConstants {
     return constants;
   }
 
+  /*
   NamespaceContext ctx =
       new NamespaceContext() {
         public String getNamespaceURI(String prefix) {
@@ -78,4 +77,6 @@ public class CdaParserConstants {
           return null;
         }
       };
+
+      */
 }

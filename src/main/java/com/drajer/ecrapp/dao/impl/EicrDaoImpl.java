@@ -4,11 +4,15 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.EicrDao;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,83 +46,131 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public Integer getMaxVersionId(Eicr eicr) {
-    Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq(FHIR_SERVER_URL, eicr.getFhirServerUrl()));
-    criteria.add(Restrictions.eq("launchPatientId", eicr.getLaunchPatientId()));
-    criteria.add(Restrictions.eq(ENCOUNTER_ID, eicr.getEncounterId()));
-    criteria.addOrder(Order.desc("docVersion"));
-    criteria.setMaxResults(1);
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
+    Root<Eicr> root = cq.from(Eicr.class);
 
-    Eicr resultEicr = (Eicr) criteria.uniqueResult();
+    Predicate criteria =
+        cb.and(
+            cb.equal(root.get(FHIR_SERVER_URL), eicr.getFhirServerUrl()),
+            cb.equal(root.get("launchPatientId"), eicr.getLaunchPatientId()),
+            cb.equal(root.get(ENCOUNTER_ID), eicr.getEncounterId()));
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("docVersion")));
 
-    if (resultEicr != null) {
-      return resultEicr.getDocVersion();
-    }
-    return 0;
+    Query<Eicr> q = getSession().createQuery(cq);
+    q.setFirstResult(0);
+    q.setMaxResults(1);
+
+    return q.uniqueResultOptional().map(Eicr::getDocVersion).orElse(0);
   }
 
   public Eicr getEicrByCorrelationId(String xcoorrId) {
-    Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq("xCorrelationId", xcoorrId));
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
+    Root<Eicr> root = cq.from(Eicr.class);
+    cq.where(cb.equal(root.get("xCorrelationId"), xcoorrId));
 
-    return (Eicr) criteria.uniqueResult();
+    Query<Eicr> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   public List<Eicr> getEicrData(Map<String, String> searchParams) {
-    Criteria criteria = getSession().createCriteria(Eicr.class);
-    if (searchParams.get("eicrId") != null) {
-      criteria.add(Restrictions.eq("id", Integer.parseInt(searchParams.get("eicrId"))));
-    }
-    prepareCriteria(criteria, searchParams);
-    return criteria.addOrder(Order.desc("id")).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
+    Root<Eicr> root = cq.from(Eicr.class);
+    List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+    predicates.add(cb.equal(root.get("id"), Integer.parseInt(searchParams.get("eicrId"))));
+
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
+
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("id")));
+
+    Query<Eicr> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   public List<Eicr> getRRData(Map<String, String> searchParams) {
-    Criteria criteria = getSession().createCriteria(Eicr.class);
-    if (searchParams.get(RESPONSE_DOC_ID) != null) {
-      criteria.add(Restrictions.eq(RESPONSE_DOC_ID, searchParams.get(RESPONSE_DOC_ID)));
-    }
-    prepareCriteria(criteria, searchParams);
-    return criteria.addOrder(Order.desc("id")).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
+    Root<Eicr> root = cq.from(Eicr.class);
+    List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+    predicates.add(
+        cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
+
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("id")));
+
+    Query<Eicr> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   public List<Eicr> getEicrAndRRByXRequestId(String xRequestId) {
-    Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq(X_REQUEST_ID, xRequestId));
-    return criteria.addOrder(Order.desc("id")).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
+    Root<Eicr> root = cq.from(Eicr.class);
+    cq.where(cb.equal(root.get(X_REQUEST_ID), xRequestId));
+
+    Query<Eicr> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   @Override
   public Eicr getEicrByDocId(String docId) {
-    Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq(EICR_DOC_ID, docId));
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
+    Root<Eicr> root = cq.from(Eicr.class);
+    cq.where(cb.equal(root.get(EICR_DOC_ID), docId));
 
-    return (Eicr) criteria.uniqueResult();
+    Query<Eicr> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
-  public static void prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
+  public static List<Predicate> preparePredicate(
+      CriteriaBuilder cb, Root<Eicr> root, Map<String, String> searchParams) {
+    List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(EICR_DOC_ID) != null) {
-      criteria.add(Restrictions.eq(EICR_DOC_ID, searchParams.get(EICR_DOC_ID)));
+      predicates.add(cb.equal(root.get(EICR_DOC_ID), searchParams.get(EICR_DOC_ID)));
     }
     if (searchParams.get(FHIR_SERVER_URL) != null) {
-      criteria.add(Restrictions.eq(FHIR_SERVER_URL, searchParams.get(FHIR_SERVER_URL)));
+      predicates.add(cb.equal(root.get(FHIR_SERVER_URL), searchParams.get(FHIR_SERVER_URL)));
     }
     if (searchParams.get(SET_ID) != null) {
-      criteria.add(Restrictions.eq(SET_ID, searchParams.get(SET_ID)));
+      predicates.add(cb.equal(root.get(SET_ID), searchParams.get(SET_ID)));
     }
     if (searchParams.get("patientId") != null) {
-      criteria.add(Restrictions.eq("launchPatientId", searchParams.get("patientId")));
+      predicates.add(cb.equal(root.get("launchPatientId"), searchParams.get("patientId")));
     }
     if (searchParams.get(ENCOUNTER_ID) != null) {
-      criteria.add(Restrictions.eq(ENCOUNTER_ID, searchParams.get(ENCOUNTER_ID)));
+      predicates.add(cb.equal(root.get(ENCOUNTER_ID), searchParams.get(ENCOUNTER_ID)));
     }
     if (searchParams.get("version") != null) {
-      criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
+      predicates.add(cb.equal(root.get("docVersion"), searchParams.get("version")));
     }
     if (searchParams.get(X_REQUEST_ID) != null) {
-      criteria.add(Restrictions.eq(X_REQUEST_ID, searchParams.get(X_REQUEST_ID)));
+      predicates.add(cb.equal(root.get(X_REQUEST_ID), searchParams.get(X_REQUEST_ID)));
     }
+
+    return predicates;
   }
 
   public void deleteEicr(Eicr eicr) {
