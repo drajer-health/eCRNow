@@ -34,7 +34,7 @@ import org.springframework.retry.support.RetryTemplate;
       "com.drajer.bsa.interfaces",
       "com.drajer.bsa"
     })
-@Import({EvaluatorConfiguration.class, HibernateConfiguration.class})
+@Import(EvaluatorConfiguration.class)
 @Configuration
 @EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class SpringConfiguration {
