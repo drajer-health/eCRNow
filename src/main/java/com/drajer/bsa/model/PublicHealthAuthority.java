@@ -1,10 +1,9 @@
 package com.drajer.bsa.model;
 
+import jakarta.persistence.*;
 import java.util.Date;
-import javax.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +71,7 @@ public class PublicHealthAuthority implements FhirServerDetails {
   private String scopes;
 
   @Column(name = "require_aud", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean requireAud = false;
 
   /**
