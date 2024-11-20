@@ -7,7 +7,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.12</version>
-		<relativePath />
+		<relativePath/>
 		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
@@ -318,7 +318,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.9.0</version>
+			<version>2.14.0</version>
 		</dependency>
 
 		<dependency>
@@ -512,8 +512,7 @@
 				<version>2.21.0</version>
 				<configuration>
 					<!-- Activate the use of TCP to transmit events to the plugin -->
-					<forkNode
-						implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+					<forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
 				</configuration>
 				<executions>
 					<execution>
@@ -527,8 +526,7 @@
 							<excludes>
 								<exclude>**/IT*.java</exclude>
 							</excludes>
-							<forkNode
-								implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+							<forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
 						</configuration>
 					</execution>
 				</executions>
