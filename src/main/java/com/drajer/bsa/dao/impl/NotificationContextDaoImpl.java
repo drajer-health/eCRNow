@@ -3,14 +3,17 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.*;
-import org.springframework.http.HttpStatus;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
@@ -58,9 +61,15 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
    */
   @Override
   public NotificationContext getNotificationContextByUrl(String url) {
-    Criteria criteria = getSession().createCriteria(NotificationContext.class);
-    criteria.add(Restrictions.eq("fhirServerBaseURL", url));
-    return (NotificationContext) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
+    Root<NotificationContext> root = cq.from(NotificationContext.class);
+    cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
+
+    Query<NotificationContext> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   /**
@@ -81,166 +90,52 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       String patientId,
       String notificationResourceId,
       String notificationResourceType) {
-    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
+    Root<NotificationContext> root = cq.from(NotificationContext.class);
 
-    criteria.add(Restrictions.eq("fhirServerBaseURL", url));
-    criteria.add(Restrictions.eq("patientId", patientId));
-    criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
-    criteria.add(Restrictions.eq("notificationResourceType", notificationResourceType));
-    return (NotificationContext) criteria.uniqueResult();
+    Predicate criteria =
+        cb.and(
+            cb.equal(root.get("fhirServerBaseURL"), url),
+            cb.equal(root.get("patientId"), patientId),
+            cb.equal(root.get("notificationResourceId"), notificationResourceId),
+            cb.equal(root.get("notificationResourceType"), notificationResourceType));
+    cq.where(criteria);
+    cq.orderBy(cb.desc(root.get("docVersion")));
+
+    Query<NotificationContext> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   @Override
   public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
-    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
+    Root<NotificationContext> root = cq.from(NotificationContext.class);
 
     if (id != null) {
-      criteria.add(Restrictions.eq("id", id));
+      predicates.add(cb.equal(root.get("id"), id));
     } else {
       if (fhirServerBaseUrl != null)
-        criteria.add(Restrictions.eq("fhirServerBaseUrl", fhirServerBaseUrl));
+        predicates.add(cb.equal(root.get("fhirServerBaseURL"), fhirServerBaseUrl));
       if (notificationResourceId != null)
-        criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
-      if (patientId != null) criteria.add(Restrictions.eq("patientId", patientId));
+        predicates.add(cb.equal(root.get("notificationResourceId"), notificationResourceId));
+      if (patientId != null) predicates.add(cb.equal(root.get("patientId"), patientId));
     }
-    return criteria.list();
-  }
+    Predicate[] predArr = new Predicate[predicates.size()];
+    predArr = predicates.toArray(predArr);
 
-  @Override
-  public List<NotificationContext> getAllNotificationContext(
-      UUID id, Map<String, String> searchParams) {
-    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+    Predicate criteria = cb.and(predArr);
+    cq.where(criteria);
 
-    if (id != null) {
-      criteria.add(Restrictions.eq("id", id));
-    } else {
-      if (searchParams.get("fhirServerBaseURL") != null) {
-        criteria.add(Restrictions.eq("fhirServerBaseUrl", searchParams.get("fhirServerBaseURL")));
-      }
-      if (searchParams.get("notificationResourceId") != null) {
-        criteria.add(
-            Restrictions.eq("notificationResourceId", searchParams.get("notificationResourceId")));
-      }
-      if (searchParams.get("patientId") != null) {
-        criteria.add(Restrictions.eq("patientId", searchParams.get("patientId")));
-      }
+    Query<NotificationContext> q = getSession().createQuery(cq);
 
-      if (searchParams.get("notificationProcessingStatus") != null) {
-        String notificationProcessingStatus = searchParams.get("notificationProcessingStatus");
-        List<String> searchStatusList =
-            notificationProcessingStatus.contains(",")
-                ? Arrays.asList(notificationProcessingStatus.split(","))
-                : Arrays.asList(notificationProcessingStatus);
-
-        criteria.add(Restrictions.in("notificationProcessingStatus", searchStatusList));
-      }
-
-      String startDate = searchParams.get("startDateTime");
-      String endDate = searchParams.get("endDateTime");
-      String lastUpdatedStartTime = searchParams.get("lastUpdatedStartTime");
-      String lastUpdatedEndTime = searchParams.get("lastUpdatedEndTime");
-
-      Date eicrStartDate = null;
-      Date eicrEndDate = null;
-      Date eicrLastUpdatedStartTime = null;
-      Date eicrLastUpdatedEndTime = null;
-
-      try {
-        if (startDate != null) {
-          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(startDate);
-        }
-        if (endDate != null) {
-          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(endDate);
-        }
-
-        if (lastUpdatedStartTime != null) {
-          eicrLastUpdatedStartTime =
-              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
-        }
-        if (lastUpdatedEndTime != null) {
-          eicrLastUpdatedEndTime =
-              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
-        }
-
-      } catch (Exception e) {
-        throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, "Invalid date format: " + e.getMessage());
-      }
-
-      if (eicrStartDate != null) {
-        criteria.add(Restrictions.ge("encounterStartTime", eicrStartDate));
-      }
-      if (eicrEndDate != null) {
-        criteria.add(Restrictions.le("encounterEndTime", eicrEndDate));
-      }
-
-      if (eicrLastUpdatedStartTime != null) {
-        criteria.add(Restrictions.ge("lastUpdated", eicrLastUpdatedStartTime));
-      }
-      if (eicrLastUpdatedEndTime != null) {
-        criteria.add(Restrictions.le("lastUpdated", eicrLastUpdatedEndTime));
-      }
-    }
-    if (searchParams.get("limit") != null) {
-      criteria.setMaxResults(Integer.parseInt(searchParams.get("limit")));
-    }
-
-    criteria.addOrder(Order.asc("lastUpdated"));
-
-    return criteria.list();
-  }
-
-  @Override
-  public List<NotificationContext> getNotificationContextForReprocessing(
-      UUID id, Map<String, String> searchParams) {
-
-    Criteria criteria = getSession().createCriteria(NotificationContext.class, "f");
-
-    DetachedCriteria subquery =
-        DetachedCriteria.forClass(NotificationContext.class, "nc")
-            .setProjection(Projections.property("nc.notificationResourceId"))
-            .add(Restrictions.eqProperty("nc.notificationResourceId", "f.notificationResourceId"))
-            .add(Restrictions.ne("nc.notificationProcessingStatus", "FAILED"))
-            .add(
-                Restrictions.in(
-                    "nc.notificationProcessingStatus", Arrays.asList("COMPLETED", "REPROCESSED")))
-            .add(Restrictions.gtProperty("nc.lastUpdated", "f.lastUpdated"));
-
-    String lastUpdatedStartTime = searchParams.get("lastUpdatedStartTime");
-    String lastUpdatedEndTime = searchParams.get("lastUpdatedEndTime");
-
-    Date eicrLastUpdatedStartTime = null;
-    Date eicrLastUpdatedEndTime = null;
-
-    try {
-
-      if (lastUpdatedStartTime != null) {
-        eicrLastUpdatedStartTime =
-            new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
-      }
-      if (lastUpdatedEndTime != null) {
-        eicrLastUpdatedEndTime = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
-      }
-
-    } catch (Exception e) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Invalid date format: " + e.getMessage());
-    }
-
-    criteria.add(Restrictions.eq("f.notificationProcessingStatus", "FAILED"));
-    if (eicrLastUpdatedStartTime != null) {
-      criteria.add(Restrictions.ge("f.lastUpdated", eicrLastUpdatedStartTime));
-    }
-
-    criteria.add(Subqueries.notExists(subquery));
-    if (searchParams.get("limit") != null) {
-      criteria.setMaxResults(Integer.parseInt(searchParams.get("limit")));
-    }
-
-    criteria.addOrder(Order.asc("f.lastUpdated"));
-
-    return criteria.list();
+    return q.getResultList();
   }
 
   @Override
