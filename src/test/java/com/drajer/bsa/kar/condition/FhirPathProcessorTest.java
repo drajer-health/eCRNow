@@ -6,7 +6,7 @@ import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import org.hl7.fhir.r4.model.Expression;
 import org.junit.Test;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -14,7 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 public class FhirPathProcessorTest {
 
   // Autowired to pass to CqlProcessors.
-  @Autowired ExpressionEvaluator expressionEvaluator;
+  @Autowired R4CqlExecutionService expressionEvaluator;
 
   private FhirPathProcessor processor = new FhirPathProcessor();
 
