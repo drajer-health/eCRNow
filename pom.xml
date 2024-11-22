@@ -19,7 +19,7 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<fhir.version>5.4.0</fhir.version>
+		<fhir.version>7.4.5</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
@@ -380,12 +380,13 @@
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.7.0</version>
-		</dependency>
-	</dependencies>
+	
+   <dependency>
+     <groupId>org.opencds.cqf</groupId>
+     <artifactId>tooling</artifactId>
+     <version>3.1.0</version>
+   </dependency>
+ </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
