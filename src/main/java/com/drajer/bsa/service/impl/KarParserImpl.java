@@ -145,14 +145,12 @@ public class KarParserImpl implements KarParser {
 
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
-  // Autowired to pass to action processors.
-  @Autowired R4MeasureService measureService;;
+  // TODO: instantiate meassureService, executionService and libraryEvaluationService in class constructor
+  R4MeasureService measureService;
 
-  // Autowired to pass to CqlProcessors.
-  @Autowired R4CqlExecutionService executionService;
+  R4CqlExecutionService executionService;
 
-  // Autowired to pass to FhirPathProcessors.
-  @Autowired R4LibraryEvaluationService libraryEvaluationService;
+  R4LibraryEvaluationService libraryEvaluationService;
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
