@@ -19,7 +19,7 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<fhir.version>5.4.0</fhir.version>
+		<fhir.version>7.4.5</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
@@ -424,7 +424,13 @@
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
 		</dependency>
-	</dependencies>
+	
+   <dependency>
+     <groupId>org.opencds.cqf</groupId>
+     <artifactId>tooling</artifactId>
+     <version>3.1.0</version>
+   </dependency>
+ </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
