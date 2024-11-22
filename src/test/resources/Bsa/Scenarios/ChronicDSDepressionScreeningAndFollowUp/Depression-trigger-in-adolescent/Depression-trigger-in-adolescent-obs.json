@@ -1,0 +1,21 @@
+{
+    "resourceType": "Observation",
+    "id": "Depression-trigger-in-adolescent-obs",
+    "code": {
+      "coding": [
+        {
+          "code": "73831-0",
+          "system": "http://loinc.org",
+          "display": "Adolescent Depression Screening Assessment"
+        }
+      ]
+    },
+    "effectiveDateTime": "2024-02-19T16:30:00-07:00",
+    "encounter": {
+      "reference": "Encounter/Depression-trigger-in-adolescent-enc"
+    },
+    "status": "final",
+    "subject": {
+      "reference": "Patient/Depression-trigger-in-adolescent"
+    }
+  }

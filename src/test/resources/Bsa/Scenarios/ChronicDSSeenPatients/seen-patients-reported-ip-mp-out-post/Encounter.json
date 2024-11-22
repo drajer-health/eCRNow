@@ -24,7 +24,7 @@
     }
   ],
   "subject": {
-    "reference": "Patient/seen-patients-reported-ip-mp-out-post"
+    "reference": "Patient/seen-patients-reported-ip-mp-out-prior"
   },
   "period": {
     "start": "2019-12-31T21:29:59.999-06:00",
