@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CdaGeneratorUtils.class})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
 
   static final String MEDICATION_BUNDLE_SAMPLE = "R4/Medication/Medication_bundle_sample.json";
