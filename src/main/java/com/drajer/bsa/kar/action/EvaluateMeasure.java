@@ -4,8 +4,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-import java.time.LocalDate;
-import java.time.Year;
+import java.time.*;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
@@ -21,24 +20,24 @@ public class EvaluateMeasure extends BsaAction {
 
   private R4MeasureService measureService;
 
-  private String periodStart;
-  private String periodEnd;
+  private ZonedDateTime periodStart;
+  private ZonedDateTime periodEnd;
 
   private String measureReportId;
 
-  public String getPeriodStart() {
+  public ZonedDateTime getPeriodStart() {
     return periodStart;
   }
 
-  public void setPeriodStart(String periodStart) {
+  public void setPeriodStart(ZonedDateTime periodStart) {
     this.periodStart = periodStart;
   }
 
-  public String getPeriodEnd() {
+  public ZonedDateTime getPeriodEnd() {
     return periodEnd;
   }
 
-  public void setPeriodEnd(String periodEnd) {
+  public void setPeriodEnd(ZonedDateTime ZonedDateTime) {
     this.periodEnd = periodEnd;
   }
 
@@ -60,8 +59,11 @@ public class EvaluateMeasure extends BsaAction {
 
   public EvaluateMeasure() {
     int year = Year.now().getValue();
-    periodStart = LocalDate.of(year, 01, 01).toString();
-    periodEnd = LocalDate.of(year, 12, 31).toString();
+    periodStart =
+        ZonedDateTime.of(LocalDateTime.of(year, 01, 01, 0, 0), ZoneId.of("America/Vancouver"));
+    periodEnd =
+        ZonedDateTime.of(LocalDateTime.of(year, 12, 31, 23, 59), ZoneId.of("America/Vancouver"));
+    ;
     measureReportId = "";
   }
 

@@ -62,6 +62,7 @@ import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.javatuples.Pair;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -79,7 +80,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   private static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilitiesTest.class);
 
   @Before
-  public void setUp() {
+  public void setUp() throws JSONException {
     createTestDataForStatusCodeTest();
     createTestDataForCodingXML();
   }
@@ -366,11 +367,11 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     }
   }
 
-  private void createTestDataForCodingXML() {
+  private void createTestDataForCodingXML() throws JSONException {
     String testDataJson = TestUtils.getFileContentAsString("R4/Misc/FhirToCDAMappedCodes.json");
     JSONArray array = new JSONArray(testDataJson);
-    for (Object obj : array) {
-      JSONObject jsonObj = (JSONObject) obj;
+    for (int i = 0; i < array.length(); i++) {
+      JSONObject jsonObj = (JSONObject) array.get(i);
       Coding coding = new Coding();
       coding.setCode(jsonObj.getString("code"));
       coding.setDisplay(jsonObj.getString("display"));
