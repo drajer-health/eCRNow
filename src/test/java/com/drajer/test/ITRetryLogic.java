@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +49,7 @@ public class ITRetryLogic extends BaseIntegrationTest {
   WireMockHelper stubHelper;
 
   @Before
-  public void launchTestSetUp() throws IOException {
+  public void launchTestSetUp() throws IOException, JSONException {
     logger.info("Executing test: {}", testCaseId);
     tx = session.beginTransaction();
 

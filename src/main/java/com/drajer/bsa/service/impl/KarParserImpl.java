@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -124,10 +125,10 @@ public class KarParserImpl implements KarParser {
   Boolean ignoreTimers;
 
   @Value("${measure-reporting-period.start}")
-  String measurePeriodStart;
+  ZonedDateTime measurePeriodStart;
 
   @Value("${measure-reporting-period.end}")
-  String measurePeriodEnd;
+  ZonedDateTime measurePeriodEnd;
 
   @Value("${cql.enabled:false}")
   boolean cqlEnabled;
@@ -145,12 +146,13 @@ public class KarParserImpl implements KarParser {
 
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
-  // TODO: instantiate meassureService, executionService and libraryEvaluationService in class constructor
-  R4MeasureService measureService;
+  // TODO: instantiate meassureService, executionService and libraryEvaluationService in class
+  // constructor
+  @Autowired R4MeasureService measureService;
 
-  R4CqlExecutionService executionService;
+  @Autowired R4CqlExecutionService executionService;
 
-  R4LibraryEvaluationService libraryEvaluationService;
+  @Autowired R4LibraryEvaluationService libraryEvaluationService;
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
