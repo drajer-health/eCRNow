@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -132,7 +133,7 @@ public class EicrControllerTest {
   }
 
   @Test
-  public void getEicrAndRRByRequestId() {
+  public void getEicrAndRRByRequestId() throws JSONException {
 
     JSONObject eicrData = new JSONObject();
     eicrData.put("xRequestId", "ecrunittest_id");

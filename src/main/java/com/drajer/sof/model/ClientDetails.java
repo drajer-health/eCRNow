@@ -2,6 +2,7 @@ package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Date;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "client_details")
 @DynamicUpdate
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ClientDetails {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(ClientDetails.class);

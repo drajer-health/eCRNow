@@ -37,7 +37,7 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.javatuples.Pair;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
-  ExpressionEvaluator expressionEvaluator;
+  R4CqlExecutionService executionService;
 
   @Override
   public Boolean evaluateExpression(
@@ -68,8 +68,19 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-    BooleanType value = (BooleanType) result.getParameter(PARAM);
+            executionService.evaluate(
+                null,
+                cond.getLogicExpression().getExpression(),
+                params,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {
       return value.getValue();
@@ -109,7 +120,10 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             logger.info(" Expression after resolution {}", expr);
 
-            Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
+            Parameters variableResult =
+                (Parameters)
+                    executionService.evaluate(
+                        null, expr, null, null, null, null, null, null, null, null, null);
 
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
@@ -130,7 +144,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             } else {
 
-              Type value = variableResult.getParameter(PARAM);
+              Type value = variableResult.getParameter(PARAM).getValue();
               paramComponent.setName("%" + exp.getName());
               paramComponent.setValue(value);
 
@@ -460,12 +474,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     return params;
   }
 
-  public ExpressionEvaluator getExpressionEvaluator() {
-    return expressionEvaluator;
+  public R4CqlExecutionService getExecutionService() {
+    return executionService;
   }
 
-  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
-    this.expressionEvaluator = expressionEvaluator;
+  public void setExecutionService(R4CqlExecutionService executionService) {
+    this.executionService = executionService;
   }
 
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> applyCodeFilter(
@@ -490,8 +504,19 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-    BooleanType value = (BooleanType) result.getParameter(PARAM);
+            executionService.evaluate(
+                null,
+                cond.getLogicExpression().getExpression(),
+                params,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {
       return value.getValue();

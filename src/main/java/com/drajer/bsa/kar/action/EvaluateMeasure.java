@@ -4,14 +4,13 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-import java.time.LocalDate;
-import java.time.Year;
+import java.time.*;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.MeasureReport;
-import org.opencds.cqf.cql.evaluator.builder.Constants;
-import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.utility.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,26 +18,26 @@ public class EvaluateMeasure extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(EvaluateMeasure.class);
 
-  private R4MeasureProcessor measureProcessor;
+  private R4MeasureService measureService;
 
-  private String periodStart;
-  private String periodEnd;
+  private ZonedDateTime periodStart;
+  private ZonedDateTime periodEnd;
 
   private String measureReportId;
 
-  public String getPeriodStart() {
+  public ZonedDateTime getPeriodStart() {
     return periodStart;
   }
 
-  public void setPeriodStart(String periodStart) {
+  public void setPeriodStart(ZonedDateTime periodStart) {
     this.periodStart = periodStart;
   }
 
-  public String getPeriodEnd() {
+  public ZonedDateTime getPeriodEnd() {
     return periodEnd;
   }
 
-  public void setPeriodEnd(String periodEnd) {
+  public void setPeriodEnd(ZonedDateTime ZonedDateTime) {
     this.periodEnd = periodEnd;
   }
 
@@ -50,18 +49,21 @@ public class EvaluateMeasure extends BsaAction {
     this.measureReportId = measureReportId;
   }
 
-  public R4MeasureProcessor getMeasureProcessor() {
-    return measureProcessor;
+  public R4MeasureService getMeasureService() {
+    return measureService;
   }
 
-  public void setMeasureProcessor(R4MeasureProcessor measureProcessor) {
-    this.measureProcessor = measureProcessor;
+  public void setMeasureService(R4MeasureService measureService) {
+    this.measureService = measureService;
   }
 
   public EvaluateMeasure() {
     int year = Year.now().getValue();
-    periodStart = LocalDate.of(year, 01, 01).toString();
-    periodEnd = LocalDate.of(year, 12, 31).toString();
+    periodStart =
+        ZonedDateTime.of(LocalDateTime.of(year, 01, 01, 0, 0), ZoneId.of("America/Vancouver"));
+    periodEnd =
+        ZonedDateTime.of(LocalDateTime.of(year, 12, 31, 23, 59), ZoneId.of("America/Vancouver"));
+    ;
     measureReportId = "";
   }
 
@@ -105,8 +107,8 @@ public class EvaluateMeasure extends BsaAction {
       // Evaluate Measure by passing the required parameters
       // Set up and evaluate the measure.
       MeasureReport result =
-          measureProcessor.evaluateMeasure(
-              measureUri,
+          measureService.evaluate(
+              null, // measureUri,
               periodStart,
               periodEnd,
               "subject",
@@ -115,8 +117,10 @@ public class EvaluateMeasure extends BsaAction {
               null, // received on
               endpoint, // Library Bundle
               endpoint, // Terminology Bundle
-              null, // Endpoint for data
-              additionalData); // Data Bundle
+              additionalData, // Endpoint for data
+              null,
+              null,
+              null); // Data Bundle
 
       if (result != null) {
 

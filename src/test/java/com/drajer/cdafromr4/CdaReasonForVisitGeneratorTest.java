@@ -6,7 +6,9 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.test.util.TestUtils;
 import org.hl7.fhir.r4.model.Encounter;
 import org.junit.Test;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaReasonForVisitGeneratorTest extends BaseGeneratorTest {
 
   static final String FILENAME = "CdaTestData/Encounter/ReasonForVisitWithCode.json";

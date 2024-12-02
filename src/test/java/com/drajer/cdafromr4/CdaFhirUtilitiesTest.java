@@ -62,15 +62,18 @@ import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.javatuples.Pair;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   Map<String, List<String>> testData = new HashMap<String, List<String>>();
@@ -79,7 +82,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   private static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilitiesTest.class);
 
   @Before
-  public void setUp() {
+  public void setUp() throws JSONException {
     createTestDataForStatusCodeTest();
     createTestDataForCodingXML();
   }
@@ -366,11 +369,11 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     }
   }
 
-  private void createTestDataForCodingXML() {
+  private void createTestDataForCodingXML() throws JSONException {
     String testDataJson = TestUtils.getFileContentAsString("R4/Misc/FhirToCDAMappedCodes.json");
     JSONArray array = new JSONArray(testDataJson);
-    for (Object obj : array) {
-      JSONObject jsonObj = (JSONObject) obj;
+    for (int i = 0; i < array.length(); i++) {
+      JSONObject jsonObj = (JSONObject) array.get(i);
       Coding coding = new Coding();
       coding.setCode(jsonObj.getString("code"));
       coding.setDisplay(jsonObj.getString("display"));

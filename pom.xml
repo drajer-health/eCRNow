@@ -19,9 +19,8 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<fhir.version>5.4.0</fhir.version>
+		<fhir.version>7.7.7-SNAPSHOT</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
-		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
 		
@@ -60,6 +59,17 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr-spring</artifactId>
+			<version>3.13.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr</artifactId>
+			<version>3.13.1</version>
+		</dependency>
       
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -91,6 +101,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-properties-migrator</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!--mssql -->
@@ -197,61 +213,13 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.spring</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.library</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.expression</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.measure-hapi</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20230227</version>
 		</dependency>
 
 		<!-- Java stuff -->
-	<!--	<dependency>
+		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>2.17.2</version>
@@ -262,11 +230,11 @@
 			<version>2.17.2</version>
 		</dependency>
 
-	 <dependency>
+	 	<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.17.2</version>
-		</dependency> -->
+		</dependency>
 
 
 		<dependency>
@@ -380,6 +348,11 @@
 					<groupId>org.junit.vintage</groupId>
 					<artifactId>junit-vintage-engine</artifactId>
 				</exclusion>
+				<!-- Removed because it introduces duplicate org.json.JSONObject on the class path -->
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -391,7 +364,7 @@
 
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock-jre8</artifactId>
+			<artifactId>wiremock-jre8-standalone</artifactId>
 			<version>2.31.0</version>
 			<scope>test</scope>
 		</dependency>
@@ -418,7 +391,13 @@
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
 		</dependency>
-	</dependencies>
+	
+   <dependency>
+     <groupId>org.opencds.cqf</groupId>
+     <artifactId>tooling</artifactId>
+     <version>3.1.0</version>
+   </dependency>
+ </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>

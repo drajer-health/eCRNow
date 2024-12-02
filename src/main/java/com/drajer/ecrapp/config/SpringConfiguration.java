@@ -6,7 +6,16 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
-import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
+import com.drajer.ecrapp.repository.EcrRepository;
+import org.opencds.cqf.fhir.api.Repository;
+import org.opencds.cqf.fhir.cql.EvaluationSettings;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
+import org.opencds.cqf.fhir.cr.measure.MeasureEvaluationOptions;
+import org.opencds.cqf.fhir.cr.measure.common.MeasurePeriodValidator;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.cr.measure.r4.R4RepositorySubjectProvider;
+import org.opencds.cqf.fhir.cr.spring.EvaluatorConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -51,6 +60,37 @@ public class SpringConfiguration {
 
   public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
     this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
+  }
+
+  @Bean
+  Repository getEhrRepository() {
+    return new EcrRepository(ctx);
+  }
+
+  @Bean
+  MeasureEvaluationOptions getMeasureEvaluationOptions() {
+    return new MeasureEvaluationOptions();
+  }
+
+  @Bean
+  R4RepositorySubjectProvider getR4RepositorySubjectProvider() {
+    return new R4RepositorySubjectProvider();
+  }
+
+  @Bean
+  R4MeasureService getMeasureService() {
+    return new R4MeasureService(
+        getEhrRepository(), new MeasureEvaluationOptions(), new MeasurePeriodValidator());
+  }
+
+  @Bean
+  R4CqlExecutionService getExecutionService() {
+    return new R4CqlExecutionService(getEhrRepository(), new EvaluationSettings());
+  }
+
+  @Bean
+  R4LibraryEvaluationService getLibraryEvaluationService() {
+    return new R4LibraryEvaluationService(getEhrRepository(), new EvaluationSettings());
   }
 
   @Bean(name = "esrdGenericClient")

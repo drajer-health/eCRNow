@@ -10,7 +10,9 @@ import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaResultGeneratorTest {
 
   @Test

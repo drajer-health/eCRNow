@@ -18,11 +18,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CdaGeneratorUtils.class})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaProblemGeneratorTest extends BaseGeneratorTest {
   static final String CONDITION_PROBLEM_WITH_COVID_TRIGGER_CODE_FILE =
       "R4/Condition/Condition-Problem-WithCovidTriggerCode.json";

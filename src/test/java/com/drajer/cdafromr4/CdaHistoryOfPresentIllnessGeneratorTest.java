@@ -4,7 +4,9 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import org.junit.Test;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaHistoryOfPresentIllnessGeneratorTest extends BaseGeneratorTest {
 
   static final String CONDITION_JSON_FILE_PATH =
