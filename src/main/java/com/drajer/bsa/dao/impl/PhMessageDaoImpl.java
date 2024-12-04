@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +54,11 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
     List<Predicate> predicates = preparePredicate(cb, root, searchParams);
-    predicates.add(
-        cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+
+    if (StringUtils.isNotBlank(searchParams.getOrDefault(RESPONSE_DOC_ID, ""))) {
+      predicates.add(
+          cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+    }
     Predicate[] predArr = new Predicate[predicates.size()];
     predArr = predicates.toArray(predArr);
     Predicate criteria = cb.and(predArr);

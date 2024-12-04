@@ -4,6 +4,7 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
@@ -63,6 +64,7 @@ public class RefreshTokenScheduler {
   /** The Constant PROVIDER_UUID. */
   private static final String PROVIDER_UUID = "uuid";
 
+  ObjectMapper mapper = new ObjectMapper();
   /**
    * Schedule job.
    *
@@ -134,7 +136,7 @@ public class RefreshTokenScheduler {
         ResponseEntity<?> response =
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
-        tokenResponse = new JSONObject(response.getBody());
+        tokenResponse = new JSONObject(mapper.writeValueAsString(response.getBody()));
       } else if (authDetails.getIsSystem() || authDetails.getIsMultiTenantSystemLaunch()) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
@@ -154,7 +156,7 @@ public class RefreshTokenScheduler {
         ResponseEntity<?> response =
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
-        tokenResponse = new JSONObject(response.getBody());
+        tokenResponse = new JSONObject(mapper.writeValueAsString(response.getBody()));
       } else if (Boolean.TRUE.equals(authDetails.getIsUserAccountLaunch())) {
         headers.setBasicAuth(authDetails.getClientId(), authDetails.getClientSecret());
 
@@ -298,7 +300,7 @@ public class RefreshTokenScheduler {
         ResponseEntity<?> response =
             resTemplate.exchange(
                 clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
-        tokenResponse = new JSONObject(response.getBody());
+        tokenResponse = new JSONObject(mapper.writeValueAsString(response.getBody()));
       } else if (Boolean.TRUE.equals(clientDetails.getIsUserAccountLaunch())) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(clientDetails.getClientId(), clientDetails.getClientSecret());
