@@ -10,6 +10,7 @@ import com.drajer.test.util.WireMockHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.TimeZone;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -63,7 +65,6 @@ public abstract class BaseIntegrationTest {
   protected Transaction tx = null;
   protected HttpHeaders headers = new HttpHeaders();
 
-  protected static final TestRestTemplate restTemplate = new TestRestTemplate();
   protected static final ObjectMapper mapper = new ObjectMapper();
 
   protected static final String URL = "http://localhost:";
@@ -72,9 +73,17 @@ public abstract class BaseIntegrationTest {
   protected static final int wireMockHttpPort = 9011;
   protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
+  protected TestRestTemplate restTemplate;
+  @Autowired private RestTemplateBuilder restTemplateBuilder;
 
   @Before
   public void setUp() throws Throwable {
+    restTemplate =
+        new TestRestTemplate(
+            restTemplateBuilder
+                .setConnectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
+                .setReadTimeout(Duration.ofSeconds(600)) // Set read timeout
+            );
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();
     wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
