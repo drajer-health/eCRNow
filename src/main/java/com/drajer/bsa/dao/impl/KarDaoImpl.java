@@ -79,17 +79,14 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(Integer hsId) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
-    Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
-    cq.where(cb.equal(root.get("hsId"), hsId));
+    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactStatus> query =
+        criteriaBuilder.createQuery(KnowledgeArtifactStatus.class);
+    Root<KnowledgeArtifactStatus> root = query.from(KnowledgeArtifactStatus.class);
 
-    Query<KnowledgeArtifactStatus> q = getSession().createQuery(cq);
+    query.select(root).where(criteriaBuilder.equal(root.get("hsId"), hsId.intValue()));
 
-    logger.info("Getting KAR Status by hsId. ");
-
-    return q.getResultList();
+    return getSession().createQuery(query).getResultList();
   }
 
   @Override
@@ -102,10 +99,10 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
     Predicate criteria =
         cb.and(
-            cb.equal(root.get("launchPatientId"), karId + "|" + karVersion),
-            cb.equal(root.get("hsId"), hsId));
+            cb.equal(root.get("versionUniqueKarId"), karId + "|" + karVersion),
+            cb.equal(root.get("hsId"), hsId.intValue()));
     cq.where(criteria);
-    cq.orderBy(cb.desc(root.get("docVersion")));
+    //    cq.orderBy(cb.desc(root.get("docVersion")));
 
     Query<KnowledgeArtifactStatus> q = getSession().createQuery(cq);
     logger.info("Getting KAR Status by using karId and karVersion. ");
