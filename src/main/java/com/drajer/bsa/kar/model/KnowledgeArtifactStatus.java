@@ -2,6 +2,7 @@ package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.ecrapp.config.SetOfStringsConverter;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
@@ -89,6 +90,7 @@ public class KnowledgeArtifactStatus {
    * The list of subscriptions that have been enabled by the KnowledgeArtifact for the specific
    * HealthcareSetting.
    */
+  @Convert(converter = SetOfStringsConverter.class)
   @Column(name = "subscriptions", columnDefinition = "TEXT")
   Set<String> subscriptions;
 
