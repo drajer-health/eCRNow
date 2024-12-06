@@ -102,7 +102,6 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
             cb.equal(root.get("notificationResourceId"), notificationResourceId),
             cb.equal(root.get("notificationResourceType"), notificationResourceType));
     cq.where(criteria);
-    cq.orderBy(cb.desc(root.get("docVersion")));
 
     Query<NotificationContext> q = getSession().createQuery(cq);
 
