@@ -140,9 +140,10 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
       Date submissionTimeDate = null;
       Date responseReceivedTimeDate = null;
       try {
-        submissionTimeDate = new SimpleDateFormat("yyyy-MM-dd").parse(submissionTimeString);
+        submissionTimeDate =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(submissionTimeString);
         responseReceivedTimeDate =
-            new SimpleDateFormat("yyyy-MM-dd").parse(responseReceivedTimeString);
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(responseReceivedTimeString);
       } catch (ParseException e) {
         logger.error("Exception while converting into date format", e);
       }
