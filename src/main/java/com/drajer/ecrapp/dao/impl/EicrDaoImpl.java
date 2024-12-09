@@ -4,7 +4,6 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.EicrDao;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -126,14 +125,14 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
       criteria.add(Restrictions.eq(X_REQUEST_ID, searchParams.get(X_REQUEST_ID)));
     }
 
-    String startDate = searchParams.get("statDate");
+    String startDate = searchParams.get("startDate");
     String endDate = searchParams.get("endDate");
     Date eicrStartDate = null;
     Date eicrEndDate = null;
     try {
       eicrStartDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
       eicrEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
-    } catch (ParseException e) {
+    } catch (Exception e) {
       logger.error("Exception while converting into date format", e);
     }
 
