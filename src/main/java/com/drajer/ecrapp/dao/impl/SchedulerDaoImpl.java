@@ -35,7 +35,8 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
   public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance) {
     Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
     if (StringUtils.isNotBlank(taskInstance)) {
-      criteria.add(Restrictions.like(TASK_INSTANCE, taskInstance, MatchMode.ANYWHERE));
+      criteria.add(
+          Restrictions.ilike(TASK_INSTANCE, taskInstance.toLowerCase(), MatchMode.ANYWHERE));
     }
 
     return criteria.list();
