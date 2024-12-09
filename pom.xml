@@ -211,6 +211,12 @@
 			<artifactId>hapi-fhir-client</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-caching-caffeine</artifactId>
+			<version>${fhir.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.json</groupId>
@@ -394,11 +400,11 @@
 			<artifactId>spring-retry</artifactId>
 		</dependency>
 	
-   <dependency>
+ <!--  <dependency>
      <groupId>org.opencds.cqf</groupId>
      <artifactId>tooling</artifactId>
      <version>3.1.0</version>
-   </dependency>
+   </dependency> -->
  </dependencies>
 
 	<build>
