@@ -4,11 +4,16 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.EicrDao;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EicrDaoImpl extends AbstractDao implements EicrDao {
 
+  private static final Logger logger = LoggerFactory.getLogger(EicrDaoImpl.class);
   public static final String FHIR_SERVER_URL = "fhirServerUrl";
   public static final String ENCOUNTER_ID = "encounterId";
   public static final String EICR_DOC_ID = "eicrDocId";
@@ -118,6 +124,24 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     }
     if (searchParams.get(X_REQUEST_ID) != null) {
       criteria.add(Restrictions.eq(X_REQUEST_ID, searchParams.get(X_REQUEST_ID)));
+    }
+
+    String startDate = searchParams.get("statDate");
+    String endDate = searchParams.get("endDate");
+    Date eicrStartDate = null;
+    Date eicrEndDate = null;
+    try {
+      eicrStartDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+      eicrEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+    } catch (ParseException e) {
+      logger.error("Exception while converting into date format", e);
+    }
+
+    if (eicrStartDate != null) {
+      criteria.add(Restrictions.ge("lastUpdated", eicrStartDate));
+    }
+    if (eicrEndDate != null) {
+      criteria.add(Restrictions.le("lastUpdated", eicrEndDate));
     }
   }
 
