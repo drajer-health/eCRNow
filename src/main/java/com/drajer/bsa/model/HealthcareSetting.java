@@ -355,6 +355,14 @@ public class HealthcareSetting implements FhirServerDetails {
   @Column(name = "backend_auth_key_alias", columnDefinition = "TEXT")
   private String backendAuthKeyAlias;
 
+  /** The attribute represents the algorithm to be used for SMART on FHIR Backend Authorization */
+  @Column(name = "backend_auth_alg", nullable = true, columnDefinition = "TEXT")
+  private String backendAuthAlg;
+
+  /** The attribute represents the KID to be used for SMART on FHIR Backend Authorization */
+  @Column(name = "backend_auth_kid", nullable = true, columnDefinition = "TEXT")
+  private String backendAuthKid;
+
   @Column(name = "debug_enabled", nullable = true)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugEnabled = true;
@@ -862,5 +870,25 @@ public class HealthcareSetting implements FhirServerDetails {
     if (kars != null) kars.log();
 
     logger.info(" **** End Printing HealthcareSetting Details **** ");
+  }
+
+  @Override
+  public String getBackendAuthAlg() {
+    return backendAuthAlg;
+  }
+
+  @Override
+  public void setBackendAuthAlg(String alg) {
+    this.backendAuthAlg = alg;
+  }
+
+  @Override
+  public String getBackendAuthKid() {
+    return backendAuthKid;
+  }
+
+  @Override
+  public void setBackendAuthKid(String kid) {
+    this.backendAuthKid = kid;
   }
 }

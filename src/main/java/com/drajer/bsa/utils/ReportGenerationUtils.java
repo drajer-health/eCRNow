@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.hl7.fhir.dstu3.model.codesystems.ObservationCategory;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -46,6 +47,56 @@ public class ReportGenerationUtils {
     }
 
     return returnVal;
+  }
+
+  public static Set<Resource> filterSocialHistoryObservations(Set<Resource> res) {
+
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      logger.info(" Total No of Observations = {}", res.size());
+
+      for (Resource r : res) {
+
+        Observation obs = (Observation) (r);
+
+        if (!observationBelongsToCategory(obs, ObservationCategory.LABORATORY.toCode())
+            && !observationBelongsToCategory(obs, ObservationCategory.VITALSIGNS.toCode())) {
+
+          returnVal.add(r);
+        }
+      }
+    }
+
+    return returnVal;
+  }
+
+  public static Boolean observationBelongsToCategory(Observation obs, String category) {
+
+    Boolean retVal = false;
+    if (obs != null && obs.hasCategory()) {
+
+      List<CodeableConcept> cds = obs.getCategory();
+
+      for (CodeableConcept cd : cds) {
+
+        if (cd.hasCoding()) {
+
+          List<Coding> codings = cd.getCoding();
+
+          for (Coding c : codings) {
+
+            if (c.getSystem().contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY)
+                && c.getCode().contentEquals(category)) {
+
+              retVal = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return retVal;
   }
 
   public static Set<Resource> filterDiagnosticReports(Set<Resource> res, Boolean resultFlag) {
