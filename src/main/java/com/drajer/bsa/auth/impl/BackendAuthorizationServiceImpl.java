@@ -86,7 +86,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    //map.add("scope", scopes);
+    map.add("scope", scopes);
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
@@ -180,38 +180,37 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
       Pair<String, SignatureAlgorithm> alg = getSignatureAlgorithm(fsd.getBackendAuthAlg());
 
-      if(fsd.getBackendAuthKid() != null && !fsd.getBackendAuthKid().isEmpty()) {
-    	  logger.info(" Kid is not empty ");
-      return Jwts.builder()
-          .setHeaderParam("typ", "JWT")
-          .setHeaderParam("kid", fsd.getBackendAuthKid())
-          .setHeaderParam("alg", alg.getKey())
-          .setHeaderParam("x5t", x5tValue)
-          .setIssuer(clientId)
-          .setSubject(clientId)
-          .setAudience(aud)
-          .setExpiration(
-              new Date(
-                  System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-          .setId(UUID.randomUUID().toString())
-          .signWith(alg.getValue(), key)
-          .compact();
-      }
-      else {
-    	  logger.info(" Kid is empty ");
-    	  return Jwts.builder()
-    	          .setHeaderParam("typ", "JWT")
-    	          .setHeaderParam("alg", alg.getKey())
-    	          .setHeaderParam("x5t", x5tValue)
-    	          .setIssuer(clientId)
-    	          .setSubject(clientId)
-    	          .setAudience(aud)
-    	          .setExpiration(
-    	              new Date(
-    	                  System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-    	          .setId(UUID.randomUUID().toString())
-    	          .signWith(alg.getValue(), key)
-    	          .compact();
+      if (fsd.getBackendAuthKid() != null && !fsd.getBackendAuthKid().isEmpty()) {
+        logger.info(" Kid is not empty ");
+        return Jwts.builder()
+            .setHeaderParam("typ", "JWT")
+            .setHeaderParam("kid", fsd.getBackendAuthKid())
+            .setHeaderParam("alg", alg.getKey())
+            .setHeaderParam("x5t", x5tValue)
+            .setIssuer(clientId)
+            .setSubject(clientId)
+            .setAudience(aud)
+            .setExpiration(
+                new Date(
+                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+            .setId(UUID.randomUUID().toString())
+            .signWith(alg.getValue(), key)
+            .compact();
+      } else {
+        logger.info(" Kid is empty ");
+        return Jwts.builder()
+            .setHeaderParam("typ", "JWT")
+            .setHeaderParam("alg", alg.getKey())
+            .setHeaderParam("x5t", x5tValue)
+            .setIssuer(clientId)
+            .setSubject(clientId)
+            .setAudience(aud)
+            .setExpiration(
+                new Date(
+                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+            .setId(UUID.randomUUID().toString())
+            .signWith(alg.getValue(), key)
+            .compact();
       }
     } catch (IOException
         | NoSuchAlgorithmException
