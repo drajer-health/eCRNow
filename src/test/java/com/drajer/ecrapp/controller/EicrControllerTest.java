@@ -67,7 +67,9 @@ public class EicrControllerTest {
                 "98323",
                 "1.0",
                 "http://ecrunitest/ecr/dao",
-                "5678")
+                "5678",
+                null,
+                null)
             .getBody());
   }
 
@@ -87,7 +89,9 @@ public class EicrControllerTest {
                               "98323",
                               "1.0",
                               "http://ecrunitest/ecr/dao",
-                              "5678")
+                              "5678",
+                              null,
+                              null)
                           .getBody());
             });
   }

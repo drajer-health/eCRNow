@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -84,7 +86,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    // map.add("scope", scopes);
+    map.add("scope", scopes);
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
@@ -176,24 +178,40 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       X509Certificate cert = (X509Certificate) ks.getCertificate(fsd.getBackendAuthKeyAlias());
       String x5tValue = Base64.getEncoder().encodeToString(DigestUtils.sha1(cert.getEncoded()));
 
-      return Jwts.builder()
-          .setHeaderParam("typ", "JWT")
-          // .setHeaderParam("kid", "178DCA01A4118728949830333DE0DF58C1CA7BBF")
-          .setHeaderParam("alg", "RS256")
-          .setHeaderParam("x5t", x5tValue)
-          .setIssuer(clientId)
-          .setSubject(clientId)
-          // .setAudience(
-          //
-          // "https://login.microsoftonline.com/9ce70869-60db-44fd-abe8-d2767077fc8f/oauth2/token")
-          .setAudience(aud)
-          .setExpiration(
-              new Date(
-                  System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-          .setId(UUID.randomUUID().toString())
-          // .signWith(key)
-          .signWith(SignatureAlgorithm.RS256, key)
-          .compact();
+      Pair<String, SignatureAlgorithm> alg = getSignatureAlgorithm(fsd.getBackendAuthAlg());
+
+      if (fsd.getBackendAuthKid() != null && !fsd.getBackendAuthKid().isEmpty()) {
+        logger.info(" Kid is not empty ");
+        return Jwts.builder()
+            .setHeaderParam("typ", "JWT")
+            .setHeaderParam("kid", fsd.getBackendAuthKid())
+            .setHeaderParam("alg", alg.getKey())
+            .setHeaderParam("x5t", x5tValue)
+            .setIssuer(clientId)
+            .setSubject(clientId)
+            .setAudience(aud)
+            .setExpiration(
+                new Date(
+                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+            .setId(UUID.randomUUID().toString())
+            .signWith(alg.getValue(), key)
+            .compact();
+      } else {
+        logger.info(" Kid is empty ");
+        return Jwts.builder()
+            .setHeaderParam("typ", "JWT")
+            .setHeaderParam("alg", alg.getKey())
+            .setHeaderParam("x5t", x5tValue)
+            .setIssuer(clientId)
+            .setSubject(clientId)
+            .setAudience(aud)
+            .setExpiration(
+                new Date(
+                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+            .setId(UUID.randomUUID().toString())
+            .signWith(alg.getValue(), key)
+            .compact();
+      }
     } catch (IOException
         | NoSuchAlgorithmException
         | CertificateException
@@ -201,5 +219,16 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       logger.error("Exception Occurred: ", e);
     }
     return null;
+  }
+
+  private Pair<String, SignatureAlgorithm> getSignatureAlgorithm(String backendAuthAlg) {
+
+    if (backendAuthAlg.contentEquals("RS256"))
+      return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
+    else if (backendAuthAlg.contentEquals("RS384"))
+      return new ImmutablePair<>("RS384", SignatureAlgorithm.RS384);
+    else if (backendAuthAlg.contentEquals("ES384"))
+      return new ImmutablePair<>("ES384", SignatureAlgorithm.ES384);
+    else return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
   }
 }

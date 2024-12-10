@@ -82,10 +82,10 @@
 </tr>
 <tr>
 <td>
-<content ID="labTestName7">Panel Name: Height/Length Measured| Component Name: Systolic blood pressure</content>
+<content ID="labTestName7">Panel Name: Height/Length Measured</content>
 </td>
 <td>
-<content ID="labTestResultValue7">Unknown</content>
+<content ID="labTestResultValue7">Component Name: Systolic blood pressure, Result = Unknown</content>
 </td>
 <td>
 <content ID="labTestResultValueDate7">20200429133200+0000</content>
@@ -225,10 +225,10 @@
 </tr>
 <tr>
 <td>
-<content ID="labTestName20">Panel Name: http://loinc.org|94308-4| Component Name: Alcohol</content>
+<content ID="labTestName20">Panel Name: http://loinc.org|94308-4</content>
 </td>
 <td>
-<content ID="labTestResultValue20">Unknown</content>
+<content ID="labTestResultValue20">Component Name: Alcohol, Result = Unknown</content>
 </td>
 <td>
 <content ID="labTestResultValueDate20">20220920084400-0400</content>
@@ -236,10 +236,10 @@
 </tr>
 <tr>
 <td>
-<content ID="labTestName21">Panel Name: http://loinc.org|94308-4| Component Name: Alcohol</content>
+<content ID="labTestName21">Panel Name: http://loinc.org|94308-4</content>
 </td>
 <td>
-<content ID="labTestResultValue21">Unknown</content>
+<content ID="labTestResultValue21">Component Name: Alcohol, Result = Unknown</content>
 </td>
 <td>
 <content ID="labTestResultValueDate21">20220920084400-0400</content>

@@ -60,6 +60,14 @@ public final class BsaTypes {
     CANCELLED
   }
 
+  public enum SubmissionStatusType {
+    DATA_SUBMISSION_SUCCCESSFUL,
+    DATA_SUBMISSION_FAILED,
+    RESPONSE_PROCESSING_SUCCESSFUL,
+    RESPONSE_PROCESSING_FAILED,
+    UNKOWN
+  }
+
   public enum MessageType {
     CANCER_REPORT_MESSAGE,
     HEP_C_REPORT_MESSAGE,
@@ -248,5 +256,30 @@ public final class BsaTypes {
     else if (s.contentEquals("MultiTenantSystemLaunch"))
       return AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH;
     else return AuthenticationType.UNKNOWN;
+  }
+
+  public static SubmissionStatusType getSubmissionStatus(String s) {
+
+    if (s.contentEquals("DATA_SUBMISSION_SUCCCESSFUL"))
+      return SubmissionStatusType.DATA_SUBMISSION_SUCCCESSFUL;
+    else if (s.contentEquals("DATA_SUBMISSION_FAILED"))
+      return SubmissionStatusType.DATA_SUBMISSION_FAILED;
+    else if (s.contentEquals("RESPONSE_PROCESSING_SUCCESSFUL"))
+      return SubmissionStatusType.RESPONSE_PROCESSING_SUCCESSFUL;
+    else if (s.contentEquals("RESPONSE_PROCESSING_FAILED"))
+      return SubmissionStatusType.RESPONSE_PROCESSING_FAILED;
+    else return SubmissionStatusType.UNKOWN;
+  }
+
+  public static String getString(SubmissionStatusType type) {
+
+    if (type == SubmissionStatusType.DATA_SUBMISSION_SUCCCESSFUL)
+      return "DATA_SUBMISSION_SUCCCESSFUL";
+    else if (type == SubmissionStatusType.DATA_SUBMISSION_FAILED) return "DATA_SUBMISSION_FAILED";
+    else if (type == SubmissionStatusType.RESPONSE_PROCESSING_SUCCESSFUL)
+      return "RESPONSE_PROCESSING_SUCCESSFUL";
+    else if (type == SubmissionStatusType.RESPONSE_PROCESSING_FAILED)
+      return "RESPONSE_PROCESSING_FAILED";
+    else return "UNKOWN";
   }
 }

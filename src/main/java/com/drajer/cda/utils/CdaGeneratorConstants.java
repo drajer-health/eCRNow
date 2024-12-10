@@ -847,6 +847,7 @@ public class CdaGeneratorConstants {
   public static final String PROD_EL_NAME = "product";
   public static final String MANU_MAT_EL_NAME = "manufacturedMaterial";
   public static final String LOT_NUM_TEXT = "lotNumberText";
+  public static final String MANUFACTURER_ORGANIZATION = "manufacturerOrganization";
   public static final String PERF_EL_NAME = "performer";
   public static final String DEFAULT_PERF_EL_TYPE_CODE = "PRF";
   public static final String ASSIGNED_ENTITY_EL_NAME = "assignedEntity";

@@ -318,13 +318,23 @@ public class CdaResultGenerator {
 
     // Add information from Components.
     String val = "";
+    Boolean first = true;
     if (obs.hasComponent()) {
       for (ObservationComponentComponent o : obs.getComponent()) {
-        obsDisplayName +=
-            "| Component Name: " + CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
+
+        if (first) {
+          val += "Component Name: ";
+          first = false;
+        } else {
+          val += "| Component Name: ";
+        }
+
+        val += CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
 
         if (o.hasValue()) {
-          val += CdaFhirUtilities.getStringForType(o.getValue());
+          val += ", Result = " + CdaFhirUtilities.getStringForType(o.getValue());
+        } else {
+          val += ", Result = " + CdaGeneratorConstants.UNKNOWN_VALUE;
         }
       }
     }
@@ -462,13 +472,23 @@ public class CdaResultGenerator {
 
     // Add information from Components.
     String val = "";
+    Boolean first = true;
     if (obs != null && !obs.isEmpty()) {
       for (Observation o : obs) {
-        obsDisplayName +=
-            "| Component Name: " + CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
+
+        if (first) {
+          val += "Component Name: ";
+          first = false;
+        } else {
+          val += "| Component Name: ";
+        }
+
+        val += CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
 
         if (o.hasValue()) {
-          val += CdaFhirUtilities.getStringForType(o.getValue());
+          val += ", Result = " + CdaFhirUtilities.getStringForType(o.getValue());
+        } else {
+          val += ", Result = " + CdaGeneratorConstants.UNKNOWN_VALUE;
         }
       }
     }

@@ -1158,8 +1158,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationRequest mr = (MedicationRequest) res;
 
       // Ignore observations that should not be included.
-      if (mr.getStatus() != null
+      if (mr.hasStatus()
           && (mr.getStatus() == MedicationRequestStatus.ENTEREDINERROR
+              || mr.getStatus() == MedicationRequestStatus.STOPPED
               || mr.getStatus() == MedicationRequestStatus.CANCELLED
               || mr.getStatus() == MedicationRequestStatus.DRAFT
               || mr.getStatus() == MedicationRequestStatus.UNKNOWN)) {
@@ -1176,8 +1177,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationAdministration ma = (MedicationAdministration) res;
 
       // Ignore observations that should not be included.
-      if (ma.getStatus() != null
+      if (ma.hasStatus()
           && (ma.getStatus() == MedicationAdministrationStatus.ENTEREDINERROR
+              || ma.getStatus() == MedicationAdministrationStatus.STOPPED
               || ma.getStatus() == MedicationAdministrationStatus.NOTDONE
               || ma.getStatus() == MedicationAdministrationStatus.UNKNOWN)) {
 
@@ -1193,8 +1195,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationStatement ms = (MedicationStatement) res;
 
       // Ignore observations that should not be included.
-      if (ms.getStatus() != null
+      if (ms.hasStatus()
           && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR
+              || ms.getStatus() == MedicationStatementStatus.STOPPED
               || ms.getStatus() == MedicationStatementStatus.NOTTAKEN
               || ms.getStatus() == MedicationStatementStatus.UNKNOWN)) {
 
@@ -1405,6 +1408,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 kd, perf.getActor(), ResourceType.Practitioner, genericClient, context);
           }
         }
+      }
+
+      if (immz.hasManufacturer()
+          && isResourceOfType(immz.getManufacturer(), ResourceType.Organization)) {
+        getAndAddSecondaryResource(
+            kd, immz.getManufacturer(), ResourceType.Organization, genericClient, context);
       }
     } else if (res != null && rType == ResourceType.Observation) {
 
@@ -1706,6 +1715,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         && actor.getReferenceElement().hasResourceType()
         && ResourceType.fromCode(actor.getReferenceElement().getResourceType())
             == ResourceType.Practitioner) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private boolean isResourceOfType(Reference actor, ResourceType type) {
+    if (actor.hasReferenceElement()
+        && actor.getReferenceElement().hasResourceType()
+        && ResourceType.fromCode(actor.getReferenceElement().getResourceType()) == type) {
       return true;
     }
 

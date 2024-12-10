@@ -748,15 +748,7 @@ public class CdaPlanOfTreatmentGenerator {
 
       for (DiagnosticReport dr : data.getDiagReports()) {
 
-        if ((dr.hasCode()
-                && dr.getCode().hasCoding()
-                //  && (dr.getResult() == null || dr.getResult().isEmpty()) -- Need to retain these
-                // for trigger code matches
-                && Boolean.TRUE.equals(
-                    CdaFhirUtilities.isCodingPresentForCodeSystem(
-                        dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)))
-            || (!dr.hasResult())) {
-
+        if (!dr.hasResult()) {
           logger.debug("Found a DiagnosticReport to be added");
           drs.add(dr);
         } else {
