@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Medication;
@@ -37,6 +38,7 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
@@ -119,6 +121,7 @@ public class R3ToR2DataConverterUtils {
 
       addAdministrativeResources(null, data, r4FhirData, details, kd, act, uniqueResourceIdsByType);
       addSecondaryResources(null, data, r4FhirData, details, kd, act, uniqueResourceIdsByType);
+      setLocationAndServiceProviderOrganization(kd, r4FhirData);
 
     } else {
 
@@ -234,12 +237,27 @@ public class R3ToR2DataConverterUtils {
         Resource location = resources.iterator().next();
         r4FhirData.setLocation((Location) location);
         data.addEntry(new BundleEntryComponent().setResource(location));
+
+        ArrayList<Location> locList = new ArrayList<>();
+        for (Resource r : resources) {
+          locList.add((Location) r);
+          data.addEntry(new BundleEntryComponent().setResource((Location) r));
+        }
+        r4FhirData.addLocations(locList);
+
       } else if (type.contentEquals(ResourceType.Organization.toString())) {
 
         logger.info(" Setting up the organization for R4FhirData ");
         Resource organization = resources.iterator().next();
         r4FhirData.setOrganization((Organization) organization);
-        data.addEntry(new BundleEntryComponent().setResource(organization));
+
+        ArrayList<Organization> orgList = new ArrayList<>();
+        for (Resource r : resources) {
+          orgList.add((Organization) r);
+          data.addEntry(new BundleEntryComponent().setResource((Organization) r));
+        }
+        r4FhirData.addOrganization(orgList);
+
       } else if (type.contentEquals(ResourceType.Practitioner.toString())) {
 
         logger.info(" Setting up the Practitioner for R4FhirData ");
@@ -403,9 +421,7 @@ public class R3ToR2DataConverterUtils {
         }
 
         logger.info(" Setting up the SocialHistory for R4FhirData ");
-        Set<Resource> socObs =
-            ReportGenerationUtils.filterObservationsByCategory(
-                resources, ObservationCategory.SOCIALHISTORY.toCode());
+        Set<Resource> socObs = ReportGenerationUtils.filterSocialHistoryObservations(resources);
 
         ArrayList<Observation> socObsList = new ArrayList<>();
 
@@ -536,6 +552,66 @@ public class R3ToR2DataConverterUtils {
       }
     } else {
       logger.warn(" Cannot add null resources for type {}", type);
+    }
+  }
+
+  public static void setLocationAndServiceProviderOrganization(
+      KarProcessingData kd, R4FhirData r4FhirData) {
+
+    // Get the encounter.
+    Encounter enc = kd.getContextEncounter();
+
+    if (enc != null) {
+
+      // Get the Service Provider organization
+      if (enc.hasServiceProvider()) {
+        Reference orgRef = enc.getServiceProvider();
+
+        Resource orgRes =
+            kd.getResourceById(orgRef.getReferenceElement().getIdPart(), ResourceType.Organization);
+
+        if (orgRes != null) {
+
+          logger.info(" Found the organization for id {}", orgRes.getId());
+          Organization org = (Organization) orgRes;
+
+          r4FhirData.setOrganization(org);
+        } else {
+          logger.error(
+              " Did not find the service provider in KarProcessingData {}", orgRef.getId());
+        }
+      } else {
+        logger.error(" Service Provider not set in Encounter ");
+      }
+
+      // Get the location
+      if (enc.hasLocation()) {
+
+        List<EncounterLocationComponent> locComps = enc.getLocation();
+
+        for (EncounterLocationComponent el : locComps) {
+
+          Reference locRef = el.getLocation();
+          Resource locRes =
+              kd.getResourceById(locRef.getReferenceElement().getIdPart(), ResourceType.Location);
+
+          if (locRes != null) {
+
+            logger.info(" Found the location for id {}", locRes.getId());
+            Location loc = (Location) locRes;
+
+            r4FhirData.setLocation(loc);
+            break;
+          } else {
+            logger.error(" Did not find the location in KarProcessingData {}", locRef.getId());
+          }
+        } // for
+      } else {
+        logger.error(" Location is not set in Encounter ");
+      }
+
+    } else {
+      logger.error(" Context Encounter is null ");
     }
   }
 
