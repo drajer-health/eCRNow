@@ -16,6 +16,7 @@ import org.opencds.cqf.fhir.cr.measure.common.MeasurePeriodValidator;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.opencds.cqf.fhir.cr.measure.r4.R4RepositorySubjectProvider;
 import org.opencds.cqf.fhir.cr.spring.EvaluatorConfiguration;
+import org.opencds.cqf.fhir.utility.repository.RestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -64,7 +65,7 @@ public class SpringConfiguration {
 
   @Bean
   Repository getEhrRepository() {
-    return new EcrRepository(ctx);
+    return new RestRepository(getEsrdFhirContext());
   }
 
   @Bean
