@@ -2,8 +2,6 @@ package com.drajer.sampleehr.controller;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.drajer.sampleehr.service.AuthorizationService;
 
+
 @RestController
 public class AuthorizationEndpoint {
 
@@ -30,8 +29,7 @@ public class AuthorizationEndpoint {
 	
 	@CrossOrigin
 	@RequestMapping(value = "/api/authorize", method = RequestMethod.POST)
-	public ResponseEntity<String> getAuthorization(@RequestBody Map<String,String> params,HttpServletRequest request,
-		      HttpServletResponse response) {
+	public ResponseEntity<String> getAuthorization(@RequestBody Map<String,String> params) {
 		JSONObject responseObj =null;
 		logger.info("Received Authorization request with Parameters");
 		try {

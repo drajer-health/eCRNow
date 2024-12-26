@@ -1,44 +1,43 @@
 package com.drajer.sampleehr.controller;
 
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONObject;
+import com.drajer.sampleehr.service.EicrReceiverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.drajer.sampleehr.service.EicrReceiverService;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class EicrReceiverController {
 
 	@Autowired
 	EicrReceiverService eicrReceiverService;
-	
+
 	private final Logger logger = LoggerFactory.getLogger(EicrReceiverController.class);
 
 	@CrossOrigin
-	@RequestMapping(value = "/api/receiveEicr", method = RequestMethod.POST)
-	public ResponseEntity<String> saveEicrXML(@RequestParam Map<String,String> params, @RequestBody String eicrXml,HttpServletRequest request,
-		      HttpServletResponse response) {
-		JSONObject responseObj =null;
+	@RequestMapping(value = "/api/receiveEicr", method = RequestMethod.POST,produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<Object> saveEicrXML(@RequestParam() Map<String, String> params,
+											  @RequestBody String eicrXml) {
+		Map<String,Object> responseObj = new HashMap<>();
 		logger.info("Received Eicr XML with Parameters");
-		
-			eicrReceiverService.saveEicrDetails(params, eicrXml);
-			responseObj = new JSONObject();
-			responseObj.put("message", "Received Eicr Details.");
-		
-		return new ResponseEntity<String>(responseObj.toString(), HttpStatus.OK);
+
+
+		// Call service method to process the EICR details
+		eicrReceiverService.saveEicrDetails(params, eicrXml);
+
+		// Create a response with a success message
+		responseObj.put("message", "Received Eicr Details.");
+
+		// Return the response with HTTP Status OK
+		return new ResponseEntity<>(responseObj, HttpStatus.OK);
 	}
 }
