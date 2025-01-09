@@ -66,6 +66,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       logger.error(
               " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
       return false;
+    } else {
+      if (!(ppc.getValue() instanceof BooleanType)) {
+        logger.error(
+                " Not BooleanType Value returned from FHIR Path Expression Evaluator in " + cond.getLogicExpression().getExpression());
+        throw new RuntimeException("Unexpected FHIR Path Expression return type");
+      }
     }
 
     BooleanType value = (BooleanType) ppc.getValue();
@@ -562,6 +568,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       logger.error(
               " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
       return false;
+    } else {
+      if (!(ppc.getValue() instanceof BooleanType)) {
+        logger.error(
+                " Not BooleanType Value returned from FHIR Path Expression Evaluator in " + cond.getLogicExpression().getExpression());
+        throw new RuntimeException("Unexpected FHIR Path Expression return type");
+      }
     }
 
     BooleanType value = (BooleanType) ppc.getValue();
