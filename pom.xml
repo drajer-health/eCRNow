@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.2</version>
+		<version>3.3.7</version>
 		<relativePath />
 		<!-- lookup parent from repository -->
 	</parent>
@@ -54,7 +54,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>30.1-jre</version>
+				<version>33.3.1-jre</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -69,6 +69,28 @@
 			<groupId>org.opencds.cqf.fhir</groupId>
 			<artifactId>cqf-fhir-cr</artifactId>
 			<version>3.13.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.fhir</groupId>
+					<artifactId>ucum</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.27.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.fhir</groupId>
+			<artifactId>ucum</artifactId>
+			<version>1.0.9</version>
 		</dependency>
 
 		<dependency>
@@ -171,12 +193,12 @@
 			<version>1.18.22</version>
 			<optional>true</optional>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
-			<version>2.5.0</version>
-		</dependency> 
+			<version>2.9.0</version>
+		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -264,11 +286,16 @@
 			<version>2.17.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.12.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.8.5</version>
+			<version>2.10.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.json</groupId>
@@ -404,11 +431,6 @@
 		</dependency>
 
 		<!-- Dependency for formatting logs in json format -->
-		<dependency>
-			<groupId>ch.qos.logback.contrib</groupId>
-			<artifactId>logback-json-classic</artifactId>
-			<version>${logback-contrib.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback.contrib</groupId>
@@ -419,17 +441,44 @@
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
 		</dependency>
-	
- <!--  <dependency>
-     <groupId>org.opencds.cqf</groupId>
-     <artifactId>tooling</artifactId>
-     <version>3.1.0</version>
-   </dependency> -->
+
+		<dependency>
+			<groupId>ch.qos.logback.contrib</groupId>
+			<artifactId>logback-json-classic</artifactId>
+			<version>${logback-contrib.version}</version>
+		</dependency>
+
+
+		<!--  <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>tooling</artifactId>
+            <version>3.1.0</version>
+          </dependency> -->
  </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>11.1.1</version> <!-- Use the latest version -->
+				<configuration>
+					<nvdApiKey>b01ddc16-d5d4-4a79-8693-49c13c3e2db7</nvdApiKey><!-- Add your NVD API key here -->
+					<formats>
+						<format>HTML</format> <!-- Generate HTML report -->
+					</formats>
+					<outputDirectory>${project.build.directory}/dependency-check-report</outputDirectory> <!-- Report location -->
+				</configuration>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

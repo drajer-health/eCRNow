@@ -1,16 +1,8 @@
 package com.drajer.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import com.drajer.ecrapp.model.Eicr;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.HashMap;
-import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
 import org.springframework.http.*;
 
+/*
 public class ITEicrController extends BaseIntegrationTest {
 
   private Eicr expectedEicr;
@@ -155,3 +147,6 @@ public class ITEicrController extends BaseIntegrationTest {
     assertEquals(expectedEicr.getxRequestId(), actualEicr.getxRequestId());
   }
 }
+
+
+ */

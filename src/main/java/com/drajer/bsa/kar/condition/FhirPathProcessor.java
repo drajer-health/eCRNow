@@ -80,12 +80,26 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 null,
                 null,
                 null);
-    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
+    ParametersParameterComponent ppc = result.getParameter(PARAM);
+
+    if (ppc == null) {
+      logger.error(
+          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      return false;
+    } else {
+      if (!(ppc.getValue() instanceof BooleanType)) {
+        logger.error(
+            " Not BooleanType Value returned from FHIR Path Expression Evaluator in "
+                + cond.getLogicExpression().getExpression());
+        throw new RuntimeException("Unexpected FHIR Path Expression return type");
+      }
+    }
+
+    BooleanType value = (BooleanType) ppc.getValue();
 
     if (value != null) {
       return value.getValue();
     } else {
-
       logger.error(
           " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
       return false;
@@ -144,6 +158,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             } else {
 
+              // TODO: Fix how this should be treated in the case the getParameter(PARAM) is null
               Type value = variableResult.getParameter(PARAM).getValue();
               paramComponent.setName("%" + exp.getName());
               paramComponent.setValue(value);
@@ -516,7 +531,22 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 null,
                 null,
                 null);
-    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
+    ParametersParameterComponent ppc = result.getParameter(PARAM);
+
+    if (ppc == null) {
+      logger.error(
+          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      return false;
+    } else {
+      if (!(ppc.getValue() instanceof BooleanType)) {
+        logger.error(
+            " Not BooleanType Value returned from FHIR Path Expression Evaluator in "
+                + cond.getLogicExpression().getExpression());
+        throw new RuntimeException("Unexpected FHIR Path Expression return type");
+      }
+    }
+
+    BooleanType value = (BooleanType) ppc.getValue();
 
     if (value != null) {
       return value.getValue();
