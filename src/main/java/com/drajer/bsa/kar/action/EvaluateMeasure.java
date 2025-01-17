@@ -6,11 +6,13 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.time.*;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.opencds.cqf.fhir.utility.Constants;
+import org.opencds.cqf.fhir.utility.monad.Eithers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,11 +106,13 @@ public class EvaluateMeasure extends BsaAction {
           additionalData.hasEntry() ? additionalData.getEntry().size() : 0,
           data.getKar().getKarPath());
 
+      CanonicalType measureCanonical = new CanonicalType(measureUri);
+
       // Evaluate Measure by passing the required parameters
       // Set up and evaluate the measure.
       MeasureReport result =
           measureService.evaluate(
-              null, // measureUri,
+              Eithers.forLeft3(measureCanonical), // measureUri,
               periodStart,
               periodEnd,
               "subject",
