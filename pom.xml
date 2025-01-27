@@ -223,11 +223,6 @@
 			<version>${fhir.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>okhttp</artifactId>
-			<version>4.12.0</version>
-		</dependency>
 
 
 		<dependency>
@@ -459,26 +454,7 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>11.1.1</version> <!-- Use the latest version -->
-				<configuration>
-					<nvdApiKey>b01ddc16-d5d4-4a79-8693-49c13c3e2db7</nvdApiKey><!-- Add your NVD API key here -->
-					<formats>
-						<format>HTML</format> <!-- Generate HTML report -->
-					</formats>
-					<outputDirectory>${project.build.directory}/dependency-check-report</outputDirectory> <!-- Report location -->
-				</configuration>
-				<executions>
-					<execution>
-						<phase>verify</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

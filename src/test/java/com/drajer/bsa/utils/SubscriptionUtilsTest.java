@@ -1,6 +1,32 @@
 package com.drajer.bsa.utils;
 
-/*
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import ca.uhn.fhir.context.FhirContext;
+import com.drajer.bsa.exceptions.InvalidLaunchContext;
+import com.drajer.bsa.exceptions.InvalidNotification;
+import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.model.PatientLaunchContext;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.io.FileUtils;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Reference;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionUtilsTest {
 
@@ -20,7 +46,7 @@ public class SubscriptionUtilsTest {
     Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
     encounterEntry.setResource(bundle);
     bundle.addEntry(encounterEntry);
-    bundle.setType(BundleType.HISTORY);
+    bundle.setType(Bundle.BundleType.HISTORY);
     mockHttpServletRequest = new MockHttpServletRequest();
     mockHttpServletResponse = new MockHttpServletResponse();
   }
@@ -136,8 +162,4 @@ public class SubscriptionUtilsTest {
       assertTrue(true);
     }
   }
-
-
 }
-
- */

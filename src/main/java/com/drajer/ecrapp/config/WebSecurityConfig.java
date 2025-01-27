@@ -27,7 +27,8 @@ public class WebSecurityConfig {
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.ignoring().requestMatchers("/meta/**", "/actuator/**");
+    return (web) ->
+        web.ignoring().requestMatchers("/meta/**", "/actuator/**", "/api/auth/generate-token");
   }
 
   @Bean
@@ -47,8 +48,11 @@ public class WebSecurityConfig {
           .csrf(csrf -> csrf.disable())
           .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
           .authorizeHttpRequests()
+          .requestMatchers("/api/auth/generate-token")
+          .permitAll()
           .anyRequest()
           .authenticated();
+
     } else {
       logger.info("Token Filter class Name is empty");
       http.csrf(csrf -> csrf.disable()).authorizeRequests().anyRequest().permitAll();

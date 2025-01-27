@@ -38,6 +38,6 @@ public class EicrReceiverController {
 		responseObj.put("message", "Received Eicr Details.");
 
 		// Return the response with HTTP Status OK
-		return new ResponseEntity<>(responseObj, HttpStatus.OK);
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseObj);
 	}
 }

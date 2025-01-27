@@ -3,6 +3,7 @@ package com.drajer.ecrapp.security;
 import com.drajer.ecrapp.exceptions.KeycloakCredentialsException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Map;
 import okhttp3.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -62,19 +63,76 @@ public class KeyCloakTokenValidationClient {
             .build();
 
     try (Response response = client.newCall(requestOne).execute()) {
+
       if (!response.isSuccessful()) {
         LOGGER.error("Failed to authenticate: {}", response.message());
         return false;
       }
+      System.out.println(response);
 
       String responseBody = response.body() != null ? response.body().string() : "{}";
+      System.out.println(responseBody);
       JSONObject jsonObj = new JSONObject(responseBody);
+      System.out.println(responseBody);
       boolean validationResponse = jsonObj.optBoolean("active", false);
       LOGGER.info("Access Token Validation Status: {}", validationResponse);
       return validationResponse;
     } catch (IOException e) {
       LOGGER.error("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
       return false;
+    } finally {
+      LOGGER.info("Exit - validateToken Method in KeyCloakTokenValidationClient");
+    }
+  }
+
+  public Object generateToken(Map<String, Object> authenciationTokenDetails) throws IOException {
+    LOGGER.info("Entry - validateToken Method in KeyCloakTokenValidationClient");
+
+    fetchAndValidateKeyCredentials();
+
+    String url = String.format("%s/realms/%s/protocol/openid-connect/token", authUrl, realm);
+
+    MediaType mediaType = MediaType.parse(APPLICATION_URL_FORM_ENCODED);
+
+    StringBuilder authRequestBody = new StringBuilder();
+    for (Map.Entry<String, Object> authEntry : authenciationTokenDetails.entrySet()) {
+      authRequestBody
+          .append(authEntry.getKey())
+          .append("=")
+          .append(authEntry.getValue())
+          .append("&");
+    }
+    if (authRequestBody.length() > 0) {
+      authRequestBody.setLength(authRequestBody.length() - 1);
+    }
+    RequestBody body = RequestBody.create(mediaType, authRequestBody.toString());
+
+    Request requestOne =
+        new Request.Builder()
+            .url(url)
+            .method("POST", body)
+            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .build();
+
+    try (Response response = client.newCall(requestOne).execute()) {
+
+      if (!response.isSuccessful()) {
+        LOGGER.error("Failed to authenticate: {}", response.message());
+        return false;
+      }
+      System.out.println(response);
+
+      String responseBody = response.body() != null ? response.body().string() : "{}";
+      System.out.println(responseBody);
+      return new JSONObject(responseBody);
+
+    } catch (IOException e) {
+      LOGGER.error("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
+      throw new IOException("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
+    } catch (Exception e) {
+
+      throw new KeycloakCredentialsException(
+          "Exception - generate Method in KeyCloakTokenValidationClient" + e.getMessage());
     } finally {
       LOGGER.info("Exit - validateToken Method in KeyCloakTokenValidationClient");
     }

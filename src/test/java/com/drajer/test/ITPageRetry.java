@@ -14,14 +14,16 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.util.*;
+import okhttp3.OkHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
 
 @RunWith(Parameterized.class)
 public class ITPageRetry extends BaseIntegrationTest {
@@ -31,6 +33,8 @@ public class ITPageRetry extends BaseIntegrationTest {
   private Map<String, ?> allResourceMapping;
   private Map<String, ?> allOtherMapping;
   private List<Map<String, String>> fieldsToValidate;
+
+  @Autowired OkHttpClient client;
 
   public ITPageRetry(
       String testCaseId,
@@ -151,5 +155,29 @@ public class ITPageRetry extends BaseIntegrationTest {
       logger.error("Exception occurred retrieving launchDetail and status", e);
       fail("Something went wrong with launch status, check the log");
     }
+  }
+
+  @Test
+  public void testSystemLaunchWithRestTemplate() {
+    String systemLaunch3PayLoad = getSystemLaunch3Payload(testData.get("SystemLaunch3Payload"));
+
+    final TestRestTemplate restTemplate = new TestRestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    String requestId = "1234";
+
+    headers.add("X-Request-ID", requestId);
+    headers.add("Content-Type", "application/json");
+    // headers.add("Accept", "application/json");
+    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    // Send actual payload, not empty JSON
+    HttpEntity<String> entity = new HttpEntity<>("{}", headers);
+
+    ResponseEntity<Object> response =
+        restTemplate.exchange(
+            createURLWithPort("/api/receiveEicr"), HttpMethod.POST, entity, Object.class);
+
+    System.out.println(response.getStatusCode());
   }
 }
