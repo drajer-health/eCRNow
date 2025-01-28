@@ -28,7 +28,13 @@ public class WebSecurityConfig {
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
     return (web) ->
-        web.ignoring().requestMatchers("/meta/**", "/actuator/**", "/api/auth/generate-token","/swagger-ui/**", "/v3/api-docs/**");
+        web.ignoring()
+            .requestMatchers(
+                "/meta/**",
+                "/actuator/**",
+                "/api/auth/generate-token",
+                "/swagger-ui/**",
+                "/v3/api-docs/**");
   }
 
   @Bean
