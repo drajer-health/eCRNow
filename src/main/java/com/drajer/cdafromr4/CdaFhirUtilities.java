@@ -417,12 +417,25 @@ public class CdaFhirUtilities {
   public static String getAddressXml(List<Address> addrs, Boolean includeMultiples) {
 
     StringBuilder addrString = new StringBuilder(200);
+    StringBuilder altAddr = new StringBuilder(200);
 
     if (addrs != null && !addrs.isEmpty()) {
 
       if (includeMultiples) {
+        Boolean found = false;
         for (Address addr : addrs) {
-          addrString.append(getAddressXml(addr));
+
+          if (addr.hasPeriod() && !addr.getPeriod().hasEnd()) {
+            found = true;
+            addrString.append(getAddressXml(addr));
+          } else {
+            altAddr.append(getAddressXml(addr));
+          }
+        }
+
+        // Add an address if it was not found to have an end
+        if (!found) {
+          addrString.append(altAddr);
         }
       } else {
 
@@ -2845,7 +2858,7 @@ public class CdaFhirUtilities {
 
       for (Coding cd : cds) {
 
-        if (cd.hasCode() && matchedCodes.contains(cd.getCode()) && !foundCodings) {
+        if (cd.hasCode() && isCodeContained(matchedCodes, cd.getCode()) && !foundCodings) {
 
           logger.debug(" Found a Coding that is in the trigger code matches. ");
           if (cd.hasDisplay()) dispName = cd.getDisplay();
@@ -2928,6 +2941,18 @@ public class CdaFhirUtilities {
     }
 
     return retval.toString();
+  }
+
+  private static boolean isCodeContained(Set<String> codes, String code) {
+
+    if (codes != null && code != null) {
+
+      for (String s : codes) {
+        if (s.contains(code)) return true;
+      }
+    }
+
+    return false;
   }
 
   public static String getStatusCodeForFhirMedStatusCodes(String val) {

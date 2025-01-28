@@ -516,7 +516,8 @@ public class CdaMedicationGenerator {
 
           Reference med = (Reference) m.getMedication();
 
-          if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+          if (med.hasReference()
+              && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
 
             logger.info(" Found a Contained Reference ");
             // Check contained.
@@ -587,13 +588,14 @@ public class CdaMedicationGenerator {
             // Check the actual medication if desired in the future.
             logger.info(" Found an External Medication Reference ");
 
-            if (cmeds != null) {
+            if (cmeds != null && med.hasReferenceElement()) {
 
               for (Medication emed : cmeds) {
 
-                if (emed.getIdElement()
-                    .getIdPart()
-                    .contentEquals(med.getReferenceElement().getIdPart())) {
+                if (med.getReferenceElement().hasIdPart()
+                    && emed.getIdElement()
+                        .getIdPart()
+                        .contentEquals(med.getReferenceElement().getIdPart())) {
 
                   if (emed.getCode() != null
                       && emed.getCode().getCoding() != null
@@ -690,7 +692,8 @@ public class CdaMedicationGenerator {
 
           Reference med = (Reference) m.getMedication();
 
-          if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+          if (med.hasReference()
+              && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
 
             logger.info(" Found a Contained Reference ");
             // Check contained.
@@ -761,13 +764,14 @@ public class CdaMedicationGenerator {
             // Check the actual medication if desired in the future.
             logger.info(" Found an External Medication Reference ");
 
-            if (cmeds != null) {
+            if (cmeds != null && med.hasReferenceElement()) {
 
               for (Medication emed : cmeds) {
 
-                if (emed.getIdElement()
-                    .getIdPart()
-                    .contentEquals(med.getReferenceElement().getIdPart())) {
+                if (med.getReferenceElement().hasIdPart()
+                    && emed.getIdElement()
+                        .getIdPart()
+                        .contentEquals(med.getReferenceElement().getIdPart())) {
 
                   if (emed.getCode() != null
                       && emed.getCode().getCoding() != null
@@ -863,7 +867,8 @@ public class CdaMedicationGenerator {
 
           Reference med = (Reference) m.getMedication();
 
-          if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+          if (med.hasReference()
+              && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
 
             logger.info(" Found a Contained Reference ");
             // Check contained.
@@ -934,13 +939,14 @@ public class CdaMedicationGenerator {
             // Check the actual medication if desired in the future.
             logger.info(" Found an External Medication Reference ");
 
-            if (cmeds != null) {
+            if (cmeds != null && med.hasReferenceElement()) {
 
               for (Medication emed : cmeds) {
 
-                if (emed.getIdElement()
-                    .getIdPart()
-                    .contentEquals(med.getReferenceElement().getIdPart())) {
+                if (med.getReferenceElement().hasIdPart()
+                    && emed.getIdElement()
+                        .getIdPart()
+                        .contentEquals(med.getReferenceElement().getIdPart())) {
 
                   if (emed.getCode() != null
                       && emed.getCode().getCoding() != null
@@ -1036,7 +1042,8 @@ public class CdaMedicationGenerator {
 
           Reference med = (Reference) m.getMedication();
 
-          if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+          if (med.hasReference()
+              && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
 
             logger.info(" Found a Contained Reference ");
             // Check contained.
@@ -1107,13 +1114,14 @@ public class CdaMedicationGenerator {
             // Check the actual medication if desired in the future.
             logger.info(" Found an External Medication Reference ");
 
-            if (cmeds != null) {
+            if (cmeds != null && med.hasReferenceElement()) {
 
               for (Medication emed : cmeds) {
 
-                if (emed.getIdElement()
-                    .getIdPart()
-                    .contentEquals(med.getReferenceElement().getIdPart())) {
+                if (med.getReferenceElement().hasIdPart()
+                    && emed.getIdElement()
+                        .getIdPart()
+                        .contentEquals(med.getReferenceElement().getIdPart())) {
 
                   if (emed.getCode() != null
                       && emed.getCode().getCoding() != null

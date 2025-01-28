@@ -1313,85 +1313,125 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationRequest mreq = (MedicationRequest) res;
 
       // Retrieve any medications
-      if (mreq.getMedication() instanceof Reference) {
+      if (mreq.hasMedicationReference()) {
         Reference medRef = (Reference) mreq.getMedication();
-        Resource secRes =
-            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-        if (secRes == null) {
-          secRes =
-              getResourceById(
-                  genericClient,
-                  context,
-                  ResourceType.Medication.toString(),
-                  medRef.getReferenceElement().getIdPart());
-        }
+        if (medRef.getReferenceElement().hasIdPart()) {
+          Resource secRes =
+              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          if (secRes == null) {
+            secRes =
+                getResourceById(
+                    genericClient,
+                    context,
+                    ResourceType.Medication.toString(),
+                    medRef.getReferenceElement().getIdPart());
+          }
 
-          logger.info(
-              " Adding secondary Medication resource for MedicationRequest with id {}",
-              secRes.getId());
-          kd.addResourceByType(secRes.getResourceType(), secRes);
-          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
-        }
-      }
+          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+
+            logger.info(
+                " Adding secondary Medication resource for MedicationRequest with id {}",
+                secRes.getId());
+            kd.addResourceByType(secRes.getResourceType(), secRes);
+            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+          }
+        } // has Id Part in Reference
+      } // has MedicationReference
     } else if (res != null && rType == ResourceType.MedicationAdministration) {
 
       MedicationAdministration mAdm = (MedicationAdministration) res;
 
       // Retrieve any medications
-      if (mAdm.getMedication() instanceof Reference) {
+      if (mAdm.hasMedicationReference()) {
         Reference medRef = (Reference) mAdm.getMedication();
-        Resource secRes =
-            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-        if (secRes == null) {
-          secRes =
-              getResourceById(
-                  genericClient,
-                  context,
-                  ResourceType.Medication.toString(),
-                  medRef.getReferenceElement().getIdPart());
-        }
+        if (medRef.getReferenceElement().hasIdPart()) {
+          Resource secRes =
+              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          if (secRes == null) {
+            secRes =
+                getResourceById(
+                    genericClient,
+                    context,
+                    ResourceType.Medication.toString(),
+                    medRef.getReferenceElement().getIdPart());
+          }
 
-          logger.info(
-              " Adding secondary Medication resource for MedicationAdministration with id {}",
-              secRes.getId());
-          kd.addResourceByType(secRes.getResourceType(), secRes);
-          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
-        }
-      }
+          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+
+            logger.info(
+                " Adding secondary Medication resource for MedicationAdministration with id {}",
+                secRes.getId());
+            kd.addResourceByType(secRes.getResourceType(), secRes);
+            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+          }
+        } // has Id Part in Reference
+      } // has MedicationReference
+    } else if (res != null && rType == ResourceType.MedicationStatement) {
+
+      MedicationStatement mst = (MedicationStatement) res;
+
+      // Retrieve any medications
+      if (mst.hasMedicationReference()) {
+        Reference medRef = (Reference) mst.getMedication();
+
+        if (medRef.getReferenceElement().hasIdPart()) {
+          Resource secRes =
+              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
+
+          if (secRes == null) {
+            secRes =
+                getResourceById(
+                    genericClient,
+                    context,
+                    ResourceType.Medication.toString(),
+                    medRef.getReferenceElement().getIdPart());
+          }
+
+          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+
+            logger.info(
+                " Adding secondary Medication resource for MedicationStatement with id {}",
+                secRes.getId());
+            kd.addResourceByType(secRes.getResourceType(), secRes);
+            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+          }
+        } // has Id Part in Reference
+      } // has MedicationReference
     } else if (res != null && rType == ResourceType.MedicationDispense) {
 
       MedicationDispense mDisp = (MedicationDispense) res;
 
       // Retrieve any medications
-      if (mDisp.getMedication() instanceof Reference) {
+      if (mDisp.hasMedicationReference()) {
         Reference medRef = (Reference) mDisp.getMedication();
-        Resource secRes =
-            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-        if (secRes == null) {
-          secRes =
-              getResourceById(
-                  genericClient,
-                  context,
-                  ResourceType.Medication.toString(),
-                  medRef.getReferenceElement().getIdPart());
-        }
+        if (medRef.getReferenceElement().hasIdPart()) {
+          Resource secRes =
+              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          if (secRes == null) {
+            secRes =
+                getResourceById(
+                    genericClient,
+                    context,
+                    ResourceType.Medication.toString(),
+                    medRef.getReferenceElement().getIdPart());
+          }
 
-          logger.info(
-              " Adding secondary Medidcation resource for MedicationDispense with id {}",
-              secRes.getId());
-          kd.addResourceByType(secRes.getResourceType(), secRes);
-          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
-        }
-      }
+          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+
+            logger.info(
+                " Adding secondary Medidcation resource for MedicationDispense with id {}",
+                secRes.getId());
+            kd.addResourceByType(secRes.getResourceType(), secRes);
+            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+          }
+        } // has Id Part in Reference
+      } // has MedicationReference
     } else if (res != null && rType == ResourceType.Immunization) {
 
       Immunization immz = (Immunization) res;
