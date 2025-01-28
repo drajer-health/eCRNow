@@ -66,7 +66,7 @@ public class ValidateReport extends BsaAction {
               || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
 
         logger.info(" Validating CDA Output ");
-        validateCdaOutput(data, actStatus);
+        validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
       } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
 
         logger.info(" Validating FHIR Output ");
@@ -75,7 +75,7 @@ public class ValidateReport extends BsaAction {
       } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
 
         logger.info(" Validating Both CDA and FHIR Output ");
-        validateCdaOutput(data, actStatus);
+        validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
         validateFhirOutput(data, actStatus);
       }
 
@@ -100,7 +100,8 @@ public class ValidateReport extends BsaAction {
     return actStatus;
   }
 
-  public boolean validateCdaOutput(KarProcessingData data, BsaActionStatus actStatus) {
+  public boolean validateCdaOutput(
+      KarProcessingData data, BsaActionStatus actStatus, OutputContentType outputFormat) {
 
     logger.info("BSA Action Status:{}", actStatus);
 

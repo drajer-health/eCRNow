@@ -12,10 +12,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
@@ -39,6 +41,10 @@ public class EcrApp extends SpringBootServletInitializer {
   public static void main(String[] args) {
     TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
     SpringApplication.run(EcrApp.class, args);
+  }
+
+  @EventListener(ApplicationReadyEvent.class)
+  public void onApplicationReady() {
     StartupUtils.setStartTime(Date.from(Instant.now()));
   }
 
