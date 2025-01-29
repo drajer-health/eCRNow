@@ -120,6 +120,12 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
   public static final String FHIR_USCORE_BIRTHSEX_EXT_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex";
+  public static final String FHIR_USCORE_GENDER_IDENTITY_EXT_URL =
+      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity";
+  public static final String FHIR_USCORE_TRIBAL_AFFILIATION_EXT_URL =
+      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation";
+  public static final String FHIR_USCORE_TRIBAL_AFFILIATION_CAT_URL = "tribalAffiliation";
+  public static final String FHIR_USCORE_TRIBAL_AFFILIATION_ENROLLED_URL = "isEnrolled";
   public static final String FHIR_RELIGION_EXT_URL =
       "http://hl7.org/fhir/StructureDefinition/patient-religion";
   public static final String FHIR_DATA_ABSENT_REASON_EXT_URL =
@@ -577,6 +583,19 @@ public class CdaGeneratorConstants {
 
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.200";
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID_EXT = "2016-06-01";
+  public static final String GENDER_IDENTITY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.34.3.45";
+  public static final String GENDER_IDENTITY_OBS_TEMPLATE_ID_EXT = "2022-06-01";
+  public static final String TRIBAL_AFFILIATION_OBS_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.15.2.3.48";
+  public static final String TRIBAL_AFFILIATION_OBS_TEMPLATE_ID_EXT = "2021-01-01";
+  public static final String NATIONALITY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.54";
+  public static final String NATIONALITY_OBS_TEMPLATE_ID_EXT = "2021-01-01";
+  public static final String RESIDENCY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.53";
+  public static final String RESIDENCY_OBS_TEMPLATE_ID_EXT = "2021-01-01";
+  public static final String HOMELESS_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.109";
+  public static final String DISABILITY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.47";
+  public static final String DISABILITY_OBS_TEMPLATE_ID_EXT = "2021-01-01";
+
   public static final String PREGNANCY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.8";
   public static final String PREGNANCY_SUPPLEMENTAL_OBS_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.22.4.293";
@@ -607,11 +626,22 @@ public class CdaGeneratorConstants {
   public static final String TRAVEL_HISTORY_SNOMED_CODE_DISPLAY = "Travel";
   public static final String BIRTH_SEX_CODE = "76689-9";
   public static final String BIRTH_SEX_DISPLAY = "Birth Sex";
+  public static final String GENDER_IDENTITY_CODE = "76691-5";
+  public static final String GENDER_IDENTITY_DISPLAY = "Gender Identity";
+  public static final String TRIBAL_AFFILIATION_DISPLAY = "Tribal Affiliation";
   public static final String PREGNANCY_CONDITION_DISPLAY = "Pregnancy Condition";
   public static final String PREGNANCY_OBSERVATION_DISPLAY = "Pregnancy Observation";
   public static final String LAST_MENSTRUAL_PERIOD_DISPLAY = "Last Menstrual Period";
   public static final String OCCUPATION_HISTORY_DISPLAY = "Occupation History";
   public static final String TRAVEL_HISTORY_DISPLAY = "Travel History";
+  public static final String NATIONALITY_CODE = "186034007";
+  public static final String NATIONALITY_DISPLAY = "Nationality";
+  public static final String RESIDENCY_CODE = "77983-5";
+  public static final String RESIDENCY_DISPLAY = "Residency";
+  public static final String HOMELESS_CODE = "75274-1";
+  public static final String HOMELESS_TABLE_DISPLAY = "Characteristics of Home Environment";
+  public static final String DISABILITY_CODE = "75274-1";
+  public static final String DISABILITY_TABLE_DISPLAY = "Disability Status";
   public static final String BIRTH_SEX_CODESYSTEM_OID = "2.16.840.1.113883.5.1";
   public static final String BIRTH_SEX_CODESYSTEM_NAME = "Administrative Gender";
 
@@ -1080,8 +1110,12 @@ public class CdaGeneratorConstants {
       prop.forEach(
           (key, value) -> {
             String name = StringUtils.substringAfterLast((String) value, "/");
-            oidMap.put((String) key, new Pair<>((String) value, name));
-            uriMap.put((String) value, new Pair<>((String) key, name));
+
+            if (!name.isEmpty()) oidMap.put((String) key, new Pair<>((String) value, name));
+            else oidMap.put((String) key, new Pair<>((String) value, (String) value));
+
+            if (!name.isEmpty()) uriMap.put((String) value, new Pair<>((String) key, name));
+            else uriMap.put((String) value, new Pair<>((String) key, (String) key));
           });
 
       InputStream intCode =

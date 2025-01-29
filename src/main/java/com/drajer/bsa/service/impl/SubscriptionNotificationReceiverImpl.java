@@ -290,7 +290,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                 } else {
 
                   String err =
-                      " Unable to process notification, as the KAR is not found {}"
+                      " Unable to process notification, as the KAR is not found "
                           + ks.getVersionUniqueKarId();
                   logger.error(err);
                   throw new InvalidNotification(err);
@@ -314,7 +314,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
         } else {
 
           String err =
-              " Cannot proceed with the processing because the Healthcare Settings does not exist for {}"
+              " Cannot proceed with the processing because the Healthcare Settings does not exist for "
                   + nc.getFhirServerBaseUrl();
           logger.error(err);
           throw new InvalidNotification(err);

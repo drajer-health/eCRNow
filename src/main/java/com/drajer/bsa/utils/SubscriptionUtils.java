@@ -248,7 +248,7 @@ public class SubscriptionUtils {
             } else {
 
               String error =
-                  "Fhir Server Url received is not valid for further processing, Url Value : {}"
+                  "Fhir Server Url received is not valid for further processing, Url Value : "
                       + ((fhirServerUrl != null) ? fhirServerUrl : "Null Value");
               logger.error(error);
               throw new InvalidNotification(error);
@@ -257,8 +257,9 @@ public class SubscriptionUtils {
           } else { // if resourceType is not the same
 
             String error =
-                " Resource Type Received {}, does not match Resource Type Expected {}"
+                " Resource Type Received "
                     + res.getResourceType().getDeclaringClass()
+                    + " , does not match Resource Type Expected "
                     + ResourceType.fromCode(resourceType).getDeclaringClass();
             logger.error(error);
             throw new InvalidNotification(error);
