@@ -318,6 +318,47 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static CodeableConcept getCodeableConceptFromExtension(
+      List<Extension> exts, String extUrl) {
+
+    if (exts != null && !exts.isEmpty()) {
+
+      for (Extension ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          // if the top level extension has Coding then we will use it.
+          if (ext.getValue() instanceof CodeableConcept) {
+
+            logger.debug("Found Extension ");
+            return (CodeableConcept) ext.getValue();
+          }
+        }
+      }
+    }
+
+    logger.debug("Did not find the Extension for the Url {}", extUrl);
+    return null;
+  }
+
+  public static Extension getExtensionForUrl(List<Extension> exts, String extUrl) {
+
+    if (exts != null && !exts.isEmpty()) {
+
+      for (Extension ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          logger.debug("Found Extension ");
+          return ext;
+        }
+      }
+    }
+
+    logger.debug("Did not find the Extension for the Url {}", extUrl);
+    return null;
+  }
+
   public static CodeType getCodeExtension(List<Extension> exts, String extUrl) {
 
     if (exts != null && !exts.isEmpty()) {
@@ -2172,7 +2213,31 @@ public class CdaFhirUtilities {
     if (dt != null) {
 
       StringBuilder val = new StringBuilder();
-      if (dt instanceof Coding) {
+
+      if (dt instanceof Extension) {
+
+        Extension ext = (Extension) dt;
+        if (ext.hasValue()) {
+          val.append(getStringForType(ext.getValue()));
+        } else if (ext.hasExtension()) {
+          List<Extension> exts = ext.getExtension();
+
+          String retV = "";
+          Boolean first = true;
+          for (Extension ex : exts) {
+            if (ex.hasValue() && first) {
+              retV += ex.getUrl() + "-" + (getStringForType(ex.getValue()));
+              first = false;
+            } else if (ex.hasValue()) {
+              retV += "|" + ex.getUrl() + "-" + getStringForType(ex.getValue());
+            }
+          }
+          val.append(retV);
+        } else {
+          return CdaGeneratorConstants.UNKNOWN_VALUE;
+        }
+
+      } else if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
 
         val.append(getStringForCoding(cd));

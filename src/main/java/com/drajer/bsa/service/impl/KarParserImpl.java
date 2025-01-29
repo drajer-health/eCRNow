@@ -135,8 +135,23 @@ public class KarParserImpl implements KarParser {
   @Value("${fhirpath.enabled:true}")
   boolean fhirpathEnabled;
 
+  @Value("${validate.eicr.cdar11:false}")
+  boolean eicrCdaR11ValidationEnabled;
+
+  @Value("${validate.eicr.cdar31:false}")
+  boolean eicrCdaR31ValidationEnabled;
+
+  @Value("${validate.eicr.fhir:false}")
+  boolean eicrFhirValidationEnabled;
+
   @Value("${bsa.output.directory:bsa-output}")
   String logDirectory;
+
+  @Value("${schematron.file.location}")
+  String eicrCdaR11SchematronPath;
+
+  @Value("${eicr.R31.schematron.file.location}")
+  String eicrCdaR31SchematronPath;
 
   @Autowired BsaServiceUtils utils;
 
@@ -774,6 +789,11 @@ public class KarParserImpl implements KarParser {
       ValidateReport vr = (ValidateReport) (action);
       vr.setValidatorEndpoint(validatorEndpoint);
       vr.setPhDao(phDao);
+      vr.setValidateEicrR11Data(eicrCdaR11ValidationEnabled);
+      vr.setValidateEicrR31Data(eicrCdaR31ValidationEnabled);
+      vr.setValidateEicrFhirData(eicrFhirValidationEnabled);
+      vr.setEicrR11SchematronPath(eicrCdaR11SchematronPath);
+      vr.setEicrR31SchematronPath(eicrCdaR31SchematronPath);
     } else if (action.getType() == ActionType.SUBMIT_REPORT) {
       SubmitReport sr = (SubmitReport) (action);
       sr.setSubmissionEndpoint(reportSubmissionEndpoint);
