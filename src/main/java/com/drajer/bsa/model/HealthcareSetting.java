@@ -367,6 +367,13 @@ public class HealthcareSetting implements FhirServerDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugEnabled = true;
 
+  @Column(name = "direct_endpoint_cert_alias", nullable = true, columnDefinition = "TEXT")
+  private String directEndpointCertificateNameOrAlias;
+
+  @Column(name = "smtp_auth_enabled", nullable = true)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean smtpAuthEnabled = false;
+
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -890,5 +897,21 @@ public class HealthcareSetting implements FhirServerDetails {
   @Override
   public void setBackendAuthKid(String kid) {
     this.backendAuthKid = kid;
+  }
+
+  public String getDirectEndpointCertificateNameOrAlias() {
+    return directEndpointCertificateNameOrAlias;
+  }
+
+  public void setDirectEndpointCertificateNameOrAlias(String directEndpointCertificateNameOrAlias) {
+    this.directEndpointCertificateNameOrAlias = directEndpointCertificateNameOrAlias;
+  }
+
+  public Boolean getSmtpAuthEnabled() {
+    return smtpAuthEnabled;
+  }
+
+  public void setSmtpAuthEnabled(Boolean smtpAuthEnabled) {
+    this.smtpAuthEnabled = smtpAuthEnabled;
   }
 }
