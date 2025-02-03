@@ -95,6 +95,7 @@ public class SubscriptionUtils {
       HttpServletRequest request,
       HttpServletResponse response,
       Boolean relaunch,
+      Boolean reprocess,
       PatientLaunchContext launchContext)
       throws InvalidLaunchContext, InvalidNotification {
 
@@ -160,10 +161,12 @@ public class SubscriptionUtils {
 
               nc = new NotificationContext();
 
-              if (!relaunch) {
+              if (!relaunch && !reprocess) {
                 nc.setTriggerEvent(namedEvent);
+              } else if (reprocess) {
+                nc.setTriggerEvent(namedEvent + "|reprocessed");
               } else {
-                nc.setTriggerEvent(namedEvent + "|" + UUID.randomUUID().toString());
+                nc.setTriggerEvent(namedEvent + "|relaunch-id:" + UUID.randomUUID().toString());
               }
               nc.setFhirServerBaseUrl(fhirServerUrl);
               nc.setPatientId(getPatientId(res));
