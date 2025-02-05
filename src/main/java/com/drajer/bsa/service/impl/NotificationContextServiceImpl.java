@@ -4,6 +4,7 @@ import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.NotificationContextService;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,13 @@ public class NotificationContextServiceImpl implements NotificationContextServic
 
     return ncDao.getNotificationContextData(
         id, fhirServerBaseURL, notificationResourceId, patientId);
+  }
+
+  @Override
+  public List<NotificationContext> getAllNotificationContextData(
+      UUID id, Map<String, String> searchParams) {
+
+    return ncDao.getAllNotificationContext(id, searchParams);
   }
 
   @Override
