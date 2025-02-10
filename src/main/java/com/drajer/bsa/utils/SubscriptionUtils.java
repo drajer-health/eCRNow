@@ -163,9 +163,14 @@ public class SubscriptionUtils {
 
               if (!relaunch && !reprocess) {
                 nc.setTriggerEvent(namedEvent);
-              } else if (reprocess) {
-                nc.setTriggerEvent(namedEvent + "|reprocessed");
-              } else {
+              } else if (reprocess && launchContext.getEhrLaunchContext() != null
+            		  && launchContext.getEhrLaunchContext().containsKey("forceReprocessing") 
+            		  && launchContext.getEhrLaunchContext().get("forceReprocessing").contains("false")) {
+                nc.setTriggerEvent(namedEvent + "|reprocessed:" + UUID.randomUUID().toString());
+              }else if (reprocess) {
+            	  nc.setTriggerEvent(namedEvent + "|reprocessed"); 
+              }
+              else {
                 nc.setTriggerEvent(namedEvent + "|relaunch-id:" + UUID.randomUUID().toString());
               }
               nc.setFhirServerBaseUrl(fhirServerUrl);
