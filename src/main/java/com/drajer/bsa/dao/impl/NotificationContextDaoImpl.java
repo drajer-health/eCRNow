@@ -3,12 +3,17 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
@@ -102,6 +107,59 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
         criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
       if (patientId != null) criteria.add(Restrictions.eq("patientId", patientId));
     }
+    return criteria.list();
+  }
+
+  @Override
+  public List<NotificationContext> getAllNotificationContext(
+      UUID id, Map<String, String> searchParams) {
+    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+
+    if (id != null) {
+      criteria.add(Restrictions.eq("id", id));
+    } else {
+      if (searchParams.get("fhirServerBaseURL") != null) {
+        criteria.add(Restrictions.eq("fhirServerBaseUrl", searchParams.get("fhirServerBaseURL")));
+      }
+      if (searchParams.get("notificationResourceId") != null) {
+        criteria.add(
+            Restrictions.eq("notificationResourceId", searchParams.get("notificationResourceId")));
+      }
+      if (searchParams.get("patientId") != null) {
+        criteria.add(Restrictions.eq("patientId", searchParams.get("patientId")));
+      }
+
+      if (searchParams.get("notificationProcessingStatus") != null) {
+        criteria.add(
+            Restrictions.ilike(
+                "notificationProcessingStatus", searchParams.get("notificationProcessingStatus")));
+      }
+
+      String startDate = searchParams.get("startDate");
+      String endDate = searchParams.get("endDate");
+      Date eicrStartDate = null;
+      Date eicrEndDate = null;
+
+      try {
+        if (startDate != null) {
+          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+        }
+        if (endDate != null) {
+          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+        }
+      } catch (Exception e) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "Invalid date format: " + e.getMessage());
+      }
+
+      if (eicrStartDate != null) {
+        criteria.add(Restrictions.ge("encounterStartTime", eicrStartDate));
+      }
+      if (eicrEndDate != null) {
+        criteria.add(Restrictions.le("encounterEndTime", eicrEndDate));
+      }
+    }
+
     return criteria.list();
   }
 
