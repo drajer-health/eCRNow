@@ -4,10 +4,7 @@ import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.http.HttpStatus;
@@ -130,22 +127,26 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       }
 
       if (searchParams.get("notificationProcessingStatus") != null) {
-        criteria.add(
-            Restrictions.ilike(
-                "notificationProcessingStatus", searchParams.get("notificationProcessingStatus")));
+        String notificationProcessingStatus = searchParams.get("notificationProcessingStatus");
+        List<String> searchStatusList =
+            notificationProcessingStatus.contains(",")
+                ? Arrays.asList(notificationProcessingStatus.split(","))
+                : Arrays.asList(notificationProcessingStatus);
+
+        criteria.add(Restrictions.in("notificationProcessingStatus", searchStatusList));
       }
 
-      String startDate = searchParams.get("startDate");
-      String endDate = searchParams.get("endDate");
+      String startDate = searchParams.get("startDateTime");
+      String endDate = searchParams.get("endDateTime");
       Date eicrStartDate = null;
       Date eicrEndDate = null;
 
       try {
         if (startDate != null) {
-          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(startDate);
         }
         if (endDate != null) {
-          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(endDate);
         }
       } catch (Exception e) {
         throw new ResponseStatusException(
