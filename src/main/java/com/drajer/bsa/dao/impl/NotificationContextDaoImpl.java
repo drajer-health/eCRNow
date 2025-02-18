@@ -6,6 +6,7 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -138,8 +139,13 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
       String startDate = searchParams.get("startDateTime");
       String endDate = searchParams.get("endDateTime");
+      String lastUpdatedStartTime = searchParams.get("lastUpdatedStartTime");
+      String lastUpdatedEndTime = searchParams.get("lastUpdatedEndTime");
+
       Date eicrStartDate = null;
       Date eicrEndDate = null;
+      Date eicrLastUpdatedStartTime = null;
+      Date eicrLastUpdatedEndTime = null;
 
       try {
         if (startDate != null) {
@@ -148,6 +154,16 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
         if (endDate != null) {
           eicrEndDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(endDate);
         }
+
+        if (lastUpdatedStartTime != null) {
+          eicrLastUpdatedStartTime =
+              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
+        }
+        if (lastUpdatedEndTime != null) {
+          eicrLastUpdatedEndTime =
+              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
+        }
+
       } catch (Exception e) {
         throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, "Invalid date format: " + e.getMessage());
@@ -159,7 +175,19 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       if (eicrEndDate != null) {
         criteria.add(Restrictions.le("encounterEndTime", eicrEndDate));
       }
+
+      if (eicrLastUpdatedStartTime != null) {
+        criteria.add(Restrictions.ge("lastUpdated", eicrLastUpdatedStartTime));
+      }
+      if (eicrLastUpdatedEndTime != null) {
+        criteria.add(Restrictions.le("lastUpdated", eicrLastUpdatedEndTime));
+      }
     }
+    if (searchParams.get("limit") != null) {
+      criteria.setMaxResults(Integer.parseInt(searchParams.get("limit")));
+    }
+
+    criteria.addOrder(Order.asc("lastUpdated"));
 
     return criteria.list();
   }
