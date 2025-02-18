@@ -6,6 +6,7 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -185,6 +186,8 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     if (searchParams.get("limit") != null) {
       criteria.setMaxResults(Integer.parseInt(searchParams.get("limit")));
     }
+
+    criteria.addOrder(Order.asc("lastUpdated"));
 
     return criteria.list();
   }
