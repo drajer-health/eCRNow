@@ -138,6 +138,66 @@ public class KeyCloakTokenValidationClient {
     }
   }
 
+  public Object generateUserAuthToken(Map<String, Object> authenciationTokenDetails)
+      throws IOException {
+    LOGGER.info("Entry - Generating Token Method in KeyCloakTokenValidationClient");
+
+    fetchAndValidateKeyCredentials();
+
+    String url = String.format("%s/realms/%s/protocol/openid-connect/token", authUrl, realm);
+
+    MediaType mediaType = MediaType.parse(APPLICATION_URL_FORM_ENCODED);
+
+    StringBuilder authRequestBody = new StringBuilder();
+
+    authenciationTokenDetails.put("client_id", clientId);
+    authenciationTokenDetails.put("client_secret", clientSecret);
+    authenciationTokenDetails.put("grant_type", "password");
+
+    for (Map.Entry<String, Object> authEntry : authenciationTokenDetails.entrySet()) {
+      authRequestBody
+          .append(authEntry.getKey())
+          .append("=")
+          .append(authEntry.getValue())
+          .append("&");
+    }
+    if (authRequestBody.length() > 0) {
+
+      authRequestBody.setLength(authRequestBody.length() - 1);
+    }
+    RequestBody body = RequestBody.create(mediaType, authRequestBody.toString());
+
+    Request requestOne =
+        new Request.Builder()
+            .url(url)
+            .method("POST", body)
+            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .build();
+
+    try (Response response = client.newCall(requestOne).execute()) {
+
+      if (!response.isSuccessful()) {
+        LOGGER.error("Failed to authenticate: {}", response.message());
+        return false;
+      }
+      System.out.println(response);
+
+      String responseBody = response.body() != null ? response.body().string() : "{}";
+      System.out.println(responseBody);
+      return new JSONObject(responseBody);
+
+    } catch (IOException e) {
+      LOGGER.error("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
+      throw new IOException("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
+    } catch (Exception e) {
+
+      throw new KeycloakCredentialsException(
+          "Exception - generate Method in KeyCloakTokenValidationClient" + e.getMessage());
+    } finally {
+      LOGGER.info("Exit - validateToken Method in KeyCloakTokenValidationClient");
+    }
+  }
+
   private String getTokenFromRequest(HttpServletRequest request) {
     String authorizationHeaderValue = request.getHeader(AUTHORIZATION_HEADER);
     if (authorizationHeaderValue != null && authorizationHeaderValue.startsWith(BEARER_PREFIX)) {
