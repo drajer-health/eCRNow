@@ -2162,7 +2162,8 @@ public class CdaFhirUtilities {
 
         Reference med = (Reference) medStmtRef.getMedication();
 
-        if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+        if (med.getReference() != null
+            && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
@@ -2180,12 +2181,14 @@ public class CdaFhirUtilities {
             String id = med.getReferenceElement().getIdPart();
             Medication medRes = null;
             for (Medication m : medList) {
-              if (m.getIdElement().getIdPart().contentEquals(id)) {
-
-                logger.info(" Found the non-contained medication reference resource {}", id);
-                medRes = m;
-                break;
-              }
+              //              if (m.hasIdElement() && m.getIdElement().hasIdPart()  &&
+              // m.getIdElement().getIdPart().contentEquals(id)) {
+              //
+              //                logger.info(" Found the non-contained medication reference resource
+              // {}", id);
+              //                medRes = m;
+              //                break;
+              //              }
             }
 
             // Found the reference, check the code and ingredients.
@@ -3008,7 +3011,7 @@ public class CdaFhirUtilities {
     return retval.toString();
   }
 
-  private static boolean isCodeContained(Set<String> codes, String code) {
+  public static boolean isCodeContained(Set<String> codes, String code) {
 
     if (codes != null && code != null) {
 
@@ -3091,7 +3094,7 @@ public class CdaFhirUtilities {
           && extension.hasValue()
           && extension.getValue() instanceof BooleanType) {
         logger.debug("Found Address Extension at top level.");
-        BooleanType retVal = (BooleanType) extension.getValueAsPrimitive().getValue();
+        BooleanType retVal = (BooleanType) extension.getValue();
         return retVal.getValue();
       }
     }

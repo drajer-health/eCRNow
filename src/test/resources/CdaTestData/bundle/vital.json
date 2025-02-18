@@ -1,0 +1,286 @@
+{
+  "resourceType": "Bundle",
+  "id": "78a2eae7-9b3e-4566-8582-600446b13c66",
+  "meta": {
+    "lastUpdated": "2025-02-15T18:46:19.900+00:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation?patient=Patient%2FTesting2"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/2b677410-9ef3-44cb-89cd-67790a44d65c",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "2b677410-9ef3-44cb-89cd-67790a44d65c",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ],
+            "text": "Vital Signs"
+          },
+          {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "39156-5",
+                "display": "Body mass index (BMI) [Ratio]"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "39156-5",
+              "display": "Body mass index (BMI) [Ratio]"
+            }
+          ],
+          "text": "BMI"
+        },
+        "subject": {
+          "reference": "Patient/Testing2"
+        },
+        "effectiveDateTime": "1999-07-02T00:00:00+00:00",
+        "valueQuantity": {
+          "value": 16.2,
+          "unit": "kg/m2",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg/m2"
+        },
+        "derivedFrom": [
+          {
+            "reference": "Observation/bodyheight",
+            "display": "Body Height"
+          },
+          {
+            "reference": "Observation/example",
+            "display": "Body Weight"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/45f919b6-2215-43c6-a423-d915a2bc7a40",
+      "resource":  {
+      "resourceType": "Observation",
+      "id": "45f919b6-2215-43c6-a423-d915a2bc7a40",
+      "meta": {
+        "versionId": "1"
+      },
+      "status": "final",
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+              "code": "vital-signs",
+              "display": "Vital Signs"
+            }
+          ],
+          "text": "Vital Signs"
+        },
+        {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8302-2",
+              "display": "Body height"
+            }
+          ],
+          "text": "Body height"
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "8302-2",
+            "display": "Body height"
+          }
+        ],
+        "text": "Body height"
+      },
+      "subject": {
+        "reference": "Patient/Testing2"
+      },
+      "effectiveDateTime": "1999-07-02T00:00:00+00:00",
+      "valueQuantity": {
+        "value": 66.89999999999999,
+        "unit": "in",
+        "system": "http://unitsofmeasure.org",
+        "code": "[in_i]"
+      }
+    }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "535e7bf4-2ff6-40b4-89d3-dfff0ffdd622",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+            "code": "laboratory",
+            "display": "Laboratory"
+          } ],
+          "text": "Laboratory"
+        } ],
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "87758-9",
+            "display": "Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"
+          } ],
+          "text": "Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [ {
+          "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+        } ],
+        "valueString": "postive"
+      }
+    },
+    {"resource":{
+      "resourceType" : "Observation",
+      "id" : "blood-pressure-dar",
+      "meta" : {
+        "profile" : ["http://hl7.org/fhir/StructureDefinition/vitalsigns"]
+      },
+      "identifier" : [{
+        "system" : "urn:ietf:rfc:3986",
+        "value" : "urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281"
+      }],
+      "status" : "final",
+      "category" : [{
+        "coding" : [{
+          "system" : "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code" : "vital-signs",
+          "display" : "Vital Signs"
+        }]
+      },
+        {
+          "coding" : [{
+            "system" : "http://loinc.org",
+            "code" : "85354-9",
+            "display" : "Blood pressure panel with all children optional"
+          }]
+        }],
+      "code" : {
+        "coding" : [{
+          "system" : "http://loinc.org",
+          "code" : "85354-9",
+          "display" : "Blood pressure panel with all children optional"
+        }],
+        "text" : "Blood pressure systolic & diastolic"
+      },
+      "subject" : {
+        "reference" : "Patient/example"
+      },
+      "effectiveDateTime" : "2012-09-17",
+      "performer" : [{
+        "reference" : "Practitioner/example"
+      }],
+      "interpretation" : [{
+        "coding" : [{
+          "system" : "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code" : "L",
+          "display" : "low"
+        }],
+        "text" : "Below low normal"
+      }],
+      "bodySite" : {
+        "coding" : [{
+          "system" : "http://snomed.info/sct",
+          "code" : "368209003",
+          "display" : "Right arm"
+        }]
+      },
+      "component" : [{
+        "extension" : [{
+          "url" : "http://hl7.org/fhir/StructureDefinition/observation-componentCategory",
+          "valueCodeableConcept" : {
+            "coding" : [{
+              "system" : "http://loinc.org",
+              "code" : "8480-6",
+              "display" : "Systolic blood pressure"
+            }]
+          }
+        }],
+        "code" : {
+          "coding" : [{
+            "system" : "http://loinc.org",
+            "code" : "8480-6",
+            "display" : "Systolic blood pressure"
+          },
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "271649006",
+              "display" : "Systolic blood pressure"
+            },
+            {
+              "system" : "http://acme.org/devices/clinical-codes",
+              "code" : "bp-s",
+              "display" : "Systolic Blood pressure"
+            }]
+        },
+        "valueQuantity" : {
+          "value" : 107,
+          "unit" : "mmHg",
+          "system" : "http://unitsofmeasure.org",
+          "code" : "mm[Hg]"
+        }
+      },
+        {
+          "extension" : [{
+            "url" : "http://hl7.org/fhir/StructureDefinition/observation-componentCategory",
+            "valueCodeableConcept" : {
+              "coding" : [{
+                "system" : "http://loinc.org",
+                "code" : "8462-4",
+                "display" : "Diastolic blood pressure"
+              }]
+            }
+          }],
+          "code" : {
+            "coding" : [{
+              "system" : "http://loinc.org",
+              "code" : "8462-4",
+              "display" : "Diastolic blood pressure"
+            }]
+          },
+          "dataAbsentReason" : {
+            "coding" : [{
+              "system" : "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+              "code" : "not-performed",
+              "display" : "Not Performed"
+            }]
+          }
+        }]
+    }
+    }
+
+  ]
+}

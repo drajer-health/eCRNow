@@ -1,0 +1,9 @@
+<component>
+    <section nullFlavor="NI">
+        <templateId root="2.16.840.1.113883.10.20.22.2.80"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.80" extension="2018-04-01"/>
+        <code code="90767-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnancy summary Document"/>
+        <title>Pregnancy Section</title>
+        <text>No Social History Information</text>
+    </section>
+</component>

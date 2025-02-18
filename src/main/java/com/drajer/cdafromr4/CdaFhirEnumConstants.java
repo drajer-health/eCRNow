@@ -3,6 +3,7 @@ package com.drajer.cdafromr4;
 public class CdaFhirEnumConstants {
 
   private CdaFhirEnumConstants() {
+
     throw new IllegalStateException("Utility class");
   }
 

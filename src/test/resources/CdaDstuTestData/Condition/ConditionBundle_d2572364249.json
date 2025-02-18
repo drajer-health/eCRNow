@@ -1,0 +1,71 @@
+{
+  "resourceType": "Bundle",
+  "id": "bc24293d-20e8-4499-80ac-9a7722ff4778",
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-ehr-code.cerner.com/dstu2/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition?patient=12742571"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/dstu2/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2572364249",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "d2572364249",
+        "meta": {
+          "versionId": "2572364249",
+          "lastUpdated": "2020-05-13T19:04:28.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div><p><b>Condition</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Diagnosis</b>: Disease caused by 2019 novel coronavirus, Disease caused by 2019-nCoV</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: May 13, 2020  7:04 P.M. UTC</p></div>"
+        },
+        "patient": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "asserter": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        },
+        "dateRecorded": "2020-05-13",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "840539006",
+              "display": "Disease caused by 2019-nCoV",
+              "userSelected": true
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "U07.1",
+              "display": "2019-nCoV acute respiratory disease",
+              "userSelected": false
+            }
+          ],
+          "text": "Disease caused by 2019 novel coronavirus"
+        },
+        "category": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/condition-category",
+              "code": "diagnosis",
+              "display": "Diagnosis"
+            }
+          ],
+          "text": "Diagnosis"
+        },
+        "clinicalStatus": "active",
+        "verificationStatus": "confirmed",
+        "onsetDateTime": "2020-05-13T19:04:00.000Z"
+      }
+    }
+  ]
+}
