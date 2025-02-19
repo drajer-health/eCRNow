@@ -66,6 +66,13 @@ public class NotificationContextServiceImpl implements NotificationContextServic
   }
 
   @Override
+  public List<NotificationContext> getNotificationContextForReprocessing(
+      UUID id, Map<String, String> searchParams) {
+
+    return ncDao.getNotificationContextForReprocessing(id, searchParams);
+  }
+
+  @Override
   public void delete(NotificationContext notificationContext) {
     ncDao.delete(notificationContext);
   }
