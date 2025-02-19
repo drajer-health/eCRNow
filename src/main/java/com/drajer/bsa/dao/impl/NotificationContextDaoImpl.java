@@ -6,8 +6,7 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -188,6 +187,58 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     }
 
     criteria.addOrder(Order.asc("lastUpdated"));
+
+    return criteria.list();
+  }
+
+  @Override
+  public List<NotificationContext> getNotificationContextForReprocessing(
+      UUID id, Map<String, String> searchParams) {
+
+    Criteria criteria = getSession().createCriteria(NotificationContext.class, "f");
+
+    DetachedCriteria subquery =
+        DetachedCriteria.forClass(NotificationContext.class, "nc")
+            .setProjection(Projections.property("nc.notificationResourceId"))
+            .add(Restrictions.eqProperty("nc.notificationResourceId", "f.notificationResourceId"))
+            .add(Restrictions.ne("nc.notificationProcessingStatus", "FAILED"))
+            .add(
+                Restrictions.in(
+                    "nc.notificationProcessingStatus", Arrays.asList("COMPLETED", "REPROCESSED")))
+            .add(Restrictions.gtProperty("nc.lastUpdated", "f.lastUpdated"));
+
+    String lastUpdatedStartTime = searchParams.get("lastUpdatedStartTime");
+    String lastUpdatedEndTime = searchParams.get("lastUpdatedEndTime");
+
+    Date eicrLastUpdatedStartTime = null;
+    Date eicrLastUpdatedEndTime = null;
+
+    try {
+
+      if (lastUpdatedStartTime != null) {
+        eicrLastUpdatedStartTime =
+            new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
+      }
+      if (lastUpdatedEndTime != null) {
+        eicrLastUpdatedEndTime = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
+      }
+
+    } catch (Exception e) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Invalid date format: " + e.getMessage());
+    }
+
+    criteria.add(Restrictions.eq("f.notificationProcessingStatus", "FAILED"));
+    if (eicrLastUpdatedStartTime != null) {
+      criteria.add(Restrictions.ge("f.lastUpdated", eicrLastUpdatedStartTime));
+    }
+
+    criteria.add(Subqueries.notExists(subquery));
+    if (searchParams.get("limit") != null) {
+      criteria.setMaxResults(Integer.parseInt(searchParams.get("limit")));
+    }
+
+    criteria.addOrder(Order.asc("f.lastUpdated"));
 
     return criteria.list();
   }

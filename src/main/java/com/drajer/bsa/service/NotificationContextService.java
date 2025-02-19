@@ -50,6 +50,9 @@ public interface NotificationContextService {
   List<NotificationContext> getAllNotificationContextData(
       UUID id, Map<String, String> searchParams);
 
+  public List<NotificationContext> getNotificationContextForReprocessing(
+      UUID id, Map<String, String> searchParams);
+
   /**
    * Method to delete NotificationContext by NotificationContext
    *

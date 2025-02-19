@@ -85,4 +85,17 @@ public class NotificationContextController {
       return ResponseEntity.ok(contexts);
     }
   }
+
+  @GetMapping("/api/getNotificationContextForReprocessing")
+  public ResponseEntity<List<NotificationContext>> getNotificationContextForReprocessing(
+      @RequestParam Map<String, String> searchParams) {
+
+    List<NotificationContext> contexts =
+        notificationContextService.getNotificationContextForReprocessing(null, searchParams);
+    if (contexts.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.ok(contexts);
+    }
+  }
 }
