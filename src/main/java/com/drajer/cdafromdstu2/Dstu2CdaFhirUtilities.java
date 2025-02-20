@@ -35,11 +35,9 @@ import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.TimeZone;
+
+import java.util.*;
+
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -85,11 +83,17 @@ public class Dstu2CdaFhirUtilities {
 
   public static IdentifierDt getIdentifierForSystem(List<IdentifierDt> ids, String system) {
 
+    if(StringUtils.isBlank(system))
+
+    {
+      logger.info("Skipping fetching identifier due to null or blank system");
+      return null;
+    }
     if (ids != null && !ids.isEmpty()) {
 
       for (IdentifierDt id : ids) {
 
-        if (id.getSystem() != null && id.getSystem().contentEquals(system)) {
+        if (id.getSystem() != null && system!=null && id.getSystem().contentEquals(system)) {
 
           logger.info(" Found the Identifier for System:{} ", system);
 
@@ -98,7 +102,7 @@ public class Dstu2CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Identifier for  System :{} ", system);
+
     return null;
   }
 
@@ -185,6 +189,8 @@ public class Dstu2CdaFhirUtilities {
     logger.info(" Did not find the Extension or sub extensions for the Url:{}", extUrl);
     return null;
   }
+
+
 
   public static CodingDt getLanguage(List<Communication> comms) {
 
@@ -421,7 +427,7 @@ public class Dstu2CdaFhirUtilities {
 
   public static Organization getOrganization(List<Entry> entries, Encounter en) {
 
-    if (!en.getServiceProvider().getReference().hasIdPart()) {
+    if (en.getServiceProvider().getReference().hasIdPart()) {
 
       Entry ent =
           getResourceEntryForId(
@@ -1263,21 +1269,24 @@ public class Dstu2CdaFhirUtilities {
     String anyDisplay = "";
     Boolean foundCodeSystem = false;
 
-    for (CodingDt c : codings) {
+    if(codings!=null && !codings.isEmpty()) {
+      for (CodingDt c : codings) {
 
-      if (c.getSystem().contentEquals(codeSystemUrl) && !StringUtils.isEmpty(c.getDisplay())) {
+        if (c.getSystem().contentEquals(codeSystemUrl) && !StringUtils.isEmpty(c.getDisplay())) {
 
-        display = c.getDisplay();
-        foundCodeSystem = true;
-        break;
-      } else if (c.getSystem().contentEquals(codeSystemUrl)) {
-        foundCodeSystem = true;
-      }
+          display = c.getDisplay();
+          foundCodeSystem = true;
+          break;
+        } else if (c.getSystem().contentEquals(codeSystemUrl)) {
+          foundCodeSystem = true;
+        }
 
-      if (Boolean.TRUE.equals(csOptional) && !StringUtils.isEmpty(c.getDisplay())) {
-        anyDisplay = c.getDisplay();
+        if (Boolean.TRUE.equals(csOptional) && !StringUtils.isEmpty(c.getDisplay())) {
+          anyDisplay = c.getDisplay();
+        }
       }
     }
+
 
     if (!StringUtils.isEmpty(display)) return new Pair<>(display, foundCodeSystem);
     else if (!StringUtils.isEmpty(anyDisplay)) return new Pair<>(anyDisplay, foundCodeSystem);
@@ -1777,4 +1786,7 @@ public class Dstu2CdaFhirUtilities {
 
     return val;
   }
+
+
+
 }

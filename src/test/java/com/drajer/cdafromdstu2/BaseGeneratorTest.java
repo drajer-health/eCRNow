@@ -17,6 +17,7 @@ import com.drajer.test.simulator.ContentDataSimulator;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.InputStream;
+import java.util.List;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu2.model.*;
@@ -26,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
+
+
 
 @PowerMockIgnore({"javax.crypto.*"})
 public class BaseGeneratorTest {
@@ -42,6 +45,8 @@ public class BaseGeneratorTest {
   public static final String XML_FOR_II_USING_GUID =
       "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>";
 
+  public List<Patient.Contact> contactList;
+
   Dstu2FhirData dstu2FhirData;
   LaunchDetails launchDetails = loadLaunchDetailsFromFile();
   Eicr eicr = loadEicrDetailsFromFile();
@@ -50,6 +55,7 @@ public class BaseGeneratorTest {
   public void setupTestCase() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     dstu2FhirData = new Dstu2FhirData();
+
   }
 
   public LaunchDetails loadLaunchDetailsFromFile() {

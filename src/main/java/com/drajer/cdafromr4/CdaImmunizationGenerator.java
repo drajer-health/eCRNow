@@ -265,7 +265,7 @@ public class CdaImmunizationGenerator {
     StringBuilder sb = new StringBuilder(400);
     String functionCode = "";
 
-    if (izcs != null & data != null) {
+    if (izcs != null && data != null) {
       for (ImmunizationPerformerComponent perf : izcs) {
         Reference actor = perf.getActor();
 
