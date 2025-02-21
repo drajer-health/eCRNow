@@ -61,7 +61,7 @@ public class BaseGeneratorTest {
 
   public static final String LAUNCH_DETAILS_FILENAME =
       "CdaTestData/LaunchDetails/LaunchDetails.json";
-  public static final String PATIENT_RES_FILENAME = "CdaTestData/patient/Patient_resource.json";
+  public static final String PATIENT_RES_FILENAME = "CdaTestData/patient/Bundle_resource.json";
   static final String ECIR_DETAILS_FILENAME = "R4/Misc/eicr.json";
   public static final String XML_FOR_II_USING_GUID =
       "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>";

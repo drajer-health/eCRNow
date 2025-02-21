@@ -47,7 +47,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({CdaGeneratorUtils.class, ActionRepo.class})
 public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
-  static final String PATIENT_RES_FILENAME = "CdaTestData/patient/Patient_resource.json";
+  static final String PATIENT_RES_FILENAME = "CdaTestData/patient/Bundle_resource.json";
 
   static final String LOCATION_FILENAME = "CdaTestData/patient/Location.json";
 

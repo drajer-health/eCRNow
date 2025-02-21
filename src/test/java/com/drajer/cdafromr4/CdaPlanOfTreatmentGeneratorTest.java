@@ -24,7 +24,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
   static final String PLAN_OF_TREATMENT_BUNDLE_RESOURCE_FILE =
-      "CdaTestData/PlanOfTreatment/plan_of_treatment_bundle_resource.json";
+          "CdaDstuTestData/Cda/PlanOfTreatment/plan_of_treatment_bundle_resource.json";
   static final String PLAN_OF_TREATMENT_CDA_FILE =
       "CdaTestData//Cda//PlanOfTreatment//PlanOfTreatment.xml";
 

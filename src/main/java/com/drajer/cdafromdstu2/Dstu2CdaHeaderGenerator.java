@@ -33,7 +33,7 @@ public class Dstu2CdaHeaderGenerator {
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaHeaderGenerator.class);
 
   public static String createCdaHeader(
-      Dstu2FhirData data, LaunchDetails details, Eicr ecr, String version) {
+          Dstu2FhirData data, LaunchDetails details, Eicr ecr, String version) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
@@ -55,40 +55,40 @@ public class Dstu2CdaHeaderGenerator {
       ecr.setxRequestId(details.getxRequestId());
 
       eICRHeader.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.CODE_EL_NAME,
-              CdaGeneratorConstants.PH_DOC_CODE,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-              CdaGeneratorConstants.PH_DOC_DISPLAY_NAME));
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.CODE_EL_NAME,
+                      CdaGeneratorConstants.PH_DOC_CODE,
+                      CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                      CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                      CdaGeneratorConstants.PH_DOC_DISPLAY_NAME));
 
       eICRHeader.append(
-          CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.PH_DOC_DISPLAY_NAME));
+              CdaGeneratorUtils.getXmlForText(
+                      CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.PH_DOC_DISPLAY_NAME));
 
       eICRHeader.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()));
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                      CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()));
 
       eICRHeader.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.CONFIDENTIALITY_EL_NAME,
-              CdaGeneratorConstants.CONFIDENTIALITY_CODE,
-              CdaGeneratorConstants.CONFIDENTIALITY_CODE_SYTEM));
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.CONFIDENTIALITY_EL_NAME,
+                      CdaGeneratorConstants.CONFIDENTIALITY_CODE,
+                      CdaGeneratorConstants.CONFIDENTIALITY_CODE_SYTEM));
 
       eICRHeader.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, CdaGeneratorConstants.LANGUAGE_CODE));
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, CdaGeneratorConstants.LANGUAGE_CODE));
 
       eICRHeader.append(
-          CdaGeneratorUtils.getXmlForIIWithElName(
-              CdaGeneratorConstants.SET_ID_EL_NAME,
-              details.getAssigningAuthorityId(),
-              String.valueOf(details.getSetId())));
+              CdaGeneratorUtils.getXmlForIIWithElName(
+                      CdaGeneratorConstants.SET_ID_EL_NAME,
+                      details.getAssigningAuthorityId(),
+                      String.valueOf(details.getSetId())));
 
       eICRHeader.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(details.getVersionNumber())));
+              CdaGeneratorUtils.getXmlForValue(
+                      CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(details.getVersionNumber())));
 
       Bundle bundle = data.getData();
       if (bundle != null) {
@@ -114,12 +114,12 @@ public class Dstu2CdaHeaderGenerator {
         eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
 
         eICRHeader.append(
-            getEncompassingEncounter(
-                data.getEncounter(),
-                data.getPractitioner(),
-                data.getLocation(),
-                data.getOrganization(),
-                details));
+                getEncompassingEncounter(
+                        data.getEncounter(),
+                        data.getPractitioner(),
+                        data.getLocation(),
+                        data.getOrganization(),
+                        details));
       }
     }
 
@@ -127,7 +127,7 @@ public class Dstu2CdaHeaderGenerator {
   }
 
   private static String getParticipantXml(
-      LaunchDetails details, Dstu2FhirData data, Patient patient) {
+          LaunchDetails details, Dstu2FhirData data, Patient patient) {
     logger.info("LaunchDetails :{} Dstu2FhirData:{} in getParticipantXml", details, data);
 
     StringBuilder s = new StringBuilder("");
@@ -156,14 +156,14 @@ public class Dstu2CdaHeaderGenerator {
     StringBuilder s = new StringBuilder(200);
 
     s.append(
-        CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
-            CdaGeneratorConstants.PARTICIPANT_EL_NAME, CdaGeneratorConstants.TYPE_CODE_IND));
+            CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+                    CdaGeneratorConstants.PARTICIPANT_EL_NAME, CdaGeneratorConstants.TYPE_CODE_IND));
 
     String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
 
     s.append(
-        CdaGeneratorUtils.getXmlForStartElementWithClassCode(
-            CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
+            CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+                    CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
 
     if (cc.getAddress() != null) {
       List<AddressDt> addrs = new ArrayList<>();
@@ -176,7 +176,7 @@ public class Dstu2CdaHeaderGenerator {
     }
 
     s.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
     s.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
 
     List<HumanNameDt> names = new ArrayList<>();
@@ -187,10 +187,10 @@ public class Dstu2CdaHeaderGenerator {
     s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
     s.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
 
     s.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
     s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
 
     return s.toString();
@@ -244,12 +244,12 @@ public class Dstu2CdaHeaderGenerator {
     if (pr != null) {
 
       IdentifierDt npi =
-          Dstu2CdaFhirUtilities.getIdentifierForSystem(
-              pr.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+              Dstu2CdaFhirUtilities.getIdentifierForSystem(
+                      pr.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
 
       if (npi != null) {
         sb.append(
-            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+                CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
         sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
       }
@@ -258,7 +258,7 @@ public class Dstu2CdaHeaderGenerator {
       sb.append(Dstu2CdaFhirUtilities.getTelecomXml(pr.getTelecom()));
 
       sb.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+              CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
 
       List<HumanNameDt> hns = new ArrayList<>();
@@ -267,7 +267,7 @@ public class Dstu2CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
       sb.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+              CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
 
     } else {
 
@@ -280,7 +280,7 @@ public class Dstu2CdaHeaderGenerator {
       sb.append(Dstu2CdaFhirUtilities.getTelecomXml(cps));
 
       sb.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+              CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
 
       List<HumanNameDt> hns = null;
@@ -288,7 +288,7 @@ public class Dstu2CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
       sb.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+              CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
     }
 
     return sb.toString();
@@ -301,16 +301,16 @@ public class Dstu2CdaHeaderGenerator {
     if (loc != null) {
 
       IdentifierDt npi =
-          Dstu2CdaFhirUtilities.getIdentifierForSystem(
-              loc.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+              Dstu2CdaFhirUtilities.getIdentifierForSystem(
+                      loc.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
 
       if (npi != null) {
         sb.append(
-            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+                CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
         sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), loc.getId().getValue()));
+                CdaGeneratorUtils.getXmlForII(
+                        details.getAssigningAuthorityId(), loc.getId().getValue()));
       }
 
       if (loc.getType() != null && loc.getType().getCoding() != null) {
@@ -318,12 +318,12 @@ public class Dstu2CdaHeaderGenerator {
         List<CodingDt> types = loc.getType().getCoding();
 
         String typeXml =
-            Dstu2CdaFhirUtilities.getCodingXmlForCodeSystem(
-                types,
-                CdaGeneratorConstants.CODE_EL_NAME,
-                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                false,
-                "");
+                Dstu2CdaFhirUtilities.getCodingXmlForCodeSystem(
+                        types,
+                        CdaGeneratorConstants.CODE_EL_NAME,
+                        CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                        false,
+                        "");
         sb.append(typeXml);
       } else {
         List<CodingDt> codes = null;
@@ -340,16 +340,16 @@ public class Dstu2CdaHeaderGenerator {
     } else if (org != null) {
 
       IdentifierDt npi =
-          Dstu2CdaFhirUtilities.getIdentifierForSystem(
-              org.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+              Dstu2CdaFhirUtilities.getIdentifierForSystem(
+                      org.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
 
       if (npi != null) {
         sb.append(
-            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+                CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
         sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), org.getId().getValue()));
+                CdaGeneratorUtils.getXmlForII(
+                        details.getAssigningAuthorityId(), org.getId().getValue()));
       }
 
       if (org.getType() != null && org.getType().getCoding() != null) {
@@ -357,12 +357,12 @@ public class Dstu2CdaHeaderGenerator {
         List<CodingDt> types = org.getType().getCoding();
 
         String typeXml =
-            Dstu2CdaFhirUtilities.getCodingXmlForCodeSystem(
-                types,
-                CdaGeneratorConstants.CODE_EL_NAME,
-                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                false,
-                "");
+                Dstu2CdaFhirUtilities.getCodingXmlForCodeSystem(
+                        types,
+                        CdaGeneratorConstants.CODE_EL_NAME,
+                        CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                        false,
+                        "");
         sb.append(typeXml);
       } else {
         List<CodingDt> codes = null;
@@ -378,11 +378,11 @@ public class Dstu2CdaHeaderGenerator {
     } else {
 
       sb.append(
-          CdaGeneratorUtils.getXmlForII(
-              details.getAssigningAuthorityId(), CdaGeneratorConstants.UNKNOWN_VALUE));
+              CdaGeneratorUtils.getXmlForII(
+                      details.getAssigningAuthorityId(), CdaGeneratorConstants.UNKNOWN_VALUE));
       sb.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNullCD(
+                      CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
       List<AddressDt> addrs = null;
@@ -400,20 +400,20 @@ public class Dstu2CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
     if (en != null
-        && en.getPeriod() != null
-        && en.getPeriod().getStartElement() != null
-        && en.getPeriod().getStart() != null) {
+            && en.getPeriod() != null
+            && en.getPeriod().getStartElement() != null
+            && en.getPeriod().getStart() != null) {
       sb.append(
-          Dstu2CdaFhirUtilities.getDateTimeTypeXml(
-              en.getPeriod().getStartElement(), CdaGeneratorConstants.TIME_EL_NAME));
+              Dstu2CdaFhirUtilities.getDateTimeTypeXml(
+                      en.getPeriod().getStartElement(), CdaGeneratorConstants.TIME_EL_NAME));
     } else {
       sb.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()));
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                      CdaGeneratorConstants.TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()));
     }
 
     sb.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
 
     sb.append(getPractitionerXml(pr));
 
@@ -424,7 +424,7 @@ public class Dstu2CdaHeaderGenerator {
   }
 
   public static String getOrganizationXml(
-      Organization org, Location location, LaunchDetails details) {
+          Organization org, Location location, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(200);
     if (org != null) {
@@ -435,8 +435,8 @@ public class Dstu2CdaHeaderGenerator {
         sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id.getValue()));
       } else {
         sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), org.getId().getValue()));
+                CdaGeneratorUtils.getXmlForII(
+                        details.getAssigningAuthorityId(), org.getId().getValue()));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
@@ -451,12 +451,12 @@ public class Dstu2CdaHeaderGenerator {
         sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id.getValue()));
       } else {
         sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), location.getId().getValue()));
+                CdaGeneratorUtils.getXmlForII(
+                        details.getAssigningAuthorityId(), location.getId().getValue()));
       }
 
       sb.append(
-          CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, location.getName()));
+              CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, location.getName()));
       sb.append(Dstu2CdaFhirUtilities.getTelecomXml(location.getTelecom()));
 
       List<AddressDt> addrs = new ArrayList<>();
@@ -470,8 +470,8 @@ public class Dstu2CdaHeaderGenerator {
       // Code that will replace the code above after testing.
       sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
       sb.append(
-          CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
+              CdaGeneratorUtils.getXmlForText(
+                      CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
 
       List<ContactPointDt> cps = null;
       sb.append(Dstu2CdaFhirUtilities.getTelecomXml(cps));
@@ -501,17 +501,17 @@ public class Dstu2CdaHeaderGenerator {
   }
 
   public static String getEncompassingEncounter(
-      Encounter en, Practitioner pr, Location loc, Organization org, LaunchDetails details) {
+          Encounter en, Practitioner pr, Location loc, Organization org, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(2000);
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMPONENT_OF_EL_NAME));
     sb.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENCOMPASSING_ENC_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENCOMPASSING_ENC_EL_NAME));
 
     if (en != null) {
       sb.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), en.getId().getIdPart()));
+              CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), en.getId().getIdPart()));
 
       // Add all the encounter identifiers to the Ids
       List<IdentifierDt> ids = en.getIdentifier();
@@ -522,9 +522,9 @@ public class Dstu2CdaHeaderGenerator {
           if (id.getSystem() != null && id.getValue() != null) {
 
             sb.append(
-                CdaGeneratorUtils.getXmlForII(
-                    CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()),
-                    id.getValue()));
+                    CdaGeneratorUtils.getXmlForII(
+                            CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()),
+                            id.getValue()));
           }
         }
       }
@@ -532,21 +532,21 @@ public class Dstu2CdaHeaderGenerator {
       sb.append(Dstu2CdaFhirUtilities.getEncounterClassCodeXml(en.getClassElementElement()));
 
       sb.append(
-          Dstu2CdaFhirUtilities.getPeriodXml(
-              en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
+              Dstu2CdaFhirUtilities.getPeriodXml(
+                      en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else {
       sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
       sb.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNullCD(
+                      CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
       sb.append(
-          CdaGeneratorUtils.getXmlForNullEffectiveTime(
-              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNullEffectiveTime(
+                      CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.RESP_PARTY_EL_NAME));
     sb.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
     sb.append(getPractitionerXml(pr));
 
@@ -561,25 +561,25 @@ public class Dstu2CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     sb.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
 
     sb.append(getLocationXml(loc, org, details));
 
     sb.append(
-        CdaGeneratorUtils.getXmlForStartElement(
-            CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(
+                    CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
     sb.append(getOrganizationXml(org, loc, details));
 
     sb.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
     sb.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
     sb.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENCOMPASSING_ENC_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENCOMPASSING_ENC_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMPONENT_OF_EL_NAME));
 
     return sb.toString();
@@ -591,12 +591,12 @@ public class Dstu2CdaHeaderGenerator {
     StringBuilder patientDetails = new StringBuilder();
 
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
 
     IdentifierDt id =
-        Dstu2CdaFhirUtilities.getIdentifierForType(p.getIdentifier(), IdentifierTypeCodesEnum.MR);
+            Dstu2CdaFhirUtilities.getIdentifierForType(p.getIdentifier(), IdentifierTypeCodesEnum.MR);
 
     if (id != null) {
 
@@ -605,20 +605,20 @@ public class Dstu2CdaHeaderGenerator {
         logger.info(" Found Identifier with Type MR ");
 
         String system =
-            CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
+                CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
         patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));
       } else {
 
         logger.info(" Using Resource Identifier as id ");
 
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
+                CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
       }
 
     } else {
       logger.info(" Using Resource Identifier as id ");
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
+              CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
     }
 
     // Add Address.
@@ -629,32 +629,32 @@ public class Dstu2CdaHeaderGenerator {
 
     // Add patient
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
 
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
     patientDetails.append(Dstu2CdaFhirUtilities.getNameXml(p.getName()));
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
     patientDetails.append(Dstu2CdaFhirUtilities.getGenderXml(p.getGenderElement()));
     patientDetails.append(
-        Dstu2CdaFhirUtilities.getDateTypeXml(
-            p.getBirthDateElement(), CdaGeneratorConstants.BIRTH_TIME_EL_NAME));
+            Dstu2CdaFhirUtilities.getDateTypeXml(
+                    p.getBirthDateElement(), CdaGeneratorConstants.BIRTH_TIME_EL_NAME));
 
     patientDetails.append(getDeceasedXml(p));
 
     CodingDt race =
-        Dstu2CdaFhirUtilities.getCodingExtension(
-            p.getUndeclaredExtensions(),
-            CdaGeneratorConstants.FHIR_ARGO_RACE_EXT_URL,
-            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+            Dstu2CdaFhirUtilities.getCodingExtension(
+                    p.getUndeclaredExtensions(),
+                    CdaGeneratorConstants.FHIR_ARGO_RACE_EXT_URL,
+                    CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
     // Check for CodeableConceptDt with DAF extension.
     if (race == null) {
       CodeableConceptDt racedt =
-          Dstu2CdaFhirUtilities.getCodeableConceptExtension(
-              p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_RACE_EXT_URL);
+              Dstu2CdaFhirUtilities.getCodeableConceptExtension(
+                      p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_RACE_EXT_URL);
 
       if (racedt != null && racedt.getCodingFirstRep() != null) {
 
@@ -664,29 +664,29 @@ public class Dstu2CdaHeaderGenerator {
 
     if (race != null && race.getCode() != null) {
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.RACE_CODE_EL_NAME,
-              race.getCode(),
-              CdaGeneratorConstants.RACE_CODE_SYSTEM,
-              CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
-              race.getDisplay()));
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.RACE_CODE_EL_NAME,
+                      race.getCode(),
+                      CdaGeneratorConstants.RACE_CODE_SYSTEM,
+                      CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
+                      race.getDisplay()));
     } else {
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.RACE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNullCD(
+                      CdaGeneratorConstants.RACE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
 
     CodingDt ethnicity =
-        Dstu2CdaFhirUtilities.getCodingExtension(
-            p.getUndeclaredExtensions(),
-            CdaGeneratorConstants.FHIR_ARGO_ETHNICITY_EXT_URL,
-            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+            Dstu2CdaFhirUtilities.getCodingExtension(
+                    p.getUndeclaredExtensions(),
+                    CdaGeneratorConstants.FHIR_ARGO_ETHNICITY_EXT_URL,
+                    CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
     // Check for CodeableConceptDt with DAF extension.
     if (ethnicity == null) {
       CodeableConceptDt ethnicitydt =
-          Dstu2CdaFhirUtilities.getCodeableConceptExtension(
-              p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_ETHNICITY_EXT_URL);
+              Dstu2CdaFhirUtilities.getCodeableConceptExtension(
+                      p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_ETHNICITY_EXT_URL);
 
       if (ethnicitydt != null && ethnicitydt.getCodingFirstRep() != null) {
 
@@ -696,16 +696,16 @@ public class Dstu2CdaHeaderGenerator {
 
     if (ethnicity != null && ethnicity.getCode() != null) {
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.ETHNIC_CODE_EL_NAME,
-              ethnicity.getCode(),
-              CdaGeneratorConstants.RACE_CODE_SYSTEM,
-              CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
-              ethnicity.getDisplay()));
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.ETHNIC_CODE_EL_NAME,
+                      ethnicity.getCode(),
+                      CdaGeneratorConstants.RACE_CODE_SYSTEM,
+                      CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
+                      ethnicity.getDisplay()));
     } else {
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNullCD(
+                      CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
 
     // Adding Guardian details for patient
@@ -717,7 +717,7 @@ public class Dstu2CdaHeaderGenerator {
       if (guardianContact != null) {
 
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+                CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
 
         // Add address
         List<AddressDt> addrs = new ArrayList<>();
@@ -736,43 +736,43 @@ public class Dstu2CdaHeaderGenerator {
 
         // Add Name
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+                CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+                CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
         patientDetails.append(Dstu2CdaFhirUtilities.getNameXml(guardianContact.getName()));
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+                CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+                CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
 
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+                CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
       }
     }
 
     // Add language communication
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
     CodingDt language = Dstu2CdaFhirUtilities.getLanguage(p.getCommunication());
 
     if (language != null && language.getCode() != null) {
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getCode()));
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getCode()));
     } else {
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNullCD(
+                      CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
 
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_EL_NAME));
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
 
     return patientDetails.toString();
   }
@@ -784,33 +784,33 @@ public class Dstu2CdaHeaderGenerator {
     if (p.getDeceased() != null) {
 
       if (p.getDeceased() instanceof BooleanType
-          && Boolean.TRUE.equals(((BooleanType) p.getDeceased()).getValue())) {
+              && Boolean.TRUE.equals(((BooleanType) p.getDeceased()).getValue())) {
 
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+                CdaGeneratorUtils.getXmlForValue(
+                        CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
 
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForNullEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
+                CdaGeneratorUtils.getXmlForNullEffectiveTime(
+                        CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
       } else if (p.getDeceased() instanceof DateTimeDt) {
 
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+                CdaGeneratorUtils.getXmlForValue(
+                        CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
 
         DateTimeDt d = (DateTimeDt) p.getDeceased();
         patientDetails.append(
-            Dstu2CdaFhirUtilities.getDateTimeTypeXml(d, CdaGeneratorConstants.SDTC_DECEASED_TIME));
+                Dstu2CdaFhirUtilities.getDateTimeTypeXml(d, CdaGeneratorConstants.SDTC_DECEASED_TIME));
       } else {
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
+                CdaGeneratorUtils.getXmlForValue(
+                        CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
       }
     } else if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
+              CdaGeneratorUtils.getXmlForValue(
+                      CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
     }
 
     return patientDetails.toString();
