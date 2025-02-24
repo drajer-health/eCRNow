@@ -2181,14 +2181,12 @@ public class CdaFhirUtilities {
             String id = med.getReferenceElement().getIdPart();
             Medication medRes = null;
             for (Medication m : medList) {
-              //              if (m.hasIdElement() && m.getIdElement().hasIdPart()  &&
-              // m.getIdElement().getIdPart().contentEquals(id)) {
-              //
-              //                logger.info(" Found the non-contained medication reference resource
-              // {}", id);
-              //                medRes = m;
-              //                break;
-              //              }
+              if (m.getIdElement().getIdPart().contentEquals(id)) {
+
+                logger.info(" Found the non-contained medication reference resource {}", id);
+                medRes = m;
+                break;
+              }
             }
 
             // Found the reference, check the code and ingredients.
