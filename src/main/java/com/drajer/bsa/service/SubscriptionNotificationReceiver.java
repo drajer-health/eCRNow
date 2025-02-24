@@ -44,4 +44,12 @@ public interface SubscriptionNotificationReceiver {
       PatientLaunchContext launchContext,
       Boolean relaunch)
       throws InvalidLaunchContext, InvalidNotification;
+
+  public List<KarProcessingData> reProcessNotification(
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext,
+      Boolean relaunch)
+      throws InvalidLaunchContext, InvalidNotification;
 }
