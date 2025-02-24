@@ -11,7 +11,7 @@
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
 <code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
 <title>Initial Public Health Case Report</title>
-<effectiveTime value="20250218094809+0000"/>
+<effectiveTime value="20250220001031+0000"/>
 <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
 <languageCode code="en-US"/>
 <setId root="2.16.840.1.113883.1.1.1.1" extension="1"/>
@@ -89,7 +89,7 @@
 </assignedAuthor>
 </author>
 <author>
-<time value="20250218094809+0000"/>
+<time value="20250220001031+0000"/>
 <assignedAuthor>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
 <streetAddressLine nullFlavor="NI"/>
@@ -106,7 +106,7 @@
 </assignedAuthor>
 </author>
 <author>
-<time value="20250218094809+0000"/>
+<time value="20250220001031+0000"/>
 <assignedAuthor>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
 <streetAddressLine nullFlavor="NI"/>
@@ -123,7 +123,7 @@
 </assignedAuthor>
 </author>
 <author>
-<time value="20250218094809+0000"/>
+<time value="20250220001031+0000"/>
 <assignedAuthor>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
 <streetAddressLine nullFlavor="NI"/>

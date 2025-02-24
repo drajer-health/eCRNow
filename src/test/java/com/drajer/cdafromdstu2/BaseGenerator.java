@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu2.model.*;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.Before;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.slf4j.Logger;
@@ -28,18 +29,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-
-
 @PowerMockIgnore({"javax.crypto.*"})
-public class BaseGeneratorTest {
+public class BaseGenerator {
+
+  protected Patient patient;
+  protected Bundle bundle;
 
   public static final Logger logger =
       LoggerFactory.getLogger(com.drajer.cdafromr4.BaseGeneratorTest.class);
   public static final FhirContext fhirContext = FhirContext.forDstu2();
   public static final String EXCEPTION_READING_FILE = "Exception Reading File";
-
+  protected static final String PATIENT_CDA_FILE = "CdaDstuTestData/Cda/Patient/Patient.xml";
   public static final String LAUNCH_DETAILS_FILENAME =
       "CdaDstuTestData/LaunchDetails/LaunchDetails.json";
+  public static final String BUNDLE_RES_FILENAME = "CdaTestData/Bundle/Bundle.json";
   public static final String PATIENT_RES_FILENAME = "CdaTestData/patient/Patient_resource.json";
   static final String ECIR_DETAILS_FILENAME = "R4/Misc/eicr.json";
   public static final String XML_FOR_II_USING_GUID =
@@ -47,6 +50,8 @@ public class BaseGeneratorTest {
 
   public List<Patient.Contact> contactList;
 
+  Dstu2FhirData dstu2FhirDataForPatient;
+  Dstu2FhirData dstu2FhirDataForBundle;
   Dstu2FhirData dstu2FhirData;
   LaunchDetails launchDetails = loadLaunchDetailsFromFile();
   Eicr eicr = loadEicrDetailsFromFile();
@@ -54,8 +59,14 @@ public class BaseGeneratorTest {
   @Before
   public void setupTestCase() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    dstu2FhirData = new Dstu2FhirData();
-
+    patient = (Patient) loadResourceDataFromFile(Patient.class, PATIENT_RES_FILENAME);
+    // bundle = loadResourceDataFromFile(Bundle.class, BUNDLE_RES_FILENAME);
+    bundle = new Bundle();
+    dstu2FhirDataForPatient = new Dstu2FhirData();
+    dstu2FhirDataForBundle = new Dstu2FhirData();
+    dstu2FhirDataForPatient.setPatient(patient);
+    dstu2FhirDataForBundle.setPatient(patient);
+    dstu2FhirDataForBundle.setData(bundle);
   }
 
   public LaunchDetails loadLaunchDetailsFromFile() {
@@ -69,7 +80,8 @@ public class BaseGeneratorTest {
     return TestUtils.readFileContents(ECIR_DETAILS_FILENAME, new TypeReference<Eicr>() {});
   }
 
-  public Object loadResourceDataFromFile(Class resourceType, String filename) {
+  public <T extends IBaseResource> T loadResourceDataFromFile(
+      Class<T> resourceType, String filename) {
 
     try (InputStream in = new ClassPathResource(filename).getInputStream()) {
 

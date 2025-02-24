@@ -2520,7 +2520,8 @@ public class CdaFhirUtilities {
       logger.info("Found Medication of Type Reference within Domain Resource");
       Reference med = (Reference) dt;
       String codeXml = "";
-      if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+      if (med.hasReference()
+          && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
         // Check contained.
         String refId = med.getReference().substring(1);
 

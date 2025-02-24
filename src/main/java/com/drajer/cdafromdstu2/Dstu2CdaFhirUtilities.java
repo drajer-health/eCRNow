@@ -35,9 +35,7 @@ import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-
 import java.util.*;
-
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -83,9 +81,8 @@ public class Dstu2CdaFhirUtilities {
 
   public static IdentifierDt getIdentifierForSystem(List<IdentifierDt> ids, String system) {
 
-    if(StringUtils.isBlank(system))
+    if (StringUtils.isBlank(system)) {
 
-    {
       logger.info("Skipping fetching identifier due to null or blank system");
       return null;
     }
@@ -93,7 +90,7 @@ public class Dstu2CdaFhirUtilities {
 
       for (IdentifierDt id : ids) {
 
-        if (id.getSystem() != null && system!=null && id.getSystem().contentEquals(system)) {
+        if (id.getSystem() != null && system != null && id.getSystem().contentEquals(system)) {
 
           logger.info(" Found the Identifier for System:{} ", system);
 
@@ -101,7 +98,6 @@ public class Dstu2CdaFhirUtilities {
         }
       }
     }
-
 
     return null;
   }
@@ -189,8 +185,6 @@ public class Dstu2CdaFhirUtilities {
     logger.info(" Did not find the Extension or sub extensions for the Url:{}", extUrl);
     return null;
   }
-
-
 
   public static CodingDt getLanguage(List<Communication> comms) {
 
@@ -1269,7 +1263,7 @@ public class Dstu2CdaFhirUtilities {
     String anyDisplay = "";
     Boolean foundCodeSystem = false;
 
-    if(codings!=null && !codings.isEmpty()) {
+    if (codings != null && !codings.isEmpty()) {
       for (CodingDt c : codings) {
 
         if (c.getSystem().contentEquals(codeSystemUrl) && !StringUtils.isEmpty(c.getDisplay())) {
@@ -1286,7 +1280,6 @@ public class Dstu2CdaFhirUtilities {
         }
       }
     }
-
 
     if (!StringUtils.isEmpty(display)) return new Pair<>(display, foundCodeSystem);
     else if (!StringUtils.isEmpty(anyDisplay)) return new Pair<>(anyDisplay, foundCodeSystem);
@@ -1786,7 +1779,4 @@ public class Dstu2CdaFhirUtilities {
 
     return val;
   }
-
-
-
 }
