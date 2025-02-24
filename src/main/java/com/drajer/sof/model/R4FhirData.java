@@ -4,24 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Immunization;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Medication;
-import org.hl7.fhir.r4.model.MedicationAdministration;
-import org.hl7.fhir.r4.model.MedicationDispense;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.Procedure;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +51,9 @@ public class R4FhirData extends FhirData {
   private List<Medication> medicationList;
   private List<ServiceRequest> serviceRequests;
   private List<Procedure> procedureList;
-
   private Address jurisdiction;
   private List<Address> jurisdictions;
+  private List<Specimen> specimenList;
 
   public void prepareJurisdicationData() {
 
@@ -571,6 +554,18 @@ public class R4FhirData extends FhirData {
     this.smokingObs = smokingObs;
   }
 
+  public List<Specimen> getSpecimenList() {
+    return specimenList;
+  }
+
+  public void setSpecimenList(List<Specimen> specimenList) {
+    this.specimenList = specimenList;
+  }
+
+  public void addSpecimen(List<Specimen> specimens) {
+    this.specimenList.addAll(specimens);
+  }
+
   @Override
   public String toString() {
     return "R4FhirData [data="
@@ -654,7 +649,19 @@ public class R4FhirData extends FhirData {
         }
       }
     }
+    return null;
+  }
 
+  public Specimen getSpecimenById(String id) {
+
+    logger.debug("Id for retrieving specimen = {}", id);
+    if (specimenList != null) {
+      for (Specimen sp : specimenList) {
+        if (sp.getId().contains(id)) {
+          return sp;
+        }
+      }
+    }
     return null;
   }
 }

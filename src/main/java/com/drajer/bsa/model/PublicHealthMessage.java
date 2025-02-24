@@ -28,7 +28,10 @@ import org.slf4j.LoggerFactory;
     name = "ph_messages",
     indexes = {
       @Index(name = "idx_not_res_id", columnList = "notified_resource_id"),
-      @Index(name = "idx_kar_id", columnList = "kar_unique_id")
+      @Index(name = "idx_kar_id", columnList = "kar_unique_id"),
+      @Index(
+          name = "idx_ph_messages_fhir_server_patient_not_res",
+          columnList = "fhir_server_base_url, patient_id, notified_resource_type")
     })
 @DynamicUpdate
 public class PublicHealthMessage {

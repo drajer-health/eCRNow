@@ -18,30 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DataRequirement;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
-import org.hl7.fhir.r4.model.Immunization;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Medication;
-import org.hl7.fhir.r4.model.MedicationAdministration;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.Procedure;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -160,6 +139,16 @@ public class R3ToR2DataConverterUtils {
         details,
         observations,
         ResourceType.Observation.toString(),
+        r4DataResourceIds);
+
+    Set<Resource> specimens = kd.getResourcesByType(ResourceType.Specimen.toString());
+    addResourcesToR4FhirData(
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        specimens,
+        ResourceType.Specimen.toString(),
         r4DataResourceIds);
   }
 
@@ -532,6 +521,18 @@ public class R3ToR2DataConverterUtils {
           r4FhirData.addNationalityObs(nationalityObs);
         }
 
+      } else if (type.contentEquals(ResourceType.Specimen.toString())) {
+
+        logger.info(" Setting up the Specimen  for R4FhirData ");
+        ArrayList<Specimen> specimenList = new ArrayList<>();
+        if (!resources.isEmpty()) {
+
+          for (Resource r : resources) {
+            specimenList.add((Specimen) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setSpecimenList(specimenList);
+        }
       } else if (type.contentEquals(ResourceType.DiagnosticReport.toString())) {
 
         logger.info(" Setting up the Diagnostic Report for R4FhirData ");
