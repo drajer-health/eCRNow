@@ -1,0 +1,380 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+        <code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+        <title>SOCIAL HISTORY</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Social History Observation</th>
+                        <th>Social History Observation Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="socContent0">Birth Sex</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult0">F</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent1">Gender Identity</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult1">Identifies as female gender</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent2">Tribal Affiliation</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult2">tribalAffiliation-Shoshone|isEnrolled-true</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent3">Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult3">Travel Component 1 : Location |  Value : Travel to China in last 14 days</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent4">Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult4">Travel Component 1 : Location |  Value : Travel Location: China</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent5">Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult5">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent6">Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult6">Travel History Component 1 : Location |  Value : Travelled abroad</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent7">Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult7">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent8">Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult8">Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent9">Nationality</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult9">United States of America</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent10">Nationality</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult10">Australia</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent11">Residency</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult11">United Kingdom of Great Britain and Northern Ireland</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent12">Residency</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult12">United States of America</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent13">Characteristics of Home Environment</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult13">unsatisfactory living conditions (finding)</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent14">Disability Status</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult14">Are you deaf, or do you have serious difficulty hearing|value=Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent15">Disability Status</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult15">Do you have difficulty dressing or bathing|value=Yes</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.200" extension="2016-06-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="76689-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Birth Sex"/>
+                <statusCode code="completed"/>
+                <value xsi:type="CD" code="F" codeSystem="2.16.840.1.113883.5.1" codeSystemName="Administrative Gender" displayName="Female"/>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.38" extension="2015-08-01"/>
+                <templateId root="2.16.840.1.113883.10.20.34.3.45" extension="2022-06-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="76691-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Gender Identity"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="446141000124107" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Identifies as female gender (finding)"><originalText>
+                    <reference value="#socContent1"/>
+                </originalText>
+                </value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.48" extension="2021-01-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="187" codeSystem="2.16.840.1.113883.5.140" codeSystemName="v3-TribalEntityUS" displayName="Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"><originalText>
+                <reference value="#socContent2"/>
+            </originalText>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime nullFlavor="NI"/>
+                <value xsi:type="ST">true</value>
+            </observation>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="4e0cb073-7206-4004-a4e7-e0fce0695939"/>
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel Component 1 : Location |  Value : Travel to China in last 14 days</text>
+                <statusCode code="completed"/>
+                <effectiveTime nullFlavor="NI"/>
+                <participant typeCode="LOC">
+                    <participantRole classCode="TERR">
+                        <code nullFlavor="OTH">
+                            <originalText>
+                                Travel to China in last 14 days</originalText>
+
+                        </code>
+                    </participantRole>
+                </participant>
+            </act>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="645317d0-b90d-4026-ac26-3d28cb53c658"/>
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel Component 1 : Location |  Value : Travel Location: China</text>
+                <statusCode code="completed"/>
+                <effectiveTime nullFlavor="NI"/>
+                <participant typeCode="LOC">
+                    <participantRole classCode="TERR">
+                        <code nullFlavor="OTH">
+                            <originalText>
+                                Travel Location: China</originalText>
+
+                        </code>
+                    </participantRole>
+                </participant>
+            </act>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="6deef845-e6fb-4db1-8de9-d53aaa15e4cd"/>
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
+                <statusCode code="completed"/>
+                <effectiveTime nullFlavor="NI"/>
+                <participant typeCode="LOC">
+                    <participantRole classCode="TERR">
+                        <code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
+                    </participantRole>
+                </participant>
+            </act>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="810c0924-8e86-402b-93a2-3fea05944dd3"/>
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel History Component 1 : Location |  Value : Travelled abroad</text>
+                <statusCode code="completed"/>
+                <effectiveTime nullFlavor="NI"/>
+                <participant typeCode="LOC">
+                    <participantRole classCode="TERR">
+                        <code nullFlavor="OTH">
+                            <originalText>
+                                Travelled abroad</originalText>
+
+                        </code>
+                    </participantRole>
+                </participant>
+            </act>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="c9fae72d-f781-4089-9534-77045256146d"/>
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
+                <statusCode code="completed"/>
+                <effectiveTime value="20241201000000+0000"/>
+                <participant typeCode="LOC">
+                    <participantRole classCode="TERR">
+                        <code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
+                    </participantRole>
+                </participant>
+            </act>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="f1da4975-a496-467f-b57f-2cd8458d0838"/>
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</text>
+                <statusCode code="completed"/>
+                <effectiveTime nullFlavor="NI"/>
+                <participant typeCode="LOC">
+                    <participantRole classCode="TERR">
+                        <code nullFlavor="OTH">
+                            <originalText>
+                                1170 N Rancho Robles Rd ,Oracle</originalText>
+
+                        </code>
+                        <addr>
+                            <country>US</country>
+                            <city>Oracle</city>
+                            <state>AZ</state>
+                        </addr>
+                    </participantRole>
+                </participant>
+            </act>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.54" extension="2021-01-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="16eb87d0-57d5-4f52-b38e-1878fcd9626d"/>
+                <code code="186034007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Nationality"/>
+                <statusCode code="completed"/>
+                <value xsi:type="CD" code="USA" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="United States of America"><originalText>
+                    <reference value="#socContent9"/>
+                </originalText>
+                </value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.54" extension="2021-01-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="c0c8631e-a7a9-4d69-9803-7cc107dca475"/>
+                <code code="186034007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Nationality"/>
+                <statusCode code="completed"/>
+                <value xsi:type="CD" code="AU" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="Australia"><originalText>
+                    <reference value="#socContent10"/>
+                </originalText>
+                </value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.53" extension="2021-01-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="6be61adc-a809-45bd-b401-80ef23e18229"/>
+                <code code="77983-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Residency"/>
+                <statusCode code="completed"/>
+                <value xsi:type="CD" code="GB" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="United Kingdom of Great Britain and Northern Ireland"><originalText>
+                    <reference value="#socContent11"/>
+                </originalText>
+                </value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.53" extension="2021-01-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="fa5f3922-b84f-4d3b-8955-4e191ffda800"/>
+                <code code="77983-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Residency"/>
+                <statusCode code="completed"/>
+                <value xsi:type="CD" code="USA" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="United States of America"><originalText>
+                    <reference value="#socContent12"/>
+                </originalText>
+                </value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.109"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="f7616c7b-2538-4f76-8c4b-5dc4e8c0e7ae"/>
+                <code code="75274-1" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Characteristics of Home Environment"/>
+                <statusCode code="completed"/>
+                <value xsi:type="CD" code="308899009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="unsatisfactory living conditions (finding)"><originalText>
+                    <reference value="#socContent13"/>
+                </originalText>
+                </value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.47" extension="2021-01-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="3cffb8ba-613d-4868-a316-c724a6e2ae95"/>
+                <code code="69856-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Are you deaf, or do you have serious difficulty hearing"><originalText>
+                    <reference value="#socContent14"/>
+                </originalText>
+                </code>
+                <statusCode code="completed"/>
+                <effectiveTime value="20231227000000+0000"/>
+                <value xsi:type="ST">No Value</value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.47" extension="2021-01-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="b746b626-ce0a-430b-9c14-e6119813892f"/>
+                <code code="69860-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Do you have difficulty dressing or bathing"><originalText>
+                    <reference value="#socContent15"/>
+                </originalText>
+                </code>
+                <statusCode code="completed"/>
+                <effectiveTime value="20240107000000+0000"/>
+                <value xsi:type="CD" code="Y" codeSystem="2.16.840.1.113883.18.347" codeSystemName="v2-0532" displayName="Yes"></value>
+            </observation>
+        </entry>
+    </section>
+</component>

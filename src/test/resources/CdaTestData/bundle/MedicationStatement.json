@@ -1,0 +1,237 @@
+{
+  "resourceType": "Bundle",
+  "id": "d08b3fce-21ee-45e9-8583-654786bf0187",
+  "meta": {
+    "lastUpdated": "2025-02-17T13:53:23.525+00:00"
+  },
+  "type": "searchset",
+  "total": 3,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationStatement?patient=Patient%2Fe9bd7100-48af-4c69-a557-c13235f72f74"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationStatement/b6bd7100-48af-4c69-a557-c13235f72f74",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "b6bd7100-48af-4c69-a557-c13235f72f74",
+        "meta": {
+          "versionId": "1.0"
+        },
+        "status": "active",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1870230",
+              "display": "NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "dateAsserted": "2023-12-27T00:00:00+00:00",
+        "dosage": [
+          {
+            "sequence": 1,
+            "text": "1 tablet per day",
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "260548002",
+                  "display": "Oral"
+                }
+              ],
+              "text": "1 tablet per day"
+            },
+            "doseAndRate": [
+              {
+                "type": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/dose-rate-type",
+                      "code": "ordered",
+                      "display": "Ordered"
+                    }
+                  ]
+                },
+                "doseQuantity": {
+                  "value": 1,
+                  "unit": "tab",
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm",
+                  "code": "TAB"
+                }
+              }
+            ],
+            "maxDosePerPeriod": {
+              "numerator": {
+                "value": 1
+              },
+              "denominator": {
+                "value": 1,
+                "system": "http://unitsofmeasure.org",
+                "code": "d"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationStatement/b65d7100-48af-4c69-a557-c13235f72f74",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "b65d7100-48af-4c69-a557-c13235f72f74",
+        "meta": {
+          "versionId": "1.0"
+        },
+        "status": "active",
+        "medicationReference": {
+          "reference": "Medication/med1"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "dateAsserted": "2023-12-27T00:00:00+00:00",
+        "dosage": [
+          {
+            "sequence": 1,
+            "text": "1 tablet per day",
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "260548002",
+                  "display": "Oral"
+                }
+              ],
+              "text": "1 tablet per day"
+            },
+            "doseAndRate": [
+              {
+                "type": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/dose-rate-type",
+                      "code": "ordered",
+                      "display": "Ordered"
+                    }
+                  ]
+                },
+                "doseQuantity": {
+                  "value": 1,
+                  "unit": "tab",
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm",
+                  "code": "TAB"
+                }
+              }
+            ],
+            "maxDosePerPeriod": {
+              "numerator": {
+                "value": 1
+              },
+              "denominator": {
+                "value": 1,
+                "system": "http://unitsofmeasure.org",
+                "code": "d"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationStatement/b6bd9100-48af-4c69-a557-c13235f72f7",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "b6bd9100-48af-4c69-a557-c13235f72f7",
+        "meta": {
+          "versionId": "b6bd9100-48af-4c69-a557-c13235f72f7"
+        },
+        "status": "active",
+        "medicationReference": {
+          "display": "remdesivir 100 mg intravenous powder for solution"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "context": {
+          "reference": "Encounter/1f43c338-cc11-415a-b96b-3b5720e6a69a"
+        },
+        "dateAsserted": "2024-12-23T00:00:00+00:00",
+        "informationSource": {
+          "reference": "Practitioner/66dc6509-5cfe-4f9a-bfc1-e549fe125141"
+        },
+        "dosage": [
+          {
+            "text": "Inject 1 mg intravenously once a day as directed",
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "6064005",
+                  "display": "Topical route"
+                },
+                {
+                  "system": "http://ncimeta.nci.nih.gov",
+                  "code": "C38304",
+                  "display": "Topical route"
+                }
+              ],
+              "text": "Inject 1 mg intravenously once a day as directed"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {"resource":
+    {
+      "resourceType": "Medication",
+      "id": "med1",
+      "meta": {
+        "versionId": "1.0"
+      },
+      "code": {
+        "coding": [
+          {
+            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+            "code": "206954",
+            "display": "Prednisone 5 MG Oral Tablet [Deltasone]"
+          }
+        ]
+      },
+      "form": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm",
+            "code": "TAB",
+            "display": "Tablet"
+          }
+        ]
+      },
+      "batch": {
+        "lotNumber": "12345",
+        "expirationDate": "2025-01-01T00:00:00+00:00"
+      }
+    }}
+  ]
+}

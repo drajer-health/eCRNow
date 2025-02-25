@@ -2162,7 +2162,8 @@ public class CdaFhirUtilities {
 
         Reference med = (Reference) medStmtRef.getMedication();
 
-        if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+        if (med.getReference() != null
+            && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
@@ -2517,7 +2518,8 @@ public class CdaFhirUtilities {
       logger.info("Found Medication of Type Reference within Domain Resource");
       Reference med = (Reference) dt;
       String codeXml = "";
-      if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+      if (med.hasReference()
+          && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
         // Check contained.
         String refId = med.getReference().substring(1);
 
@@ -3008,7 +3010,7 @@ public class CdaFhirUtilities {
     return retval.toString();
   }
 
-  private static boolean isCodeContained(Set<String> codes, String code) {
+  public static boolean isCodeContained(Set<String> codes, String code) {
 
     if (codes != null && code != null) {
 
@@ -3091,7 +3093,7 @@ public class CdaFhirUtilities {
           && extension.hasValue()
           && extension.getValue() instanceof BooleanType) {
         logger.debug("Found Address Extension at top level.");
-        BooleanType retVal = (BooleanType) extension.getValueAsPrimitive().getValue();
+        BooleanType retVal = (BooleanType) extension.getValue();
         return retVal.getValue();
       }
     }

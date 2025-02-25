@@ -1,0 +1,586 @@
+<?xml version="1.0"?>
+<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns="urn:hl7-org:v3"
+ xmlns:cda="urn:hl7-org:v3"
+ xmlns:sdtc="urn:hl7-org:sdtc">
+<realmCode code="US"/>
+<typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+<templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.1.1" extension="2015-08-01"/>
+<templateId root="2.16.840.1.113883.10.20.15.2" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+<code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
+<title>Initial Public Health Case Report</title>
+<effectiveTime value="20250220001031+0000"/>
+<confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+<languageCode code="en-US"/>
+<setId root="2.16.840.1.113883.1.1.1.1" extension="1"/>
+<versionNumber value="1"/>
+<recordTarget>
+<patientRole>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26495"/>
+<addr>
+<streetAddressLine>2222 Home Street</streetAddressLine>
+<city>SALT LAKE CITY</city>
+<state>UT</state>
+<postalCode>84101</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(555)842-6014" use="HP"/>
+<patient>
+<name use="L">
+<given qualifier="PR">Hello</given>
+<family>Kitty</family>
+</name>
+<administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7AdministrativeGenderCode" displayName="male"/>
+<birthTime value="20000710"/>
+<sdtc:deceasedInd value="false"/>
+<maritalStatusCode code="S" codeSystem="2.16.840.1.113883.5.2" codeSystemName="v3-MaritalStatus" displayName="Never Married"/>
+<raceCode code="2028-9" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="Asian"/>
+<ethnicGroupCode code="2186-5" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="Not Hispanic or Latino"/>
+<guardian>
+<code nullFlavor="NI"/>
+<addr>
+<streetAddressLine>2222 Home Street</streetAddressLine>
+<city>SALT LAKE CITY</city>
+<state>UT</state>
+<postalCode>84101</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(334)304-2665" use="HP"/>
+<guardianPerson>
+<name>
+<given>Martha</given>
+<family>Mum</family>
+</name>
+</guardianPerson>
+</guardian>
+<languageCommunication>
+<languageCode code="en"/>
+<preferenceInd value="true"/>
+</languageCommunication>
+</patient>
+</patientRole>
+</recordTarget>
+<author>
+<time value="20240710062200+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="5265467386"/>
+<addr>
+<streetAddressLine>647 Tara Rd</streetAddressLine>
+<city>NORTH KINGSTOWN</city>
+<county>WASHINGTON</county>
+<state>NJ</state>
+<postalCode>02852</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(555)842-6098"/>
+<telecom value="fax:(555)842-6098"/>
+<telecom value="mailto:lauracrawley@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Laura</given>
+<family>Crawley</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Neighborhood Physicians</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+<author>
+<time value="20250220001031+0000"/>
+<assignedAuthor>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<telecom nullFlavor="NI"/>
+<assignedAuthoringDevice>
+<manufacturerModelName>Example-Ehr-Software</manufacturerModelName>
+<softwareName>1.0.0</softwareName>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<author>
+<time value="20250220001031+0000"/>
+<assignedAuthor>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<telecom nullFlavor="NI"/>
+<assignedAuthoringDevice>
+<manufacturerModelName>ecrNowApp</manufacturerModelName>
+<softwareName>Version 3.1.8</softwareName>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<author>
+<time value="20250220001031+0000"/>
+<assignedAuthor>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<telecom nullFlavor="NI"/>
+<assignedAuthoringDevice>
+<manufacturerModelName>System-Integrator</manufacturerModelName>
+<softwareName>3.1.5</softwareName>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<custodian>
+<assignedCustodian>
+<representedCustodianOrganization>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Organization-2"/>
+<name>Neighborhood Physicians</name>
+<telecom value="tel:(555)555-1004"/>
+<addr>
+<streetAddressLine>30 Davis Road</streetAddressLine>
+<city>BEAVERTON</city>
+<county>CRAVEN</county>
+<state>OR</state>
+<postalCode>97006</postalCode>
+<country>US</country>
+</addr>
+</representedCustodianOrganization>
+</assignedCustodian>
+</custodian>
+<componentOf>
+<encompassingEncounter>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26503"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Encounter-11744"/>
+<code code="AMB" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="ambulatory"></code>
+<effectiveTime>
+<low value="20240710062200+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<responsibleParty>
+<assignedEntity>
+<id root="2.16.840.1.113883.4.6" extension="5265467386"/>
+<addr>
+<streetAddressLine>647 Tara Rd</streetAddressLine>
+<city>NORTH KINGSTOWN</city>
+<county>WASHINGTON</county>
+<state>NJ</state>
+<postalCode>02852</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(555)842-6098"/>
+<telecom value="fax:(555)842-6098"/>
+<telecom value="mailto:lauracrawley@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Laura</given>
+<family>Crawley</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Organization-2"/>
+<name>Neighborhood Physicians</name>
+<telecom value="tel:(555)555-1004"/>
+<telecom value="fax:(555)555-1004"/>
+<telecom value="mailto:provider@email.com"/>
+<addr>
+<streetAddressLine>30 Davis Road</streetAddressLine>
+<city>BEAVERTON</city>
+<county>CRAVEN</county>
+<state>OR</state>
+<postalCode>97006</postalCode>
+<country>US</country>
+</addr>
+</representedOrganization>
+</assignedEntity>
+</responsibleParty>
+<location>
+<healthCareFacility>
+<id root="2.16.840.1.113883.1.1.1.1" extension="18854"/>
+<code code="OF" codeSystem="2.16.840.1.113883.5.111" codeSystemName="v3-RoleCode" displayName="Outpatient facility"></code>
+<location>
+<name>Pandora</name>
+<addr>
+<streetAddressLine>345 House</streetAddressLine>
+<streetAddressLine>my test location</streetAddressLine>
+<city>NEW YORK CITY</city>
+<county>NEW YORK</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+</location>
+<serviceProviderOrganization>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Organization-2"/>
+<name>Neighborhood Physicians</name>
+<telecom value="tel:(555)555-1004"/>
+<telecom value="fax:(555)555-1004"/>
+<telecom value="mailto:provider@email.com"/>
+<addr>
+<streetAddressLine>30 Davis Road</streetAddressLine>
+<city>BEAVERTON</city>
+<county>CRAVEN</county>
+<state>OR</state>
+<postalCode>97006</postalCode>
+<country>US</country>
+</addr>
+</serviceProviderOrganization>
+</healthCareFacility>
+</location>
+</encompassingEncounter>
+</componentOf>
+<component>
+<structuredBody>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1" extension="2015-08-01"/>
+<code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="PROBLEM LIST"/>
+<title>PROBLEMS - DIAGNOSES</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Problem or Diagnosis</th>
+<th>Problem Status</th>
+<th>Problem Recorded Date|Onset Date|Resolved Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="problem1">Poisoning by unspecified narcotics, assault, initial encounter</content>
+</td>
+<td>
+<content ID="problemStatus1">Active</content>
+</td>
+<td>
+<content ID="problemDate1">Wed Jul 10 06:23:58 UTC 2024|Unknown|Unknown</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20240710062358+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26507"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="T40.603A" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="Poisoning by unspecified narcotics, assault, initial encounter"><originalText>
+<reference value="#problem1"/>
+</originalText>
+</value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.22.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.22.1" extension="2015-08-01"/>
+<code code="46240-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Encounters"/>
+<title>ENCOUNTERS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Encounter Code</th>
+<th>Date of Encounter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="encounter1">ambulatory</content>
+</td>
+<td>
+<content ID="encounterDate1">20240710062200+0000</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<encounter classCode="ENC" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.49"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.49" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26503"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Encounter-11744"/>
+<code code="AMB" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="ambulatory"><originalText>
+<reference value="#encounter1"/>
+</originalText>
+</code>
+<effectiveTime>
+<low value="20240710062200+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<sdtc:dischargeDispositionCode nullFlavor="NI"/>
+</encounter>
+</entry>
+</section>
+</component>
+<component>
+<section nullFlavor="NI">
+<templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
+<code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+<title>RESULTS</title>
+<text>No Lab Results Information</text>
+</section>
+</component>
+<component>
+<section nullFlavor="NI">
+<templateId root="2.16.840.1.113883.10.20.22.2.38"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>
+<code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>
+<title>Medications Administered</title>
+<text>No Medication Administered Information</text>
+</section>
+</component>
+<component>
+<section nullFlavor="NI">
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1" extension="2015-08-01"/>
+<code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>
+<title>IMMUNIZATIONS</title>
+<text>No ImmunizationInformation</text>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+<code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+<title>SOCIAL HISTORY</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Social History Observation</th>
+<th>Social History Observation Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="socContent0">Birth Sex</content>
+</td>
+<td>
+<content ID="socObservationResult0">M</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent1">Occupation History</content>
+</td>
+<td>
+<content ID="socObservationResult1">Accountants and auditors</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent2">Occupation History</content>
+</td>
+<td>
+<content ID="socObservationResult2">Accountants and auditors</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent3">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult3">Travel History Component 1 : Location |  Value : The patient travelled to Afghanistan in the current month. Component 2 : Type of activity (attribute) |  Value : Business</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent4">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult4">Travel History Component 1 : Location |  Value : The patient travelled to Afghanistan in the current month. Component 2 : Type of activity (attribute) |  Value : Business</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent5">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult5">Travel History Component 1 : Location |  Value : The patient travelled to Afghanistan in the current month. Component 2 : Type of activity (attribute) |  Value : Business</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.200" extension="2016-06-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="76689-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Birth Sex"/>
+<statusCode code="completed"/>
+<value xsi:type="CD" code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="Administrative Gender" displayName="Male"/>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.38"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.38" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26500"/>
+<code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail"><translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>
+<translation code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Occupation"></translation>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20210710061200+0000"/>
+<value xsi:type="ST">Accountants and auditors</value>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.38"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.38" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26500"/>
+<code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail"><translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>
+<translation code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Occupation"></translation>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20210710061200+0000"/>
+<value xsi:type="ST">Accountants and auditors</value>
+</observation>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26501"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel History Component 1 : Location |  Value : The patient travelled to Afghanistan in the current month. Component 2 : Type of activity (attribute) |  Value : Business</text>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20240701000000+0000"/>
+<high value="20240705000000+0000"/>
+</effectiveTime>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="AFG" codeSystem="1.0.3166.1" codeSystemName="ViewCodeSystem.action?id=1.0.3166.1" displayName="AFGHANISTAN  (Country)"/>
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+</participantRole>
+</participant>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26501"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel History Component 1 : Location |  Value : The patient travelled to Afghanistan in the current month. Component 2 : Type of activity (attribute) |  Value : Business</text>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20240701000000+0000"/>
+<high value="20240705000000+0000"/>
+</effectiveTime>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="AFG" codeSystem="1.0.3166.1" codeSystemName="ViewCodeSystem.action?id=1.0.3166.1" displayName="AFGHANISTAN  (Country)"/>
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+</participantRole>
+</participant>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="26501"/>
+<code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel History Component 1 : Location |  Value : The patient travelled to Afghanistan in the current month. Component 2 : Type of activity (attribute) |  Value : Business</text>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20240701000000+0000"/>
+<high value="20240705000000+0000"/>
+</effectiveTime>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="AFG" codeSystem="1.0.3166.1" codeSystemName="ViewCodeSystem.action?id=1.0.3166.1" displayName="AFGHANISTAN  (Country)"/>
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+</participantRole>
+</participant>
+</act>
+</entry>
+</section>
+</component>
+<component>
+<section nullFlavor="NI">
+<templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>
+<code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+<title>Plan of Treatment</title>
+<text>No Plan Of Treatment Information</text>
+</section>
+</component>
+<component>
+<section nullFlavor="NI">
+<templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.4"/>
+<code code="10164-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Present Illness"/>
+<title>History of Present Illness</title>
+<text>No History of Present Illness Information</text>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.12"/>
+<code code="29299-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Reason For Visit"/>
+<title>Reason For Visit</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="text1">Consultation</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+</section>
+</component>
+</structuredBody>
+</component>
+</ClinicalDocument>

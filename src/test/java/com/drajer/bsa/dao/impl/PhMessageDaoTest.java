@@ -1,11 +1,10 @@
-package com.drajer.ecrapp.dao.impl;
+package com.drajer.bsa.dao.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import com.drajer.bsa.dao.impl.PhMessageDaoImpl;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.sof.model.PublicHealthMessageData;
 import com.drajer.test.util.TestUtils;
@@ -71,11 +70,49 @@ public class PhMessageDaoTest {
   }
 
   @Test
+  public void testGetPhMessageDataSummary() {
+
+    List<PublicHealthMessage> actualPublicHealthMessages =
+        phMessageDaoImpl.getPhMessageDataSummary(searchParams);
+
+    assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
+    assertEquals(
+        TestUtils.toJsonString(expectedPublicHealthMessages),
+        TestUtils.toJsonString(actualPublicHealthMessages));
+  }
+
+  @Test
   public void testGetPhMessageByXRequestIds() {
     List<String> xRequestIds = Arrays.asList("xRequestId1", "xRequestId2");
 
     List<PublicHealthMessage> actualPublicHealthMessages =
         phMessageDaoImpl.getPhMessageByXRequestIds(xRequestIds, false);
+
+    assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
+    assertEquals(
+        TestUtils.toJsonString(expectedPublicHealthMessages),
+        TestUtils.toJsonString(actualPublicHealthMessages));
+  }
+
+  @Test
+  public void testGetPhMessagesContainingXRequestIds_withoutSummaryFlag() {
+    List<String> xRequestIds = Arrays.asList("xRequestId1", "xRequestId2");
+
+    List<PublicHealthMessage> actualPublicHealthMessages =
+        phMessageDaoImpl.getPhMessagesContainingXRequestIds(xRequestIds, false);
+
+    assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
+    assertEquals(
+        TestUtils.toJsonString(expectedPublicHealthMessages),
+        TestUtils.toJsonString(actualPublicHealthMessages));
+  }
+
+  @Test
+  public void testGetPhMessagesContainingXRequestIds_withSummaryFlag() {
+    List<String> xRequestIds = Arrays.asList("xRequestId1", "xRequestId2");
+
+    List<PublicHealthMessage> actualPublicHealthMessages =
+        phMessageDaoImpl.getPhMessagesContainingXRequestIds(xRequestIds, true);
 
     assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
     assertEquals(
@@ -101,6 +138,27 @@ public class PhMessageDaoTest {
 
     List<PublicHealthMessage> actualPublicHealthMessages1 =
         phMessageDaoImpl.getPhMessageByParameters(publicHealthMessageData);
+
+    assertThat(actualPublicHealthMessages1).isNotEmpty();
+  }
+
+  @Test
+  public void testGetPhMessageByParameters_WithoutId() {
+    PublicHealthMessageData publicHealthMessageData = new PublicHealthMessageData();
+
+    List<PublicHealthMessage> actualPublicHealthMessages =
+        phMessageDaoImpl.getPhMessageByParameters(publicHealthMessageData);
+
+    assertThat(actualPublicHealthMessages).isNotEmpty();
+
+    PublicHealthMessageData publicHealthMessageData1 = new PublicHealthMessageData();
+    publicHealthMessageData1.setFhirServerBaseUrl("http://localhost:8080/test/r4/fhir/");
+    publicHealthMessageData1.setSubmittedVersionNumber(1);
+    publicHealthMessageData1.setPatientId("c76d4027-7dff-43d4-adec-e3a9");
+    publicHealthMessageData1.setNotifiedResourceId("66");
+
+    List<PublicHealthMessage> actualPublicHealthMessages1 =
+        phMessageDaoImpl.getPhMessageByParameters(publicHealthMessageData1);
 
     assertThat(actualPublicHealthMessages1).isNotEmpty();
   }

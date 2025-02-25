@@ -1,0 +1,499 @@
+{
+  "resourceType": "Bundle",
+  "id": "78a2eae7-9b3e-4566-8582-600446b13c66",
+  "meta": {
+    "lastUpdated": "2025-02-15T18:46:19.900+00:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation?patient=Patient%2FTesting2"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-odh-past-or-present-job-sample",
+        "meta": {
+          "versionId": "10",
+          "lastUpdated": "2021-05-27T09:19:44.894+00:00",
+          "source": "#kx1P9fdzw85WYorA",
+          "profile": [
+            "http://hl7.org/fhir/us/odh/StructureDefinition/odh-PastOrPresentJob"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/us/odh/StructureDefinition/odh-isCurrentJob-extension",
+            "valueBoolean": true
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11341-5",
+              "display": "History of Occupation"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/Testing2"
+        },
+        "effectivePeriod": {
+          "start": "2015-04-24"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "https://terminology.hl7.org/2.0.0/CodeSystem-PHOccupationCDCCensus2010.html",
+              "code": "3600",
+              "display": "Nursing, psychiatric, and home health aides"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+              "code": "31-1014.00.007136",
+              "display": "Certified Nursing Assistant (CNA) [Nursing Assistants]"
+            }
+          ]
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "86188-0",
+                  "display": "History of Occupation Industry"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://terminology.hl7.org/2.0.0/CodeSystem-PHIndustryCDCCensus2010.html",
+                  "code": "8270",
+                  "display": "Nursing care facilities"
+                },
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+                  "code": "621610.008495",
+                  "display": "Home nursing services"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "85104-8",
+                  "display": "Compensation and sector employment type"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-WorkClassificationODH",
+                  "code": "PWNSE",
+                  "display": "Paid non-governmental work, not self-employed"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "87707-6",
+                  "display": "Job supervisory level or pay grade"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+                  "code": "C-6",
+                  "display": "Manager"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "63761-1",
+                  "display": "What were your main activities or duties for this job [NHANES]"
+                }
+              ]
+            },
+            "valueString": "Patient Care"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "87729-0",
+                  "display": "History of Occupational hazard"
+                }
+              ]
+            },
+            "valueString": "Infectious Disease"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "74159-5",
+                  "display": "Work schedule NIOSH"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+                  "code": "RSWN",
+                  "display": "rotating shift with nights"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "74160-3",
+                  "display": "Work days per week"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 5,
+              "unit": "d",
+              "system": "http://unitsofmeasure.org",
+              "code": "d"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "87512-0",
+                  "display": "Work hours per day"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 8,
+              "unit": "h",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-odh-employment-status-sample",
+        "meta": {
+          "versionId": "7",
+          "lastUpdated": "2021-05-26T17:22:34.756+00:00",
+          "source": "#H1Oz6Eja94PABzAs",
+          "profile": [
+            "http://hl7.org/fhir/us/odh/StructureDefinition/odh-EmploymentStatus"
+          ]
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "74165-2",
+              "display": "History of employment status NIOSH"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/Testing2"
+        },
+        "effectivePeriod": {
+          "start": "2018-06-01"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "Employed",
+              "display": "Employed"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "blood-pressure-dar",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/vitalsigns"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "85354-9",
+                "display": "Blood pressure panel with all children optional"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85354-9",
+              "display": "Blood pressure panel with all children optional"
+            }
+          ],
+          "text": "Blood pressure systolic & diastolic"
+        },
+        "subject": {
+          "reference": "Patient/example"
+        },
+        "effectiveDateTime": "2012-09-17",
+        "performer": [
+          {
+            "reference": "Practitioner/example"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "low"
+              }
+            ],
+            "text": "Below low normal"
+          }
+        ],
+        "bodySite": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "368209003",
+              "display": "Right arm"
+            }
+          ]
+        },
+        "component": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/observation-componentCategory",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://loinc.org",
+                      "code": "8480-6",
+                      "display": "Systolic blood pressure"
+                    }
+                  ]
+                }
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic blood pressure"
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "271649006",
+                  "display": "Systolic blood pressure"
+                },
+                {
+                  "system": "http://acme.org/devices/clinical-codes",
+                  "code": "bp-s",
+                  "display": "Systolic Blood pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 107,
+              "unit": "mmHg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/observation-componentCategory",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://loinc.org",
+                      "code": "8462-4",
+                      "display": "Diastolic blood pressure"
+                    }
+                  ]
+                }
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic blood pressure"
+                }
+              ]
+            },
+            "dataAbsentReason": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                  "code": "not-performed",
+                  "display": "Not Performed"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },{
+      "resource":
+      {
+        "resourceType" : "Observation",
+        "id" : "observation-odh-usual-work-sample",
+        "meta" : {
+          "versionId" : "25",
+          "lastUpdated" : "2023-01-18T07:09:07.892+00:00",
+          "source" : "#QJTwQZDD5rWxK8XE",
+          "profile" : [
+            "http://hl7.org/fhir/us/odh/StructureDefinition/odh-UsualWork"
+          ]
+        },
+        "text" : {
+          "status" : "generated",
+          "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n            <table>\n                <tr>\n                    <td style=\"font-weight: bold\">id</td>\n                    <td>\n                        <div title=\"id\">observation-odh-usual-work-sample</div>\n                    </td>\n                </tr>\n                <tr>\n                    <td style=\"font-weight: bold\">meta</td>\n                    <td>\n                        <table>\n                            <tr>\n                                <td style=\"font-weight: bold\">versionId</td>\n                                <td>\n                                    <div title=\"versionId\">1</div>\n                                </td>\n                            </tr>\n                            <tr>\n                                <td style=\"font-weight: bold\">lastUpdated</td>\n                                <td>\n                                    <div title=\"lastUpdated\">2021-05-24T8:53:14.000-04:00</div>\n                                </td>\n                            </tr>\n                            <tr>\n                                <td style=\"font-weight: bold\">profile</td>\n                                <td>\n                                    <div title=\"profile\">http://hl7.org/fhir/us/odh/StructureDefinition/odh-UsualWork</div>\n                                </td>\n                            </tr>\n                        </table>\n                    </td>\n                </tr>\n                <tr>\n                    <td style=\"font-weight: bold\">status</td>\n                    <td>\n                        <div title=\"status\">final</div>\n                    </td>\n                </tr>\n                <tr>\n                    <td style=\"font-weight: bold\">code</td>\n                    <td>\n                        <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                            <li>\n                                <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                                    <li>\n                                        <div title=\"display\">History of Usual occupation</div>  (\n                                        \n                                        \n                                        \n                                        <div title=\"code\">21843-8</div> )\n          \n                                    \n                                    \n                                    \n                                    </li>\n                                    <li>\n                                        <div title=\"system\">\n                                            <a href=\"http://loinc.org\">http://loinc.org</a>\n                                        </div>\n                                    </li>\n                                </ul>\n                            </li>\n                        </ul>\n                    </td>\n                </tr>\n                <tr>\n                    <td style=\"font-weight: bold\">subject</td>\n                    <td>\n                        <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                            <li/>\n                            <li>\n                                <a href=\"Patient-patient-odh-maya-gordon.html\">Maya Gordon</a>\n                            </li>\n                        </ul>\n                    </td>\n                </tr>\n                <tr>\n                    <td style=\"font-weight: bold\">effectivePeriod</td>\n                    <td>\n                        <table>\n                            <tr>\n                                <td style=\"font-weight: bold\">start</td>\n                                <td>\n                                    <div title=\"start\">2000-06-01</div>\n                                </td>\n                            </tr>\n                            <tr>\n                                <td style=\"font-weight: bold\">end</td>\n                                <td>\n                                    <div title=\"end\">2021-05-20</div>\n                                </td>\n                            </tr>\n                        </table>\n                    </td>\n                </tr>\n                <tr>\n                    <td style=\"font-weight: bold\">valueCodeableConcept</td>\n                    <td>\n                        <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                            <li>\n                                <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                                    <li>\n                                        <div title=\"display\">Nursing, psychiatric, and home health aides</div>  (\n                                        \n                                        \n                                        \n                                        <div title=\"code\">3600</div> )\n          \n                                    \n                                    \n                                    \n                                    </li>\n                                    <li>\n                                        <div title=\"system\">\n                                            <a href=\"https://phinvads.cdc.gov/vads/ViewCodeSystem.action?id=2.16.840.1.114222.4.5.314\">https://phinvads.cdc.gov/vads/ViewCodeSystem.action?id=2.16.840.1.114222.4.5.314</a>\n                                        </div>\n                                    </li>\n                                </ul>\n                            </li>\n                        </ul>\n                    </td>\n                </tr>\n                <tr>\n                    <td style=\"font-weight: bold\">component</td>\n                    <td>\n                        <table>\n                            <tr>\n                                <td style=\"font-weight: bold\">code</td>\n                                <td>\n                                    <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                                        <li>\n                                            <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                                                <li>\n                                                    <div title=\"display\">History of Usual industry</div>  (\n                                                    \n                                                    \n                                                    \n                                                    <div title=\"code\">21844-6</div> )\n          \n                                                \n                                                \n                                                \n                                                </li>\n                                                <li>\n                                                    <div title=\"system\">\n                                                        <a href=\"http://loinc.org\">http://loinc.org</a>\n                                                    </div>\n                                                </li>\n                                            </ul>\n                                        </li>\n                                    </ul>\n                                </td>\n                            </tr>\n                            <tr>\n                                <td style=\"font-weight: bold\">valueCodeableConcept</td>\n                                <td>\n                                    <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                                        <li>\n                                            <ul style=\"list-style:none; padding-left:0; margin:0 0;\">\n                                                <li>\n                                                    <div title=\"display\">Nursing care facilities</div>  (\n                                                    \n                                                    \n                                                    \n                                                    <div title=\"code\">8270</div> )\n          \n                                                \n                                                \n                                                \n                                                </li>\n                                                <li>\n                                                    <div title=\"system\">\n                                                        <a href=\"https://phinvads.cdc.gov/vads/ViewCodeSystem.action?id=2.16.840.1.114222.4.5.315\">https://phinvads.cdc.gov/vads/ViewCodeSystem.action?id=2.16.840.1.114222.4.5.315</a>\n                                                    </div>\n                                                </li>\n                                            </ul>\n                                        </li>\n                                    </ul>\n                                </td>\n                            </tr>\n                        </table>\n                    </td>\n                </tr>\n            </table>\n        </div>"
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "21843-8",
+              "display" : "History of Usual occupation"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Testing2"
+        },
+        "effectivePeriod" : {
+          "start" : "2018-06-01",
+          "end" : "2021-05-07"
+        },
+        "valueCodeableConcept" : {
+          "coding" : [
+            {
+              "system" : "urn:oid:2.16.840.1.114222.4.5.314",
+              "code" : "3600",
+              "display" : "Nursing, psychiatric, and home health aides"
+            },
+            {
+              "system" : "urn:oid:2.16.840.1.114222.4.5.327",
+              "code" : "31-1014.00.007136",
+              "display" : "Certified Nursing Assistant (CNA) [Nursing Assistants]"
+            }
+          ]
+        },
+        "component" : [
+          {
+            "code" : {
+              "coding" : [
+                {
+                  "system" : "http://loinc.org",
+                  "code" : "21844-6",
+                  "display" : "History of Usual industry"
+                }
+              ]
+            },
+            "valueCodeableConcept" : {
+              "coding" : [
+                {
+                  "system" : "https://terminology.hl7.org/2.0.0/CodeSystem-PHIndustryCDCCensus2010.html",
+                  "code" : "8270",
+                  "display" : "Nursing care facilities"
+                },
+                {
+                  "system" : "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+                  "code" : "621610.008495",
+                  "display" : "Home nursing services"
+                }
+              ]
+            }
+          },
+          {
+            "code" : {
+              "coding" : [
+                {
+                  "system" : "http://loinc.org",
+                  "code" : "74163-7",
+                  "display" : "Usual occupation duration"
+                }
+              ]
+            },
+            "valueQuantity" : {
+              "value" : 21,
+              "unit" : "a",
+              "system" : "http://unitsofmeasure.org",
+              "code" : "a"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

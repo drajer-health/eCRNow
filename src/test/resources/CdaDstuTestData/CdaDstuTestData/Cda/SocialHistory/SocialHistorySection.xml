@@ -1,0 +1,9 @@
+<component>
+    <section nullFlavor="NI">
+        <templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+        <code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+        <title>SOCIAL HISTORY</title>
+        <text>No Social History Information</text>
+    </section>
+</component>
