@@ -1,0 +1,28 @@
+{
+  "resourceType": "Immunization",
+  "id": "example",
+  "text": {
+    "status": "generated",
+    "div": "<div>Authored by Joginder Madra</div>"
+  },
+  "date": "2013-01-10",
+  "vaccineType": {
+    "coding": [
+      {
+        "system": "urn:oid:1.2.36.1.2001.1005.17",
+        "code": "Fluvax"
+      }
+    ],
+    "text": "Fluvax (Influenza)"
+  },
+  "patient": {
+    "reference": "Patient/example"
+  },
+  "wasNotGiven": false,
+  "reported": false,
+  "performer": {
+    "reference": "Practitioner/example"
+  },
+  "lotNumber": "AAJN11K",
+  "expirationDate": "2015-02-15"
+}

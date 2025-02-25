@@ -3021,7 +3021,7 @@ public class CdaFhirUtilities {
     return retval.toString();
   }
 
-  private static boolean isCodeContained(Set<String> codes, String code) {
+  public static boolean isCodeContained(Set<String> codes, String code) {
 
     if (codes != null && code != null) {
 
@@ -3099,13 +3099,10 @@ public class CdaFhirUtilities {
     }
 
     for (Extension extension : extensions) {
-      if (extension.hasUrl()
-          && extension.getUrl().equals(extensionUrl)
-          && extension.hasValue()
-          && extension.getValue() instanceof BooleanType) {
+      if (extension.hasUrl() && extension.getUrl().equals(extensionUrl) && extension.hasValue()
+          && (extension.getValue() instanceof BooleanType retVal)) {
         logger.debug("Found Address Extension at top level.");
-        BooleanType retVal = (BooleanType) extension.getValueAsPrimitive().getValue();
-        return retVal.getValue();
+          return retVal.getValue();
       }
     }
     logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);

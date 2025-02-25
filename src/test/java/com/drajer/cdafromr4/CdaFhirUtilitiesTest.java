@@ -12,54 +12,20 @@ import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.DateType;
-import org.hl7.fhir.r4.model.DecimalType;
-import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.HumanName.NameUse;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.InstantType;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Medication;
-import org.hl7.fhir.r4.model.MedicationAdministration;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Quantity;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceFactory;
-import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.Timing;
-import org.hl7.fhir.r4.model.Type;
-import org.hl7.fhir.r4.model.UriType;
 import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -2525,5 +2491,577 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
     assertEquals("Glucose [Moles/volume] in Blood-1 | Glucose [Moles/volume] in Blood-2", result);
+  }
+
+  @Test
+  public void testGetXmlForAuthorTimeValues() {
+    DateTimeType dateTimeType = new DateTimeType("2025-02-01T00:00:00Z");
+
+    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+
+    String expectedXml =
+        "<author>\n"
+            + "<time value=\"20250201000000+0000\"/>\n"
+            + "<assignedAuthor>\n"
+            + "<id nullFlavor=\"NA\"/>\n"
+            + "</assignedAuthor>\n"
+            + "</author>\n";
+    String actualXml =
+        CdaFhirUtilities.getXmlForAuthorTimeValues(dateTimeType.getValue(), timeZone);
+    assertNotNull(actualXml);
+    // Use a more specific XML assertion (e.g., assertEquals).
+    assertEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGetXmlForAuthorTimeValuesWithNullDate() {
+    // Arrange
+    Date date = null;
+    TimeZone timeZone = TimeZone.getTimeZone("America/New_York");
+
+    // Expected XML when date is null
+    String expectedXml =
+        "<author>\n"
+            + "<time nullFlavor=\"NI\"/>\n"
+            + "<assignedAuthor>\n"
+            + "<id nullFlavor=\"NA\"/>\n"
+            + "</assignedAuthor>\n"
+            + "</author>\n";
+
+    // Act
+    String result = CdaFhirUtilities.getXmlForAuthorTimeValues(date, timeZone);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(expectedXml, result);
+  }
+
+  @Test
+  public void test_when_GetXmlForAuthorTimeValues_with_noTimeZone() {
+    // Arrange
+    Date date = new Date(1675296000000L); // February 1, 2025
+    TimeZone timeZone = null; // No TimeZone provided (null)
+
+    // Expected XML when TimeZone is null, it will likely default to the system's TimeZone
+    String expectedXml =
+        "<author>\n"
+            + "<time value=\"20230202\"/>\n"
+            + // Assuming default UTC handling
+            "<assignedAuthor>\n"
+            + "<id nullFlavor=\"NA\"/>\n"
+            + "</assignedAuthor>\n"
+            + "</author>\n";
+
+    // Act
+    String result = CdaFhirUtilities.getXmlForAuthorTimeValues(date, timeZone);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(expectedXml, result);
+  }
+
+  @Test
+  public void test_getXmlForAuthorTime_InstantType_Null() {
+    InstantType dt = null;
+    String xmlForAuthorTime = CdaFhirUtilities.getXmlForAuthorTime(dt);
+    assertEquals("", xmlForAuthorTime);
+  }
+
+  @Test
+  public void test_getXmlForAuthorTime_InstantType_Not_Null() {
+    InstantType dt = new InstantType();
+    dt.setValue(new Date());
+    dt.setTimeZone(TimeZone.getDefault());
+    String xmlForAuthorTime = CdaFhirUtilities.getXmlForAuthorTime(dt);
+    assertNotNull(xmlForAuthorTime);
+  }
+
+  @Test
+  public void test_getXmlForAuthorTime_success_return_datetime() {
+    DateTimeType dateTimeType = new DateTimeType();
+    dateTimeType.setValue(new Date());
+    dateTimeType.setTimeZone(TimeZone.getDefault());
+    String xmlForAuthorTime = CdaFhirUtilities.getXmlForAuthorTime(dateTimeType);
+    assertNotNull(xmlForAuthorTime);
+  }
+
+  @Test
+  public void test_getXmlForAuthorTime_is_null_return_empty() {
+    String xmlForAuthorTime = CdaFhirUtilities.getXmlForAuthorTime((DateTimeType) null);
+    assertEquals("", xmlForAuthorTime);
+  }
+
+  @Test
+  public void test_getDisplayStringForCodeableConcept_success() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setDisplay("mock display name");
+    coding.setCode("45677");
+    List<Coding> codingList = new ArrayList<>();
+    codingList.add(coding);
+    codeableConcept.setCoding(codingList);
+
+    String displayString =
+        CdaFhirUtilities.getDisplayStringForCodeableConcept(
+            Collections.singletonList(codeableConcept));
+    assertNotNull(displayString);
+  }
+
+  @Test
+  public void test_getDisplayStringForCodeableConcept_success_two() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    codeableConcept.setText("mock text");
+
+    String displayString =
+        CdaFhirUtilities.getDisplayStringForCodeableConcept(
+            Collections.singletonList(codeableConcept));
+    assertNotNull(displayString);
+  }
+
+  @Test
+  public void test_getDisplayStringForCodeableConcept_success_CodingFirstRep() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setSystem("mock system");
+    coding.setCode("mock code");
+
+    codeableConcept.setCoding(Collections.singletonList(coding));
+
+    String displayString =
+        CdaFhirUtilities.getDisplayStringForCodeableConcept(
+            Collections.singletonList(codeableConcept));
+    assertEquals("mock system|mock code", displayString);
+  }
+
+  @Test
+  public void test_getDisplayStringForCodeableConcept_unknown() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setVersion("mock version");
+    codeableConcept.setCoding(Collections.singletonList(coding));
+
+    String displayString =
+        CdaFhirUtilities.getDisplayStringForCodeableConcept(
+            Collections.singletonList(codeableConcept));
+    assertEquals("Unknown", displayString);
+  }
+
+  @Test
+  public void test_getDisplayStringForCodeableConcept_is_unknow() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setDisplay(CdaGeneratorConstants.UNKNOWN_VALUE);
+    codeableConcept.setCoding(Collections.singletonList(coding));
+
+    String displayString =
+        CdaFhirUtilities.getDisplayStringForCodeableConcept(
+            Collections.singletonList(codeableConcept));
+    assertNotNull(displayString);
+  }
+
+  @Test
+  public void test_isCodePresent_success() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    List<Coding> codingList = new ArrayList<>();
+    Coding coding = new Coding();
+    coding.setCode("mockCode");
+    coding.setSystem("mockSystem");
+    codingList.add(coding);
+
+    codeableConcept.setCoding(codingList);
+    List<CodeableConcept> codeableConceptList = Collections.singletonList(codeableConcept);
+
+    boolean codePresent =
+        CdaFhirUtilities.isCodePresent(codeableConceptList, "mockCode", "mockSystem");
+    assertTrue(codePresent);
+  }
+
+  @Test
+  public void test_isCodePresent_false() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    List<Coding> codingList = new ArrayList<>();
+    Coding coding = new Coding();
+    coding.setCode("mockCode");
+    coding.setSystem("mockSystem");
+    codingList.add(coding);
+
+    codeableConcept.setCoding(codingList);
+    List<CodeableConcept> codeableConceptList = Collections.singletonList(codeableConcept);
+
+    boolean codePresent =
+        CdaFhirUtilities.isCodePresent(codeableConceptList, "invalidCode", "invalidSystem");
+    assertFalse(codePresent);
+  }
+
+  @Test
+  public void test_getXmlForSpecimen_success() {
+    Specimen specimen = new Specimen();
+    String xmlForSpecimen = CdaFhirUtilities.getXmlForSpecimen(specimen);
+    assertEquals("", xmlForSpecimen);
+  }
+
+  @Test
+  public void test_getXmlForSpecimen_success_has_type() {
+    Specimen specimen = new Specimen();
+    CodeableConcept codeableConcept = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setCode("mockCode");
+    coding.setSystem("mockSystem");
+    codeableConcept.setCoding(Collections.singletonList(coding));
+    specimen.setType(codeableConcept);
+
+    String xmlForSpecimen = CdaFhirUtilities.getXmlForSpecimen(specimen);
+
+    assertNotNull(xmlForSpecimen);
+  }
+
+  @Test
+  public void test_getXmlForSpecimen_success_no_has_type() {
+    String xmlForSpecimen = CdaFhirUtilities.getXmlForSpecimen(null);
+    assertNotNull(xmlForSpecimen);
+  }
+
+  @Test
+  public void test_isCodeableConceptPresentInValueSet() {
+    String valueset = "2.16.840.1.113883.11.20.9.81";
+    CodeableConcept codeableConcept = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setCode("53692-0");
+    coding.setSystem(valueset);
+    codeableConcept.setCoding(Collections.singletonList(coding));
+
+    boolean isPresent =
+        CdaFhirUtilities.isCodeableConceptPresentInValueSet(valueset, codeableConcept);
+    assertTrue(isPresent);
+  }
+
+  @Test
+  public void test_isCodeableConceptPresentInValueSet_invalid() {
+    String valueset = "2.16.840.1.113883.11.20.9.81";
+    CodeableConcept codeableConcept = new CodeableConcept();
+    List<Coding> codingList = new ArrayList<>();
+    Coding coding1 = new Coding();
+    coding1.setCode("3455");
+    coding1.setSystem(valueset);
+    codingList.add(coding1);
+
+    Coding coding2 = new Coding();
+    coding2.setCode("5479");
+    coding2.setSystem(valueset);
+    codingList.add(coding2);
+
+    codeableConcept.setCoding(codingList);
+
+    boolean isPresent =
+        CdaFhirUtilities.isCodeableConceptPresentInValueSet(valueset, codeableConcept);
+    assertNotNull(isPresent);
+  }
+
+  @Test
+  public void testGetDisplayStringForCodeableConcept_codingListWithMultipleCoding() {
+    // Arrange
+    CodeableConcept cd = new CodeableConcept();
+
+    Coding coding1 =
+        new Coding().setSystem("http://loinc.org").setCode("12334-3").setDisplay("Diabetes");
+    Coding coding2 =
+        new Coding().setSystem("http://log.org").setCode("12334-3").setDisplay("Migraine");
+
+    cd.setCoding(Arrays.asList(coding1, coding2)); // More concise list initialization
+
+    // Act
+    String result = CdaFhirUtilities.getDisplayStringForCodeableConcept(cd);
+
+    // Assert
+    assertEquals(
+        "Diabetes", result, "The method should return the display name of the first coding.");
+  }
+
+  @Test
+  public void
+      testGetDisplayStringForCodeableConcept_withEmptyCodeableConcept_shouldReturnUnknown() {
+    CodeableConcept cd = new CodeableConcept();
+    String result = CdaFhirUtilities.getDisplayStringForCodeableConcept(cd);
+    assertEquals(
+        "Unknown", result, "Expected 'Unknown' when CodeableConcept has no codings or text.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCodeableConcept_withTextValue_shouldReturnText() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.setText("Display-Text");
+    String result = CdaFhirUtilities.getDisplayStringForCodeableConcept(cd);
+    assertEquals("Display-Text", result, "Expected text value when text is set.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCodeableConcept_withEmptyCodingList_shouldReturnUnknown() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.setCoding(new ArrayList<>()); // Empty coding list
+    String result = CdaFhirUtilities.getDisplayStringForCodeableConcept(cd);
+    assertEquals("Unknown", result, "Expected 'Unknown' when coding list is empty.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCodeableConcept_codingListWithNoDisplay() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding1 = new Coding();
+    coding1.setSystem("http://loinc.org");
+    coding1.setCode("12334-3");
+
+    List<Coding> codelist = new ArrayList<>();
+    codelist.add(coding1);
+    cd.setCoding(codelist);
+
+    String result = CdaFhirUtilities.getDisplayStringForCodeableConcept(cd);
+
+    // Ensure that the fallback logic is correct
+    assertEquals(
+        "http://loinc.org|12334-3",
+        result,
+        "Expected system and code concatenation when no display is present.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCoding_withDisplay() {
+    Coding coding = new Coding();
+    coding.setDisplay("Diabetes");
+
+    String result = CdaFhirUtilities.getDisplayStringForCoding(coding);
+
+    assertEquals("Diabetes", result, "Expected display text to be returned.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCoding_withLeadingTrailingSpaces() {
+    Coding coding = new Coding();
+    coding.setDisplay(" Diabetes "); // Spaces around display
+
+    String result = CdaFhirUtilities.getDisplayStringForCoding(coding);
+
+    assertEquals("Diabetes", result.trim(), "Expected trimmed display text.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCoding_withSystemAndCode() {
+    Coding coding = new Coding();
+    coding.setSystem("http://loinc.org");
+    coding.setCode("12334-3");
+
+    String result = CdaFhirUtilities.getDisplayStringForCoding(coding);
+
+    assertEquals("http://loinc.org|12334-3", result, "Expected system and code concatenation.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCoding_withCodeOnly() {
+    Coding coding = new Coding();
+    coding.setCode("12334-3");
+
+    String result = CdaFhirUtilities.getDisplayStringForCoding(coding);
+
+    assertEquals("12334-3", result, "Expected code-only string.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCoding_withNullCoding() {
+    Coding coding = null;
+
+    String result = CdaFhirUtilities.getDisplayStringForCoding(coding);
+
+    assertEquals(CdaGeneratorConstants.UNKNOWN_VALUE, result, "Expected UNKNOWN for null coding.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCoding_withEmptyCoding() {
+    Coding coding = new Coding();
+
+    String result = CdaFhirUtilities.getDisplayStringForCoding(coding);
+
+    assertEquals(
+        CdaGeneratorConstants.UNKNOWN_VALUE, result, "Expected UNKNOWN for empty coding object.");
+  }
+
+  @Test
+  public void testGetDisplayStringForCoding_withNullSystemAndCode() {
+    Coding coding = new Coding();
+    coding.setSystem(null);
+    coding.setCode(null);
+
+    String result = CdaFhirUtilities.getDisplayStringForCoding(coding);
+
+    assertEquals(
+        CdaGeneratorConstants.UNKNOWN_VALUE,
+        result,
+        "Expected UNKNOWN when system and code are null.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_hasStart() {
+    Date startDate = new Date(1648780800000L);
+    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+    Period period = new Period().setStartElement(new DateTimeType(startDate));
+    period.getStartElement().setTimeZone(timeZone);
+
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(period);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssZ");
+    sdf.setTimeZone(timeZone);
+    String expected = sdf.format(startDate);
+
+    assertEquals(expected, result, "Expected formatted start date.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_hasEnd() {
+    Date endDate = new Date(1648780800000L);
+    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+    Period period = new Period().setEndElement(new DateTimeType(endDate));
+    period.getEndElement().setTimeZone(timeZone);
+
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(period);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssZ");
+    sdf.setTimeZone(timeZone);
+    String expected = sdf.format(endDate);
+
+    assertEquals(expected, result, "Expected formatted end date.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_bothStartAndEnd() {
+    Date startDate = new Date(1648780800000L);
+    Date endDate = new Date(1648790000000L);
+    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+
+    Period period =
+        new Period()
+            .setStartElement(new DateTimeType(startDate))
+            .setEndElement(new DateTimeType(endDate));
+    period.getStartElement().setTimeZone(timeZone);
+    period.getEndElement().setTimeZone(timeZone);
+
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(period);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssZ");
+    sdf.setTimeZone(timeZone);
+    String expected = sdf.format(startDate); // Start should take priority
+
+    assertEquals(expected, result, "Expected formatted start date when both are present.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_nullPeriod() {
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(null);
+
+    assertEquals(CdaGeneratorConstants.UNKNOWN_VALUE, result, "Expected UNKNOWN for null period.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_noStartOrEnd() {
+    Period period = new Period();
+
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(period);
+
+    assertEquals(CdaGeneratorConstants.UNKNOWN_VALUE, result, "Expected UNKNOWN for empty period.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_nullStartAndEnd() {
+    Period period =
+        new Period()
+            .setStartElement(new DateTimeType((Date) null))
+            .setEndElement(new DateTimeType((Date) null));
+
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(period);
+
+    assertEquals(
+        CdaGeneratorConstants.UNKNOWN_VALUE,
+        result,
+        "Expected UNKNOWN for period with null start and end.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_differentTimeZones() {
+    Date startDate = new Date(1648780800000L);
+    TimeZone timeZoneNY = TimeZone.getTimeZone("America/New_York");
+
+    Period period = new Period().setStartElement(new DateTimeType(startDate));
+    period.getStartElement().setTimeZone(timeZoneNY);
+
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(period);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssZ");
+    sdf.setTimeZone(timeZoneNY);
+    String expected = sdf.format(startDate);
+
+    assertEquals(expected, result, "Expected formatted start date with New York timezone.");
+  }
+
+  @Test
+  public void testGetDisplayStringForPeriod_millisecondPrecision() {
+    Date startDate = new Date(1648780800123L); // Extra milliseconds
+    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+
+    Period period = new Period().setStartElement(new DateTimeType(startDate));
+    period.getStartElement().setTimeZone(timeZone);
+
+    String result = CdaFhirUtilities.getDisplayStringForPeriod(period);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssZ");
+    sdf.setTimeZone(timeZone);
+    String expected = sdf.format(startDate);
+
+    assertEquals(expected, result, "Expected formatted date without milliseconds.");
+  }
+
+  @Test
+  public void testIsCodeContained_withMatchingLOINCCode() {
+    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    String code = "12334-3";
+
+    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+
+    assertTrue(result); // The code should be found in the set
+  }
+
+  @Test
+  public void testIsCodeContained_withPartiallyMatchingSNOMEDCode() {
+    Set<String> codes = new HashSet<>(Arrays.asList("12345", "67890"));
+    String code = "123"; // Substring that matches part of "12345"
+
+    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+
+    assertTrue(result); // The partial match should return true
+  }
+
+  @Test
+  public void testIsCodeContained_withNonMatchingCode() {
+    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    String code = "78901"; // Not in the set
+
+    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+
+    assertFalse(result); // The code should not be found
+  }
+
+  @Test
+  public void testIsCodeContained_withNullCode() {
+    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    String code = null;
+
+    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+
+    assertFalse(result); // Null code should return false
+  }
+
+  @Test
+  public void testIsCodeContained_withEmptyCode() {
+    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    String code = ""; // Empty string code
+
+    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+
+    assertTrue(result); // Empty code should return false
   }
 }
