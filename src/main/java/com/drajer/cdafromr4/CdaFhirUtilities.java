@@ -3615,4 +3615,22 @@ public class CdaFhirUtilities {
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
+
+  public static String getNarrative(String frequency, String period, String periodUnit) {
+    StringBuilder narrative = new StringBuilder();
+    appendValue(narrative, "frequency", frequency);
+    appendValue(narrative, "period", period);
+    appendValue(narrative, "periodUnit", periodUnit);
+
+    return narrative.toString();
+  }
+
+  private static void appendValue(StringBuilder narrative, String label, String value) {
+    if (StringUtils.isNotBlank(value)) {
+      if (narrative.length() > 0) {
+        narrative.append("|"); // Add separator if narrative already has content
+      }
+      narrative.append(label).append(": ").append(value);
+    }
+  }
 }

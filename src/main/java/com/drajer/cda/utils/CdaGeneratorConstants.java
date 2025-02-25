@@ -1030,10 +1030,18 @@ public class CdaGeneratorConstants {
   public static final String MED_TABLE_COL_1_BODY_CONTENT = "medication";
   public static final String MED_TABLE_COL_2_TITLE = "Medication Start Date";
   public static final String MED_TABLE_COL_2_BODY_CONTENT = "medicationDate";
+
+  public static final String MED_TABLE_COL_3_TITLE = "Medication Dosage & Period";
+  public static final String MED_TABLE_COL_3_BODY_CONTENT = "medicationDosagePeriod";
+
   public static final String MED_COL_1_TITLE = "Medication Name";
   public static final String MED_COL_1_BODY_CONTENT = "med";
   public static final String MED_COL_2_TITLE = "Medication Start Date";
   public static final String MED_COL_2_BODY_CONTENT = "medDate";
+
+  public static final String MED_COL_3_TITLE = "Medication Dosage & Period";
+  public static final String MED_COL_3_BODY_CONTENT = "medDosagePeriod";
+
   public static final String IMM_TABLE_COL_1_TITLE = "Vaccine Name";
   public static final String IMM_TABLE_COL_1_BODY_CONTENT = "vaccine";
   public static final String IMM_TABLE_COL_2_TITLE = "Vaccination Date";
