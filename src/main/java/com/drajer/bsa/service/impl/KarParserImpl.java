@@ -62,6 +62,7 @@ import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -69,6 +70,7 @@ import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionCompone
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
@@ -78,6 +80,8 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.utility.repository.InMemoryFhirRepository;
+import org.opencds.cqf.fhir.utility.search.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -176,6 +180,8 @@ public class KarParserImpl implements KarParser {
   @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
 
   @Autowired TimeZoneDao timezoneDao;
+
+  @Autowired InMemoryFhirRepository repository;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -464,6 +470,8 @@ public class KarParserImpl implements KarParser {
           logger.info(" Adding resource to dependencies");
           art.addDependentResource(comp.getResource());
         }
+
+        addKarResourceToFhirRepository(comp.getResource());
       }
 
       /**
@@ -479,6 +487,32 @@ public class KarParserImpl implements KarParser {
       logger.error(
           " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
           kar);
+    }
+  }
+
+  /**
+   * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing.
+   * Resources are only inserted if they are not already present.
+   *
+   * @param resource the resource to store.
+   */
+  private void addKarResourceToFhirRepository(Resource resource) {
+    Bundle bundle;
+    if (resource instanceof Library library) {
+      bundle = this.repository.search(Bundle.class, library.getClass(), Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
+    } else if (resource instanceof PlanDefinition planDef) {
+      bundle = this.repository.search(Bundle.class, planDef.getClass(), Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
+    } else if (resource instanceof Measure measure) {
+      bundle = this.repository.search(Bundle.class, measure.getClass(), Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
+    } else if (resource instanceof ValueSet valueSet) {
+      bundle = this.repository.search(Bundle.class, valueSet.getClass(), Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
+    } else {
+      logger.info("Unexpected Resource Type - attempting to retrieve by ID");
+      bundle = this.repository.search(Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
+    }
+
+    if (!bundle.hasEntry()) {
+      this.repository.create(resource);
     }
   }
 
