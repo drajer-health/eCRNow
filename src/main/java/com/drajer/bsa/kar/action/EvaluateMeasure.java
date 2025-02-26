@@ -119,8 +119,8 @@ public class EvaluateMeasure extends BsaAction {
               patientId,
               null, // practitioner
               null, // received on
-              endpoint, // Library Bundle
-              endpoint, // Terminology Bundle
+              null, // Terminology Bundle
+              null, // Library Bundle
               additionalData, // Endpoint for data
               null,
               null,
