@@ -7,17 +7,7 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -97,7 +87,7 @@ public class CdaResultGenerator {
             " Using Observation to create Organizer and Result entry for {}",
             obs.getIdElement().getIdPart());
         // create Table Values
-        getTableValuesForObservationWithComponents(obs, rowNum, textEntries);
+        getTableValuesForObservationWithComponents(obs, rowNum, textEntries, data);
 
         // create one organizer and multiple result observations
         processLabResultsWithComponents(
@@ -111,7 +101,7 @@ public class CdaResultGenerator {
             " Using Observation to create Organizer and Result entry for {}",
             obs.getIdElement().getIdPart());
         // create Table Values
-        getTableValues(obs, rowNum, textEntries);
+        getTableValues(obs, rowNum, textEntries, data);
 
         // create Organizer + result observation entry
         getXmlForLabObservation(obs, obs.getCode(), details, rowNum, resultEntries, data);
@@ -302,7 +292,7 @@ public class CdaResultGenerator {
   }
 
   public static void getTableValuesForObservationWithComponents(
-      Observation obs, int rowNum, StringBuilder textEntries) {
+      Observation obs, int rowNum, StringBuilder textEntries, R4FhirData data) {
 
     // Add the Panel code name
     String obsDisplayName =
@@ -331,6 +321,39 @@ public class CdaResultGenerator {
       }
     }
 
+    String interpretationValue = CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (obs.hasInterpretation()) {
+      interpretationValue =
+          CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getInterpretation());
+    }
+
+    String referenceRangeValue = "";
+    if (obs.hasReferenceRange()) {
+      Observation.ObservationReferenceRangeComponent referenceRange =
+          getReferenceRange(obs.getReferenceRange());
+      if (referenceRange == null) {
+        referenceRange = obs.getReferenceRangeFirstRep();
+      }
+
+      if (referenceRange.hasLow()) {
+        referenceRangeValue +=
+            "Low: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getLow()) + " | ";
+      }
+      if (referenceRange.hasHigh()) {
+        referenceRangeValue +=
+            "High: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh());
+      }
+    }
+
+    if (StringUtils.isBlank(referenceRangeValue)) {
+      referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+    referenceRangeValue = referenceRangeValue.replaceAll("\\|\\s*$", "");
+
+    String collectionDate =
+        CdaFhirUtilities.getStringForSpecimenCollectionDate(
+            Collections.singletonList(obs.getSpecimen()), data);
+
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
@@ -346,12 +369,60 @@ public class CdaResultGenerator {
     }
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
 
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT,
+        StringUtils.isEmpty(interpretationValue)
+            ? CdaGeneratorConstants.UNKNOWN_VALUE
+            : interpretationValue);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_5_BODY_CONTENT,
+        StringUtils.isEmpty(referenceRangeValue)
+            ? CdaGeneratorConstants.UNKNOWN_VALUE
+            : referenceRangeValue);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
+        StringUtils.isEmpty(collectionDate) ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDate);
+
     textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
   }
 
-  public static void getTableValues(Observation obs, int rowNum, StringBuilder textEntries) {
+  public static void getTableValues(
+      Observation obs, int rowNum, StringBuilder textEntries, R4FhirData data) {
 
     String obsDisplayName = CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
+
+    String interpretationValue = CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (obs.hasInterpretation()) {
+      interpretationValue =
+          CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getInterpretation());
+    }
+
+    String referenceRangeValue = "";
+    if (obs.hasReferenceRange()) {
+      Observation.ObservationReferenceRangeComponent referenceRange =
+          getReferenceRange(obs.getReferenceRange());
+      if (referenceRange == null) {
+        referenceRange = obs.getReferenceRangeFirstRep();
+      }
+
+      if (referenceRange.hasLow()) {
+        referenceRangeValue +=
+            "Low: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getLow()) + " | ";
+      }
+      if (referenceRange.hasHigh()) {
+        referenceRangeValue +=
+            "High: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh());
+      }
+    }
+
+    if (StringUtils.isBlank(referenceRangeValue)) {
+      referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+    referenceRangeValue = referenceRangeValue.replaceAll("\\|\\s*$", "");
+
+    String collectionDate =
+        CdaFhirUtilities.getStringForSpecimenCollectionDate(
+            Collections.singletonList(obs.getSpecimen()), data);
 
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
@@ -370,6 +441,20 @@ public class CdaResultGenerator {
       dt = CdaFhirUtilities.getStringForType(obs.getEffective());
     }
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
+
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT,
+        StringUtils.isEmpty(interpretationValue)
+            ? CdaGeneratorConstants.UNKNOWN_VALUE
+            : interpretationValue);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_5_BODY_CONTENT,
+        StringUtils.isEmpty(referenceRangeValue)
+            ? CdaGeneratorConstants.UNKNOWN_VALUE
+            : referenceRangeValue);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
+        StringUtils.isEmpty(collectionDate) ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDate);
 
     textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
   }
@@ -390,7 +475,7 @@ public class CdaResultGenerator {
       DiagnosticReport rep = entry.getKey();
       List<Observation> observations = entry.getValue();
 
-      getTableValuesForDiagnosticReport(rep, observations, rowNum, textEntries);
+      getTableValuesForDiagnosticReport(rep, observations, rowNum, textEntries, data);
 
       logger.info(
           " Using DiagnosticReport to create Organizer and Result entry for {}",
@@ -456,13 +541,21 @@ public class CdaResultGenerator {
   }
 
   public static void getTableValuesForDiagnosticReport(
-      DiagnosticReport report, List<Observation> obs, int rowNum, StringBuilder textEntries) {
+      DiagnosticReport report,
+      List<Observation> obs,
+      int rowNum,
+      StringBuilder textEntries,
+      R4FhirData data) {
 
     // Add the Panel code name
     String obsDisplayName =
         "Panel Name: " + CdaFhirUtilities.getStringForCodeableConcept(report.getCode());
 
     // Add information from Components.
+
+    String interpretations = "";
+    String referenceRanges = "";
+    String collectionDates = "";
     String val = "";
     Boolean first = true;
     if (obs != null && !obs.isEmpty()) {
@@ -482,9 +575,57 @@ public class CdaResultGenerator {
         } else {
           val += ", Result = " + CdaGeneratorConstants.UNKNOWN_VALUE;
         }
+
+        String interpretationValue = "";
+        if (o.hasInterpretation()) {
+          interpretationValue =
+              CdaFhirUtilities.getDisplayStringForCodeableConcept(o.getInterpretation());
+        }
+        if (!interpretations.isEmpty()) {
+          interpretations += " | ";
+        }
+        interpretations += interpretationValue;
+
+        String collectionDate = "";
+        if (o.hasSpecimen()) {
+          collectionDate =
+              CdaFhirUtilities.getStringForSpecimenCollectionDate(
+                  Collections.singletonList(o.getSpecimen()), data);
+        }
+        if (!collectionDates.isEmpty()) {
+          collectionDates += " | ";
+        }
+        collectionDates += collectionDate;
+
+        String referenceRangeValue = "";
+        if (o.hasReferenceRange()) {
+          for (Observation.ObservationReferenceRangeComponent referenceRange :
+              o.getReferenceRange()) {
+            if (referenceRange.hasLow()) {
+              referenceRangeValue +=
+                  "Low: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getLow()) + " | ";
+            }
+            if (referenceRange.hasHigh()) {
+              referenceRangeValue +=
+                  "High: "
+                      + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh())
+                      + " | ";
+            }
+          }
+        }
+        if (referenceRangeValue.isEmpty()) {
+          referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
+        }
+        if (!referenceRanges.isEmpty()) {
+          referenceRanges += " | ";
+        }
+        referenceRanges += referenceRangeValue;
       }
     }
 
+    referenceRanges = referenceRanges.replaceAll("\\|\\s*$", "");
+    interpretations = interpretations.replaceAll("\\|\\s*$", "");
+    collectionDates = collectionDates.replaceAll("\\|\\s*$", "");
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
@@ -500,6 +641,15 @@ public class CdaResultGenerator {
     }
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
 
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT,
+        interpretations.isEmpty() ? CdaGeneratorConstants.UNKNOWN_VALUE : interpretations);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_5_BODY_CONTENT,
+        referenceRanges.isEmpty() ? CdaGeneratorConstants.UNKNOWN_VALUE : referenceRanges);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
+        collectionDates.isEmpty() ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDates);
     textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
   }
 
@@ -599,6 +749,9 @@ public class CdaResultGenerator {
     list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_1_TITLE);
     list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_2_TITLE);
     list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_3_TITLE);
+    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_4_TITLE);
+    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_5_TITLE);
+    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_6_TITLE);
     hsb.append(
         CdaGeneratorUtils.getXmlForTableHeader(
             list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
@@ -1783,6 +1936,16 @@ public class CdaResultGenerator {
   public static Object generateR31ResultsSection(
       R4FhirData data, LaunchDetails details, String version) {
     // TODO Auto-generated method stub
+    return null;
+  }
+
+  public static Observation.ObservationReferenceRangeComponent getReferenceRange(
+      List<Observation.ObservationReferenceRangeComponent> referenceRange) {
+    for (Observation.ObservationReferenceRangeComponent refRange : referenceRange) {
+      if (refRange.hasLow() && refRange.hasHigh()) {
+        return refRange;
+      }
+    }
     return null;
   }
 }

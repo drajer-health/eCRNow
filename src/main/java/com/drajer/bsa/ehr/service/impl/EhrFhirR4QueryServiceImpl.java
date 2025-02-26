@@ -1470,9 +1470,29 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           }
         }
       }
+      if (observation.hasSpecimen()) {
+
+        Reference specimen = observation.getSpecimen();
+
+        if (isResourceOfType(specimen, ResourceType.Specimen)) {
+          getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
+        }
+      }
+
     } else if (res != null && rType == ResourceType.DiagnosticReport) {
 
       DiagnosticReport report = (DiagnosticReport) res;
+
+      if (report.hasSpecimen()) {
+
+        List<Reference> specimens = report.getSpecimen();
+
+        for (Reference specimen : specimens) {
+          if (isResourceOfType(specimen, ResourceType.Specimen)) {
+            getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
+          }
+        }
+      }
 
       if (report.getResult() != null) {
 
@@ -1515,6 +1535,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                   getAndAddSecondaryResource(
                       kd, performer, ResourceType.Practitioner, genericClient, context);
                 }
+              }
+            }
+
+            if (observation.hasSpecimen()) {
+
+              Reference specimen = observation.getSpecimen();
+
+              if (isResourceOfType(specimen, ResourceType.Specimen)) {
+                getAndAddSecondaryResource(
+                    kd, specimen, ResourceType.Specimen, genericClient, context);
               }
             }
           }

@@ -10,10 +10,14 @@
                     <tr>
                         <th>Medication Name</th>
                         <th>Medication Start Date</th>
+                        <th>Medication Dosage &amp; Period</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
+                        <td>
+                            <content ID="medicationDosagePeriod1">500|http://unitsofmeasure.org|mg|Unknown</content>
+                        </td>
                         <td>
                             <content ID="medication1">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto</content>
                         </td>
@@ -23,6 +27,9 @@
                     </tr>
                     <tr>
                         <td>
+                            <content ID="medicationDosagePeriod2">500|http://unitsofmeasure.org|mg|Unknown</content>
+                        </td>
+                        <td>
                             <content ID="medication2">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto</content>
                         </td>
                         <td>
@@ -30,6 +37,9 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>
+                            <content ID="medicationDosagePeriod3">500|http://unitsofmeasure.org|mg|Unknown</content>
+                        </td>
                         <td>
                             <content ID="medication3">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto</content>
                         </td>

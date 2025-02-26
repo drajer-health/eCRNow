@@ -159,6 +159,10 @@ public class CdaFhirUtilities {
 
   public static Identifier getIdentifierForSystem(List<Identifier> ids, String system) {
 
+    if (StringUtils.isBlank(system)) {
+      logger.debug("System is null : {}", system);
+      return null;
+    }
     if (ids != null && !ids.isEmpty()) {
 
       for (Identifier id : ids) {
@@ -2162,7 +2166,8 @@ public class CdaFhirUtilities {
 
         Reference med = (Reference) medStmtRef.getMedication();
 
-        if (med.getReference() != null
+        if (med != null
+            && med.hasReference()
             && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
@@ -2181,7 +2186,10 @@ public class CdaFhirUtilities {
             String id = med.getReferenceElement().getIdPart();
             Medication medRes = null;
             for (Medication m : medList) {
-              if (m.getIdElement().getIdPart().contentEquals(id)) {
+              if (id != null
+                  && m.hasIdElement()
+                  && m.getIdElement().hasIdPart()
+                  && m.getIdElement().getIdPart().contentEquals(id)) {
 
                 logger.info(" Found the non-contained medication reference resource {}", id);
                 medRes = m;
@@ -2532,7 +2540,7 @@ public class CdaFhirUtilities {
 
           for (Resource r : meds) {
 
-            if (r.getId().contains(refId) && r instanceof Medication) {
+            if (r.hasId() && r.getId().contains(refId) && r instanceof Medication) {
 
               logger.info("Found Medication in contained resource");
 
@@ -2554,7 +2562,10 @@ public class CdaFhirUtilities {
           String id = med.getReferenceElement().getIdPart();
           Medication medRes = null;
           for (Medication m : medList) {
-            if (m.getIdElement().getIdPart().contentEquals(id)) {
+            if (id != null
+                && m.hasIdElement()
+                && m.getIdElement().hasIdPart()
+                && m.getIdElement().getIdPart().contentEquals(id)) {
 
               logger.info(" Found the non-contained medication reference resource {}", id);
               medRes = m;
@@ -3088,13 +3099,10 @@ public class CdaFhirUtilities {
     }
 
     for (Extension extension : extensions) {
-      if (extension.hasUrl()
-          && extension.getUrl().equals(extensionUrl)
-          && extension.hasValue()
-          && extension.getValue() instanceof BooleanType) {
+      if (extension.hasUrl() && extension.getUrl().equals(extensionUrl) && extension.hasValue()
+          && (extension.getValue() instanceof BooleanType retVal)) {
         logger.debug("Found Address Extension at top level.");
-        BooleanType retVal = (BooleanType) extension.getValue();
-        return retVal.getValue();
+          return retVal.getValue();
       }
     }
     logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
@@ -3575,5 +3583,51 @@ public class CdaFhirUtilities {
     }
 
     return sb.toString();
+  }
+
+  public static String getStringForSpecimenCollectionDate(
+      List<Reference> specimenRefs, R4FhirData data) {
+    if (data == null || specimenRefs == null || specimenRefs.isEmpty()) {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    for (Reference reference : specimenRefs) {
+      if (reference.hasReferenceElement()
+          && reference.getReferenceElement().hasResourceType()
+          && ResourceType.fromCode(reference.getReferenceElement().getResourceType())
+              == ResourceType.Specimen) {
+
+        Specimen specimen = data.getSpecimenById(reference.getReferenceElement().getIdPart());
+        if (specimen != null && specimen.hasCollection()) {
+
+          if (specimen.getCollection().hasCollectedDateTimeType()) {
+            return CdaFhirUtilities.getStringForType(
+                specimen.getCollection().getCollectedDateTimeType());
+
+          } else if (specimen.getCollection().hasCollectedPeriod()) {
+            return CdaFhirUtilities.getStringForType(specimen.getCollection().getCollectedPeriod());
+          }
+        }
+      }
+    }
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getNarrative(String frequency, String period, String periodUnit) {
+    StringBuilder narrative = new StringBuilder();
+    appendValue(narrative, "frequency", frequency);
+    appendValue(narrative, "period", period);
+    appendValue(narrative, "periodUnit", periodUnit);
+
+    return narrative.toString();
+  }
+
+  private static void appendValue(StringBuilder narrative, String label, String value) {
+    if (StringUtils.isNotBlank(value)) {
+      if (narrative.length() > 0) {
+        narrative.append("|"); // Add separator if narrative already has content
+      }
+      narrative.append(label).append(": ").append(value);
+    }
   }
 }

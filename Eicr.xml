@@ -11,7 +11,7 @@
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
 <code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
 <title>Initial Public Health Case Report</title>
-<effectiveTime value="20250220001031+0000"/>
+<effectiveTime value="20250225155141+0000"/>
 <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
 <languageCode code="en-US"/>
 <setId root="2.16.840.1.113883.1.1.1.1" extension="1"/>
@@ -84,12 +84,21 @@
 </name>
 </assignedPerson>
 <representedOrganization>
+<id root="2.16.840.1.113883.4.6" extension="1245319599"/>
 <name>Neighborhood Physicians</name>
+<addr>
+<streetAddressLine>30 Davis Road</streetAddressLine>
+<city>BEAVERTON</city>
+<county>CRAVEN</county>
+<state>OR</state>
+<postalCode>97006</postalCode>
+<country>US</country>
+</addr>
 </representedOrganization>
 </assignedAuthor>
 </author>
 <author>
-<time value="20250220001031+0000"/>
+<time value="20250225155141+0000"/>
 <assignedAuthor>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
 <streetAddressLine nullFlavor="NI"/>
@@ -106,7 +115,7 @@
 </assignedAuthor>
 </author>
 <author>
-<time value="20250220001031+0000"/>
+<time value="20250225155141+0000"/>
 <assignedAuthor>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
 <streetAddressLine nullFlavor="NI"/>
@@ -118,12 +127,12 @@
 <telecom nullFlavor="NI"/>
 <assignedAuthoringDevice>
 <manufacturerModelName>ecrNowApp</manufacturerModelName>
-<softwareName>Version 3.1.8</softwareName>
+<softwareName>Version 3.1.9</softwareName>
 </assignedAuthoringDevice>
 </assignedAuthor>
 </author>
 <author>
-<time value="20250220001031+0000"/>
+<time value="20250225155141+0000"/>
 <assignedAuthor>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
 <streetAddressLine nullFlavor="NI"/>
@@ -142,7 +151,7 @@
 <custodian>
 <assignedCustodian>
 <representedCustodianOrganization>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Organization-2"/>
+<id root="2.16.840.1.113883.4.6" extension="1245319599"/>
 <name>Neighborhood Physicians</name>
 <telecom value="tel:(555)555-1004"/>
 <addr>
@@ -186,7 +195,7 @@
 </name>
 </assignedPerson>
 <representedOrganization>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Organization-2"/>
+<id root="2.16.840.1.113883.4.6" extension="1245319599"/>
 <name>Neighborhood Physicians</name>
 <telecom value="tel:(555)555-1004"/>
 <telecom value="fax:(555)555-1004"/>
@@ -219,7 +228,7 @@
 </addr>
 </location>
 <serviceProviderOrganization>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Organization-2"/>
+<id root="2.16.840.1.113883.4.6" extension="1245319599"/>
 <name>Neighborhood Physicians</name>
 <telecom value="tel:(555)555-1004"/>
 <telecom value="fax:(555)555-1004"/>

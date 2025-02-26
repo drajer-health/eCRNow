@@ -9,21 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Dosage;
-import org.hl7.fhir.r4.model.Medication;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Medication.MedicationIngredientComponent;
-import org.hl7.fhir.r4.model.MedicationAdministration;
-import org.hl7.fhir.r4.model.MedicationDispense;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Quantity;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.Timing;
-import org.hl7.fhir.r4.model.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +66,7 @@ public class CdaMedicationGenerator {
       List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.MED_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.MED_TABLE_COL_2_TITLE);
+      list.add(CdaGeneratorConstants.MED_TABLE_COL_3_TITLE);
 
       sb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
@@ -102,10 +90,40 @@ public class CdaMedicationGenerator {
         if (med.hasEffective() && med.getEffective() != null) {
           dt = CdaFhirUtilities.getStringForType(med.getEffective());
         }
+        Dosage dosageValue = null;
+        Quantity dose = null;
+
+        String periodText = CdaGeneratorConstants.UNKNOWN_VALUE;
+        if (med.hasDosage()) {
+          dosageValue = med.getDosageFirstRep();
+
+          if (dosageValue.hasTiming() && dosageValue.getTiming() != null) {
+            Timing t = dosageValue.getTiming();
+            if (t != null && t.hasRepeat()) {
+
+              Timing.TimingRepeatComponent repeat = t.getRepeat();
+              String period = repeat.hasPeriod() ? repeat.getPeriod().toString() : null;
+              String periodUnit = repeat.hasPeriodUnit() ? repeat.getPeriodUnit().toString() : null;
+              String frequency =
+                  repeat.hasFrequency() ? String.valueOf(repeat.getFrequency()) : null;
+              periodText = CdaFhirUtilities.getNarrative(frequency, period, periodUnit);
+            }
+          }
+
+          if (dosageValue.hasDoseAndRate()
+              && dosageValue.getDoseAndRateFirstRep() != null
+              && dosageValue.getDoseAndRateFirstRep().hasDoseQuantity()) {
+            dose = dosageValue.getDoseAndRateFirstRep().getDoseQuantity();
+          }
+        }
+        String medicationDosagePeriodText =
+            CdaFhirUtilities.getStringForQuantity(dose) + CdaGeneratorConstants.PIPE + periodText;
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
+        bodyvals.put(
+            CdaGeneratorConstants.MED_TABLE_COL_3_BODY_CONTENT, medicationDosagePeriodText);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
@@ -142,8 +160,15 @@ public class CdaMedicationGenerator {
       for (MedicationAdministration medAdm : medAdms) {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
+        Quantity dose = null;
+        String periodText = CdaGeneratorConstants.UNKNOWN_VALUE;
+        String dosageText = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (medAdm.hasMedication() && medAdm.getMedication() != null) {
           medDisplayName = CdaFhirUtilities.getStringForMedicationType(medAdm, medList);
+        }
+        if (medAdm.hasDosage() && medAdm.getDosage().hasDose()) {
+          dose = medAdm.getDosage().getDose();
+          dosageText = CdaFhirUtilities.getStringForQuantity(dose);
         }
 
         String dt = null;
@@ -151,9 +176,13 @@ public class CdaMedicationGenerator {
           dt = CdaFhirUtilities.getStringForType(medAdm.getEffective());
         }
 
-        Map<String, String> bodyvals = new HashMap<>();
+        String medicationDosagePeriodText = dosageText + CdaGeneratorConstants.PIPE + periodText;
+
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
+        bodyvals.put(
+            CdaGeneratorConstants.MED_TABLE_COL_3_BODY_CONTENT, medicationDosagePeriodText);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
@@ -168,12 +197,6 @@ public class CdaMedicationGenerator {
         } else {
           medstatus = COMPLETED;
         }
-
-        Quantity dose = null;
-        if (medAdm.hasDosage()
-            && medAdm.getDosage() != null
-            && medAdm.getDosage().hasDose()
-            && medAdm.getDosage().getDose() != null) dose = medAdm.getDosage().getDose();
 
         medEntries.append(
             getEntryForMedication(
@@ -203,19 +226,31 @@ public class CdaMedicationGenerator {
         DateTimeType startDate = null;
         Dosage dosage = null;
         Quantity dose = null;
+
+        String periodText = CdaGeneratorConstants.UNKNOWN_VALUE;
+
         if (medReq.hasDosageInstruction() && medReq.getDosageInstructionFirstRep() != null) {
 
           dosage = medReq.getDosageInstructionFirstRep();
 
-          if (dosage.hasTiming() && dosage.getTiming() != null) {
+          if (dosage.hasTiming()) {
             Timing t = medReq.getDosageInstructionFirstRep().getTiming();
-            if (t != null
-                && t.hasRepeat()
-                && t.getRepeat() != null
-                && t.getRepeat().hasBoundsPeriod()
-                && t.getRepeat().getBoundsPeriod() != null
-                && t.getRepeat().getBoundsPeriod().hasStartElement()) {
-              startDate = t.getRepeat().getBoundsPeriod().getStartElement();
+            if (t != null && t.hasRepeat()) {
+
+              if (t.getRepeat().hasBoundsPeriod()) {
+                Period boundsPeriod = t.getRepeat().getBoundsPeriod();
+                if (boundsPeriod.hasStartElement()) {
+                  startDate = t.getRepeat().getBoundsPeriod().getStartElement();
+                }
+              }
+
+              Timing.TimingRepeatComponent repeat = t.getRepeat();
+              String period = repeat.hasPeriod() ? repeat.getPeriod().toString() : null;
+              String periodUnit = repeat.hasPeriodUnit() ? repeat.getPeriodUnit().toString() : null;
+              String frequency =
+                  repeat.hasFrequency() ? String.valueOf(repeat.getFrequency()) : null;
+
+              periodText = CdaFhirUtilities.getNarrative(frequency, period, periodUnit);
             }
           }
 
@@ -237,10 +272,15 @@ public class CdaMedicationGenerator {
           logger.error(
               " Dosage field does not have a valid period either due to datetime or timezone being null ");
         }
+        String medicationDosagePeriodText =
+            CdaFhirUtilities.getStringForQuantity(dose) + CdaGeneratorConstants.PIPE + periodText;
 
-        Map<String, String> bodyvals = new HashMap<>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
+
+        bodyvals.put(
+            CdaGeneratorConstants.MED_TABLE_COL_3_BODY_CONTENT, medicationDosagePeriodText);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
@@ -1241,6 +1281,7 @@ public class CdaMedicationGenerator {
       List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.MED_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.MED_TABLE_COL_2_TITLE);
+      list.add(CdaGeneratorConstants.MED_TABLE_COL_3_TITLE);
 
       sb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
@@ -1266,9 +1307,22 @@ public class CdaMedicationGenerator {
           dt = CdaFhirUtilities.getStringForType(medAdm.getEffective());
         }
 
+        Quantity doseQuanity = null;
+        String periodText = CdaGeneratorConstants.UNKNOWN_VALUE;
+        String dosageText = CdaGeneratorConstants.UNKNOWN_VALUE;
+
+        if (medAdm.hasDosage() && medAdm.getDosage().hasDose()) {
+          doseQuanity = medAdm.getDosage().getDose();
+          dosageText = CdaFhirUtilities.getStringForQuantity(doseQuanity);
+        }
+
+        String medicationDosagePeriodText = dosageText + CdaGeneratorConstants.PIPE + periodText;
+
         Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
+        bodyvals.put(
+            CdaGeneratorConstants.MED_TABLE_COL_3_BODY_CONTENT, medicationDosagePeriodText);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
@@ -1366,6 +1420,7 @@ public class CdaMedicationGenerator {
       List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.MED_COL_1_TITLE);
       list.add(CdaGeneratorConstants.MED_COL_2_TITLE);
+      list.add(CdaGeneratorConstants.MED_COL_3_TITLE);
 
       sb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
@@ -1390,10 +1445,42 @@ public class CdaMedicationGenerator {
         if (med.hasEffective() && med.getEffective() != null) {
           dt = CdaFhirUtilities.getStringForType(med.getEffective());
         }
+        Dosage dosageValue = null;
+        Quantity doseQuanity = null;
+        String periodText = CdaGeneratorConstants.UNKNOWN_VALUE;
+        String dosageText = CdaGeneratorConstants.UNKNOWN_VALUE;
+
+        if (med.hasDosage()) {
+          dosageValue = med.getDosageFirstRep();
+
+          if (dosageValue.hasTiming() && dosageValue.getTiming() != null) {
+            Timing t = dosageValue.getTiming();
+            if (t != null && t.hasRepeat()) {
+
+              Timing.TimingRepeatComponent repeat = t.getRepeat();
+              String period = repeat.hasPeriod() ? repeat.getPeriod().toString() : null;
+              String periodUnit = repeat.hasPeriodUnit() ? repeat.getPeriodUnit().toString() : null;
+              String frequency =
+                  repeat.hasFrequency() ? String.valueOf(repeat.getFrequency()) : null;
+              periodText = CdaFhirUtilities.getNarrative(frequency, period, periodUnit);
+            }
+          }
+
+          if (dosageValue.hasDoseAndRate()
+              && dosageValue.getDoseAndRateFirstRep() != null
+              && dosageValue.getDoseAndRateFirstRep().hasDoseQuantity()) {
+            doseQuanity = dosageValue.getDoseAndRateFirstRep().getDoseQuantity();
+          }
+        }
+        String medicationDosagePeriodText =
+            CdaFhirUtilities.getStringForQuantity(doseQuanity)
+                + CdaGeneratorConstants.PIPE
+                + periodText;
 
         Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_COL_2_BODY_CONTENT, dt);
+        bodyvals.put(CdaGeneratorConstants.MED_COL_3_BODY_CONTENT, medicationDosagePeriodText);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 

@@ -10,18 +10,25 @@
                     <tr>
                         <th>Medication Name</th>
                         <th>Medication Start Date</th>
+                        <th>Medication Dosage &amp; Period</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
+                            <content ID="medDosagePeriod1">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|frequency: 2|period: 1|periodUnit: D</content>
+                        </td>
+                        <td>
                             <content ID="medDate1">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="med1">Unknown</content>
+                            <content ID="med1">Prednisone 5 MG Oral Tablet [Deltasone]</content>
                         </td>
                     </tr>
                     <tr>
+                        <td>
+                            <content ID="medDosagePeriod2">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|Unknown</content>
+                        </td>
                         <td>
                             <content ID="medDate2">20231227000000+0000</content>
                         </td>
