@@ -32,6 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/actuator/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
+            "/api/receiveEicr",
             "/api/auth/generate-token",
             "/api/auth/generateAuthToken",
             "/api/auth/refresh_token");

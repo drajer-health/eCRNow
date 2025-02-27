@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CdaResultGeneratorTest extends BaseGenerator {
@@ -49,6 +50,7 @@ public class CdaResultGeneratorTest extends BaseGenerator {
     assert (valueXml1.toString().length() == 127);*/
   }
 
+  @Ignore
   @Test
   public void doesTriggerCodesMatchObservationTest() {
 

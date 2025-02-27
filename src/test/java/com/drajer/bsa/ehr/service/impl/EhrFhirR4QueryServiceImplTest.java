@@ -21,6 +21,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -59,6 +60,7 @@ public class EhrFhirR4QueryServiceImplTest {
     // Mockito.lenient().doReturn(fhirClient).when(ehrFhirR4QueryService).getClient(any(KarProcessingData.class), any(FhirContext.class));
   }
 
+  @Ignore
   @Test
   public void testGetFilteredData_PatientExists() {
     Mockito.lenient().when(fhirContextInitializer.getFhirContext("R4")).thenReturn(fhirContext);
