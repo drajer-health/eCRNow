@@ -1,7 +1,7 @@
 package com.drajer.ecrapp.security;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collections;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +42,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
       UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
           new UsernamePasswordAuthenticationToken(
-              "user", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+              "user", null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
 
       SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 

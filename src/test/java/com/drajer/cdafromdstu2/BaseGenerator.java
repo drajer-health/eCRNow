@@ -13,7 +13,6 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.simulator.ContentDataSimulator;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.InputStream;
@@ -103,7 +102,7 @@ public class BaseGenerator {
     try (InputStream in = new ClassPathResource(filename).getInputStream()) {
       return fhirContext.newJsonParser().parseResource(Bundle.class, in);
     } catch (Exception e) {
-      ContentDataSimulator.logger.error(EXCEPTION_READING_FILE, e);
+      logger.error(EXCEPTION_READING_FILE, e);
       return null;
     }
   }

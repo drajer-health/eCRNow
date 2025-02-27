@@ -18,13 +18,12 @@
 	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>1.8</java.version>
 		<fhir.version>5.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
-		<skip-jacoco-check>false</skip-jacoco-check>
 	</properties>
 
 
@@ -55,7 +54,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>32.0.1-jre</version>
+				<version>30.1-jre</version>
 			</dependency>
 
 		</dependencies>
@@ -131,7 +130,7 @@
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
-			<version>2.9.0</version>
+			<version>2.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -240,7 +239,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20231013</version>
+			<version>20190722</version>
 		</dependency>
 
 		<!-- Java stuff -->
@@ -258,7 +257,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.13.5</version>
+			<version>2.12.6.1</version>
 		</dependency>
 
 
@@ -267,7 +266,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.10</version>
+			<version>2.8.5</version>
 		</dependency>
 
 		<dependency>
@@ -533,7 +532,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.1</version>
+				<version>2.21.0</version>
 				<configuration>
 					<forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
 					<skipTests>${skip.unit.tests}</skipTests>
@@ -547,7 +546,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>2.21.0</version>
 				<executions>
 					<execution>
 						<goals>

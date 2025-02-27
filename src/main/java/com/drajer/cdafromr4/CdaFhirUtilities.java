@@ -3099,10 +3099,13 @@ public class CdaFhirUtilities {
     }
 
     for (Extension extension : extensions) {
-      if (extension.hasUrl() && extension.getUrl().equals(extensionUrl) && extension.hasValue()
-          && (extension.getValue() instanceof BooleanType retVal)) {
+      if (extension.hasUrl()
+          && extension.getUrl().equals(extensionUrl)
+          && extension.hasValue()
+          && extension.getValue() instanceof BooleanType) {
         logger.debug("Found Address Extension at top level.");
-          return retVal.getValue();
+        BooleanType retVal = (BooleanType) extension.getValue();
+        return retVal.getValue();
       }
     }
     logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
