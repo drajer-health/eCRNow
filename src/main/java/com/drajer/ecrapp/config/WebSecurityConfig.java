@@ -26,7 +26,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/meta/**", "/actuator/**", "/swagger-ui/**", "/v3/api-docs/**");
+    web.ignoring()
+        .antMatchers(
+            "/meta/**",
+            "/actuator/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/api/receiveEicr",
+            "/api/auth/generate-token",
+            "/api/auth/generateAuthToken",
+            "/api/auth/refresh_token");
   }
 
   @Override
@@ -47,8 +56,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
           .authorizeRequests()
           .antMatchers("/api/**")
-          .permitAll()
-          .anyRequest()
           .authenticated();
     } else {
       logger.info("Token Filter class Name is empty");

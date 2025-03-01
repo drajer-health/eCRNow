@@ -5,17 +5,7 @@ import com.drajer.bsa.model.HealthcareSetting;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -31,7 +21,9 @@ import org.slf4j.LoggerFactory;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "hs_kar_status")
+@Table(
+    name = "hs_kar_status",
+    indexes = {@Index(name = "idx_hs_id", columnList = "hs_id")})
 @DynamicUpdate
 @TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)
 public class KnowledgeArtifactStatus {

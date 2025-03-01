@@ -41,11 +41,11 @@ testCase:
         "code/@displayName": "RESULTS"
         "title": "RESULTS"
       - xPath: "text/table/thead/tr/th"
-        count: 3
+        count: 6
       - xPath: "text/table/tbody/tr"
         count: 1
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 3
+        count: 6
       - xPath: "text/table/"
         "thead/tr/th[1]": "Lab Test Name"
         "thead/tr/th[2]": "Lab Test Result Value"
@@ -201,11 +201,11 @@ testCase:
         "code/@displayName": "RESULTS"
         "title": "RESULTS"
       - xPath: "text/table/thead/tr/th"
-        count: 3
+        count: 6
       - xPath: "text/table/tbody/tr"
         count: 26
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 3
+        count: 6
       - xPath: "text/table/"
         "thead/tr/th[1]": "Lab Test Name"
         "thead/tr/th[2]": "Lab Test Result Value"
@@ -301,7 +301,7 @@ testCase:
         "code/@displayName": "RESULTS"
         "title": "RESULTS"
       - xPath: "text/table/thead/tr/th"
-        count: 3
+        count: 6
       - xPath: "text/table/tbody/tr"
         count: 15
       - xPath: "text/table/"
@@ -1006,7 +1006,7 @@ testCase:
         "code/@displayName": "RESULTS"
         "title": "RESULTS"
       - xPath: "text/table/thead/tr/th"
-        count: 3
+        count: 6
       - xPath: "text/table/tbody/tr"
         count: 15
       - xPath: "text/table/"
@@ -1696,7 +1696,7 @@ testCase:
         "code/@displayName": "RESULTS"
         "title": "RESULTS"
       - xPath: "text/table/thead/tr/th"
-        count: 3
+        count: 6
       - xPath: "text/table/tbody/tr"
         count: 3
       - xPath: "text/table/"
@@ -1851,7 +1851,7 @@ testCase:
         "code/@displayName": "RESULTS"
         "title": "RESULTS"
       - xPath: "text/table/thead/tr/th"
-        count: 3
+        count: 6
       - xPath: "text/table/tbody/tr"
         count: 3
       - xPath: "text/table/"
@@ -2000,11 +2000,11 @@ testCase:
         "code/@displayName": "RESULTS"
         "title": "RESULTS"
       - xPath: "text/table/thead/tr/th"
-        count: 3
+        count: 6
       - xPath: "text/table/tbody/tr"
         count: 1
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 3
+        count: 6
       - xPath: "text/table/"
         "thead/tr/th[1]": "Lab Test Name"
         "thead/tr/th[2]": "Lab Test Result Value"

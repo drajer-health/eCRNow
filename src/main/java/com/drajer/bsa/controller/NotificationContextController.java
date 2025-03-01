@@ -5,6 +5,7 @@ import com.drajer.bsa.service.NotificationContextService;
 import com.drajer.sof.model.NotificationContextData;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -65,6 +66,32 @@ public class NotificationContextController {
         notificationContextService.getNotificationContextData(
             null, fhirServerUrl, notificationResourceId, patientId);
 
+    if (contexts.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.ok(contexts);
+    }
+  }
+
+  @GetMapping("/api/notificationContexts")
+  public ResponseEntity<List<NotificationContext>> getAllNotificationContextData(
+      @RequestParam Map<String, String> searchParams) {
+
+    List<NotificationContext> contexts =
+        notificationContextService.getAllNotificationContextData(null, searchParams);
+    if (contexts.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.ok(contexts);
+    }
+  }
+
+  @GetMapping("/api/getNotificationContextForReprocessing")
+  public ResponseEntity<List<NotificationContext>> getNotificationContextForReprocessing(
+      @RequestParam Map<String, String> searchParams) {
+
+    List<NotificationContext> contexts =
+        notificationContextService.getNotificationContextForReprocessing(null, searchParams);
     if (contexts.isEmpty()) {
       return ResponseEntity.noContent().build();
     } else {

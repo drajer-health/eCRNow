@@ -6,6 +6,8 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
+import java.util.concurrent.TimeUnit;
+import okhttp3.OkHttpClient;
 import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -79,5 +81,14 @@ public class SpringConfiguration {
   @Bean
   public FhirContext fhirContext() {
     return ctx;
+  }
+
+  @Bean
+  public OkHttpClient okHttpClient() {
+    return new OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(300, TimeUnit.SECONDS)
+        .writeTimeout(300, TimeUnit.SECONDS)
+        .build();
   }
 }

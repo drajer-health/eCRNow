@@ -1,0 +1,3370 @@
+{
+  "resourceType": "Bundle",
+  "id": "ef035976-6e35-46c7-bd29-6c0334dcc872",
+  "meta": {
+    "lastUpdated": "2025-02-17T14:43:51.046+00:00"
+  },
+  "type": "searchset",
+  "total": 56,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation?patient=Patient%2Fe9bd7100-48af-4c69-a557-c13235f72f74"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/c0c8631e-a7a9-4d69-9803-7cc107dca475",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "c0c8631e-a7a9-4d69-9803-7cc107dca475",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "186034007",
+              "display": "Ethnicity / related nationality data (observable entity)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "effectiveDateTime": "2020-11-10T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "urn:iso:std:iso:3166",
+              "code": "AU",
+              "display": "Australia"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/676939ec-9f4d-4615-8fef-9bc02d07551b",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "676939ec-9f4d-4615-8fef-9bc02d07551b",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11370-4",
+              "display": "Immunization status - Reported"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C NewMan"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0532",
+              "code": "Y",
+              "display": "Yes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/6be61adc-a809-45bd-b401-80ef23e18229",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "6be61adc-a809-45bd-b401-80ef23e18229",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "77983-5",
+              "display": "Country of usual residence"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C newman"
+        },
+        "effectiveDateTime": "2020-11-10T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "urn:iso:std:iso:3166",
+              "code": "GB",
+              "display": "United Kingdom of Great Britain and Northern Ireland"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/e77b6dd5-2962-446e-a544-1463a00d7ed7",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "e77b6dd5-2962-446e-a544-1463a00d7ed7",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "280147009",
+              "display": "Type of activity (attribute)"
+            }
+          ],
+          "text": "Travel history"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "issued": "2023-12-27T00:00:00.000+00:00"
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/9e3d00a1-6924-4090-9dd5-b6b96655fd41",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "9e3d00a1-6924-4090-9dd5-b6b96655fd41",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11341-5",
+              "display": "History of Occupation"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+              "code": "25-3099.02.046026",
+              "display": "Writing Tutor [Tutors]"
+            }
+          ]
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "86188-0",
+                  "display": "History of Occupation Industry"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+                  "code": "25-3099.02.046026",
+                  "display": "Writing Tutor [Tutors]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/05da9140-7ab6-491c-bc4a-3b2fb177ee4f",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "05da9140-7ab6-491c-bc4a-3b2fb177ee4f",
+        "meta": {
+          "versionId": "3"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "16177-8",
+              "display": "Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid"
+            }
+          ],
+          "text": "Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-07T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected (qualifier value)"
+            }
+          ],
+          "text": "Detected"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/f1da4975-a496-467f-b57f-2cd8458d0838",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "f1da4975-a496-467f-b57f-2cd8458d0838",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "420008001",
+              "display": "Travel"
+            }
+          ],
+          "text": "Travel History"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "component": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-address-extension",
+                "valueAddress": {
+                  "line": [
+                    "[\"1170 N Rancho Robles Rd\"]"
+                  ],
+                  "city": "Oracle",
+                  "state": "AZ",
+                  "postalCode": "8562",
+                  "country": "US"
+                }
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                  "code": "LOC",
+                  "display": "Location"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "text": "1170 N Rancho Robles Rd ,Oracle"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/24648925-0408-454b-aec8-ea507e8b13b2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "24648925-0408-454b-aec8-ea507e8b13b2",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:uuid:5ffea0ae-9ae5-4313-956a-30219b4a6afa"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8665-2",
+              "display": "Last menstrual period start date"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice newman "
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00"
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/8250504e-14a1-4c63-91fb-2c3fbaee2cf3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "8250504e-14a1-4c63-91fb-2c3fbaee2cf3",
+        "meta": {
+          "versionId": "2"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287553-2020043020311100"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94500-6",
+              "display": "SARS-CoV-2 (COVID-19) RNA [Presence] in Respiratory specimen by NAA with probe detection"
+            }
+          ],
+          "text": "SARS-CoV-2 (COVID-19) RNA [Presence] in Respiratory specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected (qualifier value)"
+            }
+          ],
+          "text": "Detected"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/5f37f039-44e2-462c-8297-dec39918654c",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5f37f039-44e2-462c-8297-dec39918654c",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "777-3",
+              "display": "Platelets [#/volume] in Blood by Automated count"
+            }
+          ],
+          "text": "Platelets [#/volume] in Blood by Automated count"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueQuantity": {
+          "value": 6.9,
+          "unit": "10*3/uL",
+          "system": "http://unitsofmeasure.org"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 7.4,
+              "unit": "10*3/uL",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*3/uL"
+            },
+            "high": {
+              "value": 10,
+              "unit": "10*3/uL",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*3/uL"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/3cf46a5f-cec0-4961-975c-8369469ecb10",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3cf46a5f-cec0-4961-975c-8369469ecb10",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11341-5",
+              "display": "History of Occupation"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+              "code": "25-3099.02.046026",
+              "display": "Writing Tutor [Tutors]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/bf93fcf8-2a35-480e-9e2a-4b38f5e289e4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "bf93fcf8-2a35-480e-9e2a-4b38f5e289e4",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "text": "Signs and Symptoms"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "45708-5",
+              "display": "Vomiting [Minimum Data Set]"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "2667000",
+              "display": "Absent (qualifier value)"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/b746b626-ce0a-430b-9c14-e6119813892f",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "b746b626-ce0a-430b-9c14-e6119813892f",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-category",
+                "code": "disability-status",
+                "display": "Disability Status"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69860-5",
+              "display": "Do you have difficulty dressing or bathing"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C NewMan"
+        },
+        "effectiveDateTime": "2024-01-07T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0532",
+              "code": "Y",
+              "display": "Yes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/34730c79-28da-4ac8-b190-9c443b30a6a0",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "34730c79-28da-4ac8-b190-9c443b30a6a0",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "text": "Employee desk distance from mail sorter"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueQuantity": {
+          "value": 2.0,
+          "unit": "m"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/9ccaf77a-5e96-4915-902f-308f9daef080",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "9ccaf77a-5e96-4915-902f-308f9daef080",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActClass",
+                "code": "EXPOS",
+                "display": "exposure"
+              }
+            ],
+            "text": "An interaction between entities that provides opportunity for transmission of a physical, chemical, or biological agent from an exposure source entity to an exposure target entity."
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/umls",
+              "code": "C3841750",
+              "display": "Mass gathering"
+            }
+          ],
+          "text": "Mass gathering (football game)"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C NewMan"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "264379009",
+              "display": "Sports stadium (environment)"
+            }
+          ],
+          "text": "City Football Stadium"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/810c0924-8e86-402b-93a2-3fea05944dd3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "810c0924-8e86-402b-93a2-3fea05944dd3",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "420008001",
+              "display": "Travel"
+            }
+          ],
+          "text": "Travel History"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                  "code": "LOC",
+                  "display": "Location"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "text": "Travelled abroad"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/64ad5cd5-842a-4be7-8305-e3f13c6a1df5",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "64ad5cd5-842a-4be7-8305-e3f13c6a1df5",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11341-5",
+              "display": "History of Occupation"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+              "code": "25-3099.02.046026",
+              "display": "Writing Tutor [Tutors]"
+            }
+          ]
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "86188-0",
+                  "display": "History of Occupation Industry"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+                  "code": "25-3099.02.046026",
+                  "display": "Writing Tutor [Tutors]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/1495207a-3304-47c9-95f6-1ec72929964a",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "1495207a-3304-47c9-95f6-1ec72929964a",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/ValueSet/observation-category",
+                "code": "social-history"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "344",
+              "display": "Village of Alakanuk"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/16eb87d0-57d5-4f52-b38e-1878fcd9626d",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "16eb87d0-57d5-4f52-b38e-1878fcd9626d",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "186034007",
+              "display": "Ethnicity / related nationality data (observable entity)"
+            }
+          ],
+          "text": "Ethnicity / related nationality data (observable entity)"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "urn:iso:std:iso:3166",
+              "code": "USA",
+              "display": "United States of America"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/fa5f3922-b84f-4d3b-8955-4e191ffda800",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "fa5f3922-b84f-4d3b-8955-4e191ffda800",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "77983-5",
+              "display": "Country of usual residence"
+            }
+          ],
+          "text": "Country of usual residence"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "urn:iso:std:iso:3166",
+              "code": "USA",
+              "display": "United States of America"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/ddbddc6c-1c6b-4d21-bdec-680213f0b0d4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ddbddc6c-1c6b-4d21-bdec-680213f0b0d4",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "67875-5",
+              "display": "Employment status current"
+            }
+          ],
+          "text": "Employment status current"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2022-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/employment-status",
+              "code": "EMP",
+              "display": "Employed"
+            }
+          ],
+          "text": "Employed"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/70e66557-6dc8-4ce6-bd20-a78542bf2e7a",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "70e66557-6dc8-4ce6-bd20-a78542bf2e7a",
+        "meta": {
+          "versionId": "3"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "63893-2",
+              "display": "Outcome of pregnancy"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "21243004",
+              "display": "Term birth of newborn (finding)"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/6deef845-e6fb-4db1-8de9-d53aaa15e4cd",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "6deef845-e6fb-4db1-8de9-d53aaa15e4cd",
+        "meta": {
+          "versionId": "2"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "420008001",
+              "display": "Travel"
+            }
+          ],
+          "text": "Travel History"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                  "code": "4154424",
+                  "display": "Recent Travel Location"
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "161086008",
+                  "display": "Recent countries visited (observable entity)"
+                }
+              ],
+              "text": "Recent Travel Location"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223668000",
+                  "display": "Italy (geographic location)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Italy"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/b7bd427b-9d2e-4e8c-ae1e-9b33818efa49",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "b7bd427b-9d2e-4e8c-ae1e-9b33818efa49",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "74165-2",
+              "display": "History of employment status NIOSH"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "Employed",
+              "display": "Employed"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/7a5a1f8c-6e22-4b38-8a0a-e2093c999b1e",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "7a5a1f8c-6e22-4b38-8a0a-e2093c999b1e",
+        "meta": {
+          "versionId": "6"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "77386006",
+              "display": "Pregnancy (finding)"
+            }
+          ],
+          "text": "Pregnancy (finding)"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "LA15173-0",
+              "display": "Pregnant"
+            }
+          ]
+        },
+        "method": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "16310003",
+              "display": "Ultrasonography (procedure)"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "77386006",
+              "display": "Pregnancy (finding)"
+            }
+          ]
+        },
+        "component": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-date-determined-extension",
+                "valueDateTime": "2023-12-27"
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11778-8",
+                  "display": "Delivery date Estimated"
+                }
+              ],
+              "text": "Delivery date Estimated"
+            },
+            "valueDateTime": "2024-09-03T00:00:00+00:00"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11884-4",
+                  "display": "Gestational age Estimated"
+                }
+              ],
+              "text": "Gestational age Estimated"
+            },
+            "valueQuantity": {
+              "value": 22.0,
+              "unit": "weeks",
+              "system": "http://unitsofmeasure.org",
+              "code": "wk"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8665-2",
+                  "display": "Last menstrual period start date"
+                }
+              ],
+              "text": "Last Menstrual Period"
+            },
+            "valueDateTime": "2023-10-28T00:00:00+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/76ca63e1-2b53-4f1d-a690-d791c1446245",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "76ca63e1-2b53-4f1d-a690-d791c1446245",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "718-7",
+              "display": "Hemoglobin [Mass/volume] in Blood"
+            }
+          ],
+          "text": "Hemoglobin [Mass/volume] in Blood"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueQuantity": {
+          "value": 7.4,
+          "unit": "g/dL",
+          "system": "http://unitsofmeasure.org"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 7.5,
+              "unit": "g/dl",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            },
+            "high": {
+              "value": 10,
+              "unit": "g/dl",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/a1fa219b-10fc-41b6-8020-64f2092b03eb",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "a1fa219b-10fc-41b6-8020-64f2092b03eb",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActClass",
+                "code": "TRNS",
+                "display": "Transportation"
+              }
+            ],
+            "text": "Transportation"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "424483007",
+              "display": "Transportation details (observable entity)"
+            }
+          ],
+          "text": "Transportation details (observable entity)"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "21812002",
+              "display": "Ocean liner, device (physical object)"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": " 261325004",
+              "display": "Airliner (physical object)"
+            }
+          ],
+          "text": "travel Details"
+        },
+        "component": [
+          {
+            "code": {
+              "text": "Ship name"
+            },
+            "valueString": "Princess of the Sea"
+          },
+          {
+            "code": {
+              "text": "Cabin number"
+            },
+            "valueString": "69B"
+          },
+          {
+            "code": {
+              "text": "flight number "
+            },
+            "valueString": "6EZAFLI"
+          },
+          {
+            "code": {
+              "text": "flight Seat number"
+            },
+            "valueString": "34C"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/bab2253b-483c-4af6-905d-d89564e8ca3f",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "bab2253b-483c-4af6-905d-d89564e8ca3f",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActClass",
+                "code": "TRNS",
+                "display": "Transportation"
+              }
+            ],
+            "text": "Transportation"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "424483007",
+              "display": "Transportation details (observable entity)"
+            }
+          ],
+          "text": "Transportation details (observable entity)"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "21812002",
+              "display": "Ocean liner, device (physical object)"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": " 261325004",
+              "display": "Airliner (physical object)"
+            }
+          ],
+          "text": "travel Details"
+        },
+        "component": [
+          {
+            "code": {
+              "text": "Ship name"
+            },
+            "valueString": "Princess of the Sea"
+          },
+          {
+            "code": {
+              "text": "Cabin number"
+            },
+            "valueString": "69B"
+          },
+          {
+            "code": {
+              "text": "flight number "
+            },
+            "valueString": "6EZAFLI"
+          },
+          {
+            "code": {
+              "text": "flight Seat number"
+            },
+            "valueString": "34C"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/645317d0-b90d-4026-ac26-3d28cb53c658",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "645317d0-b90d-4026-ac26-3d28cb53c658",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "http://picassoemr.com/observation-travelhistory",
+            "value": "1865.18680-OBSERVATION-TRAVELHISTORY"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "420008001"
+            }
+          ],
+          "text": "Travel"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                  "code": "LOC"
+                }
+              ],
+              "text": "Location"
+            },
+            "valueCodeableConcept": {
+              "text": "Travel Location: China"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/4e0cb073-7206-4004-a4e7-e0fce0695939",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "4e0cb073-7206-4004-a4e7-e0fce0695939",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "http://picassoemr.com/observation-travelhistory",
+            "value": "1865.18592-OBSERVATION-TRAVELHISTORY"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "420008001"
+            }
+          ],
+          "text": "Travel"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                  "code": "LOC"
+                }
+              ],
+              "text": "Location"
+            },
+            "valueCodeableConcept": {
+              "text": "Travel to China in last 14 days"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/1bd47e05-52e6-4f2f-bed9-ad06a945a085",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "1bd47e05-52e6-4f2f-bed9-ad06a945a085",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "entered-in-error",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "82810-3",
+              "display": "Pregnancy status"
+            }
+          ],
+          "text": "Pregnancy Status"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "LA15173-0",
+              "display": "Pregnant"
+            }
+          ]
+        },
+        "method": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "16310003",
+              "display": "Ultrasonography (procedure)"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "77386006",
+              "display": "Pregnancy (finding)"
+            }
+          ]
+        },
+        "component": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-date-determined-extension",
+                "valueDateTime": "2023-12-27"
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11778-8",
+                  "display": "Delivery date Estimated"
+                }
+              ],
+              "text": "Delivery date Estimated"
+            },
+            "valueDateTime": "2024-09-03T00:00:00+00:00"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11884-4",
+                  "display": "Gestational age Estimated"
+                }
+              ],
+              "text": "Gestational age Estimated"
+            },
+            "valueQuantity": {
+              "value": 22.0,
+              "unit": "weeks",
+              "system": "http://unitsofmeasure.org",
+              "code": "wk"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8665-2",
+                  "display": "Last menstrual period start date"
+                }
+              ],
+              "text": "Last Menstrual Period"
+            },
+            "valueDateTime": "2023-10-28T00:00:00+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/3eb6aaa3-af28-4d33-842e-5ac496ea82b8",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3eb6aaa3-af28-4d33-842e-5ac496ea82b8",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "713-8",
+              "display": "Eosinophils/100 leukocytes in Blood by Automated count"
+            }
+          ],
+          "text": "Eosinophils"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueQuantity": {
+          "value": 20.0,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/d0aafda7-1eba-41be-8a0c-bdc9cfe9127a",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "d0aafda7-1eba-41be-8a0c-bdc9cfe9127a",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "6690-2",
+              "display": "Leukocytes [#/volume] in Blood by Automated count"
+            }
+          ],
+          "text": "White Cell Count"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "issued": "2024-01-05T00:00:00.000+00:00",
+        "valueQuantity": {
+          "value": 4.6,
+          "unit": "x10*9/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "10*9/L"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/0528f948-6a6e-4387-ad54-cba461f40c51",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "0528f948-6a6e-4387-ad54-cba461f40c51",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "75274-1",
+              "display": "Characteristics of residence"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C NewMan"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "105526001",
+              "display": "Homeless family"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/3cffb8ba-613d-4868-a316-c724a6e2ae95",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3cffb8ba-613d-4868-a316-c724a6e2ae95",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69856-3",
+              "display": "Are you deaf, or do you have serious difficulty hearing"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C NewMan"
+        },
+        "effectiveDateTime": "2023-12-27T00:00:00+00:00"
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/d9236a8d-c5a2-4364-a567-c4c30c7f3498",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "d9236a8d-c5a2-4364-a567-c4c30c7f3498",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11370-4",
+              "display": "Immunization status - Reported"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice newman"
+        },
+        "effectiveDateTime": "2020-11-10T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0532",
+              "code": "Y",
+              "display": "Yes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/e83c4524-bfc7-4321-b5be-68546a15b6e9",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "e83c4524-bfc7-4321-b5be-68546a15b6e9",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "29762-2",
+              "display": "Social history Narrative"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "72166-2",
+              "display": "Tobacco smoking status"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "365980008",
+              "display": "Finding of tobacco use and exposure (finding)"
+            }
+          ],
+          "text": "Smoking History"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "ALice C Newman"
+        },
+        "issued": "2023-12-30T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "449868002",
+              "display": "Smokes tobacco daily"
+            }
+          ],
+          "text": "Every Day"
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81228-9",
+                  "display": "Tobacco product"
+                }
+              ],
+              "text": "Type"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "65568007",
+                  "display": "Cigarette Smoker"
+                }
+              ],
+              "text": "Cigarettes"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81228-9",
+                  "display": "Tobacco product"
+                }
+              ],
+              "text": "Type"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "81703003",
+                  "display": "Chews Tobacco"
+                }
+              ],
+              "text": "Chew"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "88029-4",
+                  "display": "Tobacco use duration"
+                }
+              ],
+              "text": "Years Used"
+            },
+            "valueQuantity": {
+              "value": 12.4,
+              "unit": "Years Used",
+              "system": "http://unitsofmeasure.org",
+              "code": "a"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8663-7",
+                  "display": "Cigarettes smoked current (pack per day) - Reported"
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "266918002",
+                  "display": "Tobacco smoking consumption (observable entity)"
+                }
+              ],
+              "text": "Packs/Day"
+            },
+            "valueQuantity": {
+              "value": 0.3,
+              "unit": "Packs/Day",
+              "system": "http://snomed.info/sct",
+              "code": "228963008"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/d0eb62ca-9c18-4752-ae04-9adb8ab4df8b",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "d0eb62ca-9c18-4752-ae04-9adb8ab4df8b",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "74165-2",
+              "display": "History of employment status NIOSH"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "224362002",
+              "display": "Employment status"
+            }
+          ],
+          "text": "Employment status current"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice Newman "
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "Employed",
+              "display": "Employed"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/f7e55c9f-0612-42e3-8e52-67f4f3a25712",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "f7e55c9f-0612-42e3-8e52-67f4f3a25712",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "96910-5",
+              "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+            }
+          ],
+          "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueString": "postive"
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/535e7bf4-2ff6-40b4-89d3-dfff0ffdd622",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "535e7bf4-2ff6-40b4-89d3-dfff0ffdd622",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "87758-9",
+              "display": "Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"
+            }
+          ],
+          "text": "Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueString": "postive"
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/46e1fea4-ce38-4b0d-9514-f8518cf370b9",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "46e1fea4-ce38-4b0d-9514-f8518cf370b9",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "41432-6",
+              "display": "Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"
+            }
+          ],
+          "text": "Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "115635005",
+              "display": "Balamuthia mandrillaris"
+            }
+          ],
+          "text": "Balamuthia mandrillaris"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/36aa8224-2021-4ed2-8f2f-1f7227c57230",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "36aa8224-2021-4ed2-8f2f-1f7227c57230",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "text": "Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "115635005",
+              "display": "Balamuthia mandrillaris"
+            }
+          ],
+          "text": "Balamuthia mandrillaris"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/3c8933b0-4449-4a10-9d06-c072af133dc2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3c8933b0-4449-4a10-9d06-c072af133dc2",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "72869-1",
+              "display": "Mycobacterium leprae gyrA gene fluoroquinolone resistance mutation [Presence] by Molecular method"
+            }
+          ],
+          "text": "Mycobacterium leprae gyrA gene fluoroquinolone resistance mutation [Presence] by Molecular method"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueString": "Detected"
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/b9e0a76e-9b16-4f8e-8607-0ba69f8421eb",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "b9e0a76e-9b16-4f8e-8607-0ba69f8421eb",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94558-4",
+              "display": "SARS coronavirus 2 Ag [Presence] in Respiratory specimen by"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-04-09T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "valueQuantity": {
+          "value": 22.0,
+          "unit": "mg",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "A",
+                "display": "Abnormal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/ed83f765-bbd7-4465-b8fd-ba1b94c2e367",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ed83f765-bbd7-4465-b8fd-ba1b94c2e367",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "16676-9",
+              "display": "Corynebacterium diphtheriae [Presence] in Specimen by Organism specific culture"
+            }
+          ],
+          "text": "Corynebacterium diphtheriae [Presence] in Specimen by Organism specific culture"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+          }
+        ],
+        "dataAbsentReason": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+              "code": "unknown",
+              "display": "Unknown"
+            }
+          ],
+          "text": "No result"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/a8d8e022-cfe6-4215-9c4f-a84223e39a7f",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "a8d8e022-cfe6-4215-9c4f-a84223e39a7f",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281"
+          }
+        ],
+        "basedOn": [
+          {
+            "identifier": {
+              "system": "https://acme.org/identifiers",
+              "value": "1234"
+            }
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "85354-9",
+                "display": "Blood pressure panel with all children optional"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85354-9",
+              "display": "Blood pressure panel with all children optional"
+            }
+          ],
+          "text": "Blood pressure systolic & diastolic"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice newman"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2023-12-28T00:00:00+00:00",
+        "valueQuantity": {
+          "value": 107.0,
+          "unit": "mmHg",
+          "system": "http://unitsofmeasure.org",
+          "code": "mm[Hg]"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/b1e98d4a-6201-42d9-982d-c2058f1eb687",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "b1e98d4a-6201-42d9-982d-c2058f1eb687",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281"
+          }
+        ],
+        "basedOn": [
+          {
+            "identifier": {
+              "system": "https://acme.org/identifiers",
+              "value": "1234"
+            }
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "39156-5",
+              "display": "Body mass index (BMI) [Ratio]"
+            }
+          ],
+          "text": "BMI"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice newman"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2023-12-28T00:00:00+00:00",
+        "valueQuantity": {
+          "value": 16.2,
+          "unit": "kg/m2",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg/m2"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/4193af66-58d4-4b2b-8b93-43399c517c1e",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "4193af66-58d4-4b2b-8b93-43399c517c1e",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281"
+          }
+        ],
+        "basedOn": [
+          {
+            "identifier": {
+              "system": "https://acme.org/identifiers",
+              "value": "1234"
+            }
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "39156-5",
+              "display": "Body mass index (BMI) [Ratio]"
+            }
+          ],
+          "text": "BMI"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice newman"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2023-12-28T00:00:00+00:00",
+        "valueQuantity": {
+          "value": 16.2,
+          "unit": "kg/m2",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg/m2"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/68365bef-4837-44fe-a948-aa73be6576b8",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "68365bef-4837-44fe-a948-aa73be6576b8",
+        "meta": {
+          "versionId": "2"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "249197004",
+              "display": "Maternal condition during puerperium (observable entity)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "42814007",
+              "display": "Mid postpartum state (finding)"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/8ae9104c-5337-4b73-8617-9632b1687bab",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "8ae9104c-5337-4b73-8617-9632b1687bab",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "17369002",
+              "display": "Miscarriage (disorder) "
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-01-05T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "17369002",
+              "display": "Immediate post-septic abortion"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/61dde85e-d4fc-4e8e-b152-b354f5f269e3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "61dde85e-d4fc-4e8e-b152-b354f5f269e3",
+        "meta": {
+          "versionId": "2"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "21843-8",
+              "display": "History of Usual occupation"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+              "code": "25-3099.02.046026",
+              "display": "Writing Tutor [Tutors]"
+            }
+          ]
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "21844-6",
+                  "display": "History of Usual industry"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://terminology.hl7.org/2.0.0/CodeSystem-PHIndustryCDCCensus2010.html",
+                  "code": "8270",
+                  "display": "Nursing care facilities"
+                },
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/PHOccupationalDataForHealthODH",
+                  "code": "621610.008495",
+                  "display": "Home nursing services"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/c9fae72d-f781-4089-9534-77045256146d",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "c9fae72d-f781-4089-9534-77045256146d",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "text": "social history"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "420008001",
+              "display": "Travel"
+            }
+          ],
+          "text": "Travel History"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "effectiveDateTime": "2024-12-01T00:00:00+00:00",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://fhir.cerner.com/codeSet/72",
+                  "code": "4154424",
+                  "display": "Recent Travel Location"
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "161086008",
+                  "display": "Recent countries visited (observable entity)"
+                }
+              ],
+              "text": "Recent Travel Location"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223668000",
+                  "display": "Italy (geographic location)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Italy"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/a19860c9-df94-47f3-8288-076d7f459250",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "a19860c9-df94-47f3-8288-076d7f459250",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95370-3",
+              "display": "Tribal affiliation"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/ae50b912-fdd9-4552-991a-4a6e2dd4b4f4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ae50b912-fdd9-4552-991a-4a6e2dd4b4f4",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActClass",
+                "code": "EXPOS",
+                "display": "exposure"
+              }
+            ],
+            "text": "An interaction between entities that provides opportunity for transmission of a physical, chemical, or biological agent from an exposure source entity to an exposure target entity."
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "C3841750",
+              "display": "Mass gathering"
+            }
+          ],
+          "text": "Mass gathering (football game)"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice newman"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "264379009",
+              "display": "Sports stadium (environment)"
+            }
+          ],
+          "text": "City Football Stadium"
+        },
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                  "code": "EXPAGNT",
+                  "display": "ExposureAgent"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "840533007",
+                  "display": "Severe acute respiratory syndrome coronavirus 2 (organism)"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/7331077e-4bd3-431b-a532-867eb46a1652",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "7331077e-4bd3-431b-a532-867eb46a1652",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/us/sdoh-clinicalcare/CodeSystem/SDOHCC-CodeSystemTemporaryCodes",
+                "code": "personal-characteristic"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "76691-5",
+              "display": "Gender identity"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c newman"
+        },
+        "effectiveDateTime": "2025-04-10T00:00:00+00:00",
+        "performer": [
+          {
+            "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+            "display": "Alice c newman"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "446141000124107",
+              "display": "Identifies as female gender (finding)"
+            }
+          ]
+        },
+        "method": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/us/sdoh-clinicalcare/CodeSystem/SDOHCC-CodeSystemTemporaryCodes",
+              "code": "self-reported",
+              "display": "Self Reported"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/f7616c7b-2538-4f76-8c4b-5dc4e8c0e7ae",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "f7616c7b-2538-4f76-8c4b-5dc4e8c0e7ae",
+        "meta": {
+          "versionId": "2"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "32911000",
+              "display": "Homeless (finding)"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "105526001",
+              "display": "Homeless family (finding)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "308899009",
+              "display": "unsatisfactory living conditions (finding)"
+            }
+          ]
+        }
+      }
+    },
+    {"resource": {
+      "resourceType": "Patient",
+      "id": "e9bd7100-48af-4c69-a557-c13235f72f74",
+      "meta": {
+        "versionId": "5"
+      },
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+          "extension": [
+            {
+              "url": "ombCategory",
+              "valueCoding": {
+                "system": "urn:oid:2.16.840.1.113883.6.238",
+                "code": "2106-3",
+                "display": "White"
+              }
+            },
+            {
+              "url": "text",
+              "valueString": "White"
+            }
+          ]
+        },
+        {
+          "url": "http://hl7.org/fhir/us/core/ValueSet/detailed-race",
+          "extension": [
+            {
+              "url": "detailed",
+              "valueCoding": {
+                "system": "urn:oid:2.16.840.1.113883.6.238",
+                "code": "1072-8",
+                "display": "Mexican American Indian"
+              }
+            },
+            {
+              "url": "text",
+              "valueString": "Mexican American Indian"
+            }
+          ]
+        },
+        {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+          "extension": [
+            {
+              "url": "ombCategory",
+              "valueCoding": {
+                "system": "urn:oid:2.16.840.1.113883.6.238",
+                "code": "2135-2",
+                "display": "Hispanic or Latino"
+              }
+            },
+            {
+              "url": "text",
+              "valueString": "Not Hispanic or Latino"
+            }
+          ]
+        },
+        {
+          "url": "http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity",
+          "extension": [
+            {
+              "url": "detailed",
+              "valueCoding": {
+                "system": "urn:oid:2.16.840.1.113883.6.238",
+                "code": "2178-2",
+                "display": "Latin American"
+              }
+            },
+            {
+              "url": "text",
+              "valueString": "Latin American"
+            }
+          ]
+        },
+        {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+          "valueCode": "F"
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/patient-religion",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation",
+                "code": "1013",
+                "display": "Christian (non-Catholic, non-specific)"
+              }
+            ],
+            "text": "Christian"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
+          "valueAddress": {
+            "line": [
+              "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"]\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]"
+            ],
+            "city": "New York City",
+            "district": "Northeast",
+            "state": "NY",
+            "postalCode": "10001",
+            "country": "US"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+          "extension": [
+            {
+              "url": "tribalAffiliation",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                    "code": "187",
+                    "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                  }
+                ],
+                "text": "Shoshone"
+              }
+            },
+            {
+              "url": "isEnrolled",
+              "valueBoolean": true
+            }
+          ]
+        },
+        {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "446141000124107",
+                "display": "Identifies as female gender (finding)"
+              }
+            ],
+            "text": "Identifies as female gender"
+          }
+        }
+      ],
+      "identifier": [
+        {
+          "use": "usual",
+          "type": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                "code": "MR",
+                "display": "Medical Record Number"
+              }
+            ]
+          },
+          "system": "http://hospital.smarthealthit.org",
+          "value": "34332234"
+        },
+        {
+          "type": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                "code": "SS",
+                "display": "Social Security Number"
+              }
+            ]
+          },
+          "system": "http://hl7.org/fhir/sid/us-ssn",
+          "value": "12345"
+        }
+      ],
+      "active": true,
+      "name": [
+        {
+          "use": "official",
+          "family": "Newman",
+          "given": [
+            "Alice",
+            "C"
+          ],
+          "prefix": [
+            "Mr."
+          ]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "phone",
+          "value": "(573)923-4567",
+          "use": "work"
+        },
+        {
+          "system": "phone",
+          "value": "(816)234-5123",
+          "use": "work"
+        },
+        {
+          "system": "phone",
+          "value": "(913)222-1324",
+          "use": "home"
+        },
+        {
+          "system": "phone",
+          "value": "(212)555-5554",
+          "use": "mobile"
+        },
+        {
+          "system": "email",
+          "value": "Alice.Newman@gmail.com"
+        }
+      ],
+      "gender": "female",
+      "birthDate": "1980-11-15",
+      "deceasedBoolean": false,
+      "address": [
+        {
+          "line": [
+            "[\"[\\\"23 Maple Street\\\"]\"]"
+          ],
+          "city": "New York City",
+          "district": "Northeast",
+          "state": "NY",
+          "postalCode": "12201",
+          "country": "US",
+          "period": {
+            "start": "2021-07-05T00:00:00+00:00",
+            "end": "2023-06-05T00:00:00+00:00"
+          }
+        },
+        {
+          "line": [
+            "[\"[\\\"456 Oak Avenue\\\"]\"]"
+          ],
+          "city": "Syracuse",
+          "district": "Northeast",
+          "state": "NY",
+          "postalCode": "13202",
+          "country": "US"
+        },
+        {
+          "line": [
+            "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"]\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]"
+          ],
+          "city": "New York City",
+          "district": "Northeast",
+          "state": "NY",
+          "postalCode": "10001",
+          "country": "US",
+          "period": {
+            "start": "2023-07-05T00:00:00+00:00"
+          }
+        }
+      ],
+      "maritalStatus": {
+        "coding": [
+          {
+            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+            "code": "M",
+            "display": "Married"
+          }
+        ],
+        "text": "Single"
+      },
+      "contact": [
+        {
+          "relationship": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                  "code": "N"
+                }
+              ]
+            }
+          ],
+          "name": {
+            "family": "Jacob",
+            "given": [
+              "Newman"
+            ]
+          },
+          "telecom": [
+            {
+              "system": "phone",
+              "value": "(212)555-5553",
+              "use": "mobile"
+            },
+            {
+              "system": "email",
+              "value": "Jnewman@gmail.com"
+            }
+          ],
+          "address": {
+            "line": [
+              "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"]\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]"
+            ],
+            "city": "New York City",
+            "district": "Northeast",
+            "state": "NY",
+            "postalCode": "10001",
+            "country": "US",
+            "period": {
+              "start": "2023-07-05T00:00:00+00:00"
+            }
+          }
+        }
+      ],
+      "communication": [
+        {
+          "language": {
+            "coding": [
+              {
+                "system": "urn:ietf:bcp:47",
+                "code": "en",
+                "display": "English"
+              }
+            ]
+          }
+        }
+      ]
+    }
+    }
+  ]
+}
