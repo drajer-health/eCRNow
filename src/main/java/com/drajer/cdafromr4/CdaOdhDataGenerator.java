@@ -698,11 +698,6 @@ public class CdaOdhDataGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
     }
 
-    sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.ODH_SECTION_TEMPLATE_ID));
-    sb.append(
-        CdaGeneratorUtils.getXmlForTemplateId(
-            CdaGeneratorConstants.SOC_HISTORY_SEC_TEMPLATE_ID,
-            CdaGeneratorConstants.SOC_HISTORY_SEC_TEMPLATE_ID_EXT));
     sb.append(
         CdaGeneratorUtils.getXmlForTemplateId(
             CdaGeneratorConstants.ODH_SECTION_TEMPLATE_ID,
