@@ -358,6 +358,8 @@ public class KarProcessorImpl implements KarProcessor {
         throw e;
       }
     }
+    
+    // Save Data only if everything is good .
   }
 
   private PublicHealthMessage getPublicHealthMessage(
