@@ -267,6 +267,12 @@ public class KarProcessorImpl implements KarProcessor {
                         action.getType());
                     action.process(kd, ehrInterface);
 
+                    // persist relevant outputs
+                    if (kd.getPhm() != null) {
+                      logger.info("Updating database with PhMesssage data ");
+                      phDao.saveOrUpdate(kd.getPhm());
+                    }
+
                     saveDataForDebug(kd);
                     logger.info(
                         " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
@@ -358,6 +364,8 @@ public class KarProcessorImpl implements KarProcessor {
         throw e;
       }
     }
+
+    // Save Data only if everything is good
   }
 
   private PublicHealthMessage getPublicHealthMessage(
