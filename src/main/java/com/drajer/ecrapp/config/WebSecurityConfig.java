@@ -1,17 +1,22 @@
 package com.drajer.ecrapp.config;
 
+import java.util.Arrays;
 import javax.servlet.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -38,6 +43,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/auth/refresh_token");
   }
 
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(Arrays.asList("*"));
+    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(Arrays.asList("*"));
+    //   config.setAllowCredentials(true);
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
+  }
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     logger.info("*******************************************************************");
@@ -50,8 +67,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
       Filter customFilter =
           (Filter) context.getAutowireCapableBeanFactory().autowire(classInstance, 1, true);
-
-      http.csrf()
+      http.cors()
+          .and()
+          .csrf()
           .disable()
           .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
           .authorizeRequests()
@@ -59,7 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .authenticated();
     } else {
       logger.info("Token Filter class Name is empty");
-      http.csrf().disable().authorizeRequests().anyRequest().permitAll();
+      http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
     }
   }
 }
