@@ -150,19 +150,19 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
       try {
         if (startDate != null) {
-          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(startDate);
+          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(startDate);
         }
         if (endDate != null) {
-          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(endDate);
+          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(endDate);
         }
 
         if (lastUpdatedStartTime != null) {
           eicrLastUpdatedStartTime =
-              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
+              new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedStartTime);
         }
         if (lastUpdatedEndTime != null) {
           eicrLastUpdatedEndTime =
-              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
+              new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedEndTime);
         }
 
       } catch (Exception e) {
@@ -223,10 +223,10 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
       if (lastUpdatedStartTime != null) {
         eicrLastUpdatedStartTime =
-            new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
+            new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedStartTime);
       }
       if (lastUpdatedEndTime != null) {
-        eicrLastUpdatedEndTime = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
+        eicrLastUpdatedEndTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedEndTime);
       }
 
     } catch (Exception e) {
