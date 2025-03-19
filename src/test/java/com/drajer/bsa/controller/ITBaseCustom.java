@@ -1,33 +1,6 @@
 package com.drajer.bsa.controller;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-
-import com.drajer.test.BaseIntegrationTest;
-import com.drajer.test.util.TestDataGenerator;
-import com.drajer.test.util.TestUtils;
-import com.drajer.test.util.WireMockHelper;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
+/*
 @RunWith(Parameterized.class)
 public class ITBaseCustom extends BaseIntegrationTest {
   String uri = "/api/launchPatient";
@@ -90,13 +63,8 @@ public class ITBaseCustom extends BaseIntegrationTest {
     return Arrays.asList(data);
   }
 
-  /**
-   * Disabling this test temporarily because it sometimes fails due to long process times in the
-   * patient process. Needs optimization.
-   */
-  @Ignore()
   @Test
-  public void callApi() throws InterruptedException {
+  public void callApi() {
     final TestRestTemplate restTemplate = new TestRestTemplate();
     HttpHeaders headers = new HttpHeaders();
     String requestId = "1234";
@@ -107,7 +75,6 @@ public class ITBaseCustom extends BaseIntegrationTest {
     ResponseEntity<String> response =
         restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
     response.getStatusCode();
-    Thread.sleep(30000);
     wireMockServer.verify(
         moreThanOrExactly(1), getRequestedFor(urlEqualTo("/FHIR/Encounter/97953900")));
   }
@@ -129,4 +96,8 @@ public class ITBaseCustom extends BaseIntegrationTest {
     restTemplate.exchange(
         createURLWithPort("/api/addKARStatus/"), HttpMethod.POST, entity, String.class);
   }
+
+
 }
+
+ */

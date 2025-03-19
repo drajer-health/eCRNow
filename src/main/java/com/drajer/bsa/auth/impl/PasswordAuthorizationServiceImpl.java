@@ -7,8 +7,6 @@ import com.jayway.jsonpath.JsonPath;
 import jakarta.transaction.Transactional;
 import java.security.KeyStoreException;
 import java.util.Objects;
-import javax.transaction.Transactional;
-import net.minidev.json.JSONArray;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;

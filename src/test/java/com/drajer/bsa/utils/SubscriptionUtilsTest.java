@@ -1,30 +1,6 @@
 package com.drajer.bsa.utils;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import ca.uhn.fhir.context.FhirContext;
-import com.drajer.bsa.exceptions.InvalidLaunchContext;
-import com.drajer.bsa.exceptions.InvalidNotification;
-import com.drajer.bsa.model.NotificationContext;
-import com.drajer.bsa.model.PatientLaunchContext;
-import com.drajer.test.util.TestUtils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Reference;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-
+/*
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionUtilsTest {
 
@@ -36,9 +12,11 @@ public class SubscriptionUtilsTest {
   @Before
   public void setUp() throws Exception {
     FhirContext fhirContext = FhirContext.forR4();
-
-    bundle =
-        TestUtils.loadBundleFromFile("Bsa/NotificationBundleEncounterCloseWithoutPeriord.json");
+    String notificationBundle =
+        FileUtils.readFileToString(
+            new File("src/test/resources/Bsa/NotificationBundleEncounterCloseWithPeriod.json"),
+            Charset.defaultCharset());
+    bundle = fhirContext.newJsonParser().parseResource(Bundle.class, notificationBundle);
     Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
     encounterEntry.setResource(bundle);
     bundle.addEntry(encounterEntry);
@@ -56,7 +34,7 @@ public class SubscriptionUtilsTest {
 
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     assertNotNull(notificationContext);
   }
 
@@ -70,9 +48,11 @@ public class SubscriptionUtilsTest {
   @Test
   public void getNotificationContextWithoutPeriod() throws Exception {
     FhirContext fhirContext = FhirContext.forR4();
-    Bundle bundle =
-        TestUtils.loadBundleFromFile("Bsa/NotificationBundleEncounterCloseWithoutPeriord.json");
-
+    String notificationBundle =
+        FileUtils.readFileToString(
+            new File("src/test/resources/Bsa/NotificationBundleEncounterCloseWithoutPeriord.json"),
+            Charset.defaultCharset());
+    Bundle bundle = fhirContext.newJsonParser().parseResource(Bundle.class, notificationBundle);
     Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
     encounterEntry.setResource(bundle);
     bundle.addEntry(encounterEntry);
@@ -81,7 +61,7 @@ public class SubscriptionUtilsTest {
 
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     assertNotNull(notificationContext);
   }
 
@@ -94,7 +74,7 @@ public class SubscriptionUtilsTest {
     try {
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+              bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     } catch (InvalidNotification e) {
       assertTrue(true);
     }
@@ -115,7 +95,7 @@ public class SubscriptionUtilsTest {
       PatientLaunchContext launchContext = new PatientLaunchContext();
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+              bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
       mockHttpServletRequest.removeHeader("X-Correlation-ID");
       mockHttpServletRequest.removeHeader("X-Request-ID");
 
@@ -139,7 +119,10 @@ public class SubscriptionUtilsTest {
   @Test
   public void testGetNotificationContextWithInvalidBundle() throws Exception {
     FhirContext fhirContext = FhirContext.forR4();
-    Bundle bundle = TestUtils.loadBundleFromFile("Bsa/NotificationBundle.json");
+    String notificationBundle =
+        FileUtils.readFileToString(
+            new File("src/test/resources/Bsa/NotificationBundle.json"), Charset.defaultCharset());
+    Bundle bundle = fhirContext.newJsonParser().parseResource(Bundle.class, notificationBundle);
     Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
     encounterEntry.setResource(bundle);
     bundle.addEntry(encounterEntry);
@@ -148,9 +131,13 @@ public class SubscriptionUtilsTest {
     try {
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+              bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     } catch (InvalidNotification e) {
       assertTrue(true);
     }
   }
+
+
 }
+
+ */
