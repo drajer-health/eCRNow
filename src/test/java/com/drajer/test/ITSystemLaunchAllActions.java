@@ -27,6 +27,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   WireMockHelper stubHelper;
 
   @Before
-  public void launchTestSetUp() throws IOException {
+  public void launchTestSetUp() throws IOException, JSONException {
 
     logger.info("Executing Test {}: ", testCaseId);
     tx = session.beginTransaction();
@@ -427,7 +428,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     }
   }
 
-  private void mockRestApiUrl() {
+  private void mockRestApiUrl() throws JSONException {
     JSONObject jsonObject = new JSONObject(systemLaunchPayload);
 
     StringBuilder sb1 = new StringBuilder(200);

@@ -60,7 +60,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 null,
                 null,
                 null);
-    BooleanType value = (BooleanType) result.getParameter(PARAM);
+    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {
       return value.getValue();
@@ -124,7 +124,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             } else {
 
-              Type value = variableResult.getParameter(PARAM);
+              Type value = variableResult.getParameter(PARAM).getValue();
               paramComponent.setName("%" + exp.getName());
               paramComponent.setValue(value);
 
@@ -548,7 +548,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 null,
                 null,
                 null);
-    BooleanType value = (BooleanType) result.getParameter(PARAM);
+    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {
       return value.getValue();

@@ -11,6 +11,7 @@ import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -113,7 +114,7 @@ public class EicrDaoTest {
   }
 
   @Test
-  public void getMaxVersionId() throws JsonProcessingException {
+  public void getMaxVersionId() throws JsonProcessingException, JSONException {
 
     // First Row with docverison 1.0
     eicrDaoImpl.saveOrUpdate(expectedEicr);

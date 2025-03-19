@@ -114,7 +114,7 @@ public abstract class BaseIntegrationTest {
     return TestUtils.getFileContentAsString(systemLaunchFile);
   }
 
-  protected void createClientDetails(String clientDetailsFile) throws IOException {
+  protected void createClientDetails(String clientDetailsFile) throws IOException, JSONException {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
 

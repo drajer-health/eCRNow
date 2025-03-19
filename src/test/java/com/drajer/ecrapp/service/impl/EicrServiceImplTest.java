@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.IdType;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -460,7 +461,7 @@ public class EicrServiceImplTest {
   }
 
   @Test
-  public void getEicrData() {
+  public void getEicrData() throws JSONException {
 
     Map<String, String> searchParams = new HashMap<>();
     searchParams.put("eicrId", "67735647");
@@ -487,7 +488,7 @@ public class EicrServiceImplTest {
   }
 
   @Test
-  public void getRRData() {
+  public void getRRData() throws JSONException {
 
     Map<String, String> searchParams = new HashMap<>();
     searchParams.put("eicrId", "67735647");
@@ -515,7 +516,7 @@ public class EicrServiceImplTest {
 
   @Test
   public void getEicrAndRRByXRequestId()
-      throws JsonParseException, JsonMappingException, IOException {
+      throws JsonParseException, JsonMappingException, IOException, JSONException {
 
     List<Eicr> eicrList = new ArrayList<>();
     eicrList.add(eicr);

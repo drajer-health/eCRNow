@@ -2,6 +2,7 @@ package com.drajer.ecrapp.fhir.utils.ecrretry;
 
 import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.api.PagingHttpMethodEnum;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.gclient.IGetPage;
 import ca.uhn.fhir.rest.gclient.IGetPageTyped;
@@ -127,6 +128,11 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public IGetPageUntyped byUrl(String thePageUrl) {
+    throw new NotImplementedOperationException("The requested operation is not implemented");
+  }
+
+  @Override
+  public IGetPageTyped<IBaseBundle> usingMethod(PagingHttpMethodEnum pagingHttpMethodEnum) {
     throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 }

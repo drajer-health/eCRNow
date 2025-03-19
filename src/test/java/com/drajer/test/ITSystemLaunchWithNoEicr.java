@@ -16,6 +16,7 @@ import jakarta.persistence.criteria.Root;
 import java.io.IOException;
 import java.util.*;
 import org.hibernate.query.Query;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +53,7 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
   WireMockHelper stubHelper;
 
   @Before
-  public void launchTestSetUp() throws IOException {
+  public void launchTestSetUp() throws IOException, JSONException {
 
     logger.info("Executing Test {}: ", testCaseId);
     tx = session.beginTransaction();
