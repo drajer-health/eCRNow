@@ -1,23 +1,23 @@
-//package com.drajer.cdafromdstu2;
+// package com.drajer.cdafromdstu2;
 //
-//import ca.uhn.fhir.model.api.IDatatype;
-//import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-//import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-//import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-//import ca.uhn.fhir.model.dstu2.resource.Observation;
-//import ca.uhn.fhir.model.primitive.StringDt;
-//import com.drajer.eca.model.MatchedTriggerCodes;
-//import java.util.ArrayList;
-//import java.util.HashSet;
-//import java.util.List;
-//import java.util.Set;
-//import org.junit.jupiter.api.Test;
-//import org.powermock.core.classloader.annotations.PowerMockIgnore;
-//import org.junit.Assert;
-//import org.junit.Ignore;
+// import ca.uhn.fhir.model.api.IDatatype;
+// import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+// import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+// import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
+// import ca.uhn.fhir.model.dstu2.resource.Observation;
+// import ca.uhn.fhir.model.primitive.StringDt;
+// import com.drajer.eca.model.MatchedTriggerCodes;
+// import java.util.ArrayList;
+// import java.util.HashSet;
+// import java.util.List;
+// import java.util.Set;
+// import org.junit.jupiter.api.Test;
+// import org.powermock.core.classloader.annotations.PowerMockIgnore;
+// import org.junit.Assert;
+// import org.junit.Ignore;
 //
 //
-//public class CdaResultGeneratorTest extends BaseGenerator {
+// public class CdaResultGeneratorTest extends BaseGenerator {
 //
 //  @Test
 //  public void generateResultsSectionTest() {
@@ -25,8 +25,9 @@
 //    StringBuilder codeXml = new StringBuilder(200);
 //    StringBuilder valueXml = new StringBuilder(200);
 //
-//@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-//public class CdaResultGeneratorTest {
+// @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*",
+// "javax.management.*"})
+// public class CdaResultGeneratorTest {
 //    CodeableConceptDt codeableConceptDt = new CodeableConceptDt();
 //    CodingDt codingDt = new CodingDt();
 //    codingDt
@@ -166,4 +167,4 @@
 //
 //    return obs;
 //  }
-//}
+// }

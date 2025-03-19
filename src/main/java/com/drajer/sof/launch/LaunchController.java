@@ -661,7 +661,7 @@ public class LaunchController {
   }
 
   private Date getTokenExpirationDateTime(Integer expiresIn) {
-    Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresIn));
+    Instant expireInstantTime = new Date().toInstant().plusSeconds(Long.valueOf(expiresIn));
     return new Date().from(expireInstantTime);
   }
 

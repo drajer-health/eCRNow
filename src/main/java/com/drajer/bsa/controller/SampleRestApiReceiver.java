@@ -7,6 +7,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +26,7 @@ public class SampleRestApiReceiver {
 
   @CrossOrigin
   @PostMapping(value = "/api/receiveEicr")
-  public JSONObject receiveEicr(
+  public ResponseEntity<Object> receiveEicr(
       @RequestBody RestApiBody body, HttpServletRequest request, HttpServletResponse response) {
 
     logger.info(
@@ -40,7 +42,7 @@ public class SampleRestApiReceiver {
 
     JSONObject responseObject = new JSONObject();
     responseObject.put("status", "Success");
+    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseObject.toString());
 
-    return responseObject;
   }
 }
