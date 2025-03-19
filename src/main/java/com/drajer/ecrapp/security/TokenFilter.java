@@ -1,16 +1,12 @@
 package com.drajer.ecrapp.security;
 
-import com.drajer.sof.model.ClientDetails;
-import com.drajer.sof.service.ClientDetailsService;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.stream.Collectors;
+import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +42,13 @@ public class TokenFilter extends OncePerRequestFilter {
 
       UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
           new UsernamePasswordAuthenticationToken(
-              "user", null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
-
+              "user", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
       SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
       chain.doFilter(request, response);
     } else {
+      //      log.error("Access token validation failed.");
+      //      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       chain.doFilter(request, response);
     }
   }
