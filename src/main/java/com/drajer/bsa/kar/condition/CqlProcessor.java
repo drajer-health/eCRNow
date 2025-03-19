@@ -56,7 +56,7 @@ public class CqlProcessor implements BsaConditionProcessor {
                 cqlCondition.getTerminologyEndpoint());
 
     BooleanType value =
-        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
+        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression()).getValue();
 
     return value.getValue();
   }

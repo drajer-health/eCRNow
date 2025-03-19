@@ -119,16 +119,16 @@ public class SubscriptionUtils {
       Parameters p = (Parameters) bec.getResource();
 
       CodeType subsType =
-          ((p.getParameter(TYPE_PARAMETER) instanceof CodeType)
-              ? (CodeType) p.getParameter(TYPE_PARAMETER)
+          ((p.getParameterValue(TYPE_PARAMETER) instanceof CodeType)
+              ? (CodeType) p.getParameter(TYPE_PARAMETER).getValue()
               : null);
       Reference subsRef =
-          ((p.getParameter(SUBSCRIPTION_PARAMETER) instanceof Reference)
-              ? (Reference) p.getParameter(SUBSCRIPTION_PARAMETER)
+          ((p.getParameterValue(SUBSCRIPTION_PARAMETER) instanceof Reference)
+              ? (Reference) p.getParameter(SUBSCRIPTION_PARAMETER).getValue()
               : null);
       CanonicalType subTopic =
-          ((p.getParameter(TOPIC_PARAMETER) instanceof CanonicalType)
-              ? (CanonicalType) p.getParameter(TOPIC_PARAMETER)
+          ((p.getParameterValue(TOPIC_PARAMETER) instanceof CanonicalType)
+              ? (CanonicalType) p.getParameter(TOPIC_PARAMETER).getValue()
               : null);
 
       if (subsType != null
