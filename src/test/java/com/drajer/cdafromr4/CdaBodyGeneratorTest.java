@@ -5,7 +5,9 @@ import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.Test;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaBodyGeneratorTest extends BaseGeneratorTest {
 
   private static final String EMPTY_SECTION_BODY_CDA_FILE =
