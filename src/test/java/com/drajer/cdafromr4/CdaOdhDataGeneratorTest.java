@@ -19,9 +19,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({CdaGeneratorUtils.class})
 public class CdaOdhDataGeneratorTest extends BaseGeneratorTest {
 
-  private static final String ODH_CDA_FILE = "CdaTestData/Cda/Odh/odh.xml";
+  private static final String ODH_CDA_FILE = "CdaTestData/Cda/odh/odh.xml";
 
-  private static final String EMPTY_ODH_CDA_FILE = "CdaTestData/Cda/odh/emptyOdh.xml";
+  private static final String EMPTY_ODH_CDA_FILE = "CdaTestData/Cda/odh/empty_odh.xml";
 
   @Test
   public void testGenerateOdhSection() {
