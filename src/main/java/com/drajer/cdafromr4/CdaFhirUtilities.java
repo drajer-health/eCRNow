@@ -2507,6 +2507,12 @@ public class CdaFhirUtilities {
       }
 
       return val;
+    } else {
+      Pair<Date, TimeZone> low = null;
+      Pair<Date, TimeZone> high = null;
+      val +=
+          CdaGeneratorUtils.getXmlForValueIVLWithTS(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, low, high);
     }
 
     return val;

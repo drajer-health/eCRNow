@@ -231,7 +231,7 @@ public class CdaVitalSignsGenerator {
           cc = oc.getCode();
         }
 
-        if (oc.hasValue()) {
+        if (oc.hasValue() && oc.getValue() instanceof Quantity) {
           val = oc.getValue();
         }
 
@@ -331,9 +331,12 @@ public class CdaVitalSignsGenerator {
 
     if (val instanceof Quantity) {
       Quantity dt = (Quantity) val;
+
       lrEntry.append(CdaFhirUtilities.getQuantityXml(dt, CdaGeneratorConstants.VAL_EL_NAME, true));
     } else {
-      lrEntry.append(CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true));
+      lrEntry.append(
+          CdaGeneratorUtils.getXmlForNfQuantity(
+              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI, true));
     }
 
     // Add interpretation code.

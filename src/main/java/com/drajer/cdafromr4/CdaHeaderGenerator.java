@@ -701,7 +701,16 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
 
-    sb.append(getLocationXml(data.getLocation(), data.getOrganization(), details));
+    if (data.getLocation() != null && data.getLocation().hasAddress()) {
+      Address address = data.getLocation().getAddress();
+      if (address.hasCity() && address.hasState() && address.hasPostalCode() && address.hasLine()) {
+        sb.append(getLocationXml(data.getLocation(), data.getOrganization(), details));
+      } else {
+        sb.append(getLocationXml(null, data.getOrganization(), details));
+      }
+    } else {
+      sb.append(getLocationXml(null, data.getOrganization(), details));
+    }
 
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(

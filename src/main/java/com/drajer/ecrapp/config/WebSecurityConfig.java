@@ -29,18 +29,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Value("${token.validator.class}")
   private String tokenFilterClassName;
 
+  @Value("${security.whitelist-endpoints}")
+  private String[] whitelistEndpoints;
+
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring()
-        .antMatchers(
-            "/meta/**",
-            "/actuator/**",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/api/receiveEicr",
-            "/api/auth/generate-token",
-            "/api/auth/generateAuthToken",
-            "/api/auth/refresh_token");
+
+    if (whitelistEndpoints != null && whitelistEndpoints.length > 0) {
+
+      web.ignoring().antMatchers(whitelistEndpoints);
+    } else {
+      web.ignoring()
+          .antMatchers(
+              "/meta/**",
+              "/actuator/**",
+              "/swagger-ui/**",
+              "/v3/api-docs/**",
+              "/api/receiveEicr",
+              "/api/auth/generate-token",
+              "/api/auth/generateAuthToken",
+              "/api/auth/refresh-token");
+    }
   }
 
   @Bean
