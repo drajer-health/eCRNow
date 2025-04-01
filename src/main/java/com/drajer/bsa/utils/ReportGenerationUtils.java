@@ -1,9 +1,8 @@
 package com.drajer.bsa.utils;
 
+import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.fhirecr.FhirGeneratorConstants;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.dstu3.model.codesystems.ObservationCategory;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -219,5 +218,30 @@ public class ReportGenerationUtils {
       }
     }
     return text;
+  }
+
+  public static Set<Resource> filterPregancyObservationn(
+      Set<Resource> res, List<Map<String, Object>> pregnancyCodes) {
+
+    logger.info(" Getting observations for codes {}", pregnancyCodes);
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      for (Resource r : res) {
+
+        Observation obs = (Observation) (r);
+
+        if (obs.hasCode() && obs.getCode().hasCoding()) {
+          for (Map<String, Object> pregnancyCodeMap : pregnancyCodes) {
+            String system = (String) pregnancyCodeMap.get("system");
+            String code = (String) pregnancyCodeMap.get("code");
+            if (CdaFhirUtilities.isCodePresent(
+                Collections.singletonList(obs.getCode()), code, system)) {
+              returnVal.add(r);
+            }
+          }
+        }
+      }
+    }
+    return returnVal;
   }
 }

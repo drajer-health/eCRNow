@@ -14,6 +14,7 @@ public final class BsaTypes {
     SOF_PROVIDER,
     USER_NAME_PWD,
     SOF_BACKEND,
+    SOF_SYSTEM,
     UNKNOWN
   }
 
@@ -246,6 +247,7 @@ public final class BsaTypes {
     else if (t == AuthenticationType.USER_NAME_PWD) return "UserNamePwd";
     else if (t == AuthenticationType.SOF_BACKEND) return "SofBackend";
     else if (t == AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH) return "MultiTenantSystemLaunch";
+    else if (t == AuthenticationType.SOF_SYSTEM) return "SofSystem";
     else return UNKNOWN;
   }
 
@@ -254,8 +256,8 @@ public final class BsaTypes {
     if (s.contentEquals("System")) return AuthenticationType.SYSTEM;
     else if (s.contentEquals("SofProvider")) return AuthenticationType.SOF_PROVIDER;
     else if (s.contentEquals("UserNamePwd")) return AuthenticationType.USER_NAME_PWD;
-    else if (s.contentEquals("SofBackend")) return AuthenticationType.SOF_BACKEND;
-    else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_BACKEND;
+    else if (s.contentEquals("SofBackend")) return AuthenticationType.SOF_SYSTEM;
+    else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_SYSTEM;
     else if (s.contentEquals("MultiTenantSystemLaunch"))
       return AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH;
     else return AuthenticationType.UNKNOWN;

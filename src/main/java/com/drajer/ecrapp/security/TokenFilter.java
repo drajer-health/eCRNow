@@ -49,7 +49,8 @@ public class TokenFilter extends OncePerRequestFilter {
       chain.doFilter(request, response);
     } else {
       log.error("Access token validation failed.");
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      // response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      chain.doFilter(request, response);
     }
   }
 

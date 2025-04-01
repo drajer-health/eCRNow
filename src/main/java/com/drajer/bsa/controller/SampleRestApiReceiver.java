@@ -42,7 +42,8 @@ public class SampleRestApiReceiver {
 
     JSONObject responseObject = new JSONObject();
     responseObject.put("status", "Success");
-    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseObject.toString());
-
+    return ResponseEntity.ok()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(responseObject.toString());
   }
 }

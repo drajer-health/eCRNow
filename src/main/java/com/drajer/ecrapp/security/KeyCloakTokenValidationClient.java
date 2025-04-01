@@ -120,10 +120,8 @@ public class KeyCloakTokenValidationClient {
         LOGGER.error("Failed to authenticate: {}", response.message());
         return false;
       }
-      System.out.println(response);
 
       String responseBody = response.body() != null ? response.body().string() : "{}";
-      System.out.println(responseBody);
       return new JSONObject(responseBody);
 
     } catch (IOException e) {

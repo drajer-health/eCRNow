@@ -25,10 +25,28 @@ public class WebSecurityConfig {
   @Value("${token.validator.class}")
   private String tokenFilterClassName;
 
+  private static final String[] AUTH_WHITELIST = {
+    "/v2/api-docs",
+    "/v3/api-docs",
+    "/v3/api-docs/**",
+    "/swagger-resources",
+    "/swagger-resources/**",
+    "/configuration/ui",
+    "/configuration/security",
+    "/swagger-ui/**",
+    "/webjars/**",
+    "/swagger-ui.html",
+    "/meta/**",
+    "/actuator/**",
+    "/api/auth/refresh-token",
+    "/api/receiveEicr",
+    "/api/auth/generate-token",
+    "/api/auth/generateAuthToken"
+  };
+
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) ->
-        web.ignoring().requestMatchers("/meta/**", "/actuator/**", "/api/auth/generate-token");
+    return (web) -> web.ignoring().requestMatchers(AUTH_WHITELIST);
   }
 
   @Bean
@@ -44,14 +62,15 @@ public class WebSecurityConfig {
       Filter customFilter =
           (Filter) context.getAutowireCapableBeanFactory().autowire(classInstance, 1, true);
 
-      http.securityMatcher("/api/**")
-          .csrf(csrf -> csrf.disable())
-          .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
-          .authorizeHttpRequests()
-          .requestMatchers("/api/auth/generate-token")
-          .permitAll()
-          .anyRequest()
-          .authenticated();
+      http.csrf(csrf -> csrf.disable())
+          .authorizeHttpRequests(
+              (authorize) ->
+                  authorize
+                      .requestMatchers(AUTH_WHITELIST)
+                      .permitAll()
+                      .anyRequest()
+                      .authenticated())
+          .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class);
 
     } else {
       logger.info("Token Filter class Name is empty");
