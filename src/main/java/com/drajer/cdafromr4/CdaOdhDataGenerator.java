@@ -433,12 +433,13 @@ public class CdaOdhDataGenerator {
     ObservationComponentComponent oc = getOccupationalHazardComponent(obs);
 
     if (oc != null && oc.hasValue()) {
+      String textVal = CdaFhirUtilities.getStringForType(oc.getValue());
       sb.append(
-          CdaFhirUtilities.getXmlForType(oc.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+          StringUtils.isNotBlank(textVal)
+              ? CdaGeneratorUtils.getXmlForValueString(textVal)
+              : CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI));
     } else {
-      sb.append(
-          CdaGeneratorUtils.getXmlForNullValueCD(
-              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
+      sb.append(CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI));
     }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
