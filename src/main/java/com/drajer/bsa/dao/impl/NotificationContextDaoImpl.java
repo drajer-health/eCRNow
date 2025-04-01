@@ -5,6 +5,8 @@ import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.*;
 import org.springframework.http.HttpStatus;
@@ -148,19 +150,19 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
       try {
         if (startDate != null) {
-          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(startDate);
+          eicrStartDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(startDate);
         }
         if (endDate != null) {
-          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(endDate);
+          eicrEndDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(endDate);
         }
 
         if (lastUpdatedStartTime != null) {
           eicrLastUpdatedStartTime =
-              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
+              new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedStartTime);
         }
         if (lastUpdatedEndTime != null) {
           eicrLastUpdatedEndTime =
-              new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
+              new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedEndTime);
         }
 
       } catch (Exception e) {
@@ -194,6 +196,11 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
   @Override
   public List<NotificationContext> getNotificationContextForReprocessing(
       UUID id, Map<String, String> searchParams) {
+    Date eicrLastUpdatedStartTime = null;
+    Date eicrLastUpdatedEndTime = null;
+    Integer limit;
+
+    limit = searchParams.get("limit") != null ? Integer.parseInt(searchParams.get("limit")) : 10;
 
     Criteria criteria = getSession().createCriteria(NotificationContext.class, "f");
 
@@ -202,25 +209,24 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
             .setProjection(Projections.property("nc.notificationResourceId"))
             .add(Restrictions.eqProperty("nc.notificationResourceId", "f.notificationResourceId"))
             .add(Restrictions.ne("nc.notificationProcessingStatus", "FAILED"))
-            .add(
-                Restrictions.in(
-                    "nc.notificationProcessingStatus", Arrays.asList("COMPLETED", "REPROCESSED")))
+            /*  .add(
+                 Restrictions.in(
+                     "nc.notificationProcessingStatus", Arrays.asList("FAILED")))
+
+            */
             .add(Restrictions.gtProperty("nc.lastUpdated", "f.lastUpdated"));
 
     String lastUpdatedStartTime = searchParams.get("lastUpdatedStartTime");
     String lastUpdatedEndTime = searchParams.get("lastUpdatedEndTime");
 
-    Date eicrLastUpdatedStartTime = null;
-    Date eicrLastUpdatedEndTime = null;
-
     try {
 
       if (lastUpdatedStartTime != null) {
         eicrLastUpdatedStartTime =
-            new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedStartTime);
+            new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedStartTime);
       }
       if (lastUpdatedEndTime != null) {
-        eicrLastUpdatedEndTime = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(lastUpdatedEndTime);
+        eicrLastUpdatedEndTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedEndTime);
       }
 
     } catch (Exception e) {
@@ -233,14 +239,33 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       criteria.add(Restrictions.ge("f.lastUpdated", eicrLastUpdatedStartTime));
     }
 
-    criteria.add(Subqueries.notExists(subquery));
-    if (searchParams.get("limit") != null) {
-      criteria.setMaxResults(Integer.parseInt(searchParams.get("limit")));
-    }
+    String[] properties = {"f.notificationResourceId"};
+    criteria.add(Subqueries.propertiesNotIn(properties, subquery));
 
     criteria.addOrder(Order.asc("f.lastUpdated"));
 
-    return criteria.list();
+    List<NotificationContext> notificationContexts = criteria.list();
+
+    Map<String, List<NotificationContext>> notificationsById =
+        notificationContexts
+            .stream()
+            .sorted(Comparator.comparing(NotificationContext::getLastUpdated).reversed())
+            .collect(Collectors.groupingBy(NotificationContext::getNotificationResourceId));
+    return notificationsById
+        .entrySet()
+        .stream()
+        .flatMap(
+            entry -> {
+              return IntStream.range(0, entry.getValue().size())
+                  .mapToObj(i -> new AbstractMap.SimpleEntry<>(entry.getValue().get(i), i + 1));
+            })
+        .filter(
+            notificationContextIntegerSimpleEntry ->
+                notificationContextIntegerSimpleEntry.getValue() == 1)
+        .map(Map.Entry::getKey)
+        .sorted(Comparator.comparing(NotificationContext::getLastUpdated))
+        .limit(limit)
+        .collect(Collectors.toList());
   }
 
   @Override

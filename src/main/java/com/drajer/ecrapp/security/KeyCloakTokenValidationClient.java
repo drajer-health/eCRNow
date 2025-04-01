@@ -68,12 +68,9 @@ public class KeyCloakTokenValidationClient {
         LOGGER.error("Failed to authenticate: {}", response.message());
         return false;
       }
-      System.out.println(response);
 
       String responseBody = response.body() != null ? response.body().string() : "{}";
-      System.out.println(responseBody);
       JSONObject jsonObj = new JSONObject(responseBody);
-      System.out.println(responseBody);
       boolean validationResponse = jsonObj.optBoolean("active", false);
       LOGGER.info("Access Token Validation Status: {}", validationResponse);
       return validationResponse;
@@ -120,10 +117,8 @@ public class KeyCloakTokenValidationClient {
         LOGGER.error("Failed to authenticate: {}", response.message());
         return false;
       }
-      System.out.println(response);
 
       String responseBody = response.body() != null ? response.body().string() : "{}";
-      System.out.println(responseBody);
       return new JSONObject(responseBody);
 
     } catch (IOException e) {

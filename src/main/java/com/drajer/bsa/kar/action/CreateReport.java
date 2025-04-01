@@ -259,9 +259,9 @@ public class CreateReport extends BsaAction {
           // Also update the payload in the KarProcessingData
           kd.setSubmittedCdaData(payload);
 
-          // Save the data in the table.
-          PublicHealthMessage phm = phDao.saveOrUpdate(msg);
-          kd.setPhm(phm);
+          // Do not save the data in the table here to better handle exceptions
+          // PublicHealthMessage phm = phDao.saveOrUpdate(msg);
+          kd.setPhm(msg);
           MDCUtils.addEicrDocId(msg.getSubmittedDataId());
           logger.info(
               "Public Health message created successfully with submittedDataId: {} version: {}",

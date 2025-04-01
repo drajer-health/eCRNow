@@ -134,7 +134,9 @@ public class DirectTransportImpl implements DataTransportInterface {
             hs.getDirectTlsVersion());
       } else {
 
-        logger.error(" Cannot send Direct message since both Direct Host and SMTP Urls are empty ");
+        String msg = " Cannot send Direct message since both Direct Host and SMTP Urls are empty ";
+        logger.error(msg);
+        throw new RuntimeException(msg);
       }
 
     } catch (Exception e) {

@@ -22,7 +22,7 @@ public class Dstu2CdaEncounterGeneratorTest extends BaseGenerator {
   private static final String ENCOUNTER_CDA_FILE = "CdaDstuTestData/Cda/Encounter/encounter.xml";
 
   private static final String EMPTY_ENCOUNTER_CDA_FILE =
-      "CdaDstuTestData/Cda/Encounter/emptyEncounter.xml";
+      "CdaDstuTestData/Cda/Encounter/empty_encounter.xml";
 
   private static final String ENCOUNTER_BUNDLE_FILE =
       "CdaDstuTestData/Bundle/EncounterBundle_97953900.json";
