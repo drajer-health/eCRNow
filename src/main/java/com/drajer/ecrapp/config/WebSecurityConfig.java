@@ -1,6 +1,8 @@
 package com.drajer.ecrapp.config;
 
 import jakarta.servlet.Filter;
+import java.util.Arrays;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -45,6 +51,32 @@ public class WebSecurityConfig {
   };
 
   @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(Arrays.asList("*"));
+    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(Arrays.asList("*"));
+    //   config.setAllowCredentials(true);
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("*")); // Allow all origins
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    // config.setAllowCredentials(true); // Optional: Enable if credentials are needed
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+
+    return source;
+  }
+
+  @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
     return (web) -> web.ignoring().requestMatchers(AUTH_WHITELIST);
   }
@@ -62,7 +94,8 @@ public class WebSecurityConfig {
       Filter customFilter =
           (Filter) context.getAutowireCapableBeanFactory().autowire(classInstance, 1, true);
 
-      http.csrf(csrf -> csrf.disable())
+      http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+          .csrf(csrf -> csrf.disable())
           .authorizeHttpRequests(
               (authorize) ->
                   authorize
