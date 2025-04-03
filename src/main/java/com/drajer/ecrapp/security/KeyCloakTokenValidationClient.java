@@ -113,13 +113,16 @@ public class KeyCloakTokenValidationClient {
 
     try (Response response = client.newCall(requestOne).execute()) {
 
+      String responseBody = response.body() != null ? response.body().string() : "{}";
+      JSONObject keyCloakResponse = new JSONObject(responseBody);
+
       if (!response.isSuccessful()) {
         LOGGER.error("Failed to authenticate: {}", response.message());
-        return false;
+        keyCloakResponse.put("isSuccess", false);
+        return keyCloakResponse;
       }
-
-      String responseBody = response.body() != null ? response.body().string() : "{}";
-      return new JSONObject(responseBody);
+      keyCloakResponse.put("isSuccess", true);
+      return keyCloakResponse;
 
     } catch (IOException e) {
       LOGGER.error("Exception - validateToken Method in KeyCloakTokenValidationClient", e);

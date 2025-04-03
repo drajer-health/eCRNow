@@ -29,15 +29,18 @@ public class KeycloakTokenController {
     }
 
     try {
-      Object tokenResponse = keyCloakTokenValidationClient.generateToken(tokenDetails);
-      if (tokenResponse != null) {
-        return ResponseEntity.ok()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(tokenResponse.toString());
-
-      } else {
+      JSONObject tokenResponse =
+          (JSONObject) keyCloakTokenValidationClient.generateToken(tokenDetails);
+      if (tokenResponse == null) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed.");
       }
+
+      boolean isSuccess = Boolean.parseBoolean(String.valueOf(tokenResponse.get("isSuccess")));
+      HttpStatus status = isSuccess ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+      return ResponseEntity.status(status)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(tokenResponse.toString());
+
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("An error occurred while validating the token: " + e.getMessage());
