@@ -416,6 +416,7 @@
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
+		<pluginManagement>
 		<plugins>
 
 
@@ -578,6 +579,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+		</pluginManagement>
 	</build>
 
 	<reporting>
