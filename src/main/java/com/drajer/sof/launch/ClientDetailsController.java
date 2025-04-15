@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,13 +51,15 @@ public class ClientDetailsController {
       BeanUtils.copyProperties(clientDetailsDTO, newClientDetails);
       clientDetailsService.saveOrUpdate(newClientDetails);
       BeanUtils.copyProperties(newClientDetails, clientDetailsDTO);
-      return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
+      return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(clientDetailsDTO);
     } else {
       logger.error("FHIR Server URL is already registered");
       JSONObject responseObject = new JSONObject();
       responseObject.put("status", "error");
       responseObject.put("message", "URL is already registered");
-      return new ResponseEntity<>(responseObject, HttpStatus.CONFLICT);
+      return ResponseEntity.status(409)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(responseObject);
     }
   }
 
@@ -84,13 +87,15 @@ public class ClientDetailsController {
       BeanUtils.copyProperties(clientDetailsDTO, updateClientDetails);
       clientDetailsService.saveOrUpdate(updateClientDetails);
       BeanUtils.copyProperties(updateClientDetails, clientDetailsDTO);
-      return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
+      return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(clientDetailsDTO);
     } else {
       logger.error("FHIR Server URL is already registered");
       JSONObject responseObject = new JSONObject();
       responseObject.put("status", "error");
       responseObject.put("message", "URL is already registered");
-      return new ResponseEntity<>(responseObject, HttpStatus.CONFLICT);
+      return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(responseObject);
     }
   }
 
