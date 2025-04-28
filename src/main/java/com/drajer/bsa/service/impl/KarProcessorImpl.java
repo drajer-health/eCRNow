@@ -242,7 +242,7 @@ public class KarProcessorImpl implements KarProcessor {
                 kd.setContextEncounter(
                     (Encounter)
                         ehrInterface.getResourceById(
-                            kd, "Encounter", nc.getNotificationResourceId()));
+                            kd, "Encounter", nc.getNotificationResourceId(), true));
                 nc.setNotifiedResource(kd.getContextEncounter());
               }
 

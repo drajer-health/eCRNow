@@ -43,7 +43,6 @@ import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
@@ -107,45 +106,44 @@ public class CdaFhirUtilities {
     return returnIds;
   }
 
-  public static Patient.ContactComponent getGuardianContact(List<ContactComponent> ccs) {
+  public static List<ContactComponent> getGuardianContacts(List<ContactComponent> ccs) {
+    List<ContactComponent> guardianContacts = new ArrayList<>();
 
     if (ccs != null && !ccs.isEmpty()) {
-
       for (ContactComponent cc : ccs) {
-
         if (cc.hasRelationship()) {
-
           for (CodeableConcept cd : cc.getRelationship()) {
-
+            // Check Text field first
             if (cd.getText() != null
                 && (cd.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME)
                     || cd.getText()
                         .equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME))) {
+              guardianContacts.add(cc);
+            }
 
-              return cc;
-            } else {
-              List<Coding> cs = cd.getCoding();
+            // Check Codings
+            for (Coding coding : cd.getCoding()) {
+              if (coding.hasSystem()
+                  && coding.hasCode()
+                  && (coding
+                          .getSystem()
+                          .equals(CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
+                      || coding
+                          .getSystem()
+                          .equals(CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
+                      || coding
+                          .getSystem()
+                          .equals(CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3))) {
 
-              for (Coding c : cs) {
-
-                if (c.hasSystem()
-                    && (c.getSystem()
-                            .contentEquals(
-                                CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
-                        || c.getSystem()
-                            .contentEquals(
-                                CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
-                        || c.getSystem()
-                            .contentEquals(CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3))
-                    && c.hasCode()
-                    && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.EMERGENCY_VALUE)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
-                        || c.getCode()
-                            .contentEquals(CdaGeneratorConstants.FHIR_EMERGENCY_CONTACT_VALUE))) {
-                  return cc;
+                if (coding.getCode().equals(CdaGeneratorConstants.GUARDIAN_VALUE)
+                    || coding.getCode().equals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
+                    || coding.getCode().equals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
+                    || coding.getCode().equals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
+                    || coding.getCode().equals(CdaGeneratorConstants.EMERGENCY_VALUE)
+                    || coding
+                        .getCode()
+                        .equals(CdaGeneratorConstants.FHIR_EMERGENCY_CONTACT_VALUE)) {
+                  guardianContacts.add(cc);
                 }
               }
             }
@@ -153,8 +151,7 @@ public class CdaFhirUtilities {
         }
       }
     }
-
-    return null;
+    return guardianContacts;
   }
 
   public static Identifier getIdentifierForSystem(List<Identifier> ids, String system) {

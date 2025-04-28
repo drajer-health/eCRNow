@@ -1214,39 +1214,70 @@ public class CdaGeneratorUtils {
   public static String getXmlForPIVLWithTS(String elName, String frequencyInHours) {
 
     String s = "";
-    s +=
-        CdaGeneratorConstants.START_XMLTAG
-            + elName
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.XSI_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.PIVL_TS_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + "institutionSpecified="
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.CCDA_TRUE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + "operator="
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-            + "\n"
-            + CdaGeneratorConstants.START_XMLTAG
-            + "period value="
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + frequencyInHours
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.UNIT_WITH_EQUAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.HOURS_UNITS_NAME
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.END_XMLTAG_NEWLN
-            + CdaGeneratorUtils.getXmlForEndElement(elName);
-
+    if (StringUtils.isNotBlank(frequencyInHours)) {
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.XSI_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.PIVL_TS_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + "institutionSpecified="
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.CCDA_TRUE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + "operator="
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + "\n"
+              + CdaGeneratorConstants.START_XMLTAG
+              + "period value="
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + frequencyInHours
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.UNIT_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.HOURS_UNITS_NAME
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN
+              + CdaGeneratorUtils.getXmlForEndElement(elName);
+    } else {
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.XSI_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.PIVL_TS_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + "institutionSpecified="
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.CCDA_TRUE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + "operator="
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + "\n"
+              + CdaGeneratorConstants.START_XMLTAG
+              + "period"
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + StringEscapeUtils.escapeXml10(CdaGeneratorConstants.NF_UNK)
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN
+              + CdaGeneratorUtils.getXmlForEndElement(elName);
+    }
     return s;
   }
 
