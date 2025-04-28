@@ -124,6 +124,9 @@
                 <statusCode code="completed"/>
                 <effectiveTime xsi:type="IVL_TS"><low value="20201023"/>
                 </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="UNK"/>
+                </effectiveTime>
                 <doseQuantity nullFlavor="NI"/>
                 <consumable>
                     <manufacturedProduct classCode="MANU">
@@ -146,6 +149,9 @@
                 <effectiveTime xsi:type="IVL_TS"><low nullFlavor="NI"/>
                     <high nullFlavor="NI"/>
                 </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="UNK"/>
+                </effectiveTime>
                 <doseQuantity nullFlavor="NI"/>
                 <consumable>
                     <manufacturedProduct classCode="MANU">
@@ -167,6 +173,9 @@
                 <statusCode code="active"/>
                 <effectiveTime xsi:type="IVL_TS"><low value="20201015143000+0100"/>
                     <high nullFlavor="NI"/>
+                </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="UNK"/>
                 </effectiveTime>
                 <doseQuantity value="500" unit="mg"/>
                 <consumable>

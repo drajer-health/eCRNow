@@ -470,7 +470,8 @@ public class PatientLaunchController {
     kd.getNotificationContext().setxRequestId(requestId);
     kd.setTokenRefreshThreshold(tokenRefreshThreshold);
     Resource res =
-        ehrService.getResourceById(kd, ResourceType.Encounter.toString(), context.getEncounterId());
+        ehrService.getResourceById(
+            kd, ResourceType.Encounter.toString(), context.getEncounterId(), true);
     nb.addEntry(new BundleEntryComponent().setResource(res));
 
     return nb;
