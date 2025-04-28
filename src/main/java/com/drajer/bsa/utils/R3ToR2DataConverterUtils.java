@@ -150,6 +150,17 @@ public class R3ToR2DataConverterUtils {
         specimens,
         ResourceType.Specimen.toString(),
         r4DataResourceIds);
+
+    Set<Resource> medicationRequests =
+        kd.getResourcesByType(ResourceType.MedicationRequest.toString());
+    addResourcesToR4FhirData(
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        medicationRequests,
+        ResourceType.MedicationRequest.toString(),
+        r4DataResourceIds);
   }
 
   public static void addAdministrativeResources(
