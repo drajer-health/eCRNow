@@ -1383,7 +1383,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
           }
         } // has Id Part in Reference
-      } else if (mAdm.hasRequest()) {
+      }
+
+      if (mAdm.hasRequest()) {
         Reference medRequestRef = (Reference) mAdm.getRequest();
 
         if (medRequestRef.getReferenceElement().hasIdPart()) {
