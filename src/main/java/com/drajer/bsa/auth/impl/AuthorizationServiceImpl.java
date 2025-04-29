@@ -8,6 +8,7 @@ import com.drajer.sof.model.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -76,7 +77,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         // Setup the OAuth Type flow.
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
-        map.add("scope", fsd.getScopes());
+        if (StringUtils.isNotBlank(fsd.getScopes())) {
+          map.add("scope", fsd.getScopes());
+        }
 
         if (Boolean.TRUE.equals(fsd.getRequireAud())) {
           map.add("aud", fsd.getFhirServerBaseURL());
