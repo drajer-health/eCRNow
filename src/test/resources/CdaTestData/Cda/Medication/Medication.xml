@@ -125,7 +125,7 @@
                 <effectiveTime xsi:type="IVL_TS"><low value="20201023"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <doseQuantity nullFlavor="NI"/>
                 <consumable>
@@ -150,7 +150,7 @@
                     <high nullFlavor="NI"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <doseQuantity nullFlavor="NI"/>
                 <consumable>
@@ -175,7 +175,7 @@
                     <high nullFlavor="NI"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <doseQuantity value="500" unit="mg"/>
                 <consumable>
