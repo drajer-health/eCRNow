@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -86,7 +87,10 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("scope", scopes);
+
+    if (StringUtils.isNotBlank(fsd.getScopes())) {
+      map.add("scope", fsd.getScopes());
+    }
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
