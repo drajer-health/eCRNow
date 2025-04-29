@@ -65,5 +65,6 @@ public class StartupUtils {
   @Value("${startup.timedelay}")
   private void setStartupTimeDelay(Integer val) {
     startupTimeDelay = val;
-  };
+  }
+  ;
 }

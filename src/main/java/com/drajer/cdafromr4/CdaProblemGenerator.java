@@ -227,8 +227,7 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
         // Split the system and code.
-        matchedCodesFromCc
-            .stream()
+        matchedCodesFromCc.stream()
             .filter(Objects::nonNull)
             .findFirst()
             .ifPresent(
@@ -506,8 +505,7 @@ public class CdaProblemGenerator {
     StringBuilder sb = new StringBuilder();
     if (matchedCodes != null && !matchedCodes.isEmpty()) {
 
-      matchedCodes
-          .stream()
+      matchedCodes.stream()
           .filter(Objects::nonNull)
           .findFirst()
           .ifPresent(

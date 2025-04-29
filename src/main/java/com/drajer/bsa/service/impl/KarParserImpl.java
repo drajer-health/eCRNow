@@ -506,24 +506,42 @@ public class KarParserImpl implements KarParser {
   }
 
   /**
-   * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing.
-   * Resources are only inserted if they are not already present.
+   * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing. Resources
+   * are only inserted if they are not already present.
    *
    * @param resource the resource to store.
    */
   private void addKarResourceToFhirRepository(Resource resource) {
     Bundle bundle;
     if (resource instanceof Library library) {
-      bundle = this.repository.search(Bundle.class, library.getClass(), Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              library.getClass(),
+              Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
     } else if (resource instanceof PlanDefinition planDef) {
-      bundle = this.repository.search(Bundle.class, planDef.getClass(), Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              planDef.getClass(),
+              Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
     } else if (resource instanceof Measure measure) {
-      bundle = this.repository.search(Bundle.class, measure.getClass(), Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              measure.getClass(),
+              Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
     } else if (resource instanceof ValueSet valueSet) {
-      bundle = this.repository.search(Bundle.class, valueSet.getClass(), Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              valueSet.getClass(),
+              Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
     } else {
       logger.info("Unexpected Resource Type - attempting to retrieve by ID");
-      bundle = this.repository.search(Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
+      bundle =
+          this.repository.search(
+              Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
     }
 
     if (!bundle.hasEntry()) {

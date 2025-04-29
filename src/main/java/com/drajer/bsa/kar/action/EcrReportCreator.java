@@ -935,8 +935,7 @@ public class EcrReportCreator extends ReportCreator {
     val.setStatus(NarrativeStatus.ADDITIONAL);
 
     String resultString =
-        resTobeAdded
-            .stream()
+        resTobeAdded.stream()
             .map(dres -> (DomainResource) (dres))
             .collect(Collectors.toList())
             .stream()
