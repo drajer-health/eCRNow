@@ -74,7 +74,7 @@ public class EhrFhirR4QueryServiceImplTest {
     Patient mockPatient = new Patient();
     mockPatient.setId("123");
     Mockito.lenient()
-        .when(ehrFhirR4QueryService.getResourceById(any(), any(), eq("Patient"), eq("123")))
+        .when(ehrFhirR4QueryService.getResourceById(any(), any(), eq("Patient"), eq("123"), true))
         .thenReturn(mockPatient);
 
     Map<String, ResourceType> resTypes = new HashMap<>();
@@ -86,6 +86,6 @@ public class EhrFhirR4QueryServiceImplTest {
     assertNotNull(result);
     assertTrue(result.containsKey(ResourceType.Patient));
     assertEquals(1, result.get(ResourceType.Patient).size());
-    verify(ehrFhirR4QueryService).getResourceById(any(), any(), eq("Patient"), eq("123"));
+    verify(ehrFhirR4QueryService).getResourceById(any(), any(), eq("Patient"), eq("123"), true);
   }
 }

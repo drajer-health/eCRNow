@@ -47,6 +47,9 @@
                 <statusCode code="active"/>
                 <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
                 </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="NI"/>
+                </effectiveTime>
                 <doseQuantity value="1" unit="TAB"/>
                 <consumable>
                     <manufacturedProduct classCode="MANU">
@@ -66,6 +69,9 @@
                 <id root="2.16.840.1.113883.1.1.1.1" extension="b6bd7100-48af-4c69-a557-c13235f72f74"/>
                 <statusCode code="active"/>
                 <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
+                </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <doseQuantity value="1" unit="TAB"/>
                 <consumable>

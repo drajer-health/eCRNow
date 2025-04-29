@@ -94,6 +94,8 @@ public class CdaMedicationGenerator {
         Quantity dose = null;
 
         String periodText = CdaGeneratorConstants.UNKNOWN_VALUE;
+        String period;
+        String periodUnit;
         if (med.hasDosage()) {
           dosageValue = med.getDosageFirstRep();
 
@@ -102,8 +104,8 @@ public class CdaMedicationGenerator {
             if (t != null && t.hasRepeat()) {
 
               Timing.TimingRepeatComponent repeat = t.getRepeat();
-              String period = repeat.hasPeriod() ? repeat.getPeriod().toString() : null;
-              String periodUnit = repeat.hasPeriodUnit() ? repeat.getPeriodUnit().toString() : null;
+              period = repeat.hasPeriod() ? repeat.getPeriod().toString() : null;
+              periodUnit = repeat.hasPeriodUnit() ? repeat.getPeriodUnit().toString() : null;
               String frequency =
                   repeat.hasFrequency() ? String.valueOf(repeat.getFrequency()) : null;
               periodText = CdaFhirUtilities.getNarrative(frequency, period, periodUnit);
@@ -436,6 +438,9 @@ public class CdaMedicationGenerator {
       sb.append(
           CdaGeneratorUtils.getXmlForPIVLWithTS(
               CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
+    } else {
+      sb.append(
+          CdaGeneratorUtils.getXmlForPIVLWithTS(CdaGeneratorConstants.EFF_TIME_EL_NAME, null));
     }
 
     // Add Route Code
@@ -1339,10 +1344,13 @@ public class CdaMedicationGenerator {
         }
 
         Quantity dose = null;
+
         if (medAdm.hasDosage()
             && medAdm.getDosage() != null
             && medAdm.getDosage().hasDose()
-            && medAdm.getDosage().getDose() != null) dose = medAdm.getDosage().getDose();
+            && medAdm.getDosage().getDose() != null) {
+          dose = medAdm.getDosage().getDose();
+        }
 
         medEntries.append(
             getEntryForMedication(
@@ -1350,7 +1358,7 @@ public class CdaMedicationGenerator {
                 medAdm.getMedication(),
                 medAdm.getEffective(),
                 medstatus,
-                null,
+                convertToDosage(medAdm.getDosage()),
                 details,
                 dose,
                 null,
@@ -1708,5 +1716,24 @@ public class CdaMedicationGenerator {
     }
 
     return retVal;
+  }
+
+  public static Dosage convertToDosage(
+      MedicationAdministration.MedicationAdministrationDosageComponent adminDosage) {
+    if (adminDosage == null) {
+      return null;
+    }
+
+    Dosage dosage = new Dosage();
+
+    if (adminDosage.hasText()) {
+      dosage.setText(adminDosage.getText());
+    }
+
+    if (adminDosage.hasRoute()) {
+      dosage.setRoute(adminDosage.getRoute().copy());
+    }
+
+    return dosage;
   }
 }

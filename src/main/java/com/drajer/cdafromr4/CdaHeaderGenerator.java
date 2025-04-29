@@ -5,11 +5,10 @@ import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_NPI_URL;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,21 +57,7 @@ public class CdaHeaderGenerator {
   }
 
   public static void loadProperties() {
-    String propertiesFileName = getPropertiesFileName();
-
-    try (InputStream input =
-        CdaHeaderGenerator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
-      if (input != null) {
-        Properties properties = new Properties();
-        properties.load(input);
-        appProps.putAll((Map) properties);
-
-      } else {
-        logger.error("Properties file {} not found in classpath!", propertiesFileName);
-      }
-    } catch (IOException e) {
-      logger.error("Error loading properties file :{} ", e);
-    }
+    appProps = (HashMap<String, String>) AppConfig.getAllProperties();
   }
 
   private static String getPropertiesFileName() {
@@ -561,7 +546,7 @@ public class CdaHeaderGenerator {
       sb.append(
           CdaGeneratorUtils.getXmlForText(
               CdaGeneratorConstants.NAME_EL_NAME, data.getOrganization().getName()));
-
+      sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom(), false, false));
       sb.append(CdaFhirUtilities.getAddressXml(data.getOrganization().getAddress(), false));
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
@@ -977,9 +962,10 @@ public class CdaHeaderGenerator {
     // Adding Guardian
     if (p.getContact() != null && !p.getContact().isEmpty()) {
 
-      ContactComponent guardianContact = CdaFhirUtilities.getGuardianContact(p.getContact());
+      List<ContactComponent> guardianContacts =
+          CdaFhirUtilities.getGuardianContacts(p.getContact());
 
-      if (guardianContact != null) {
+      for (ContactComponent guardianContact : guardianContacts) {
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));

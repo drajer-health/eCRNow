@@ -53,7 +53,8 @@ public interface EhrQueryService {
 
   void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
 
-  Resource getResourceById(KarProcessingData data, String resourceName, String id);
+  Resource getResourceById(
+      KarProcessingData data, String resourceName, String id, boolean applyFiltering);
 
   Resource getResourceByUrl(KarProcessingData data, String resourceName, String id);
 
