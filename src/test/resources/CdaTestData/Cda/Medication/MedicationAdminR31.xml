@@ -60,7 +60,7 @@
                     <high nullFlavor="NI"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <routeCode code="47625008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Intravenous route (qualifier value)"></routeCode>
                 <doseQuantity value="500" unit="mg"/>
@@ -85,7 +85,7 @@
                     <high nullFlavor="NI"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <routeCode code="47625008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Intravenous route (qualifier value)"></routeCode>
                 <doseQuantity value="500" unit="mg"/>
@@ -110,7 +110,7 @@
                     <high nullFlavor="NI"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <routeCode code="47625008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Intravenous route (qualifier value)"></routeCode>
                 <doseQuantity value="500" unit="mg"/>

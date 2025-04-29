@@ -48,7 +48,7 @@
                 <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <doseQuantity value="1" unit="TAB"/>
                 <consumable>
@@ -71,7 +71,7 @@
                 <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period nullFlavor="UNK"/>
+                    <period nullFlavor="NI"/>
                 </effectiveTime>
                 <doseQuantity value="1" unit="TAB"/>
                 <consumable>

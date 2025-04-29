@@ -1273,7 +1273,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + StringEscapeUtils.escapeXml10(CdaGeneratorConstants.NF_UNK)
+              + StringEscapeUtils.escapeXml10(CdaGeneratorConstants.NF_NI)
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN
               + CdaGeneratorUtils.getXmlForEndElement(elName);
