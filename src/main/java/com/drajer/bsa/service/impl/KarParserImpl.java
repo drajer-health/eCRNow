@@ -209,12 +209,16 @@ public class KarParserImpl implements KarParser {
 
   private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
   private static final String LOCAL_HOST_REPO_NAME = "local-repo";
-  private static final String PH_QUERY_EXTENSION_URL =
+  private static final String ECR_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
+  private static final String PH_QUERY_EXTENSION_URL =
+	      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String MEDMORPH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
-  private static final String PH_RELATED_DATA_EXTENSION_URL =
+  private static final String ECR_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
+  private static final String PH_RELATED_DATA_EXTENSION_URL =
+	      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
   private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
 
@@ -716,8 +720,12 @@ public class KarParserImpl implements KarParser {
         action.addInputResourceType(dr.getId(), rt);
 
         // Get Query Extensions to identify default queries.
-        Extension queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+        Extension queryExt = dr.getExtensionByUrl(ECR_QUERY_EXTENSION_URL);
 
+        if (queryExt == null) {
+            queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+        }
+        
         if (queryExt == null) {
           queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
         }
@@ -736,8 +744,12 @@ public class KarParserImpl implements KarParser {
         }
 
         // Get Related Data Ids to reuse data already accessed.
-        Extension relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+        Extension relatedDataExt = dr.getExtensionByUrl(ECR_RELATED_DATA_EXTENSION_URL);
 
+        if (relatedDataExt == null) {
+            relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+        }
+        
         if (relatedDataExt == null) {
           relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
         }
