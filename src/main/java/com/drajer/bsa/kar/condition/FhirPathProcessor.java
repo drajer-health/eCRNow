@@ -398,13 +398,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               } else {
                 Set<Resource> resources = new HashSet<>();
                 resources.add(resourceMatched);
-                
-                // what if it already exists, it gets over written 
+
+                // what if it already exists, it gets over written
                 res.put(dr.getId(), resources);
               }
             } else {
               logger.debug(" No match found for path {}", matchPath);
-              //Set the trigger match status to be false
+              // Set the trigger match status to be false
               notFound = true;
               // Also clear the resources that were added if possible..
             }

@@ -313,9 +313,9 @@ public abstract class BsaAction {
     for (DataRequirement dr : inputData) {
 
       Set<Resource> resources = getResourcesFromInput(dr, input);
-    		  
-      if(resources == null) {
-    	  resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+
+      if (resources == null) {
+        resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
       }
 
       BsaServiceUtils.convertDataToParameters(
@@ -328,37 +328,33 @@ public abstract class BsaAction {
 
     data.addParameters(actionId, params);
   }
-  
+
   public Set<Resource> getResourcesFromInput(DataRequirement dr, Parameters params) {
-	  
-	  Set<Resource> res = null;
-	  if(params != null) {
-		  
-		  String id = "%" + String.format("%s", dr.getId());
-		  List<ParametersParameterComponent> ps = params.getParameters(id);
-		  
-		  if(ps != null) {
-			  
-			  for(ParametersParameterComponent r : ps) {
-				  
-				  if(r.hasResource() && res == null) {
-					  res = new HashSet<>();
-					  res.add(r.getResource());
-				  }
-				  else if(r.hasResource()) {
-					  res.add(r.getResource());
-				  }
-			  }
-			  
-		  }
-		  else {
-			  logger.info(" Could not find the parameter with name {}", id);
-		  }
-		  
-	  }
-	  
-	  return res;
-	  
+
+    Set<Resource> res = null;
+    if (params != null) {
+
+      String id = "%" + String.format("%s", dr.getId());
+      List<ParametersParameterComponent> ps = params.getParameters(id);
+
+      if (ps != null) {
+
+        for (ParametersParameterComponent r : ps) {
+
+          if (r.hasResource() && res == null) {
+            res = new HashSet<>();
+            res.add(r.getResource());
+          } else if (r.hasResource()) {
+            res.add(r.getResource());
+          }
+        }
+
+      } else {
+        logger.info(" Could not find the parameter with name {}", id);
+      }
+    }
+
+    return res;
   }
 
   public void scheduleJob(
