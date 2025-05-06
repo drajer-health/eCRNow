@@ -31,7 +31,10 @@ public class FhirGeneratorConstants {
   public static final String HCS_COMP_TYPE_CODE_DISPLAY = "National Health Care Surveys report";
   public static final String CCRR_COMP_TYPE_CODE = "72134-0";
   public static final String CCRR_COMP_TYPE_CODE_DISPLAY = "Cancer event report";
-  public static final String CCRR_COMP_SECTION_TITLE = "Central Cancer Registry Report";
+  public static final String CCRR_COMP_SECTION_TITLE = "Central Cancer Registry Report Section";
+  public static final String RESPNET_COMP_TYPE_CODE = "55751-2";
+  public static final String RESPNET_COMP_TYPE_CODE_DISPLAY = "Respnet Report";
+  public static final String RESPNET_COMP_SECTION_TITLE = "Respnet Report Section";
   public static final String RESP_NET_COMP_TYPE_CODE = "75619-7";
 
   public static final String RESP_NET_COMP_SECTION_TITLE = "RESP-NET Report";

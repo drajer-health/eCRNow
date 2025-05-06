@@ -98,6 +98,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     BooleanType value = (BooleanType) ppc.getValue();
 
     if (value != null) {
+      logger.info(" Result from CQL FHIR Path Evaluation {}", value);
       return value.getValue();
     } else {
       logger.error(
@@ -363,7 +364,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     logger.debug("valElem:{}", valElem);
 
     List<DataRequirementCodeFilterComponent> drcfs = dr.getCodeFilter();
-
+    Boolean notFound = false;
     if (drcfs != null) {
 
       for (DataRequirementCodeFilterComponent drcf : drcfs) {
@@ -397,10 +398,15 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               } else {
                 Set<Resource> resources = new HashSet<>();
                 resources.add(resourceMatched);
+                
+                // what if it already exists, it gets over written 
                 res.put(dr.getId(), resources);
               }
             } else {
-              logger.debug(" No match found for code ");
+              logger.debug(" No match found for path {}", matchPath);
+              //Set the trigger match status to be false
+              notFound = true;
+              // Also clear the resources that were added if possible..
             }
           } else {
             logger.error(" Value Set not found for id {}", drcf.getValueSet());
@@ -409,7 +415,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
           logger.error(" Value Set and Code not present for code filter component");
         }
-      }
+      } // for all data requirements
     } else {
       logger.error(" Code Filter Component list is null, cannot proceed with finding matches ");
     }

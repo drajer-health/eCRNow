@@ -20,7 +20,7 @@ public class SubscriptionUtilsTest {
     Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
     encounterEntry.setResource(bundle);
     bundle.addEntry(encounterEntry);
-    bundle.setType(BundleType.HISTORY);
+    bundle.setType(Bundle.BundleType.HISTORY);
     mockHttpServletRequest = new MockHttpServletRequest();
     mockHttpServletResponse = new MockHttpServletResponse();
   }

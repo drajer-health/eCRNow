@@ -7,6 +7,8 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.Map;
+
+import org.hl7.fhir.r4.model.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +45,8 @@ public class EvaluateCondition extends BsaAction {
     }
 
     // Create the necessary parameters for evaluation of the data using FHIR Path processor.
-    populateParamsForConditionEvaluation(data);
+    Parameters params = null;
+    populateParamsForConditionEvaluation(data, params);
 
     // Ensure the activity is In-Progress and the Conditions are met.
     if (status != BsaActionStatusType.SCHEDULED
