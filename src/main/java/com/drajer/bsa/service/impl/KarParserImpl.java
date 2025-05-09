@@ -419,7 +419,7 @@ public class KarParserImpl implements KarParser {
       KnowledgeArtifact art = new KnowledgeArtifact();
 
       // Setup the Id.
-      art.setKarId(karBundle.getId());
+      art.setKarId(karBundle.getIdPart());
 
       // Setup Version.
       if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
