@@ -1,0 +1,71 @@
+{
+  "resourceType": "Bundle",
+  "id": "9959b5bd-e26c-424d-ab82-05f0b241f081",
+  "meta": {
+    "lastUpdated": "2025-02-17T10:17:09.373+00:00"
+  },
+  "type": "searchset",
+  "total": 7,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/Condition?patient=Patient%2Fe9bd7100-48af-4c69-a557-c13235f72f74"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Condition/4e2f6abf-c353-4190-bf4b-f73a2793d829",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "4e2f6abf-c353-4190-bf4b-f73a2793d829",
+        "meta": {
+          "versionId": "1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "1481000119100",
+              "display": "Diabetes mellitus type 2 without retinopathy (disorder)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice c Newman"
+        },
+        "onsetDateTime": "2025-01-02T00:00:00+00:00",
+        "recordedDate": "2025-01-02T00:00:00+00:00"
+      }
+    }
+  ]
+}

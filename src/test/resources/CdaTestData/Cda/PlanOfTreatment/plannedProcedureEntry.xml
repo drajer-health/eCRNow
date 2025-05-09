@@ -1,0 +1,32 @@
+<entry>
+    <procedure classCode="PROC" moodCode="RQO">
+        <templateId root="2.16.840.1.113883.10.20.22.4.41"/>
+        <templateId root="2.16.840.1.113883.10.20.22.4.41" extension="2014-06-09"/>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="536b2fd1-6962-4362-9a27-fa5a0cf94df8"/>
+        <code code="89648-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Chlamydia trachomatis [Presence] in Throat by Organism specific culture"></code>
+        <statusCode code="active"/>
+        <effectiveTime value="20240107000000+0000"/>
+        <author>
+            <time value="20250217125323+0000"/>
+            <assignedAuthor>
+                <id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+                <addr>
+                    <streetAddressLine>5400 N Oak Trfy</streetAddressLine>
+                    <city>New York City</city>
+                    <county>Manhattan</county>
+                    <state>NY</state>
+                    <postalCode>10001</postalCode>
+                    <country>US</country>
+                </addr>
+                <telecom value="tel:(816)673-2878" use="MC"/>
+                <telecom value="mailto:arthur.james73@gmail.com"/>
+                <assignedPerson>
+                    <name>
+                        <given>Arthur</given>
+                        <given>James</given>
+                        <family>Smith</family>
+                    </name>
+                </assignedPerson>
+            </assignedAuthor>
+        </author></procedure>
+</entry>

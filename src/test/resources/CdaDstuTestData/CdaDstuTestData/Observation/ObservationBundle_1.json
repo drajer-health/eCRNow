@@ -1,0 +1,11 @@
+{
+  "resourceType": "Bundle",
+  "id": "f1517e52-747b-4f8a-a6fe-fb3c4fd19336",
+  "type": "searchset",
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-ehr-code.cerner.com/dstu2/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?category=laboratory&patient=12742571&_count=50"
+    }
+  ]
+}

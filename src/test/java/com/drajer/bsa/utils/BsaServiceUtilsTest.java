@@ -26,6 +26,7 @@ import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.ecrapp.config.QueryReaderConfig;
+import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.Utility;
 import java.io.File;
 import java.io.IOException;
@@ -306,13 +307,7 @@ public class BsaServiceUtilsTest {
   @Test
   public void saveCdaDocumentFromDocumentBundleToFile() {
     FhirContext fhirContext = FhirContext.forR4();
-    Bundle messageHeader =
-        fhirContext
-            .newJsonParser()
-            .parseResource(
-                Bundle.class,
-                R3ToR2DataConverterUtilsTest.class.getResourceAsStream(
-                    "/Bsa/DocumentReferenceResource.json"));
+    Bundle messageHeader = TestUtils.loadBundleFromFile("/Bsa/DocumentReferenceResource.json");
     List<Pair<String, String>> cdaDocument =
         bsaServiceUtils.saveCdaDocumentFromDocumentBundleToFile(
             "/bsa/", "DocumentReference.xml", messageHeader);
@@ -322,12 +317,7 @@ public class BsaServiceUtilsTest {
   @Test
   public void findMessageHeaderAndDocumentReferences() {
     FhirContext fhirContext = FhirContext.forR4();
-    Bundle bundle =
-        fhirContext
-            .newJsonParser()
-            .parseResource(
-                Bundle.class,
-                R3ToR2DataConverterUtilsTest.class.getResourceAsStream("/Bsa/MessageHeader.json"));
+    Bundle bundle = TestUtils.loadBundleFromFile("/Bsa/MessageHeader.json");
     List<DocumentReference> documentReferenceList = new ArrayList<>();
     MessageHeader messageHeader =
         bsaServiceUtils.findMessageHeaderAndDocumentReferences(bundle, documentReferenceList);

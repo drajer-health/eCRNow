@@ -89,14 +89,11 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
    */
   public List<Subscription> subscriptionsFromBundle(Bundle bundle) {
     List<PlanDefinition> planDefinitions =
-        bundle
-            .getEntry()
-            .stream()
+        bundle.getEntry().stream()
             .filter(entry -> entry.getResource().getResourceType() == ResourceType.PlanDefinition)
             .map(entry -> (PlanDefinition) entry.getResource())
             .collect(Collectors.toList());
-    return planDefinitions
-        .stream()
+    return planDefinitions.stream()
         .map(this::subscriptionsFromPlanDef)
         .flatMap(List::stream)
         .collect(Collectors.toList());
@@ -128,11 +125,11 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
                     if (extension.getValue() instanceof CodeableConcept) {
                       Coding namedEventCoding =
                           ((CodeableConcept) extension.getValue())
-                              .getCoding()
-                              .stream()
-                              .filter(coding -> coding.getSystem().equals(NAMED_EVENT_CODE_SYSTEM))
-                              .findFirst()
-                              .orElse(null);
+                              .getCoding().stream()
+                                  .filter(
+                                      coding -> coding.getSystem().equals(NAMED_EVENT_CODE_SYSTEM))
+                                  .findFirst()
+                                  .orElse(null);
                       if (namedEventCoding != null) {
                         String code = namedEventCoding.getCode();
                         String criteria = namedEventToCriteria(code);

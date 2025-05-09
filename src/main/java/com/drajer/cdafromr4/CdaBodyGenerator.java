@@ -57,7 +57,7 @@ public class CdaBodyGenerator {
 
         logger.info("Starting R31 Social History Section generation ");
         eICRBody.append(
-            CdaSocialHistoryGenerator.generateSocialHistorySection(data, details, version));
+            CdaSocialHistoryGenerator.generateR31SocialHistorySection(data, details, version));
 
         logger.info("Starting R31 Pregnancy Section generation ");
         eICRBody.append(CdaPregnancyGenerator.generatePregnancySection(data, details, version));

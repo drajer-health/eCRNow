@@ -105,8 +105,7 @@ public class KnowledgeArtifactRepository {
   public void addKar(KnowledgeArtifact kar) {
 
     KnowledgeArtifactSummaryInfo info =
-        karsInfo
-            .stream()
+        karsInfo.stream()
             .filter(art -> art.getVersionUniqueId().equals(kar.getVersionUniqueId()))
             .findAny()
             .orElse(null);
@@ -143,8 +142,7 @@ public class KnowledgeArtifactRepository {
     if (karsInfo != null) {
 
       List<KnowledgeArtifactSummaryInfo> infos =
-          karsInfo
-              .stream()
+          karsInfo.stream()
               .filter(art -> art.getKarAvailable().equals(Boolean.FALSE))
               .collect(Collectors.toList());
 

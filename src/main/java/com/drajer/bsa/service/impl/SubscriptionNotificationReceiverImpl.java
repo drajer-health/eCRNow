@@ -78,7 +78,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
     NotificationContext nc =
         SubscriptionUtils.getNotificationContext(
-            notificationBundle, request, response, false, launchContext);
+            notificationBundle, request, response, false, false, launchContext);
 
     if (nc != null) {
 
@@ -210,7 +210,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
     NotificationContext nc =
         SubscriptionUtils.getNotificationContext(
-            notificationBundle, request, response, true, launchContext);
+            notificationBundle, request, response, true, false, launchContext);
 
     if (nc != null) {
 
@@ -290,7 +290,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                 } else {
 
                   String err =
-                      " Unable to process notification, as the KAR is not found {}"
+                      " Unable to process notification, as the KAR is not found "
                           + ks.getVersionUniqueKarId();
                   logger.error(err);
                   throw new InvalidNotification(err);
@@ -314,7 +314,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
         } else {
 
           String err =
-              " Cannot proceed with the processing because the Healthcare Settings does not exist for {}"
+              " Cannot proceed with the processing because the Healthcare Settings does not exist for "
                   + nc.getFhirServerBaseUrl();
           logger.error(err);
           throw new InvalidNotification(err);
@@ -336,6 +336,149 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
     }
 
     logger.info(" End processing notification ");
+    return dataList;
+  }
+
+  @Override
+  public List<KarProcessingData> reProcessNotification(
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext,
+      Boolean relaunch)
+      throws InvalidLaunchContext, InvalidNotification {
+
+    List<KarProcessingData> dataList = new ArrayList<>();
+    logger.info(" Stating to re-process notification ");
+
+    NotificationContext nc =
+        SubscriptionUtils.getNotificationContext(
+            notificationBundle, request, response, false, true, launchContext);
+
+    if (nc != null) {
+
+      logger.info(" Notification Context exists for re-processing the notification ");
+      nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
+      nc.setNotificationProcessingStatus(NotificationProcessingStatusType.REPROCESSED.toString());
+
+      if (launchContext != null && launchContext.getThrottleContext() != null)
+        nc.setThrottleContext(launchContext.getThrottleContext());
+
+      ncDao.saveOrUpdate(nc);
+
+      try {
+
+        // Start re-processing the notification.
+
+        // Retrieve the settings for the FHIR Server.
+        HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(nc.getFhirServerBaseUrl());
+
+        if (hs != null) {
+
+          logger.info(" Found the Healthcare Settings necessary to re-process notifications ");
+
+          // Find the KAR's active for the Healthcare Setting.
+          if (hs.getKars() != null) {
+
+            // Get the Active Kars and process it.
+            HealthcareSettingOperationalKnowledgeArtifacts arfts = hs.getKars();
+
+            logger.info(
+                " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
+                arfts.getId());
+
+            Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
+
+            for (KnowledgeArtifactStatus ks : stat) {
+
+              if (ks.getIsActive().booleanValue()) {
+
+                logger.info(
+                    " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
+
+                KnowledgeArtifact kar =
+                    knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
+
+                if (kar != null) {
+
+                  logger.info(" Processing KAR since we found the one that we needed. ");
+
+                  // Setup the initial Kar
+                  KarProcessingData kd = new KarProcessingData();
+                  kd.setNotificationContext(nc);
+                  kd.setHealthcareSetting(hs);
+                  kd.setKar(kar);
+                  kd.setNotificationBundle(notificationBundle);
+                  kd.setScheduledJobData(null);
+                  kd.setKarStatus(ks);
+                  kd.setxRequestId(nc.getxRequestId());
+                  kd.setxCorrelationId(nc.getxCorrelationId());
+                  kd.setTokenRefreshThreshold(tokenRefreshThreshold);
+
+                  if (nc.getNotifiedResource() != null) {
+                    logger.info("Adding notified resource to the set of inputs ");
+                    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
+                    Set<Resource> results = new HashSet<>();
+                    results.add(nc.getNotifiedResource());
+                    res.put(nc.getNotifiedResource().getResourceType(), results);
+                    kd.addResourcesByType(res);
+
+                    if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
+                      kd.setContextEncounter((Encounter) nc.getNotifiedResource());
+                    }
+                  }
+
+                  karProcessor.applyKarForNotification(kd);
+                  dataList.add(kd);
+                } else {
+
+                  String err =
+                      " Unable to re-process notification, as the KAR is not found "
+                          + ks.getVersionUniqueKarId();
+                  logger.error(err);
+                  throw new InvalidNotification(err);
+                }
+
+              } else {
+
+                logger.info(
+                    " Skipping processing of KAR as it is inactive. {}",
+                    ks.getVersionUniqueKarId());
+              }
+            }
+
+          } else {
+            String err =
+                " Cannot proceed with the re-processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.";
+            logger.error(err);
+            throw new InvalidNotification(err);
+          }
+
+        } else {
+
+          String err =
+              " Cannot proceed with the re-processing because the Healthcare Settings does not exist for "
+                  + nc.getFhirServerBaseUrl();
+          logger.error(err);
+          throw new InvalidNotification(err);
+        }
+
+      } catch (Exception e) {
+
+        logger.error(" Error during re-processing of notification.", e);
+        throw e;
+      }
+
+    } else {
+
+      logger.error(
+          " Cannot re-process notification because the Notification context is not derivable. ");
+
+      throw new InvalidNotification(
+          "Cannot re-process notification because the Notification context is not derivable.");
+    }
+
+    logger.info(" End re-processing notification ");
     return dataList;
   }
 }

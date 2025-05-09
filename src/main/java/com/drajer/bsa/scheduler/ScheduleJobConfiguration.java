@@ -30,7 +30,7 @@ public class ScheduleJobConfiguration {
 
   @Autowired KarProcessor karProcessor;
 
-  @Value("${timer.retries:10}")
+  @Value("${timer.retries:3}")
   private Integer timerRetries;
 
   /** Define a one-time job which has to be manually scheduled. */
@@ -55,7 +55,7 @@ public class ScheduleJobConfiguration {
                     inst.getData().getKarExecutionStateId(),
                     inst.getData().getxRequestId());
 
-                karProcessor.applyKarForScheduledJob(inst.getData());
+                karProcessor.applyKarForScheduledJob(inst.getData(), inst, ctx);
 
                 logger.info(
                     "Successfully Completed Executing Task for {}, Action Id: {}, KarExecutionStateId: {}, xRequestId : {}",
@@ -74,7 +74,7 @@ public class ScheduleJobConfiguration {
                     inst.getData().getxRequestId());
 
               } catch (Exception e) {
-                if (ctx.getExecution().consecutiveFailures >= timerRetries) {
+                if ((ctx.getExecution().consecutiveFailures + 1) >= timerRetries) {
                   logger.error(
                       "Error in executing Task for {}, Action Id : {}, KarExecutionStateId : {}, xRequestId : {} removing the timer after {} retries",
                       inst.getTaskAndInstance(),

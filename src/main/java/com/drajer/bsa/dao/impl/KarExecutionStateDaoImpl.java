@@ -67,7 +67,9 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
     return q.getResultList();
   }
 
-  /** @param state - KarExecutionState that needs to be deleted. */
+  /**
+   * @param state - KarExecutionState that needs to be deleted.
+   */
   @Override
   public void delete(KarExecutionState state) {
     getSession().delete(state);

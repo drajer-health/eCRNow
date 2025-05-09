@@ -98,10 +98,8 @@ public class EcrReportCreator extends ReportCreator {
   public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
   public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
-  public static final String MESSAGE_HEADER_PROFILE =
-      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-messageheader";
-  public static final String MESSAGE_TYPE_URL =
-      "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-message-types-codesystem";
+  public static final String MESSAGE_HEADER_PROFILE = "";
+  public static final String MESSAGE_TYPE_URL = "";
   public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-triggerdefinition-namedevents";
 
@@ -937,8 +935,7 @@ public class EcrReportCreator extends ReportCreator {
     val.setStatus(NarrativeStatus.ADDITIONAL);
 
     String resultString =
-        resTobeAdded
-            .stream()
+        resTobeAdded.stream()
             .map(dres -> (DomainResource) (dres))
             .collect(Collectors.toList())
             .stream()

@@ -337,8 +337,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
     // Filter subdirectories for now..
     List<File> files =
-        Arrays.asList(scenario.listFiles())
-            .stream()
+        Arrays.asList(scenario.listFiles()).stream()
             .filter(x -> x.isFile())
             .collect(Collectors.toList());
 
@@ -449,11 +448,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected void validatePopulation(MeasureReport report, String population, int count) {
     Optional<MeasureReportGroupPopulationComponent> pgc =
-        report
-            .getGroup()
-            .get(0)
-            .getPopulation()
-            .stream()
+        report.getGroup().get(0).getPopulation().stream()
             .filter(x -> x.getCode().getCodingFirstRep().getCode().equals(population))
             .findFirst();
     if (!pgc.isPresent()) {

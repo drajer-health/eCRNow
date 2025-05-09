@@ -3,7 +3,9 @@ package com.drajer.bsa.controller;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.service.KarService;
+import com.drajer.bsa.utils.OperationOutcomeUtil;
 import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -33,6 +35,9 @@ public class KnowledgeArtifactRepositoryController {
 
   /** The Service class to manage the Knowledge Artifact Repositories */
   @Autowired KarService karService;
+
+  /** The Service class to manage loading of KARs */
+  @Autowired KarParser karParser;
 
   /**
    * Method to retrieve the Knowledge Artifact Repository by Id
@@ -144,5 +149,24 @@ public class KnowledgeArtifactRepositoryController {
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(
       @RequestParam(value = "hsId") Integer hsId) {
     return karService.getKARStatusByHsId(hsId);
+  }
+
+  /** Method to reload Kars from the file system */
+  @CrossOrigin
+  @PostMapping(value = "/api/loadKars")
+  public ResponseEntity<Object> loadKars() {
+
+    try {
+      karParser.loadKars();
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(
+              OperationOutcomeUtil.createSuccessOperationOutcome(
+                  "Reloaded Knowledge Artifacts (PlanDefinition Resources) successfully."));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+          .body(
+              OperationOutcomeUtil.createErrorOperationOutcome(
+                  "Unable to load Knowledge Artifacts (PlanDefinition Resources)" + e.toString()));
+    }
   }
 }
