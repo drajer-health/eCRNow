@@ -1,0 +1,129 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.38"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>
+        <code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>
+        <title>Medications Administered</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Medication Name</th>
+                        <th>Medication Start Date</th>
+                        <th>Medication Dosage &amp; Period</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="medicationDosagePeriod1">500|http://unitsofmeasure.org|mg|Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="medication1">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto</content>
+                        </td>
+                        <td>
+                            <content ID="medicationDate1">20231227000000+0000</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="medicationDosagePeriod2">500|http://unitsofmeasure.org|mg|Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="medication2">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto</content>
+                        </td>
+                        <td>
+                            <content ID="medicationDate2">20231227000000+0000</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="medicationDosagePeriod3">500|http://unitsofmeasure.org|mg|Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="medication3">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto</content>
+                        </td>
+                        <td>
+                            <content ID="medicationDate3">20231227000000+0000</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="3119a577-1d71-4215-b986-7859ade848a7"/>
+                <statusCode code="active"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="NI"/>
+                </effectiveTime>
+                <routeCode code="47625008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Intravenous route (qualifier value)"></routeCode>
+                <doseQuantity value="500" unit="mg"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="1870230" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="940a1f1e-0be5-4a17-8cc4-ed3321fdee18"/>
+                <statusCode code="active"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="NI"/>
+                </effectiveTime>
+                <routeCode code="47625008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Intravenous route (qualifier value)"></routeCode>
+                <doseQuantity value="500" unit="mg"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="1870230" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="e3198a0e-35f4-4548-8c41-2db6476528b1"/>
+                <statusCode code="active"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period nullFlavor="NI"/>
+                </effectiveTime>
+                <routeCode code="47625008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Intravenous route (qualifier value)"></routeCode>
+                <doseQuantity value="500" unit="mg"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="1870230" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
+    </section>
+</component>

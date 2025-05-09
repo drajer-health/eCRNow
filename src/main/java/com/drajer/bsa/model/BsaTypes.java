@@ -23,6 +23,7 @@ public final class BsaTypes {
     COMPLETED,
     CANCELLED,
     RELAUNCHED,
+    REPROCESSED,
     FAILED,
     Unknown
   }
@@ -121,6 +122,7 @@ public final class BsaTypes {
     else if (nst == NotificationProcessingStatusType.COMPLETED) return "COMPLETED";
     else if (nst == NotificationProcessingStatusType.CANCELLED) return "CANCELLED";
     else if (nst == NotificationProcessingStatusType.RELAUNCHED) return "RELAUNCHED";
+    else if (nst == NotificationProcessingStatusType.REPROCESSED) return "REPROCESSED";
     else if (nst == NotificationProcessingStatusType.FAILED) return "FAILED";
     else return UNKNOWN;
   }
@@ -132,6 +134,7 @@ public final class BsaTypes {
     else if (s.contentEquals("COMPLETED")) return NotificationProcessingStatusType.COMPLETED;
     else if (s.contentEquals("CANCELLED")) return NotificationProcessingStatusType.CANCELLED;
     else if (s.contentEquals("RELAUNCHED")) return NotificationProcessingStatusType.RELAUNCHED;
+    else if (s.contentEquals("REPROCESSED")) return NotificationProcessingStatusType.REPROCESSED;
     else if (s.contentEquals("FAILED")) return NotificationProcessingStatusType.FAILED;
     else return NotificationProcessingStatusType.Unknown;
   }

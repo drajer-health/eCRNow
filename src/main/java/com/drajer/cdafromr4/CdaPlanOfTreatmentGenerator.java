@@ -927,7 +927,7 @@ public class CdaPlanOfTreatmentGenerator {
     return sb.toString();
   }
 
-  private static Object getPlannedActXml(
+  public static Object getPlannedActXml(
       ServiceRequest sa, LaunchDetails details, String contentRef, String version) {
 
     StringBuilder sb = new StringBuilder();

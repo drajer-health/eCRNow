@@ -1,0 +1,74 @@
+version: '3.8'
+
+networks:
+  ecrnow_network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_DB:  ecrnow
+      POSTGRES_PASSWORD: ecrnow@2024
+    ports:
+      - "5432:5432"
+    networks:
+      - ecrnow_network
+    command: ["postgres", "-c", "log_statement=all"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.1
+    container_name: keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KEYCLOAK_IMPORT=/opt/keycloak/data/import/ecrNow-realm.json
+    volumes:
+      - "C://keycloak-data:/opt/keycloak/data/import"
+    ports:
+      - "9000:8080"
+    networks:
+      - ecrnow_network
+
+  ecr-now:
+    image: drajerhealth/ecr-now:ecr-now-keycloak-lts
+    container_name: ecr-now
+    restart: always
+    env_file: C:/ecr-now/env.list
+    environment:
+      - jdbc.username=postgres
+      - jdbc.password=ecrnow@2024
+      - security.key=test123
+      - keycloak.auth.server=http://host.docker.internal:9000
+      - keycloak.client.id=uyyyHhPmeEpFJ4gLa96gPBFPQoAmyu7
+      - keycloak.client.secret=Q6spWh8UYwWNmDbr96I1J8mc9msqtOOg
+      - keycloak.realm=ecrNow
+      - logging.file.name=/c/ecr-now/ecrNow.log
+      - disable.hostname.verifier=true
+      
+    depends_on:
+      - postgres
+      - keycloak
+    volumes:
+      - "C://ecr-now:/c/ecr-now"
+
+    ports:
+      - "8081:8081"
+    networks:
+      - ecrnow_network
+
+  ecrNow-ui:
+    image: drajerhealth/ecr-now:ecr-now-ui-3.1.4
+    container_name: ecrNow-ui
+    restart: always
+    environment:
+      - REACT_APP_ECR_BASE_URL=http://localhost:8081
+    depends_on:
+      - ecr-now
+    ports:
+      - "3000:3000"
+    networks:
+      - ecrnow_network

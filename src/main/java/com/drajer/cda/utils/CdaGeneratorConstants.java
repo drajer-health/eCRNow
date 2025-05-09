@@ -1016,14 +1016,32 @@ public class CdaGeneratorConstants {
   public static final String LABTEST_TABLE_COL_2_BODY_CONTENT = "labTestResultValue";
   public static final String LABTEST_TABLE_COL_3_TITLE = "Lab Test Result Date";
   public static final String LABTEST_TABLE_COL_3_BODY_CONTENT = "labTestResultValueDate";
+
+  public static final String LABTEST_TABLE_COL_4_TITLE = "Lab Test Interpretation";
+  public static final String LABTEST_TABLE_COL_4_BODY_CONTENT = "labTestInterpretation";
+
+  public static final String LABTEST_TABLE_COL_5_TITLE = "Lab Test Reference Range";
+  public static final String LABTEST_TABLE_COL_5_BODY_CONTENT = "labTestReferenceRange";
+
+  public static final String LABTEST_TABLE_COL_6_TITLE = "Lab Test Specimen Collection Date";
+  public static final String LABTEST_TABLE_COL_6_BODY_CONTENT = "labTestSpecimenCollectionDate";
+
   public static final String MED_TABLE_COL_1_TITLE = "Medication Name";
   public static final String MED_TABLE_COL_1_BODY_CONTENT = "medication";
   public static final String MED_TABLE_COL_2_TITLE = "Medication Start Date";
   public static final String MED_TABLE_COL_2_BODY_CONTENT = "medicationDate";
+
+  public static final String MED_TABLE_COL_3_TITLE = "Medication Dosage & Period";
+  public static final String MED_TABLE_COL_3_BODY_CONTENT = "medicationDosagePeriod";
+
   public static final String MED_COL_1_TITLE = "Medication Name";
   public static final String MED_COL_1_BODY_CONTENT = "med";
   public static final String MED_COL_2_TITLE = "Medication Start Date";
   public static final String MED_COL_2_BODY_CONTENT = "medDate";
+
+  public static final String MED_COL_3_TITLE = "Medication Dosage & Period";
+  public static final String MED_COL_3_BODY_CONTENT = "medDosagePeriod";
+
   public static final String IMM_TABLE_COL_1_TITLE = "Vaccine Name";
   public static final String IMM_TABLE_COL_1_BODY_CONTENT = "vaccine";
   public static final String IMM_TABLE_COL_2_TITLE = "Vaccination Date";

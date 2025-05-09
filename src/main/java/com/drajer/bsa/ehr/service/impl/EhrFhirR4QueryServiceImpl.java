@@ -254,7 +254,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     // Get Patient by Id always
     Resource res =
         getResourceById(
-            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId());
+            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
 
     if (res != null && res.getResourceType() != ResourceType.OperationOutcome) {
 
@@ -285,7 +285,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               client,
               context,
               ResourceType.Encounter.toString(),
-              kd.getNotificationContext().getNotificationResourceId());
+              kd.getNotificationContext().getNotificationResourceId(),
+              true);
 
       if (enc != null && enc.getResourceType() != ResourceType.OperationOutcome) {
 
@@ -350,7 +351,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     // Get Patient by Id always
     Resource res =
         getResourceById(
-            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId());
+            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
     if (res != null) {
 
       logger.info(
@@ -551,7 +552,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               Practitioner practitioner =
                   (Practitioner)
                       getResourceById(
-                          client, context, ResourceType.Practitioner.toString(), practitionerID);
+                          client,
+                          context,
+                          ResourceType.Practitioner.toString(),
+                          practitionerID,
+                          true);
               if (practitioner != null && !practitionerMap.containsKey(practitionerID)) {
                 practitioners.add(practitioner);
                 kd.storeResourceById(practitionerID, practitioner);
@@ -575,7 +580,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                       client,
                       context,
                       "Organization",
-                      organizationReference.getReferenceElement().getIdPart());
+                      organizationReference.getReferenceElement().getIdPart(),
+                      true);
           if (organization != null) {
             organizations.add(organization);
             kd.storeResourceById(
@@ -599,7 +605,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                         client,
                         context,
                         "Location",
-                        locationReference.getReferenceElement().getIdPart());
+                        locationReference.getReferenceElement().getIdPart(),
+                        true);
             if (locationResource != null) {
               locations.add(locationResource);
               kd.storeResourceById(
@@ -700,7 +707,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   }
 
   @Override
-  public Resource getResourceById(KarProcessingData kd, String resourceName, String resourceId) {
+  public Resource getResourceById(
+      KarProcessingData kd, String resourceName, String resourceId, boolean applyFiltering) {
 
     logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
@@ -708,11 +716,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
 
-    return getResourceById(client, context, resourceName, resourceId);
+    return getResourceById(client, context, resourceName, resourceId, applyFiltering);
   }
 
   public Resource getResourceById(
-      IGenericClient genericClient, FhirContext context, String resourceName, String resourceId) {
+      IGenericClient genericClient,
+      FhirContext context,
+      String resourceName,
+      String resourceId,
+      boolean applyFiltering) {
 
     Resource resource = null;
 
@@ -723,7 +735,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       resource =
           (Resource) (genericClient.read().resource(resourceName).withId(resourceId).execute());
 
-      if (!isValidResource(resource)) resource = null;
+      if (applyFiltering && !isValidResource(resource)) resource = null;
 
     } catch (BaseServerResponseException responseException) {
       if (responseException.getOperationOutcome() != null) {
@@ -1326,7 +1338,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                     genericClient,
                     context,
                     ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart());
+                    medRef.getReferenceElement().getIdPart(),
+                    true);
           }
 
           if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
@@ -1357,7 +1370,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                     genericClient,
                     context,
                     ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart());
+                    medRef.getReferenceElement().getIdPart(),
+                    true);
           }
 
           if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
@@ -1369,7 +1383,36 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
           }
         } // has Id Part in Reference
-      } // has MedicationReference
+      }
+
+      if (mAdm.hasRequest()) {
+        Reference medRequestRef = (Reference) mAdm.getRequest();
+
+        if (medRequestRef.getReferenceElement().hasIdPart()) {
+          Resource secRes =
+              kd.getResourceById(
+                  medRequestRef.getReferenceElement().getIdPart(), ResourceType.MedicationRequest);
+
+          if (secRes == null) {
+            secRes =
+                getResourceById(
+                    genericClient,
+                    context,
+                    ResourceType.MedicationRequest.toString(),
+                    medRequestRef.getReferenceElement().getIdPart(),
+                    false);
+          }
+
+          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+
+            logger.info(
+                " Adding secondary Medication Request resource for MedicationAdministration with id {}",
+                secRes.getId());
+            kd.addResourceByType(secRes.getResourceType(), secRes);
+            kd.storeResourceById(medRequestRef.getReferenceElement().getIdPart(), secRes);
+          }
+        }
+      }
     } else if (res != null && rType == ResourceType.MedicationStatement) {
 
       MedicationStatement mst = (MedicationStatement) res;
@@ -1388,7 +1431,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                     genericClient,
                     context,
                     ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart());
+                    medRef.getReferenceElement().getIdPart(),
+                    true);
           }
 
           if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
@@ -1419,7 +1463,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                     genericClient,
                     context,
                     ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart());
+                    medRef.getReferenceElement().getIdPart(),
+                    true);
           }
 
           if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
@@ -1470,9 +1515,29 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           }
         }
       }
+      if (observation.hasSpecimen()) {
+
+        Reference specimen = observation.getSpecimen();
+
+        if (isResourceOfType(specimen, ResourceType.Specimen)) {
+          getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
+        }
+      }
+
     } else if (res != null && rType == ResourceType.DiagnosticReport) {
 
       DiagnosticReport report = (DiagnosticReport) res;
+
+      if (report.hasSpecimen()) {
+
+        List<Reference> specimens = report.getSpecimen();
+
+        for (Reference specimen : specimens) {
+          if (isResourceOfType(specimen, ResourceType.Specimen)) {
+            getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
+          }
+        }
+      }
 
       if (report.getResult() != null) {
 
@@ -1489,7 +1554,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                     genericClient,
                     context,
                     ResourceType.Observation.toString(),
-                    r.getReferenceElement().getIdPart());
+                    r.getReferenceElement().getIdPart(),
+                    true);
           }
 
           if (secRes != null
@@ -1517,6 +1583,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 }
               }
             }
+
+            if (observation.hasSpecimen()) {
+
+              Reference specimen = observation.getSpecimen();
+
+              if (isResourceOfType(specimen, ResourceType.Specimen)) {
+                getAndAddSecondaryResource(
+                    kd, specimen, ResourceType.Specimen, genericClient, context);
+              }
+            }
           }
         }
       }
@@ -1537,7 +1613,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     if (secRes == null) {
       secRes =
           getResourceById(
-              genericClient, context, type.toString(), ref.getReferenceElement().getIdPart());
+              genericClient, context, type.toString(), ref.getReferenceElement().getIdPart(), true);
     }
 
     addResourceToContext(kd, secRes, ref.getReferenceElement().getIdPart(), false);
@@ -1704,7 +1780,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       logger.debug(LOG_INIT_FHIR_CLIENT);
       IGenericClient client = getClient(data, context);
 
-      Resource res = getResourceById(client, context, ResourceType.Encounter.toString(), encId);
+      Resource res =
+          getResourceById(client, context, ResourceType.Encounter.toString(), encId, true);
 
       if (res != null) enc = (Encounter) res;
     }

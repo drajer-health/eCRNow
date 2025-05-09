@@ -49,3 +49,5 @@ The result of configuring OffHours is reduction in the load on the EHR due to el
 All the pending processing will be queued up for the OffHours, so the EHRs FHIR Server and the # of parallel threads required to complete the 
 pending load should be tuned for optimal performance.   
 
+#4. Timezone supported for offhours #
+The only timezone currently supported for off hour configuration is UTC.

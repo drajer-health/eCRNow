@@ -1,6 +1,7 @@
 # 1. Running Multiple ERSD Versions concurrently #
 
 The eCRNow App is capable of executing multiple ERSD versions concurrently. There are many scenarios where this is required.
+Vendors are encouraged to use ERSDv3 and produce CDA_R31 version of the eICRs.
 
 ## Scenario 1: Organizations want to migrate to new ERSD file.
 

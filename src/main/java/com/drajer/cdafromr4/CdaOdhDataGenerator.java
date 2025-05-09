@@ -433,12 +433,13 @@ public class CdaOdhDataGenerator {
     ObservationComponentComponent oc = getOccupationalHazardComponent(obs);
 
     if (oc != null && oc.hasValue()) {
+      String textVal = CdaFhirUtilities.getStringForType(oc.getValue());
       sb.append(
-          CdaFhirUtilities.getXmlForType(oc.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+          StringUtils.isNotBlank(textVal)
+              ? CdaGeneratorUtils.getXmlForValueString(textVal)
+              : CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI));
     } else {
-      sb.append(
-          CdaGeneratorUtils.getXmlForNullValueCD(
-              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
+      sb.append(CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI));
     }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -698,11 +699,6 @@ public class CdaOdhDataGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
     }
 
-    sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.ODH_SECTION_TEMPLATE_ID));
-    sb.append(
-        CdaGeneratorUtils.getXmlForTemplateId(
-            CdaGeneratorConstants.SOC_HISTORY_SEC_TEMPLATE_ID,
-            CdaGeneratorConstants.SOC_HISTORY_SEC_TEMPLATE_ID_EXT));
     sb.append(
         CdaGeneratorUtils.getXmlForTemplateId(
             CdaGeneratorConstants.ODH_SECTION_TEMPLATE_ID,

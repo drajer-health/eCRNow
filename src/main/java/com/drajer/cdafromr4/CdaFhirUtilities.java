@@ -43,7 +43,6 @@ import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
@@ -107,45 +106,44 @@ public class CdaFhirUtilities {
     return returnIds;
   }
 
-  public static Patient.ContactComponent getGuardianContact(List<ContactComponent> ccs) {
+  public static List<ContactComponent> getGuardianContacts(List<ContactComponent> ccs) {
+    List<ContactComponent> guardianContacts = new ArrayList<>();
 
     if (ccs != null && !ccs.isEmpty()) {
-
       for (ContactComponent cc : ccs) {
-
         if (cc.hasRelationship()) {
-
           for (CodeableConcept cd : cc.getRelationship()) {
-
+            // Check Text field first
             if (cd.getText() != null
                 && (cd.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME)
                     || cd.getText()
                         .equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME))) {
+              guardianContacts.add(cc);
+            }
 
-              return cc;
-            } else {
-              List<Coding> cs = cd.getCoding();
+            // Check Codings
+            for (Coding coding : cd.getCoding()) {
+              if (coding.hasSystem()
+                  && coding.hasCode()
+                  && (coding
+                          .getSystem()
+                          .equals(CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
+                      || coding
+                          .getSystem()
+                          .equals(CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
+                      || coding
+                          .getSystem()
+                          .equals(CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3))) {
 
-              for (Coding c : cs) {
-
-                if (c.hasSystem()
-                    && (c.getSystem()
-                            .contentEquals(
-                                CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
-                        || c.getSystem()
-                            .contentEquals(
-                                CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
-                        || c.getSystem()
-                            .contentEquals(CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3))
-                    && c.hasCode()
-                    && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.EMERGENCY_VALUE)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
-                        || c.getCode().contentEquals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
-                        || c.getCode()
-                            .contentEquals(CdaGeneratorConstants.FHIR_EMERGENCY_CONTACT_VALUE))) {
-                  return cc;
+                if (coding.getCode().equals(CdaGeneratorConstants.GUARDIAN_VALUE)
+                    || coding.getCode().equals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
+                    || coding.getCode().equals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
+                    || coding.getCode().equals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
+                    || coding.getCode().equals(CdaGeneratorConstants.EMERGENCY_VALUE)
+                    || coding
+                        .getCode()
+                        .equals(CdaGeneratorConstants.FHIR_EMERGENCY_CONTACT_VALUE)) {
+                  guardianContacts.add(cc);
                 }
               }
             }
@@ -153,12 +151,15 @@ public class CdaFhirUtilities {
         }
       }
     }
-
-    return null;
+    return guardianContacts;
   }
 
   public static Identifier getIdentifierForSystem(List<Identifier> ids, String system) {
 
+    if (StringUtils.isBlank(system)) {
+      logger.debug("System is null : {}", system);
+      return null;
+    }
     if (ids != null && !ids.isEmpty()) {
 
       for (Identifier id : ids) {
@@ -2162,7 +2163,9 @@ public class CdaFhirUtilities {
 
         Reference med = (Reference) medStmtRef.getMedication();
 
-        if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+        if (med != null
+            && med.hasReference()
+            && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
@@ -2180,7 +2183,10 @@ public class CdaFhirUtilities {
             String id = med.getReferenceElement().getIdPart();
             Medication medRes = null;
             for (Medication m : medList) {
-              if (m.getIdElement().getIdPart().contentEquals(id)) {
+              if (id != null
+                  && m.hasIdElement()
+                  && m.getIdElement().hasIdPart()
+                  && m.getIdElement().getIdPart().contentEquals(id)) {
 
                 logger.info(" Found the non-contained medication reference resource {}", id);
                 medRes = m;
@@ -2498,6 +2504,12 @@ public class CdaFhirUtilities {
       }
 
       return val;
+    } else {
+      Pair<Date, TimeZone> low = null;
+      Pair<Date, TimeZone> high = null;
+      val +=
+          CdaGeneratorUtils.getXmlForValueIVLWithTS(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, low, high);
     }
 
     return val;
@@ -2517,7 +2529,8 @@ public class CdaFhirUtilities {
       logger.info("Found Medication of Type Reference within Domain Resource");
       Reference med = (Reference) dt;
       String codeXml = "";
-      if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+      if (med.hasReference()
+          && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
         // Check contained.
         String refId = med.getReference().substring(1);
 
@@ -2530,7 +2543,7 @@ public class CdaFhirUtilities {
 
           for (Resource r : meds) {
 
-            if (r.getId().contains(refId) && r instanceof Medication) {
+            if (r.hasId() && r.getId().contains(refId) && r instanceof Medication) {
 
               logger.info("Found Medication in contained resource");
 
@@ -2552,7 +2565,10 @@ public class CdaFhirUtilities {
           String id = med.getReferenceElement().getIdPart();
           Medication medRes = null;
           for (Medication m : medList) {
-            if (m.getIdElement().getIdPart().contentEquals(id)) {
+            if (id != null
+                && m.hasIdElement()
+                && m.getIdElement().hasIdPart()
+                && m.getIdElement().getIdPart().contentEquals(id)) {
 
               logger.info(" Found the non-contained medication reference resource {}", id);
               medRes = m;
@@ -3008,7 +3024,7 @@ public class CdaFhirUtilities {
     return retval.toString();
   }
 
-  private static boolean isCodeContained(Set<String> codes, String code) {
+  public static boolean isCodeContained(Set<String> codes, String code) {
 
     if (codes != null && code != null) {
 
@@ -3091,7 +3107,7 @@ public class CdaFhirUtilities {
           && extension.hasValue()
           && extension.getValue() instanceof BooleanType) {
         logger.debug("Found Address Extension at top level.");
-        BooleanType retVal = (BooleanType) extension.getValueAsPrimitive().getValue();
+        BooleanType retVal = (BooleanType) extension.getValue();
         return retVal.getValue();
       }
     }
@@ -3573,5 +3589,51 @@ public class CdaFhirUtilities {
     }
 
     return sb.toString();
+  }
+
+  public static String getStringForSpecimenCollectionDate(
+      List<Reference> specimenRefs, R4FhirData data) {
+    if (data == null || specimenRefs == null || specimenRefs.isEmpty()) {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    for (Reference reference : specimenRefs) {
+      if (reference.hasReferenceElement()
+          && reference.getReferenceElement().hasResourceType()
+          && ResourceType.fromCode(reference.getReferenceElement().getResourceType())
+              == ResourceType.Specimen) {
+
+        Specimen specimen = data.getSpecimenById(reference.getReferenceElement().getIdPart());
+        if (specimen != null && specimen.hasCollection()) {
+
+          if (specimen.getCollection().hasCollectedDateTimeType()) {
+            return CdaFhirUtilities.getStringForType(
+                specimen.getCollection().getCollectedDateTimeType());
+
+          } else if (specimen.getCollection().hasCollectedPeriod()) {
+            return CdaFhirUtilities.getStringForType(specimen.getCollection().getCollectedPeriod());
+          }
+        }
+      }
+    }
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getNarrative(String frequency, String period, String periodUnit) {
+    StringBuilder narrative = new StringBuilder();
+    appendValue(narrative, "frequency", frequency);
+    appendValue(narrative, "period", period);
+    appendValue(narrative, "periodUnit", periodUnit);
+
+    return narrative.toString();
+  }
+
+  private static void appendValue(StringBuilder narrative, String label, String value) {
+    if (StringUtils.isNotBlank(value)) {
+      if (narrative.length() > 0) {
+        narrative.append("|"); // Add separator if narrative already has content
+      }
+      narrative.append(label).append(": ").append(value);
+    }
   }
 }

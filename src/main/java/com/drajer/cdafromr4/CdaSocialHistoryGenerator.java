@@ -1183,13 +1183,10 @@ public class CdaSocialHistoryGenerator {
     if (tribalEnrolled != null
         && tribalEnrolled.hasValue()
         && tribalEnrolled.getValue() instanceof BooleanType) {
-      sb.append(
-          CdaFhirUtilities.getXmlForType(
-              tribalEnrolled.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
-
+      String isEntrolledString = ((BooleanType) tribalEnrolled.getValue()).getValueAsString();
+      sb.append(CdaGeneratorUtils.getXmlForValueBoolean(isEntrolledString));
     } else {
-      BooleanType val = new BooleanType(false);
-      sb.append(CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true));
+      sb.append(CdaGeneratorUtils.getXmlForValueBoolean("false"));
     }
 
     // End Tag for Entry Relationship

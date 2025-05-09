@@ -2,15 +2,12 @@ package com.drajer.cdafromr4;
 
 import static org.junit.Assert.assertNotNull;
 
+import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
-import java.util.List;
-import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Period;
+import java.util.*;
+import org.hl7.fhir.r4.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -24,6 +21,9 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
 
   private static final String SOCIAL_HISTORY_CDA_FILE =
       "CdaTestData/Cda/SocialHistory/SocialHistory.xml";
+
+  private static final String SOCIAL_HISTORY_R31_CDA_FILE =
+      "CdaTestData/Cda/SocialHistory/SocialHistoryR31.xml";
 
   private static final String TREAVEL_OBS_FILE1 = "CdaTestData/Observation/travelHistory.json";
   private static final String PREGNANCY_CONDITION_FILE =
@@ -52,6 +52,67 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     String actualXml =
         CdaSocialHistoryGenerator.generateSocialHistorySection(
             r4FhirData, launchDetails, "CDA_R11");
+
+    assertNotNull(actualXml);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void shouldGenerateR31SocialHistorySection() {
+    R4FhirData data = new R4FhirData();
+    Bundle b = loadBundleFromFile("CdaTestData/bundle/socialHistory.json");
+
+    List<Bundle.BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+
+    Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
+
+    for (Bundle.BundleEntryComponent ent : entries) {
+      Resource resource = ent.getResource();
+      ResourceType resourceType = resource.getResourceType();
+
+      resourcesByType.computeIfAbsent(resourceType, k -> new LinkedHashSet<>()).add(resource);
+    }
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (Bundle.BundleEntryComponent ent : entries) {
+
+      ResourceType resourceType = ent.getResource().getResourceType();
+
+      resourceSet.addAll(resourcesByType.getOrDefault(resourceType, Collections.EMPTY_SET));
+
+      if (!resourceSet.isEmpty()) {
+        R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+            "1",
+            bundle,
+            data,
+            launchDetails,
+            resourceSet,
+            resourceType.toString(),
+            uniqueResourceIdsByType);
+        resourceSet.clear();
+        resourcesByType.remove(resourceType);
+      }
+    }
+
+    data.getTravelObs().sort(Comparator.comparing(Observation::getId));
+    data.getResidencyObs().sort(Comparator.comparing(Observation::getId));
+    data.getNationalityObs().sort(Comparator.comparing(Observation::getId));
+    data.getVaccineCredObs().sort(Comparator.comparing(Observation::getId));
+    data.getHomelessObs().sort(Comparator.comparing(Observation::getId));
+    data.getDisabilityObs().sort(Comparator.comparing(Observation::getId));
+    data.setData(bundle);
+    String expectedXml = TestUtils.getFileContentAsString(SOCIAL_HISTORY_R31_CDA_FILE);
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    String actualXml =
+        (String) CdaSocialHistoryGenerator.generateR31SocialHistorySection(data, launchDetails, "");
 
     assertNotNull(actualXml);
 

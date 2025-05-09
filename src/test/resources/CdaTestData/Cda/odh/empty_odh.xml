@@ -1,0 +1,8 @@
+<component>
+    <section nullFlavor="NI">
+        <templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2020-09-01"/>
+        <code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SOCIAL HISTORY-ODH"/>
+        <title>SOCIAL HISTORY-ODH</title>
+        <text>No Occupational Data Information</text>
+    </section>
+</component>

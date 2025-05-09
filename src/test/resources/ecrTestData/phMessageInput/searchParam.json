@@ -12,5 +12,7 @@
   "notificationId": "10",
   "correlationId" :"56",
   "startTime":"2023-07-04",
-  "endTime":"2023-08-05"
+  "endTime":"2023-08-05",
+  "submissionTime": "2023-08-05T00:00:00",
+  "responseReceivedTime": "2023-08-05T00:00:00"
 }

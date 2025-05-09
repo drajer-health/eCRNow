@@ -24,7 +24,6 @@
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
-		
 	</properties>
 
 
@@ -57,6 +56,7 @@
 				<artifactId>guava</artifactId>
 				<version>30.1-jre</version>
 			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
@@ -103,6 +103,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>42.3.9</version>
 		</dependency>
 
 		<dependency>
@@ -125,6 +126,7 @@
 			<version>1.18.22</version>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
@@ -172,6 +174,12 @@
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-validation-resources-r4</artifactId>
 			<version>${fhir.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.12.0</version>
 		</dependency>
 
 		<dependency>
@@ -253,6 +261,8 @@
 		</dependency>
 
 
+
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -318,7 +328,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.9.0</version>
+			<version>2.14.0</version>
 		</dependency>
 
 		<dependency>
@@ -401,11 +411,14 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.7.0</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
+
+
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -438,9 +451,9 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.8</version>
+				<version>0.8.12</version>
 				<executions>
-					<!-- For Unit Test Coverage - jacoco-ut.exec -->
+					<!-- Unit Test Coverage - jacoco-ut.exec -->
 					<execution>
 						<id>pre-unit-test</id>
 						<goals>
@@ -449,6 +462,7 @@
 						<configuration>
 							<destFile>${project.build.directory}/jacoco-ut.exec</destFile>
 							<propertyName>surefireArgLine</propertyName>
+							<append>true</append> <!-- Ensures data is collected -->
 						</configuration>
 					</execution>
 					<execution>
@@ -462,7 +476,8 @@
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 						</configuration>
 					</execution>
-					<!-- For Integration Test Coverage - jacoco-it.exec -->
+
+					<!-- Integration Test Coverage - jacoco-it.exec -->
 					<execution>
 						<id>pre-integration-test</id>
 						<phase>pre-integration-test</phase>
@@ -472,6 +487,7 @@
 						<configuration>
 							<destFile>${project.build.directory}/jacoco-it.exec</destFile>
 							<propertyName>failsafeArgLine</propertyName>
+							<append>true</append> <!-- Ensures data is collected -->
 						</configuration>
 					</execution>
 					<execution>
@@ -485,9 +501,10 @@
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
 						</configuration>
 					</execution>
-					<!-- Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
+
+					<!-- Merge Unit & Integration Test Coverage -->
 					<execution>
-						<id>jacoco-merge-report-verify</id>
+						<id>jacoco-merge-report</id>
 						<phase>verify</phase>
 						<goals>
 							<goal>merge</goal>
@@ -510,35 +527,22 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Used for unit tests -->
+
+			<!-- Surefire Plugin for Unit Tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.21.0</version>
 				<configuration>
-					<!-- Activate the use of TCP to transmit events to the plugin -->
-					<forkNode
-						implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+					<forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
+					<skipTests>${skip.unit.tests}</skipTests>
+					<excludes>
+						<exclude>**/IT*.java</exclude>
+					</excludes>
 				</configuration>
-				<executions>
-					<execution>
-						<id>default-test</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-
-							<skipTests>${skip.unit.tests}</skipTests>
-							<excludes>
-								<exclude>**/IT*.java</exclude>
-							</excludes>
-							<forkNode
-								implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
-			<!-- Used for integration tests -->
+
+			<!-- Failsafe Plugin for Integration Tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -553,7 +557,6 @@
 							<includes>
 								<include>**/IT*.java</include>
 							</includes>
-
 							<skipTests>${skip.integration.tests}</skipTests>
 						</configuration>
 					</execution>

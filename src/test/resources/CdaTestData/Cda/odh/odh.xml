@@ -1,0 +1,114 @@
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2020-09-01"/>
+<code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SOCIAL HISTORY-ODH"/>
+<title>SOCIAL HISTORY-ODH</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Occupational History Observation</th>
+<th>Occupational History Observation Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="occHist0">Past or Present Occupation</content>
+</td>
+<td>
+<content ID="occHistResult0">Nursing, psychiatric, and home health aides</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="occHist1">Employment Status</content>
+</td>
+<td>
+<content ID="occHistResult1">Employed</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="occHist2">Usual Occupation</content>
+</td>
+<td>
+<content ID="occHistResult2">Nursing, psychiatric, and home health aides</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.217"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.217" extension="2020-09-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="observation-odh-past-or-present-job-sample"/>
+<code code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Past or Present Occupation"/>
+<statusCode code="active"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20150424"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="31-1014.00.007136" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Certified Nursing Assistant (CNA) [Nursing Assistants]"></value>
+<participant typeCode="IND">
+<participantRole classCode="ROL">
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/></participantRole>
+</participant>
+<entryRelationship typeCode="REFR">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.216"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.216" extension="2020-09-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="86188-0"/>
+<statusCode code="completed"/>
+<value xsi:type="CD" code="621610.008495" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Home nursing services"></value>
+</observation>
+</entryRelationship>
+<entryRelationship typeCode="REFR">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.215"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.215" extension="2017-11-30"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="87729-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Occupational Hazard"/>
+<statusCode code="completed"/>
+<value xsi:type="ST">Infectious Disease</value>
+</observation>
+</entryRelationship>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.212"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.212" extension="2017-11-30"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="observation-odh-employment-status-sample"/>
+<code code="74165-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Employment Status"/>
+<statusCode code="completed"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20180601"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="Employed" codeSystem="2.16.840.1.113883.5.1063" codeSystemName="v3-ObservationValue" displayName="Employed"></value>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.221"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.221" extension="2020-09-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="observation-odh-usual-work-sample"/>
+<code code="21843-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Usual Occupation"/>
+<statusCode code="completed"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20180601"/>
+<high value="20210507"/>
+</effectiveTime>
+<value xsi:type="CD" code="3600" codeSystem="2.16.840.1.114222.4.5.314" codeSystemName="PHOccupationCDCCensus2010" displayName="Nursing, psychiatric, and home health aides"><translation code="31-1014.00.007136" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Certified Nursing Assistant (CNA) [Nursing Assistants]"/>
+</value>
+<entryRelationship typeCode="REFR">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.219"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.219" extension="2020-09-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="21844-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Usual Industry"/>
+<statusCode code="completed"/>
+<value xsi:type="CD" code="621610.008495" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Home nursing services"></value>
+</observation>
+</entryRelationship>
+</observation>
+</entry>
+</section>
+</component>

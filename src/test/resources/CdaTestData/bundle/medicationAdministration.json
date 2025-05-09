@@ -1,0 +1,313 @@
+{
+  "resourceType": "Bundle",
+  "id": "0b597aaf-da91-4e38-b2d1-1d42b0fe0544",
+  "meta": {
+    "lastUpdated": "2025-02-17T14:13:40.715+00:00"
+  },
+  "type": "searchset",
+  "total": 4,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationAdministration?patient=Patient%2Fe9bd7100-48af-4c69-a557-c13235f72f74"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationAdministration/940a1f1e-0be5-4a17-8cc4-ed3321fdee18",
+      "resource": {
+        "resourceType": "MedicationAdministration",
+        "id": "940a1f1e-0be5-4a17-8cc4-ed3321fdee18",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "in-progress",
+        "medicationReference": {
+          "reference": "Medication/med0301"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "context": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectivePeriod": {
+          "start": "2023-12-27T00:00:00+00:00"
+        },
+        "performer": [
+          {
+            "actor": {
+              "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+            }
+          }
+        ],
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/reason-medication-given",
+                "code": "b",
+                "display": "Given as Ordered"
+              }
+            ]
+          }
+        ],
+        "request": {
+          "reference": "MedicationRequest/medrx0318"
+        },
+        "dosage": {
+          "text": "500mg IV q6h x 3 days",
+          "route": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "47625008",
+                "display": "Intravenous route (qualifier value)"
+              }
+            ]
+          },
+          "method": {
+            "text": "IV Push"
+          },
+          "dose": {
+            "value": 500,
+            "unit": "mg",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationAdministration/3119a577-1d71-4215-b986-7859ade848a7",
+      "resource": {
+        "resourceType": "MedicationAdministration",
+        "id": "3119a577-1d71-4215-b986-7859ade848a7",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "in-progress",
+        "medicationReference": {
+          "reference": "Medication/med0301"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "context": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectivePeriod": {
+          "start": "2023-12-27T00:00:00+00:00"
+        },
+        "performer": [
+          {
+            "actor": {
+              "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+            }
+          }
+        ],
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/reason-medication-given",
+                "code": "b",
+                "display": "Given as Ordered"
+              }
+            ]
+          }
+        ],
+        "request": {
+          "reference": "MedicationRequest/medrx0318"
+        },
+        "dosage": {
+          "text": "500mg IV q6h x 3 days",
+          "route": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "47625008",
+                "display": "Intravenous route (qualifier value)"
+              }
+            ]
+          },
+          "method": {
+            "text": "IV Push"
+          },
+          "dose": {
+            "value": 500,
+            "unit": "mg",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationAdministration/e3198a0e-35f4-4548-8c41-2db6476528b1",
+      "resource": {
+        "resourceType": "MedicationAdministration",
+        "id": "e3198a0e-35f4-4548-8c41-2db6476528b1",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "in-progress",
+        "medicationReference": {
+          "reference": "Medication/med0301"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "context": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectivePeriod": {
+          "start": "2023-12-27T00:00:00+00:00"
+        },
+        "performer": [
+          {
+            "actor": {
+              "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+            }
+          }
+        ],
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/reason-medication-given",
+                "code": "b",
+                "display": "Given as Ordered"
+              }
+            ]
+          }
+        ],
+        "request": {
+          "reference": "MedicationRequest/medrx0318"
+        },
+        "dosage": {
+          "text": "500mg IV q6h x 3 days",
+          "route": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "47625008",
+                "display": "Intravenous route (qualifier value)"
+              }
+            ]
+          },
+          "method": {
+            "text": "IV Push"
+          },
+          "dose": {
+            "value": 500,
+            "unit": "mg",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg"
+          },
+          "rateRatio": {
+            "numerator": {
+              "value": 8,
+              "system": "http://unitsofmeasure.org",
+              "code": "ml"
+            },
+            "denominator": {
+              "value": 1,
+              "system": "http://unitsofmeasure.org",
+              "code": "s"
+            }
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationAdministration/e3198a0e-35f4-4548-8c41-2db6476528b1",
+      "resource": {
+        "resourceType": "MedicationAdministration",
+        "id": "e3198a0e-35f4-4548-8c41-2db6476528b1",
+        "meta": {
+          "versionId": "2"
+        },
+        "status": "in-progress",
+        "medicationReference": {
+          "reference": "Medication/med0301"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "context": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectivePeriod": {
+          "start": "2023-12-27T00:00:00+00:00"
+        },
+        "performer": [
+          {
+            "actor": {
+              "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+            }
+          }
+        ],
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/reason-medication-given",
+                "code": "b",
+                "display": "Given as Ordered"
+              }
+            ]
+          }
+        ],
+        "request": {
+          "reference": "MedicationRequest/medrx0318"
+        },
+        "dosage": {
+          "text": "500mg IV q6h x 3 days",
+          "route": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "47625008",
+                "display": "Intravenous route (qualifier value)"
+              }
+            ]
+          },
+          "method": {
+            "text": "IV Push"
+          },
+          "dose": {
+            "value": 500,
+            "unit": "mg",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg"
+          },
+          "rateQuantity": {
+            "value": 8,
+            "unit": "ml/s",
+            "system": "http://unitsofmeasure.org",
+            "code": "ml/s"
+          }
+        }
+      }
+    },{
+      "resource": {
+        "resourceType": "Medication",
+        "id": "med0301",
+        "meta": {
+          "versionId": "1.0"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1870230",
+              "display": "NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injecto"
+            }
+          ]
+        }
+      }
+    }
+  ]
+
+}

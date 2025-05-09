@@ -169,8 +169,8 @@ public class PatientLaunchController {
 
   /**
    * The method is the API to re-launch a patient instance within the app for processing. The
-   * re-launch API is intended to be used when the original patientId/encounterId combination has
-   * bee completed either by the eCRNow App or by the EHR. This is intended to be used for long
+   * relaunchPatient API is intended to be used when the original patientId/encounterId combination
+   * has been completed either by the eCRNow App or by the EHR. This is intended to be used for long
    * running encounters. In such cases, the encounters may be open for a long duration of time and
    * the eCRNow App will suspend reporting for the encounter after a configurable time period. Once
    * it is suspended, any changes to the patient record for the patient/encounter combination will
@@ -201,7 +201,7 @@ public class PatientLaunchController {
       HttpServletResponse response) {
 
     logger.info(
-        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
+        "Patient reLaunchPatient request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
         StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
         StringEscapeUtils.escapeJava(launchContext.getPatientId()),
         StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
@@ -263,6 +263,111 @@ public class PatientLaunchController {
           .body(
               OperationOutcomeUtil.createSuccessOperationOutcome(
                   "Patient Instance Re-launched for processing successfully"));
+
+    } else {
+
+      return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+          .body(
+              OperationOutcomeUtil.createErrorOperationOutcome(
+                  "Unable to launch Patient Instance since the app has not started yet, wait till "
+                      + StartupUtils.getPatientLaunchInstanceTime().toString()
+                      + " for the application to startup and launch patients"));
+    }
+  }
+
+  /**
+   * The method is the API to re-process a patient instance within the app. The reProcessPatient API
+   * is intended to be used when the original patientId/encounterId combination has error'd out due
+   * to the retries during the processing. This can happen due to many reasons during the execution.
+   * Some examples include Unable to complete processing because the submission API is not working
+   * Unable to complete processing because the FHIR APIs are down on the EHR Unable to complete
+   * processing because there is storage connectivity issues
+   *
+   * <p>In such cases, the client which performs the launchPatient API can monitor the
+   * NotificationContext table and based on specific errors in the NotificationContext table, can
+   * invoke the reprocess API. The reprocess API will perform the same processing as launchPatient
+   * API and setup the timers similar to a regular launchPatient API.
+   *
+   * <p>In addition to the parameters listed below, the following HTTP headers are expected to be
+   * populated. 'X-Request-ID' - This can be used for logging across the client and server. This is
+   * expected to be a GUID. 'X-Correlation-ID' - This can be used for correlation across clients and
+   * server request / responses. This is expected to be a GUID.
+   *
+   * @param launchContext - Contains the context of the launch.
+   * @param request - Request parameters
+   * @param response - Response parameters.
+   * @return
+   * @throws IOException
+   */
+  @CrossOrigin
+  @PostMapping(value = "/api/reProcessPatient")
+  public ResponseEntity<Object> reProcessPatient(
+      @RequestBody PatientLaunchContext launchContext,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+
+    logger.info(
+        "Patient reProcessPatient request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
+        StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
+        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+        StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
+        launchContext.getThrottleContext());
+
+    if (StartupUtils.hasAppStarted()) {
+      try {
+
+        HealthcareSetting hs =
+            hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
+
+        // If the healthcare setting exists
+        if (hs != null) {
+
+          String requestId = request.getHeader(X_REQUEST_ID);
+
+          if (!StringUtils.isEmpty(requestId)) {
+
+            Bundle nb = getNotificationBundle(launchContext, hs, requestId, false);
+
+            notificationReceiver.reProcessNotification(nb, request, response, launchContext, true);
+
+          } else {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(
+                    OperationOutcomeUtil.createErrorOperationOutcome(
+                        "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+          }
+
+        } else {
+          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+              .body(
+                  OperationOutcomeUtil.createErrorOperationOutcome(
+                      "Unrecognized healthcare setting FHIR URL"));
+        }
+
+      } catch (AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(
+                OperationOutcomeUtil.createErrorOperationOutcome(
+                    "Unable to reProcess Patient Instance, Error: " + e.getMessage()));
+      } catch (Exception e) {
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(
+                OperationOutcomeUtil.createErrorOperationOutcome(
+                    "Unable to reProcess Patient Instance, Error: " + e.getMessage()));
+      }
+
+      logger.info(
+          " Patient reProcess was successful for patientId: {}, encounterId: {}, requestId: {}",
+          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+          StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
+
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(
+              OperationOutcomeUtil.createSuccessOperationOutcome(
+                  "Patient Instance ReProcessing successful"));
 
     } else {
 
@@ -365,7 +470,8 @@ public class PatientLaunchController {
     kd.getNotificationContext().setxRequestId(requestId);
     kd.setTokenRefreshThreshold(tokenRefreshThreshold);
     Resource res =
-        ehrService.getResourceById(kd, ResourceType.Encounter.toString(), context.getEncounterId());
+        ehrService.getResourceById(
+            kd, ResourceType.Encounter.toString(), context.getEncounterId(), true);
     nb.addEntry(new BundleEntryComponent().setResource(res));
 
     return nb;

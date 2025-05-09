@@ -75,13 +75,13 @@ testCase:
         "ethnicGroupCode/@displayName": "Not Hispanic or Latino"
         "languageCommunication/languageCode/@code": "en"
       - xPath: "patient/guardian"
-        count: 1
-      - xPath: "patient/guardian/addr"
-        count: 1
-      - xPath: "patient/guardian/telecom"
         count: 2
+      - xPath: "patient/guardian/addr"
+        count: 2
+      - xPath: "patient/guardian/telecom"
+        count: 4
       - xPath: "patient/guardian/guardianPerson/name"
-        count: 1
+        count: 2
       - xPath: "patient/guardian/"
         "addr/@use": "HP"
         "addr/streetAddressLine": "2802 ROCK CREEK PKWY"
@@ -283,8 +283,8 @@ testCase:
       - xPath: "representedCustodianOrganization/telecom"
         count: 1
       - xPath: "representedCustodianOrganization/"
-        "id/@root": "2.16.840.1.113883.4.4"
-        "id/@extension": "123456785"
+        "id/@root": "2.16.840.1.113883.1.1.1.1"
+        "id/@extension": "675844"
         "name": "Model Hospital"
         "addr/streetAddressLine": "6276 Rockriver Drive"
         "addr/city": "Kansas City"
@@ -370,8 +370,8 @@ testCase:
       - xPath: "responsibleParty/assignedEntity/representedOrganization/telecom"
         count: 2
       - xPath: "responsibleParty/assignedEntity/representedOrganization/"
-        "id/@root": "2.16.840.1.113883.4.4"
-        "id/@extension": "123456785"
+        "id/@root": "2.16.840.1.113883.1.1.1.1"
+        "id/@extension": "675844"
         "name": "Model Hospital"
         "addr/streetAddressLine": "6276 Rockriver Drive"
         "addr/city": "Kansas City"
@@ -404,8 +404,8 @@ testCase:
       - xPath: "location/healthCareFacility/serviceProviderOrganization/addr"
         count: 1
       - xPath: "location/healthCareFacility/serviceProviderOrganization/"
-        "id/@root": "2.16.840.1.113883.4.4"
-        "id/@extension": "123456785"
+        "id/@root": "2.16.840.1.113883.1.1.1.1"
+        "id/@extension": "675844"
         "name": "Model Hospital"
         "addr/streetAddressLine": "6276 Rockriver Drive"
         "addr/city": "Kansas City"

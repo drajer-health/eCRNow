@@ -146,15 +146,51 @@ The security.key is something that you can configure in the environment or your 
 
 NOTE: If you are using Windows system to run the application, then use the command formatted like below.
 ```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" "-Djava.version=<JAVA VERSION>" -jar .\target\ecr-now.war```
+ 
+# 6.  Running the Application with SSL.
 
-6. **App configuration for EHR server:** 
+ ## Prerequisites:
+Java Version: Ensure that you have the required version of Java installed.
+
+Keystore File: You will need a valid keystore file (.p12 or .jks) for SSL encryption.
+
+#### 6.1  Running the Application with a .p12 Keystore (Self-Signed) using the following command from the eCRNow project root directory.
+
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.p12 -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=PKCS12 -jar .\target\ecr-now.war```
+
+
+#### 6.2  Running the Application with a .jks Keystore (Self-Signed) using the following command from the eCRNow project root directory.
+
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.jks -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=jks -jar .\target\ecr-now.war```
+
+
+### Properties  Explanation
+
+| **Property Name**             | **Description**                                                                                   | **Default Value** | **Example Value**                                  |
+|-------------------------------|---------------------------------------------------------------------------------------------------|-------------------|----------------------------------------------------|
+| `java.version`                 | Specifies the Java version required to run the application.                                      | `1.8`             | `17`                                               |
+| `security.key`                 | Encryption key used to protect sensitive data like client IDs, client secrets, and transport info. | `test123`         | `mySecureKey!`                                     |
+| `server.ssl.enabled`           | Enables or disables SSL for secure communication.                                                 | `false`           | `true`                                             |
+| `server.ssl.key-alias`         | Alias for the key inside the keystore.                                                            | `ecrnow`          | `mykey`                                            |
+| `server.ssl.key-password`      | Password for accessing the private key in the keystore.                                          | `Password123@`    | `SecurePass123`                                    |
+| `server.ssl.key-store`         | Path to the keystore file containing the SSL certificate.                                        | `N/A`             | `C:\ecr-now\ecrnow.p12` or `C:\ecr-now\ecrnow.jks` |
+|                               |                                                                                                   |                   |                                                    |
+| `server.ssl.key-store-password`| Password for unlocking the keystore.                                                             | `Password123@`    | ``SecurePass123``                                   |
+| `server.ssl.key-store-type`    | Specifies the type of keystore (e.g., JKS or PKCS12).                                            | `PKCS12`          | `JKS`, `PKCS12`                                    |
+
+### Example Paths for Keystore Files:
+#### Windows: "C:\\ecr-now\\ecrnow.p12 or  C:\\ecr-now\\ecrnow.jks"
+
+#### Linux/macOS: "/etc/ssl/ecrnow.p12 or "/etc/ssl/ecrnow.jks"
+
+7.**App configuration for EHR server:** 
 
 Once the App is up and running, you can access the App configuration screen by building the eCRNowUI project and then following the instructions in that project for bringing up the UI.
 
 Follow the App Configuration Guide present in documents folder to configure the app before using it for testing.
 Only after the app is configured, you will be able to use it for reporting.
 
-6.1 App Launch Mechanisms
+7.1 App Launch Mechanisms
 
 The app supports three different launch mechanisms.
 1. Regular SMART on FHIR ehr launch with no UI (Headless launch) that can be configured with the SMART on FHIR Backend services authorization.
