@@ -256,7 +256,7 @@ public final class BsaTypes {
     if (s.contentEquals("System")) return AuthenticationType.SYSTEM;
     else if (s.contentEquals("SofProvider")) return AuthenticationType.SOF_PROVIDER;
     else if (s.contentEquals("UserNamePwd")) return AuthenticationType.USER_NAME_PWD;
-    else if (s.contentEquals("SofBackend")) return AuthenticationType.SOF_SYSTEM;
+    else if (s.contentEquals("SofBackend")) return AuthenticationType.SOF_BACKEND;
     else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_SYSTEM;
     else if (s.contentEquals("MultiTenantSystemLaunch"))
       return AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH;
