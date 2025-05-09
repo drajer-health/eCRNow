@@ -22,6 +22,7 @@ import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
@@ -66,13 +67,13 @@ public class HcsReportCreator extends ReportCreator {
   public static final String DEFAULT_VERSION = "1";
   public static final String BUNDLE_REL_URL = "Bundle/";
   public static final String MESSAGE_HEADER_PROFILE =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-messageheader";
   public static final String SENDER_ORG_PROFILE =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-organization";
+      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization";
   public static final String MESSAGE_TYPE =
-      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
+      "http://hl7.org/fhir/us/ph-library/CodeSystem/us-ph-codesystem-message-types";
   public static final String NAMED_EVENT_URL =
-      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
+      "http://hl7.org/fhir/us/ph-library/ValueSet/us-ph-valueset-triggerdefinition-namedevent";
   public static final String HCS_REPORTING_BUNDLE =
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-reporting-bundle";
   public static final String HCS_CONTENT_BUNDLE =
@@ -82,12 +83,17 @@ public class HcsReportCreator extends ReportCreator {
 
   private static final String VERSION_NUM_URL =
       "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
+  public static final String REPORT_ENCRYPTION_EXT_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-data-encrypted-extension";
   private static final String DEVICE_NAME = "eCRNow/Backend Service App";
   public static final String REPORT_INITIATION_TYPE_EXT_URL =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-report-initiation-type";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-report-initiation-type-extension";
   public static final String REPORT_INITIATION_TYPE_CODE_SYSTEM_URL =
-      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-report-initiation-types";
+      "http://hl7.org/fhir/us/ph-library/CodeSystem/us-ph-codesystem-report-initiation-types";
   public static final String REPORT_INITIATION_TYPE_CODE = "subscription-notification";
+  public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-message-processing-category-extension";
+  public static final String MESSAGE_PROCESSING_CATEGORY_EXT_CODE = "consequence";
   public static final String MESSAGE_SIGNIFICANCE_CATEGORY =
       "http://hl7.org/fhir/ValueSet/message-significance-category";
 
@@ -251,8 +257,13 @@ public class HcsReportCreator extends ReportCreator {
     rptCd.addCoding(rptCoding);
     ext2.setValue(rptCd);
 
+    Extension ext3 = new Extension();
+    ext3.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
+    ext3.setValue(new CodeType(MESSAGE_PROCESSING_CATEGORY_EXT_CODE));
+
     List<Extension> exts = new ArrayList<>();
     exts.add(ext2);
+    exts.add(ext3);
 
     header.setExtension(exts);
 
@@ -438,21 +449,22 @@ public class HcsReportCreator extends ReportCreator {
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.MedicationAdministration, kd, sc, resTobeAdded);
 
+    // Add Admission Medications Section
+    sc = getSection(SectionTypeEnum.ADMISSION_MEDICATIONS, kd);
+    if (sc != null) scs.add(sc);
+    // No way to figure out admission medications currently
+    // addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
+
     // Add Medications Section
     sc = getSection(SectionTypeEnum.MEDICATIONS, kd);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
+    addEntries(ResourceType.MedicationDispense, kd, sc, resTobeAdded);
 
-    // Add Admission Medications Section
-    /*    sc = getSection(SectionTypeEnum.ADMISSION_MEDICATIONS, kd);
-        if (sc != null) scs.add(sc);
-        // No way to figure out admission medications currently
-        // addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
-    */
     // Add Results section.
     sc = getSection(SectionTypeEnum.RESULTS, kd);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
+    addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
 
     // Add Notes section.
     sc = getSection(SectionTypeEnum.NOTES, kd);
@@ -460,11 +472,18 @@ public class HcsReportCreator extends ReportCreator {
     addEntries(ResourceType.DocumentReference, kd, sc, resTobeAdded);
     addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
 
+    // Add Plan Of Assessment Treatment section.
+    sc = getSection(SectionTypeEnum.PLAN_OF_ASSESSMENT, kd);
+    if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
+
     // Add Plan Of Treatment section.
     sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.ServiceRequest, kd, sc, resTobeAdded);
     addEntries(ResourceType.MedicationRequest, kd, sc, resTobeAdded);
+    // CarePlan is now part of Plan of Treatment section
+    addEntries(ResourceType.CarePlan, kd, sc, resTobeAdded);
 
     // Add Immunizations section.
     sc = getSection(SectionTypeEnum.IMMUNIZATIONS, kd);
@@ -482,9 +501,9 @@ public class HcsReportCreator extends ReportCreator {
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
 
     // Add Social History section.
-    /*    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
+    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded); */
+    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
 
     // Add Medical Equipment section.
     sc = getSection(SectionTypeEnum.MEDICAL_EQUIPMENT, kd);
@@ -501,10 +520,15 @@ public class HcsReportCreator extends ReportCreator {
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Goal, kd, sc, resTobeAdded);
 
-    // Add Care Plan section.
-    sc = getSection(SectionTypeEnum.CARE_PLAN, kd);
+    // Add Pregnancy Section
+    sc = getSection(SectionTypeEnum.PREGNANCY, kd);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.CarePlan, kd, sc, resTobeAdded);
+    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
+
+    // Add coverage section
+    sc = getSection(SectionTypeEnum.COVERAGE, kd);
+    if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Coverage, kd, sc, resTobeAdded);
 
     // Finalize the sections.
     comp.setSection(scs);
@@ -621,6 +645,15 @@ public class HcsReportCreator extends ReportCreator {
         populateDefaultNarrative(sc, kd);
         break;
 
+      case PLAN_OF_ASSESSMENT:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.PLAN_OF_ASSESSMENT_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.PLAN_OF_ASSESSMENT_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
       case PLAN_OF_TREATMENT:
         sc =
             FhirGeneratorUtils.getSectionComponent(
@@ -701,12 +734,22 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
-      case CARE_PLAN:
+
+      case PREGNANCY:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE_DISPLAY);
+                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case COVERAGE:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.COVERAGE_CODE,
+                FhirGeneratorConstants.COVERAGE_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
@@ -769,16 +812,31 @@ public class HcsReportCreator extends ReportCreator {
     if (resourcesByType != null
         && rt == ResourceType.Observation
         && Boolean.TRUE.equals(isResultsSection(sc))) {
-      res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
+      res = filterObservationsForResultsSection(resourcesByType);
     } else if (resourcesByType != null
         && rt == ResourceType.Observation
         && Boolean.TRUE.equals(isVitalsSection(sc))) {
-      res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
+      res = ReportGenerationUtils.getVitalSectionObservation(resourcesByType);
     } else if (resourcesByType != null
         && rt == ResourceType.Observation
         && Boolean.TRUE.equals(isSocialHistorySection(sc))) {
-      res =
-          filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
+      res = ReportGenerationUtils.getSmokingStatusObservation(resourcesByType);
+    } else if (resourcesByType != null
+        && rt == ResourceType.Observation
+        && Boolean.TRUE.equals(isPregnancySection(sc))) {
+      res = ReportGenerationUtils.getPregnancySectionObservation(resourcesByType);
+    } else if (resourcesByType != null
+        && rt == ResourceType.Observation
+        && Boolean.TRUE.equals(isAssessmentSection(sc))) {
+      res = filterObservationsForAssessmentSection(resourcesByType);
+    } else if (resourcesByType != null
+        && rt == ResourceType.DiagnosticReport
+        && Boolean.TRUE.equals(isResultsSection(sc))) {
+      res = filterDiagnosticReportsForResultsSection(resourcesByType);
+    } else if (resourcesByType != null
+        && rt == ResourceType.DiagnosticReport
+        && Boolean.TRUE.equals(isNotesSection(sc))) {
+      res = filterDiagnosticReportsForNotesSection(resourcesByType);
     } else res = resourcesByType;
 
     if (res != null && !res.isEmpty()) {
@@ -901,6 +959,66 @@ public class HcsReportCreator extends ReportCreator {
     return false;
   }
 
+  public Boolean isPregnancySection(SectionComponent sc) {
+
+    if (sc.getCode() != null
+        && sc.getCode().getCodingFirstRep() != null
+        && sc.getCode().getCodingFirstRep().getSystem() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getSystem()
+            .contentEquals(FhirGeneratorConstants.LOINC_CS_URL)
+        && sc.getCode().getCodingFirstRep().getCode() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public Boolean isAssessmentSection(SectionComponent sc) {
+
+    if (sc.getCode() != null
+        && sc.getCode().getCodingFirstRep() != null
+        && sc.getCode().getCodingFirstRep().getSystem() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getSystem()
+            .contentEquals(FhirGeneratorConstants.LOINC_CS_URL)
+        && sc.getCode().getCodingFirstRep().getCode() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(FhirGeneratorConstants.PLAN_OF_ASSESSMENT_SECTION_LOINC_CODE)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public Boolean isNotesSection(SectionComponent sc) {
+
+    if (sc.getCode() != null
+        && sc.getCode().getCodingFirstRep() != null
+        && sc.getCode().getCodingFirstRep().getSystem() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getSystem()
+            .contentEquals(FhirGeneratorConstants.LOINC_CS_URL)
+        && sc.getCode().getCodingFirstRep().getCode() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE)) {
+      return true;
+    }
+
+    return false;
+  }
+
   public void removeExtensions(Resource res) {
 
     if (res instanceof DomainResource) {
@@ -964,12 +1082,21 @@ public class HcsReportCreator extends ReportCreator {
     }
   }
 
-  public Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
+  public Set<Resource> filterObservationsForResultsSection(Set<Resource> res) {
+    return ReportGenerationUtils.filterObservationsByCategory(
+        res, ObservationCategory.LABORATORY.toCode());
+  }
 
-    if (ObservationCategory.SOCIALHISTORY.toCode().contentEquals(category)) {
-      return ReportGenerationUtils.getSmokingStatusObservation(res);
-    } else {
-      return ReportGenerationUtils.filterObservationsByCategory(res, category);
-    }
+  public Set<Resource> filterObservationsForAssessmentSection(Set<Resource> res) {
+    return ReportGenerationUtils.getAssessmentObservations(res);
+  }
+
+  public Set<Resource> filterDiagnosticReportsForResultsSection(Set<Resource> res) {
+    return ReportGenerationUtils.filterDiagnosticReportsByCategories(
+        res, FhirGeneratorConstants.TERMINOLOGY_V2_0074_URL, FhirGeneratorConstants.LAB_CODE);
+  }
+
+  public Set<Resource> filterDiagnosticReportsForNotesSection(Set<Resource> res) {
+    return ReportGenerationUtils.getNotesDiagnosticReports(res);
   }
 }
