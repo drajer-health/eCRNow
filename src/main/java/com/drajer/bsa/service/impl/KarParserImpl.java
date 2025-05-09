@@ -215,17 +215,22 @@ public class KarParserImpl implements KarParser {
   private static final String JSON_KAR_EXT = "json";
   private static final String RECEIVER_ADDRESS_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-receiver-endpoint";
-
+  private static final String HCS_RECEIVER_ADDRESS_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-receiver-address-extension";
   private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
   private static final String LOCAL_HOST_REPO_NAME = "local-repo";
   private static final String PH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String MEDMORPH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
+  private static final String HCS_QUERY_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String PH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
   private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
+  private static final String HCS_RELATED_DATA_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
 
   private static HashMap<String, String> actionClasses = new HashMap<>();
 
@@ -641,7 +646,9 @@ public class KarParserImpl implements KarParser {
 
       for (Extension ext : extensions) {
 
-        if (ext.hasValue() && ext.getUrl().contentEquals(RECEIVER_ADDRESS_URL)) {
+        if (ext.hasValue()
+            && (ext.getUrl().contentEquals(RECEIVER_ADDRESS_URL)
+                || ext.getUrl().contentEquals(HCS_RECEIVER_ADDRESS_URL))) {
           logger.info(" Processing Receiver URL extension ");
           Type t = ext.getValue();
           if (t instanceof PrimitiveType) {
@@ -702,6 +709,9 @@ public class KarParserImpl implements KarParser {
         if (queryExt == null) {
           queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
         }
+        if (queryExt == null) {
+          queryExt = dr.getExtensionByUrl(HCS_QUERY_EXTENSION_URL);
+        }
 
         FhirQueryFilter query = new FhirQueryFilter();
         query.setResourceType(rt);
@@ -721,6 +731,9 @@ public class KarParserImpl implements KarParser {
 
         if (relatedDataExt == null) {
           relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
+        }
+        if (relatedDataExt == null) {
+          relatedDataExt = dr.getExtensionByUrl(HCS_RELATED_DATA_EXTENSION_URL);
         }
 
         if (relatedDataExt != null && relatedDataExt.getValue() != null) {

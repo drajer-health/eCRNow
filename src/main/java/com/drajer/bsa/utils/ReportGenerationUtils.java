@@ -1,6 +1,7 @@
 package com.drajer.bsa.utils;
 
 import com.drajer.fhirecr.FhirGeneratorConstants;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,8 @@ public class ReportGenerationUtils {
   private static final Logger logger = LoggerFactory.getLogger(ReportGenerationUtils.class);
 
   private static final String SMOKING_STATUS_CODE = "72166-2";
+  private static final String PREGNANCY_STATUS_CODE = "82810-3";
+  private static final String PREGNANCY_INTENTION_CODE = "86645-9";
 
   private ReportGenerationUtils() {}
 
@@ -99,6 +102,43 @@ public class ReportGenerationUtils {
     return retVal;
   }
 
+  public static Set<Resource> getAssessmentObservations(Set<Resource> res) {
+
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      for (Resource r : res) {
+        Observation obs = (Observation) (r);
+        if (obs.getCategoryFirstRep() != null
+            && obs.getCategoryFirstRep().getCodingFirstRep() != null
+            && obs.getCategoryFirstRep().getCodingFirstRep().getSystem() != null
+            && obs.getCategoryFirstRep().getCodingFirstRep().getCode() != null) {
+          if (obs.getCategoryFirstRep()
+                  .getCodingFirstRep()
+                  .getSystem()
+                  .contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY)
+              && (obs.getCategoryFirstRep()
+                      .getCodingFirstRep()
+                      .getCode()
+                      .contentEquals(ObservationCategory.LABORATORY.toCode())
+                  || obs.getCategoryFirstRep()
+                      .getCodingFirstRep()
+                      .getCode()
+                      .contentEquals(ObservationCategory.VITALSIGNS.toCode()))) {
+            // skip laboratory and vital-sign
+            continue;
+          } else if (obs.hasCode()
+              && (isPregnancyCode(obs.getCode()) || isSmokingStatusCode(obs.getCode()))) {
+            // skip smoking and Pregnancy observations
+            continue;
+          }
+          returnVal.add(r);
+        }
+      }
+    }
+
+    return returnVal;
+  }
+
   public static Set<Resource> filterDiagnosticReports(Set<Resource> res, Boolean resultFlag) {
 
     logger.info(" Filtering Diagnostic Reports with {}", (resultFlag ? "results" : "no results"));
@@ -123,6 +163,59 @@ public class ReportGenerationUtils {
     return returnVal;
   }
 
+  public static Set<Resource> filterDiagnosticReportsByCategories(
+      Set<Resource> res, String codeSystem, String... category) {
+    Set<String> categories = new HashSet<>(Arrays.asList(category));
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      for (Resource r : res) {
+
+        DiagnosticReport report = (DiagnosticReport) (r);
+        if (report.getCategoryFirstRep() != null
+            && report.getCategoryFirstRep().getCodingFirstRep() != null
+            && report.getCategoryFirstRep().getCodingFirstRep().getSystem() != null
+            && report.getCategoryFirstRep().getCodingFirstRep().getCode() != null
+            && report
+                .getCategoryFirstRep()
+                .getCodingFirstRep()
+                .getSystem()
+                .contentEquals(codeSystem)
+            && categories.contains(report.getCategoryFirstRep().getCodingFirstRep().getCode())) {
+
+          returnVal.add(r);
+        }
+      }
+    }
+
+    return returnVal;
+  }
+
+  public static Set<Resource> getNotesDiagnosticReports(Set<Resource> res) {
+
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      for (Resource r : res) {
+        DiagnosticReport report = (DiagnosticReport) (r);
+        if (report.getCategoryFirstRep() != null
+            && report.getCategoryFirstRep().getCodingFirstRep() != null
+            && report.getCategoryFirstRep().getCodingFirstRep().getSystem() != null
+            && report.getCategoryFirstRep().getCodingFirstRep().getCode() != null) {
+          // Skip LAB Diagnostic report
+          if (FhirGeneratorConstants.TERMINOLOGY_V2_0074_URL.contentEquals(
+                  report.getCategoryFirstRep().getCodingFirstRep().getSystem())
+              && FhirGeneratorConstants.LAB_CODE.contentEquals(
+                  report.getCategoryFirstRep().getCodingFirstRep().getCode())) {
+            continue;
+          } else {
+            returnVal.add(r);
+          }
+        }
+      }
+    }
+
+    return returnVal;
+  }
+
   public static Set<Resource> getSmokingStatusObservation(Set<Resource> res) {
 
     logger.info(" Getting Smoking Status observation ");
@@ -133,10 +226,7 @@ public class ReportGenerationUtils {
         Observation obs = (Observation) (r);
 
         if (obs.hasCode()) {
-          CodeableConcept cd = obs.getCode();
-
-          if (hasCode(FhirGeneratorConstants.LOINC_CS_URL, SMOKING_STATUS_CODE, cd)) {
-
+          if (isSmokingStatusCode(obs.getCode())) {
             returnVal.add(r);
             break;
           }
@@ -144,6 +234,40 @@ public class ReportGenerationUtils {
       }
     }
     return returnVal;
+  }
+
+  private static boolean isSmokingStatusCode(CodeableConcept cd) {
+    return hasCode(FhirGeneratorConstants.LOINC_CS_URL, SMOKING_STATUS_CODE, cd);
+  }
+
+  public static Set<Resource> getPregnancySectionObservation(Set<Resource> res) {
+
+    logger.info(" Getting Pregnancy section observation");
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      for (Resource r : res) {
+
+        Observation obs = (Observation) (r);
+
+        if (obs.hasCode()) {
+          if (isPregnancyCode(obs.getCode())) {
+            returnVal.add(r);
+            break;
+          }
+        }
+      }
+    }
+    return returnVal;
+  }
+
+  private static boolean isPregnancyCode(CodeableConcept cd) {
+    return (hasCode(FhirGeneratorConstants.LOINC_CS_URL, PREGNANCY_STATUS_CODE, cd)
+        || hasCode(FhirGeneratorConstants.LOINC_CS_URL, PREGNANCY_INTENTION_CODE, cd));
+  }
+
+  public static Set<Resource> getVitalSectionObservation(Set<Resource> res) {
+    logger.info(" Getting Vital section observations");
+    return filterObservationsByCategory(res, ObservationCategory.VITALSIGNS.toCode());
   }
 
   public static Boolean hasCode(String csUrl, String code, CodeableConcept cd) {

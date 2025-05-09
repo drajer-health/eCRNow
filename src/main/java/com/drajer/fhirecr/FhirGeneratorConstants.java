@@ -23,6 +23,8 @@ public class FhirGeneratorConstants {
   public static final String SNOMED_CS_URL = "http://snomed.info/sct";
   public static final String HL7_OBSERVATION_CATEGORY =
       "http://terminology.hl7.org/CodeSystem/observation-category";
+  public static final String TERMINOLOGY_V2_0074_URL =
+      "http://terminology.hl7.org/CodeSystem/v2-0074";
 
   // Composition Codes
   public static final String ECR_COMP_TYPE_CODE = "55751-2";
@@ -75,6 +77,9 @@ public class FhirGeneratorConstants {
       "Relevant diagnostic tests/laboratory data Narrative";
   public static final String PLAN_OF_TREATMENT_SECTION_LOINC_CODE = "18776-5";
   public static final String PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY = "Plan of care note";
+  public static final String PLAN_OF_ASSESSMENT_SECTION_LOINC_CODE = "51847-2";
+  public static final String PLAN_OF_ASSESSMENT_SECTION_LOINC_CODE_DISPLAY =
+      "Evaluation + Plan note";
   public static final String IMMUNIZATION_SECTION_LOINC_CODE = "11369-6";
   public static final String IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY =
       "History of Immunization Narrative";
@@ -109,7 +114,7 @@ public class FhirGeneratorConstants {
       "Radiotherapy course of treatment";
   public static final String ODH_SECTION_CODE = "74165-2";
   public static final String ODH_SECTION_CODE_DISPLAY = "History of employment status NIOSH";
-
-  public static final String CARE_PLAN_SECTION_LOINC_CODE = "18776-5";
-  public static final String CARE_PLAN_SECTION_LOINC_CODE_DISPLAY = "Care Plan Section narrative";
+  public static final String COVERAGE_CODE = "48768-6";
+  public static final String COVERAGE_CODE_DISPLAY = "Payment sources Document";
+  public static final String LAB_CODE = "LAB";
 }

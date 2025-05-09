@@ -91,13 +91,13 @@ public final class BsaTypes {
     RESULTS,
     NOTES,
     PLAN_OF_TREATMENT,
+    PLAN_OF_ASSESSMENT,
     IMMUNIZATIONS,
     PROCEDURES,
     VITAL_SIGNS,
     SOCIAL_HISTORY,
     MEDICAL_EQUIPMENT,
     CARE_TEAM,
-    CARE_PLAN,
     GOAL,
     CHIEF_COMPLAINT,
     HISTORY_OF_PRESENT_ILLNESS,
@@ -111,7 +111,8 @@ public final class BsaTypes {
     SECONDARY_CANCER_CONDITION,
     CANCER_STAGE_GROUP,
     RADIO_THERAPY_COURSE_SUMMARY,
-    ODH
+    ODH,
+    COVERAGE
   }
 
   public static String getNotificationStatusTypeString(NotificationProcessingStatusType nst) {
