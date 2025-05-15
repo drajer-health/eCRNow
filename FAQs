@@ -1,1 +1,17 @@
 This page contains the FAQs associated with using eCRNow App and providing services to the Providers. 
+
+**1. What should be the size of the server for installing and running eCRNow App ?**
+
+For production, it really depends on the work load. It is a horizontally scalable application which can be deployed on docker / kubernetes or VMs.
+we recommend using Linux machines, but if your environment has only windows you can still deploy the application on windows. There are vendors who have deployed on windows.
+Typically vendors are starting off with a 4 CPU, 16GB RAM, 500GB or 1TB hard disk as a starting point and then adjust from there.
+
+**2. How do I get notification of changes and releases ?**
+
+eCRNow App releases are scheduled for the last monday of every month typically. You can subsribe to github notifications to get notified of new releases.
+
+**3. How do I get the latest eRSD and be notified of changes in eRSD versions ?**
+
+All eRSD related documentation including downloading eRSD's and subscribing for eRSD changes are docuemnted at https://ersd.aimsplatform.org/#/home 
+P
+
