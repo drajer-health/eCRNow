@@ -115,7 +115,7 @@ public class EcrReportCreator extends ReportCreator {
       String id,
       String profile,
       BsaAction act) {
-    return createReport(kd, ehrService, id, profile, act);
+    return createReport(kd, ehrService, inputData, id, profile, act);
   }
 
   @Override
