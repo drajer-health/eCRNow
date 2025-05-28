@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns="urn:hl7-org:v3"
+                  xmlns:cda="urn:hl7-org:v3"
+                  xmlns:sdtc="urn:hl7-org:sdtc">
+    <realmCode code="US"/>
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+    <templateId root="2.16.840.1.113883.10.20.22.1.1" extension="2015-08-01"/>
+    <templateId root="2.16.840.1.113883.10.20.15.2" extension="2022-05-01"/>
+    <id root="69e3a174-6cbe-4329-8bed-4b6962c344ae"/>
+    <code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
+    <title>Initial Public Health Case Report</title>
+    <effectiveTime value="20250219232735+0000"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+    <languageCode code="en-US"/>
+    <setId root="2.16.840.1.113883.1.1.1.1" extension="1"/>
+    <versionNumber value="1"/>
+    <author>
+        <time value="20250219232735+0000"/>
+        <assignedAuthor>
+            <id root="2.16.840.1.113883.4.6"/>
+            <addr>
+                <streetAddressLine nullFlavor="NI"/>
+                <city nullFlavor="NI"/>
+                <state nullFlavor="NI"/>
+                <postalCode nullFlavor="NI"/>
+                <country nullFlavor="NI"/>
+            </addr>
+            <telecom nullFlavor="NI"/>
+            <assignedPerson>
+                <name>
+                    <given nullFlavor="NI"/>
+                    <family nullFlavor="NI"/>
+                </name>
+            </assignedPerson>
+        </assignedAuthor>
+    </author>
+    <custodian>
+        <assignedCustodian>
+            <representedCustodianOrganization>
+                <id nullFlavor="NI"/>
+                <name>Unknown</name>
+                <telecom nullFlavor="NI"/>
+                <addr>
+                    <streetAddressLine nullFlavor="NI"/>
+                    <city nullFlavor="NI"/>
+                    <state nullFlavor="NI"/>
+                    <postalCode nullFlavor="NI"/>
+                    <country nullFlavor="NI"/>
+                </addr>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <participant typeCode="IND">
+        <associatedEntity classCode="NOK">
+            <addr>
+                <streetAddressLine>534 Erewhon St</streetAddressLine>
+                <city>PleasantVille</city>
+                <state>Vic</state>
+                <postalCode>3999</postalCode>
+                <country nullFlavor="NI"/>
+            </addr>
+            <telecom value="tel:(323)799-8327" use="HP"/>
+            <associatedPerson>
+                <name>
+                    <given>B�n�dicte</given>
+                    <family>du March�</family>
+                </name>
+            </associatedPerson>
+        </associatedEntity>
+    </participant>
+    <componentOf>
+        <encompassingEncounter>
+            <id root="ee2e711c-be9a-40df-b252-bb18d0531f64"/>
+            <code nullFlavor="NI"/>
+            <effectiveTime nullFlavor="NI"/>
+            <responsibleParty>
+                <assignedEntity>
+                    <id root="2.16.840.1.113883.4.6"/>
+                    <addr>
+                        <streetAddressLine nullFlavor="NI"/>
+                        <city nullFlavor="NI"/>
+                        <state nullFlavor="NI"/>
+                        <postalCode nullFlavor="NI"/>
+                        <country nullFlavor="NI"/>
+                    </addr>
+                    <telecom nullFlavor="NI"/>
+                    <assignedPerson>
+                        <name>
+                            <given nullFlavor="NI"/>
+                            <family nullFlavor="NI"/>
+                        </name>
+                    </assignedPerson>
+                    <representedOrganization>
+                        <id nullFlavor="NI"/>
+                        <name>Unknown</name>
+                        <telecom nullFlavor="NI"/>
+                        <addr>
+                            <streetAddressLine nullFlavor="NI"/>
+                            <city nullFlavor="NI"/>
+                            <state nullFlavor="NI"/>
+                            <postalCode nullFlavor="NI"/>
+                            <country nullFlavor="NI"/>
+                        </addr>
+                    </representedOrganization>
+                </assignedEntity>
+            </responsibleParty>
+            <location>
+                <healthCareFacility>
+                    <id root="2.16.840.1.113883.1.1.1.1" extension="Unknown"/>
+                    <code nullFlavor="NI"/>
+                    <location>
+                        <addr>
+                            <streetAddressLine nullFlavor="NI"/>
+                            <city nullFlavor="NI"/>
+                            <state nullFlavor="NI"/>
+                            <postalCode nullFlavor="NI"/>
+                            <country nullFlavor="NI"/>
+                        </addr>
+                    </location>
+                    <serviceProviderOrganization>
+                        <id nullFlavor="NI"/>
+                        <name>Unknown</name>
+                        <telecom nullFlavor="NI"/>
+                        <addr>
+                            <streetAddressLine nullFlavor="NI"/>
+                            <city nullFlavor="NI"/>
+                            <state nullFlavor="NI"/>
+                            <postalCode nullFlavor="NI"/>
+                            <country nullFlavor="NI"/>
+                        </addr>
+                    </serviceProviderOrganization>
+                </healthCareFacility>
+            </location>
+        </encompassingEncounter>
+    </componentOf>
+    <component>
+        <structuredBody>
+            <component>
+                <section nullFlavor="NI">
+                    <templateId root="2.16.840.1.113883.10.20.22.2.5.1"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.5.1" extension="2015-08-01"/>
+                    <code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="PROBLEM LIST"/>
+                    <title>PROBLEMS - DIAGNOSES</title>
+                    <text>No Problem Information</text>
+                </section>
+            </component>
+            <component>
+                <section nullFlavor="NI">
+                    <templateId root="2.16.840.1.113883.10.20.22.2.22.1"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.22.1" extension="2015-08-01"/>
+                    <code code="46240-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Encounters"/>
+                    <title>ENCOUNTERS</title>
+                    <text>No Encounter Information</text>
+                </section>
+            </component>
+            <component>
+                <section nullFlavor="NI">
+                    <templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
+                    <code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+                    <title>RESULTS</title>
+                    <text>No Lab Results Information</text>
+                </section>
+            </component>
+            <component>
+                <section nullFlavor="NI">
+                    <templateId root="2.16.840.1.113883.10.20.22.2.38"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>
+                    <code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>
+                    <title>Medications Administered</title>
+                    <text>No Medication Administered Information</text>
+                </section>
+            </component>
+            <component>
+                <section nullFlavor="NI">
+                    <templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.2.1" extension="2015-08-01"/>
+                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>
+                    <title>IMMUNIZATIONS</title>
+                    <text>No ImmunizationInformation</text>
+                </section>
+            </component>
+            <component>
+                <section nullFlavor="NI">
+                    <templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+                    <code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+                    <title>SOCIAL HISTORY</title>
+                    <text>No Social History Information</text>
+                </section>
+            </component>
+            <component>
+                <section nullFlavor="NI">
+                    <templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>
+                    <code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+                    <title>Plan of Treatment</title>
+                    <text>No Plan Of Treatment Information</text>
+                </section>
+            </component>
+            <component>
+                <section>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.4"/>
+                    <code code="10164-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Present Illness"/>
+                    <title>History of Present Illness</title>
+                    <text>
+                        <table border="1" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Narrative Text</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <content ID="historyOfPresentIllness1">Unknown History of Present Illness</content>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                </section>
+            </component>
+            <component>
+                <section>
+                    <templateId root="2.16.840.1.113883.10.20.22.2.12"/>
+                    <code code="29299-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Reason For Visit"/>
+                    <title>Reason For Visit</title>
+                    <text>
+                        <table border="1" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>text</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <content ID="reasonForVisit1">Unknown Reason For Visit</content>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>

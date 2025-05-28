@@ -95,6 +95,7 @@ public class SubscriptionUtils {
       HttpServletRequest request,
       HttpServletResponse response,
       Boolean relaunch,
+      Boolean reprocess,
       PatientLaunchContext launchContext)
       throws InvalidLaunchContext, InvalidNotification {
 
@@ -160,10 +161,20 @@ public class SubscriptionUtils {
 
               nc = new NotificationContext();
 
-              if (!relaunch) {
+              if (!relaunch && !reprocess) {
                 nc.setTriggerEvent(namedEvent);
+              } else if (reprocess
+                  && launchContext.getEhrLaunchContext() != null
+                  && launchContext.getEhrLaunchContext().containsKey("forceReprocessing")
+                  && launchContext
+                      .getEhrLaunchContext()
+                      .get("forceReprocessing")
+                      .contains("false")) {
+                nc.setTriggerEvent(namedEvent + "|reprocessed:" + UUID.randomUUID().toString());
+              } else if (reprocess) {
+                nc.setTriggerEvent(namedEvent + "|reprocessed");
               } else {
-                nc.setTriggerEvent(namedEvent + "|" + UUID.randomUUID().toString());
+                nc.setTriggerEvent(namedEvent + "|relaunch-id:" + UUID.randomUUID().toString());
               }
               nc.setFhirServerBaseUrl(fhirServerUrl);
               nc.setPatientId(getPatientId(res));
@@ -248,7 +259,7 @@ public class SubscriptionUtils {
             } else {
 
               String error =
-                  "Fhir Server Url received is not valid for further processing, Url Value : {}"
+                  "Fhir Server Url received is not valid for further processing, Url Value : "
                       + ((fhirServerUrl != null) ? fhirServerUrl : "Null Value");
               logger.error(error);
               throw new InvalidNotification(error);
@@ -257,8 +268,9 @@ public class SubscriptionUtils {
           } else { // if resourceType is not the same
 
             String error =
-                " Resource Type Received {}, does not match Resource Type Expected {}"
+                " Resource Type Received "
                     + res.getResourceType().getDeclaringClass()
+                    + " , does not match Resource Type Expected "
                     + ResourceType.fromCode(resourceType).getDeclaringClass();
             logger.error(error);
             throw new InvalidNotification(error);

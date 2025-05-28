@@ -96,16 +96,29 @@ public class CdaValidatorUtil {
    */
   public static boolean validateEicrToSchematron(String ecrData) {
 
+    return validateEicrToSchematron(ecrData, ActionRepo.getInstance().getSchematronFileLocation());
+  }
+
+  /**
+   * Method used for validating XML data against valid Schematron returns true if XML data matched
+   * Schematton
+   *
+   * @param ecrData
+   * @param schematronFilePath Indicates which schematron to use
+   * @return boolean value
+   */
+  public static boolean validateEicrToSchematron(String ecrData, String schematronFilePath) {
+
     boolean validationResult = false;
-    final ISchematronResource aResSCH =
-        SchematronResourceSCH.fromFile(ActionRepo.getInstance().getSchematronFileLocation());
+    final ISchematronResource aResSCH = SchematronResourceSCH.fromFile(schematronFilePath);
 
     if (!aResSCH.isValidSchematron()) {
-      logger.warn("*** Cannot Validate EICR since Schematron is not valid ***");
+      logger.warn(
+          "*** Cannot Validate EICR since Schematron {} is not valid ***", schematronFilePath);
     } else {
       SchematronOutputType output = null;
       try {
-        logger.debug("Found Valid Schematron which can be applied to EICR");
+        logger.debug("Found Valid Schematron {} which can be applied to EICR", schematronFilePath);
         output =
             aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrData)));
       } catch (Exception e) {

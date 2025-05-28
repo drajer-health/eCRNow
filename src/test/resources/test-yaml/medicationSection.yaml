@@ -44,11 +44,11 @@ testCase:
         "code/@displayName": "Medications Administered"
         "title": "Medications Administered"
       - xPath: "text/table/thead/tr/th"
-        count: 2
+        count: 3
       - xPath: "text/table/tbody/tr"
         count: 6
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 2
+        count: 3
       - xPath: "text/table/"
         "thead/tr/th[1]": "Medication Name"
         "thead/tr/th[2]": "Medication Start Date"

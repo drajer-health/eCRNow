@@ -1,0 +1,442 @@
+{
+  "resourceType": "Bundle",
+  "id": "e66afdec-aebd-4d65-9439-12c83214a3c6",
+  "meta": {
+    "lastUpdated": "2025-02-03T16:09:43.535+00:00"
+  },
+  "type": "searchset",
+  "total": 8,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport?patient=Patient%2Fe9bd7100-48af-4c69-a557-c13235f72f74"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/330f301b-16cb-42e9-8ad3-f29900d5f3b7",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "330f301b-16cb-42e9-8ad3-f29900d5f3b7",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "SARS coronavirus 2 Ag [Presence] in Respiratory sp"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-04-09T00:00:00+00:00",
+        "issued": "2024-04-09T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Organization/23dae8374a66fa1c9f9d95fae64d9b46a0661bfe"
+          },
+          {
+            "reference": "Practitioner/81415d03066ed4e2b8d754448ded73567939800b"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/b9e0a76e-9b16-4f8e-8607-0ba69f8421eb"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/adfaa90d-5db7-42c1-99a0-dc72127a9e2e",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "adfaa90d-5db7-42c1-99a0-dc72127a9e2e",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "58410-2",
+              "display": "CBC panel - Blood by Automated count"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+        "issued": "2024-01-01T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+            "type": "Practitioner"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/d0aafda7-1eba-41be-8a0c-bdc9cfe9127a"
+          },
+          {
+            "reference": "Observation/3eb6aaa3-af28-4d33-842e-5ac496ea82b8"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/0220fde7-cf19-47b5-bf61-8f9a2bfa5513",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "0220fde7-cf19-47b5-bf61-8f9a2bfa5513",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "https://www.acmeonline.com",
+            "value": "P73456090"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "96910-5",
+              "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+        "issued": "2024-01-01T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+            "type": "Practitioner"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/f7e55c9f-0612-42e3-8e52-67f4f3a25712"
+          },
+          {
+            "reference": "Observation/535e7bf4-2ff6-40b4-89d3-dfff0ffdd622"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/43962602-9bf2-4bd5-b7b7-549392c18e80",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "43962602-9bf2-4bd5-b7b7-549392c18e80",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "https://www.acmeonline.com",
+            "value": "P73456090"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "96910-5",
+              "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+            }
+          ],
+          "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+        "issued": "2024-01-01T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+            "type": "Practitioner"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/36aa8224-2021-4ed2-8f2f-1f7227c57230"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/e8d37430-34f4-4cff-9807-585d73454882",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "e8d37430-34f4-4cff-9807-585d73454882",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "https://www.acmeonline.com",
+            "value": "P73456090"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+        "issued": "2024-01-01T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+            "type": "Practitioner"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/46e1fea4-ce38-4b0d-9514-f8518cf370b9"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/3357a141-dc4e-482b-951f-4be799a7ddbc",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "3357a141-dc4e-482b-951f-4be799a7ddbc",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "https://www.acmeonline.com",
+            "value": "P73456090"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "96910-5",
+              "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+            }
+          ],
+          "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+        "issued": "2024-01-01T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+            "type": "Practitioner"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/176c7458-7e49-4c4c-af0c-9f4e9c4b5394",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "176c7458-7e49-4c4c-af0c-9f4e9c4b5394",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "https://www.acmeonline.com",
+            "value": "P73456090"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "96910-5",
+              "display": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+            }
+          ],
+          "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+        "issued": "2024-01-01T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+            "type": "Practitioner"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/46e1fea4-ce38-4b0d-9514-f8518cf370b9"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/DiagnosticReport/ac263c51-4350-4ebe-8ac3-f4315041a192",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "ac263c51-4350-4ebe-8ac3-f4315041a192",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [
+          {
+            "system": "https://www.acmeonline.com",
+            "value": "P73456090"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "text": "Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-01T00:00:00+00:00",
+        "issued": "2024-01-01T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+            "type": "Practitioner"
+          }
+        ]
+      }
+    }
+  ]
+}

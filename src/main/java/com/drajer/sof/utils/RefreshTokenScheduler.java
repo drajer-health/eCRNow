@@ -65,6 +65,7 @@ public class RefreshTokenScheduler {
   private static final String PROVIDER_UUID = "uuid";
 
   ObjectMapper mapper = new ObjectMapper();
+
   /**
    * Schedule job.
    *

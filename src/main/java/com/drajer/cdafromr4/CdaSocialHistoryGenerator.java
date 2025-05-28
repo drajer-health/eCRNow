@@ -12,10 +12,12 @@ import java.util.Map;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Period;
@@ -652,7 +654,601 @@ public class CdaSocialHistoryGenerator {
 
   public static Object generateR31SocialHistorySection(
       R4FhirData data, LaunchDetails details, String version) {
-    // TODO Auto-generated method stub
-    return null;
+
+    logger.info("LaunchDetails in generateSocialHistorySection:{}", details);
+
+    StringBuilder sb = new StringBuilder(2000);
+
+    CodeType birthSex =
+        CdaFhirUtilities.getCodeExtension(
+            data.getPatient().getExtension(), CdaGeneratorConstants.FHIR_USCORE_BIRTHSEX_EXT_URL);
+
+    CodeableConcept genderIdentity =
+        CdaFhirUtilities.getCodeableConceptFromExtension(
+            data.getPatient().getExtension(),
+            CdaGeneratorConstants.FHIR_USCORE_GENDER_IDENTITY_EXT_URL);
+
+    Extension tribalAffiliation =
+        CdaFhirUtilities.getExtensionForUrl(
+            data.getPatient().getExtension(),
+            CdaGeneratorConstants.FHIR_USCORE_TRIBAL_AFFILIATION_EXT_URL);
+
+    List<Observation> travelHistory = data.getTravelObs();
+    List<Observation> residencyData = data.getResidencyObs();
+    List<Observation> nationalityData = data.getNationalityObs();
+    List<Observation> vaccineCredData = data.getVaccineCredObs();
+    List<Observation> disabilityData = data.getDisabilityObs();
+    List<Observation> homelessData = data.getHomelessObs();
+
+    if (birthSex != null
+        || genderIdentity != null
+        || tribalAffiliation != null
+        || (nationalityData != null && !nationalityData.isEmpty())
+        || (residencyData != null && !residencyData.isEmpty())
+        || (homelessData != null && !homelessData.isEmpty())
+        || (disabilityData != null && !disabilityData.isEmpty())
+        || (travelHistory != null && !travelHistory.isEmpty())) {
+
+      sb.append(generateSocialHistorySectionHeader(""));
+
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
+
+      // Create Table Header.
+      List<String> list = new ArrayList<>();
+      list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_TITLE);
+      list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_TITLE);
+      sb.append(
+          CdaGeneratorUtils.getXmlForTableHeader(
+              list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+
+      // Add Table Body
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+      String birthSexXml = "";
+      String genderIdentityXml = "";
+      String tribalAffiliationXml = "";
+      StringBuilder nationalityDataXml = new StringBuilder();
+      StringBuilder residencyDataXml = new StringBuilder();
+      StringBuilder travelHistoryXml = new StringBuilder();
+      StringBuilder homelessDataXml = new StringBuilder();
+      StringBuilder disabilityDataXml = new StringBuilder();
+      int index = 0;
+      Map<String, String> bodyvals = new LinkedHashMap<>();
+
+      if (birthSex != null) {
+
+        logger.info("Found Birth Sex");
+        bodyvals.put(
+            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+            CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
+        bodyvals.put(
+            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
+            CdaFhirUtilities.getStringForType(birthSex));
+
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+        index++;
+
+        birthSexXml = generateBirthSexEntry(birthSex);
+      }
+
+      if (genderIdentity != null) {
+        logger.info(" Found Gender Identity ");
+        bodyvals.put(
+            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+            CdaGeneratorConstants.GENDER_IDENTITY_DISPLAY);
+
+        String display = CdaFhirUtilities.getStringForType(genderIdentity);
+        bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+
+        String contentRef =
+            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
+        genderIdentityXml = generateGenderIdentityEntry(genderIdentity, display, contentRef);
+
+        index++;
+      }
+
+      if (tribalAffiliation != null) {
+
+        logger.info(" Found Tribal Affiliation ");
+        bodyvals.put(
+            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+            CdaGeneratorConstants.TRIBAL_AFFILIATION_DISPLAY);
+
+        String display = CdaFhirUtilities.getStringForType(tribalAffiliation);
+
+        bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+
+        String contentRef =
+            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
+        tribalAffiliationXml =
+            generateTribalAffiliationEntry(tribalAffiliation, display, contentRef);
+        index++;
+      }
+
+      if (travelHistory != null && !travelHistory.isEmpty()) {
+
+        logger.info("Travel History Observation Found ");
+
+        for (Observation obs : travelHistory) {
+
+          bodyvals.put(
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+              CdaGeneratorConstants.TRAVEL_HISTORY_DISPLAY);
+
+          String display = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
+
+          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+
+          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+          travelHistoryXml.append(generateTravelHistoryEntry(obs, display, details));
+          index++;
+        }
+      }
+
+      if (nationalityData != null && !nationalityData.isEmpty()) {
+
+        logger.info("Nationality Data Observation Found ");
+
+        for (Observation obs : nationalityData) {
+
+          bodyvals.put(
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+              CdaGeneratorConstants.NATIONALITY_DISPLAY);
+
+          String display = CdaFhirUtilities.getStringForType(obs.getValue());
+
+          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+
+          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+
+          String contentRef =
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
+          nationalityDataXml.append(generateNationalityEntry(obs, display, details, contentRef));
+          index++;
+        }
+      }
+
+      if (residencyData != null && !residencyData.isEmpty()) {
+
+        logger.info("Residency Data Observation Found ");
+
+        for (Observation obs : residencyData) {
+
+          bodyvals.put(
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+              CdaGeneratorConstants.RESIDENCY_DISPLAY);
+
+          String display = CdaFhirUtilities.getStringForType(obs.getValue());
+
+          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+
+          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+
+          String contentRef =
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
+          residencyDataXml.append(generateResidencyEntry(obs, display, details, contentRef));
+          index++;
+        }
+      }
+
+      if (homelessData != null && !homelessData.isEmpty()) {
+
+        logger.info("Homeless Data Observation Found ");
+
+        for (Observation obs : homelessData) {
+
+          bodyvals.put(
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+              CdaGeneratorConstants.HOMELESS_TABLE_DISPLAY);
+
+          String display = CdaFhirUtilities.getStringForType(obs.getValue());
+
+          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+
+          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+
+          String contentRef =
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
+          homelessDataXml.append(generateHomelessEntry(obs, display, details, contentRef));
+          index++;
+        }
+      }
+
+      if (disabilityData != null && !disabilityData.isEmpty()) {
+
+        logger.info("Disability Data Observation Found ");
+
+        for (Observation obs : disabilityData) {
+
+          bodyvals.put(
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+              CdaGeneratorConstants.DISABILITY_TABLE_DISPLAY);
+
+          String display = CdaFhirUtilities.getStringForType(obs.getCode());
+          String finalDisplay =
+              display + "|value=" + CdaFhirUtilities.getStringForType(obs.getValue());
+
+          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, finalDisplay);
+
+          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
+
+          String contentRef =
+              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
+          homelessDataXml.append(generateDisabilityEntry(obs, display, details, contentRef));
+          index++;
+        }
+      }
+
+      // Close the Table.
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
+
+      // Add entry for birth sex
+      if (!StringUtils.isEmpty(birthSexXml)) {
+        sb.append(birthSexXml);
+      }
+
+      // Add entry for gender identity
+      if (!StringUtils.isEmpty(genderIdentityXml)) {
+        sb.append(genderIdentityXml);
+      }
+
+      // Add entry for tribal affiliation
+      if (!StringUtils.isEmpty(tribalAffiliationXml)) {
+        sb.append(tribalAffiliationXml);
+      }
+
+      // Add travel history
+      if (!StringUtils.isEmpty(travelHistoryXml)) {
+        sb.append(travelHistoryXml);
+      }
+
+      // Add nationality
+      if (!StringUtils.isEmpty(nationalityDataXml)) {
+        sb.append(nationalityDataXml);
+      }
+
+      // Add residency
+      if (!StringUtils.isEmpty(residencyDataXml)) {
+        sb.append(residencyDataXml);
+      }
+
+      // Add homeless data
+      if (!StringUtils.isEmpty(homelessDataXml)) {
+        sb.append(homelessDataXml);
+      }
+
+      // Add Disability data
+      if (!StringUtils.isEmpty(disabilityDataXml)) {
+        sb.append(disabilityDataXml);
+      }
+
+      sb.append(generateSocialHistorySectionEndHeader());
+
+    } else {
+      sb.append(generateEmptySocialHistorySection());
+    }
+
+    return sb.toString();
+  }
+
+  private static String generateDisabilityEntry(
+      Observation obs, String display, LaunchDetails details, String contentRef) {
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.DISABILITY_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.DISABILITY_OBS_TEMPLATE_ID_EXT));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
+
+    sb.append(
+        CdaFhirUtilities.getCodeableConceptXml(
+            obs.getCode(), CdaGeneratorConstants.CODE_EL_NAME, contentRef));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    sb.append(
+        CdaFhirUtilities.getXmlForType(
+            obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+
+    sb.append(
+        CdaFhirUtilities.getXmlForType(obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
+  }
+
+  private static String generateHomelessEntry(
+      Observation obs, String display, LaunchDetails details, String contentRef) {
+
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.HOMELESS_OBS_TEMPLATE_ID));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.HOMELESS_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.HOMELESS_TABLE_DISPLAY));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    if (obs.hasValue() && obs.getValue() instanceof CodeableConcept) {
+      CodeableConcept cd = obs.getValueCodeableConcept();
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXmlForValue(
+              cd, CdaGeneratorConstants.VAL_EL_NAME, contentRef));
+    } else {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXmlForValue(
+              null, CdaGeneratorConstants.VAL_EL_NAME, contentRef));
+    }
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
+  }
+
+  private static Object generateResidencyEntry(
+      Observation obs, String display, LaunchDetails details, String contentRef) {
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.RESIDENCY_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.RESIDENCY_OBS_TEMPLATE_ID_EXT));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.RESIDENCY_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.RESIDENCY_DISPLAY));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    if (obs.hasValue() && obs.getValue() instanceof CodeableConcept) {
+      CodeableConcept cd = obs.getValueCodeableConcept();
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXmlForValue(
+              cd, CdaGeneratorConstants.VAL_EL_NAME, contentRef));
+    } else {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXmlForValue(
+              null, CdaGeneratorConstants.VAL_EL_NAME, contentRef));
+    }
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
+  }
+
+  private static Object generateNationalityEntry(
+      Observation obs, String display, LaunchDetails details, String contentRef) {
+
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.NATIONALITY_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.NATIONALITY_OBS_TEMPLATE_ID_EXT));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.NATIONALITY_CODE,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
+            CdaGeneratorConstants.NATIONALITY_DISPLAY));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    if (obs.hasValue() && obs.getValue() instanceof CodeableConcept) {
+      CodeableConcept cd = obs.getValueCodeableConcept();
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXmlForValue(
+              cd, CdaGeneratorConstants.VAL_EL_NAME, contentRef));
+    } else {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXmlForValue(
+              null, CdaGeneratorConstants.VAL_EL_NAME, contentRef));
+    }
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
+  }
+
+  public static String generateTribalAffiliationEntry(
+      Extension tribalAffiliation, String display, String contentRef) {
+
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.TRIBAL_AFFILIATION_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.TRIBAL_AFFILIATION_OBS_TEMPLATE_ID_EXT));
+
+    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+
+    Extension tribalAff =
+        tribalAffiliation.getExtensionByUrl(
+            CdaGeneratorConstants.FHIR_USCORE_TRIBAL_AFFILIATION_CAT_URL);
+    Extension tribalEnrolled =
+        tribalAffiliation.getExtensionByUrl(
+            CdaGeneratorConstants.FHIR_USCORE_TRIBAL_AFFILIATION_ENROLLED_URL);
+
+    if (tribalAff != null
+        && tribalAff.hasValue()
+        && tribalAff.getValue() instanceof CodeableConcept) {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXml(
+              (CodeableConcept) tribalAff.getValue(),
+              CdaGeneratorConstants.CODE_EL_NAME,
+              contentRef));
+    } else {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXml(
+              null, CdaGeneratorConstants.CODE_EL_NAME, contentRef));
+    }
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForNullEffectiveTime(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+
+    if (tribalEnrolled != null
+        && tribalEnrolled.hasValue()
+        && tribalEnrolled.getValue() instanceof BooleanType) {
+      sb.append(
+          CdaFhirUtilities.getXmlForType(
+              tribalEnrolled.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+
+    } else {
+      BooleanType val = new BooleanType(false);
+      sb.append(CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true));
+    }
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
+  }
+
+  public static String generateGenderIdentityEntry(
+      CodeableConcept genderIdentity, String display, String contentRef) {
+
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID_EXT));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.GENDER_IDENTITY_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.GENDER_IDENTITY_OBS_TEMPLATE_ID_EXT));
+
+    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.GENDER_IDENTITY_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.GENDER_IDENTITY_DISPLAY));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.EFF_TIME_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForNullEffectiveTime(
+            CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.EFF_TIME_EL_NAME));
+
+    sb.append(
+        CdaFhirUtilities.getCodeableConceptXmlForValue(
+            genderIdentity, CdaGeneratorConstants.VAL_EL_NAME, contentRef));
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
   }
 }

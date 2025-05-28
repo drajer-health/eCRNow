@@ -213,8 +213,7 @@ public class TriggerQueryDstu2Bundle {
               BaseContainedDt medAdministrationContained = medAdministration.getContained();
               List<Medication> containedResources =
                   (List<Medication>) medAdministrationContained.getContainedResources();
-              if (containedResources
-                  .stream()
+              if (containedResources.stream()
                   .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
                 logger.info(
                     "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");

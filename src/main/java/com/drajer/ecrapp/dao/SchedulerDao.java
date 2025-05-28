@@ -10,4 +10,6 @@ public interface SchedulerDao {
   ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks);
 
   List<ScheduledTasks> getScheduledTasks();
+
+  public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance);
 }
