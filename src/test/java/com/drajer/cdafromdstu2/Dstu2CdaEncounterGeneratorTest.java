@@ -19,10 +19,10 @@ public class Dstu2CdaEncounterGeneratorTest extends BaseGenerator {
   public static final String XML_FOR_ENC_TEMPLATE_ID =
       "<templateId root=\"2.16.840.1.113883.10.20.22.2.22.1\" extension=\"2015-08-01\"/>";
 
-  private static final String ENCOUNTER_CDA_FILE = "CdaDstuTestData/Cda/Encounter/encounter.xml";
+  private static final String ENCOUNTER_CDA_FILE = "CdaDstuTestData/cda/Encounter/encounter.xml";
 
   private static final String EMPTY_ENCOUNTER_CDA_FILE =
-      "CdaDstuTestData/Cda/Encounter/empty_encounter.xml";
+      "CdaDstuTestData/cda/Encounter/empty_encounter.xml";
 
   private static final String ENCOUNTER_BUNDLE_FILE =
       "CdaDstuTestData/Bundle/EncounterBundle_97953900.json";

@@ -3,7 +3,7 @@ ALTER TABLE notification_context
 ADD encounter_class NVARCHAR(255);
 
 ALTER TABLE notification_context
-ADD relaunch_notification_data text;
+ADD relaunch_notification_data NVARCHAR(255);
 
 // Avoid the having duplicates
 ALTER TABLE notification_context

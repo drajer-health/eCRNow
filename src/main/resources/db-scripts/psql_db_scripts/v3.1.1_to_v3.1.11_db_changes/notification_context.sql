@@ -4,6 +4,9 @@ ALTER TABLE notification_context
 ALTER TABLE notification_context
 ADD COLUMN relaunch_notification_data VARCHAR(255);
 
+ALTER TABLE notification_context
+ADD COLUMN ehr_launch_context VARCHAR(255);
+
 
 -- ==============================================
 --  CAUTION: Test in Local Before Running in Production!
