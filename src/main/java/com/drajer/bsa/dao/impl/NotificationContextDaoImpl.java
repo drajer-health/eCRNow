@@ -223,10 +223,11 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
       if (lastUpdatedStartTime != null) {
         eicrLastUpdatedStartTime =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedStartTime);
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(lastUpdatedStartTime);
       }
       if (lastUpdatedEndTime != null) {
-        eicrLastUpdatedEndTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastUpdatedEndTime);
+        eicrLastUpdatedEndTime =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(lastUpdatedEndTime);
       }
 
     } catch (Exception e) {
