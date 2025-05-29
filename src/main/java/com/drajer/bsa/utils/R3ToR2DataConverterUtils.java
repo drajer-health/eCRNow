@@ -439,6 +439,7 @@ public class R3ToR2DataConverterUtils {
           List<Observation> vaccineCredObs = new ArrayList<>();
           List<Observation> residencyObs = new ArrayList<>();
           List<Observation> nationalityObs = new ArrayList<>();
+          List<Observation> pregnancyIntentionObs = new ArrayList<>();
 
           for (Resource r : socObs) {
             Observation sochisObs = (Observation) r;
@@ -516,6 +517,11 @@ public class R3ToR2DataConverterUtils {
               logger.info(" Found Nationality Observation ");
               nationalityObs.add(sochisObs);
             }
+            
+            if(sochisObs.hasCode() && isPregnancyIntentionObservation(sochisObs.getCode())) {
+            	logger.info(" Found Pregnancy Intention Observation ");
+            	pregnancyIntentionObs.add(sochisObs);
+            }
           }
 
           r4FhirData.addOccupationObs(occObs);
@@ -530,6 +536,7 @@ public class R3ToR2DataConverterUtils {
           r4FhirData.addVaccineCredObs(vaccineCredObs);
           r4FhirData.addResidencyObs(residencyObs);
           r4FhirData.addNationalityObs(nationalityObs);
+          r4FhirData.addPregnancyIntentionObs(pregnancyIntentionObs);
         }
 
       } else if (type.contentEquals(ResourceType.Specimen.toString())) {
@@ -753,6 +760,26 @@ public class R3ToR2DataConverterUtils {
     }
 
     return false;
+  }
+  
+  public static Boolean isPregnancyIntentionObservation(CodeableConcept cd) {
+	  
+	  if (cd != null && cd.hasCoding()) {
+
+	      List<Coding> cds = cd.getCoding();
+
+	      for (Coding c : cds) {
+
+	        if (c.hasCode()
+	            && c.hasSystem()
+	            && ((c.getCode().contentEquals(CdaGeneratorConstants.PREGNANCY_INTENTION_CODE)
+	                && c.getSystem().contains("http://loinc.org")))) {
+	          return true;
+	        }
+	      }
+	    }
+
+	    return false;
   }
 
   public static Boolean isLastMenstrualPeriodObservation(CodeableConcept cd) {

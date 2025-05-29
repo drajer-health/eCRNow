@@ -8,10 +8,29 @@ Typically vendors are starting off with a 4 CPU, 16GB RAM, 500GB or 1TB hard dis
 
 **2. How do I get notification of changes and releases ?**
 
-eCRNow App releases are scheduled for the last monday of every month typically. You can subsribe to github notifications to get notified of new releases.
+eCRNow App releases are scheduled for the last Monday of every month typically. You can subscribe to github notifications to get notified of new releases.
 
 **3. How do I get the latest eRSD and be notified of changes in eRSD versions ?**
 
-All eRSD related documentation including downloading eRSD's and subscribing for eRSD changes are docuemnted at https://ersd.aimsplatform.org/#/home 
-P
+All eRSD related documentation including downloading eRSD's and subscribing for eRSD changes are documented at https://ersd.aimsplatform.org/#/home 
+
+**4. How do I update my production releases of eCRNow ?**
+
+Please refer to the eCRNowAppUpgrade.md instructions.
+
+
+
+**5. How do I update my eRSD files to latest version ?** 
+
+Please refer to the MultipleERSDConfiguration.md instructions. 
+
+**6. How do I configure custom-queries ?**
+
+Please refer to the CustomQueryConfiguration.md instructions.
+
+**7. How do I protect the eCRNow App APIs ?**
+
+Please refer to the Security Configuration.md instructions.
+
+
 

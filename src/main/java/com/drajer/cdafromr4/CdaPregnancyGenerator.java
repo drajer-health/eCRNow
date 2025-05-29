@@ -41,11 +41,13 @@ public class CdaPregnancyGenerator {
     List<Observation> lmpObs = data.getLmpObs();
     List<Observation> postPartumObs = data.getPostPartumObs();
     List<Observation> pregOutcomeObs = data.getPregnancyOutcomeObs();
+    List<Observation> pregnancyIntentionObs = data.getPregnancyIntentionObservations();
 
     if ((pregObs != null && !pregObs.isEmpty())
         || (pregConds != null && !pregConds.isEmpty())
         || (lmpObs != null && !lmpObs.isEmpty())
         || (postPartumObs != null && !postPartumObs.isEmpty())
+        || (pregnancyIntentionObs != null && !pregnancyIntentionObs.isEmpty())
         || (pregOutcomeObs != null && !pregOutcomeObs.isEmpty())) {
 
       logger.info("Found Pregnancy Conditions or Observations ");
@@ -96,6 +98,11 @@ public class CdaPregnancyGenerator {
         processPregOutcomeObservation(po, details, sb, pregObsXml, rowNum);
         rowNum++;
       }
+      
+      for(Observation pi : pregnancyIntentionObs) {
+    	  processPregnancyIntentionObservation(pi, details, sb, pregObsXml, rowNum);
+    	  rowNum++;
+      }
 
       // Close the Table.
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -119,6 +126,86 @@ public class CdaPregnancyGenerator {
 
     return sb.toString();
   }
+  
+  private static void processPregnancyIntentionObservation(
+	      Observation pi,
+	      LaunchDetails details,
+	      StringBuilder table,
+	      StringBuilder pregObsXml,
+	      int rowNum) {
+
+	    StringBuilder sb = new StringBuilder();
+
+	    Map<String, String> bodyvals = new LinkedHashMap<>();
+	    bodyvals.put(
+	        CdaGeneratorConstants.PREGNANCY_OBSERVATION_TABLE_COL_1_BODY_CONTENT,
+	        CdaGeneratorConstants.PREGNANCY_INTENTION_CODE_DISPLAY);
+
+	    bodyvals.put(
+	        CdaGeneratorConstants.PREGNANCY_OBSERVATION_TABLE_COL_2_BODY_CONTENT,
+	        CdaFhirUtilities.getStringForType(pi.getValue()));
+	    table.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+
+	    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+	    sb.append(
+	        CdaGeneratorUtils.getXmlForAct(
+	            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+	            CdaGeneratorConstants.OBS_CLASS_CODE,
+	            CdaGeneratorConstants.MOOD_CODE_INT));
+
+	    sb.append(
+	        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PREGNANCY_INTENTION_TEMPLATE_ID));
+	    sb.append(
+	        CdaGeneratorUtils.getXmlForTemplateId(
+	            CdaGeneratorConstants.PREGNANCY_INTENTION_TEMPLATE_ID,
+	            CdaGeneratorConstants.PREGNANCY_INTENTION_TEMPLATE_ID_EXT));
+
+	    sb.append(CdaGeneratorUtils.getXmlForII(pi.getIdElement().getIdPart()));
+
+	    sb.append(
+	        CdaGeneratorUtils.getXmlForCD(
+	            CdaGeneratorConstants.CODE_EL_NAME,
+	            CdaGeneratorConstants.PREGNANCY_INTENTION_CODE,
+	            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+	            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+	            CdaGeneratorConstants.PREGNANCY_INTENTION_CODE_DISPLAY));
+
+	    sb.append(
+	        CdaGeneratorUtils.getXmlForCD(
+	            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+	    Pair<Date, TimeZone> start = null;
+	    Pair<Date, TimeZone> end = null;
+	    if (pi.hasEffective() && pi.getEffective() instanceof Period) {
+
+	      Period p = (Period) pi.getEffective();
+	      start = CdaFhirUtilities.getActualDate(p.getStartElement());
+	      end = CdaFhirUtilities.getActualDate(p.getEndElement());
+
+	    } else if (pi.hasEffective() && pi.getEffective() instanceof DateTimeType) {
+	      start = CdaFhirUtilities.getActualDate(pi.getEffective());
+	    }
+
+	    sb.append(
+	        CdaGeneratorUtils.getXmlForIVLWithTS(
+	            CdaGeneratorConstants.EFF_TIME_EL_NAME, start, end, false));
+
+	    String valXml = "";
+	    valXml = CdaFhirUtilities.getXmlForType(pi.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true);
+
+	    if (!valXml.isEmpty()) {
+	      sb.append(valXml);
+	    } else {
+	      sb.append(
+	          CdaGeneratorUtils.getXmlForNullValueEffectiveTime(
+	              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
+	    }
+
+	    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+	    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+	    pregObsXml.append(sb.toString());
+	  }
 
   private static void processPregOutcomeObservation(
       Observation po,

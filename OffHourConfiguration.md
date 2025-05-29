@@ -50,4 +50,4 @@ All the pending processing will be queued up for the OffHours, so the EHRs FHIR 
 pending load should be tuned for optimal performance.   
 
 #4. Timezone supported for offhours #
-The only timezone currently supported for off hour configuration is UTC.
+The only time zone currently supported for off hour configuration is UTC.

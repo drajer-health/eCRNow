@@ -468,6 +468,12 @@ public class CdaGeneratorConstants {
   public static final String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT = "2016-12-01";
   public static final String PLANNED_PROC_TRIGGER_TEMPLATE = "2.16.840.1.113883.10.20.15.2.3.42";
   public static final String PLANNED_PROC_TRIGGER_TEMPLATE_EXT = "2021-01-01";
+  public static final String SPECIMEN_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.415";
+  public static final String SPECIMEN_TEMPLATE_ID_EXT = "2018-09-01";
+  public static final String SPECIMEN_COLLECTION_CODE = "17636008";
+  public static final String PARTICIPANT_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.410";
+  public static final String PARTICIPANT_TEMPLATE_ID_EXT = "2018-09-01";
+  
   public static final String QRDA_LAB_RESULTS_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.40";
   public static final String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.24.3.38";
@@ -615,9 +621,11 @@ public class CdaGeneratorConstants {
   public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE =
       "2.16.840.1.113883.10.20.15.2.3.4";
   public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT = "2016-12-01";
+  public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT_31 = "2019-04-01";
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE =
       "2.16.840.1.113883.10.20.15.2.3.2";
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT = "2016-12-01";
+  public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT_31 = "2019-04-01";
   public static final String PLANNED_PROCEDURE_TRIGGER_CODE_TEMPLATE =
       "2.16.840.1.113883.10.20.15.2.3.42";
   public static final String PLANNED_PROCEDURE_TRIGGER_CODE_TEMPLATE_EXT = "2021-01-01";
@@ -654,6 +662,10 @@ public class CdaGeneratorConstants {
   public static final String LMP_TEMPLATE_ID_EXT = "2014-06-09";
   public static final String LMP_CODE = "8665-2";
   public static final String LMP_DISPLAY = "Last Menstrual Period";
+  public static final String PREGNANCY_INTENTION_CODE = "86645-9";
+  public static final String PREGNANCY_INTENTION_CODE_DISPLAY = "Pregnancy Intention";
+  public static final String PREGNANCY_INTENTION_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.281";
+  public static final String PREGNANCY_INTENTION_TEMPLATE_ID_EXT = "2018-04-01";
   public static final String PP_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.285";
   public static final String PP_TEMPLATE_ID_EXT = "2018-04-01";
   public static final String PP_CODE = "249197004";
