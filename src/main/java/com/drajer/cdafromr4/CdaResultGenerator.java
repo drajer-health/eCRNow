@@ -356,11 +356,14 @@ public class CdaResultGenerator {
 
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
+        StringEscapeUtils.escapeXml11(obsDisplayName));
 
     // Get Value String
     if (val.isEmpty()) val = CdaGeneratorConstants.UNKNOWN_VALUE;
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
 
     // Get the Date String
     String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -426,14 +429,17 @@ public class CdaResultGenerator {
 
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
+        StringEscapeUtils.escapeXml11(obsDisplayName));
 
     // Get Value String
     String val = CdaGeneratorConstants.UNKNOWN_VALUE;
     if (obs.hasValue()) {
       val = CdaFhirUtilities.getStringForType(obs.getValue());
     }
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
+    bodyvals.put(
+        CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
 
     // Get the Date String
     String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
