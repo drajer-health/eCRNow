@@ -50,10 +50,13 @@ public class CdaResultGenerator {
 
       // process lab results
       rowNum =
-          processLabResults(uniqueObservations, details, rowNum, resultEntries, data, textEntries, version);
+          processLabResults(
+              uniqueObservations, details, rowNum, resultEntries, data, textEntries, version);
 
       // process diagnostic reports
-      rowNum = processDiagnosticResults(reports, details, rowNum, resultEntries, data, textEntries, version);
+      rowNum =
+          processDiagnosticResults(
+              reports, details, rowNum, resultEntries, data, textEntries, version);
 
       // complete section
       createSectionEnd(hsb, textEntries, resultEntries);
@@ -154,14 +157,16 @@ public class CdaResultGenerator {
               obs.getInterpretation(),
               rowNum,
               obsWithComponents.getPerformer(),
-              data, version));
+              data,
+              version));
 
       i++;
     }
-    
-    if(obsWithComponents.hasSpecimen()) {
-    	Specimen spec = data.getSpecimenById(obsWithComponents.getSpecimen().getReferenceElement().getIdPart());
-    	lrEntry.append(getSpecimenXml(spec, details));
+
+    if (obsWithComponents.hasSpecimen()) {
+      Specimen spec =
+          data.getSpecimenById(obsWithComponents.getSpecimen().getReferenceElement().getIdPart());
+      lrEntry.append(getSpecimenXml(spec, details));
     }
 
     // End the Organizer and the entry.
@@ -203,11 +208,12 @@ public class CdaResultGenerator {
             obs.getInterpretation(),
             rowNum,
             obs.getPerformer(),
-            data, version));
-    
-    if(obs.hasSpecimen()) {
-    	Specimen spec = data.getSpecimenById(obs.getSpecimen().getReferenceElement().getIdPart());
-    	lrEntry.append(getSpecimenXml(spec, details));
+            data,
+            version));
+
+    if (obs.hasSpecimen()) {
+      Specimen spec = data.getSpecimenById(obs.getSpecimen().getReferenceElement().getIdPart());
+      lrEntry.append(getSpecimenXml(spec, details));
     }
 
     // End the Organizer and the entry.
@@ -368,13 +374,13 @@ public class CdaResultGenerator {
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(
-            CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
-            StringEscapeUtils.escapeXml11(obsDisplayName));
+        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
+        StringEscapeUtils.escapeXml11(obsDisplayName));
 
     // Get Value String
     if (val.isEmpty()) val = CdaGeneratorConstants.UNKNOWN_VALUE;
     bodyvals.put(
-            CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
+        CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
 
     // Get the Date String
     String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -441,8 +447,8 @@ public class CdaResultGenerator {
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(
-            CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
-            StringEscapeUtils.escapeXml11(obsDisplayName));
+        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
+        StringEscapeUtils.escapeXml11(obsDisplayName));
 
     // Get Value String
     String val = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -450,7 +456,7 @@ public class CdaResultGenerator {
       val = CdaFhirUtilities.getStringForType(obs.getValue());
     }
     bodyvals.put(
-            CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
+        CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
 
     // Get the Date String
     String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -547,13 +553,14 @@ public class CdaResultGenerator {
               obs.getInterpretation(),
               rowNum,
               obs.getPerformer(),
-              data, version));
+              data,
+              version));
 
       i++;
     }
-    
-    if(report.hasSpecimen()) {
-    	lrEntry.append(getSpecimenXmls(report.getSpecimen(), data, details));
+
+    if (report.hasSpecimen()) {
+      lrEntry.append(getSpecimenXmls(report.getSpecimen(), data, details));
     }
 
     // End the Organizer and the entry.
@@ -811,7 +818,8 @@ public class CdaResultGenerator {
       int rowNum,
       StringBuilder sb,
       StringBuilder resultEntries,
-      R4FhirData data, String version) {
+      R4FhirData data,
+      String version) {
 
     // Create a map of all Observations to ids for faster lookup
     HashMap<String, Observation> observations = new HashMap<>();
@@ -918,7 +926,8 @@ public class CdaResultGenerator {
               details,
               CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
               rowNum,
-              data, version);
+              data,
+              version);
 
       boolean compFound = false;
       if (compXml != null && !compXml.isEmpty()) {
@@ -962,7 +971,8 @@ public class CdaResultGenerator {
       LaunchDetails details,
       String contentId,
       int row,
-      R4FhirData data, String version) {
+      R4FhirData data,
+      String version) {
 
     logger.info(" Adding References to observations ");
     StringBuilder lrEntry = new StringBuilder(2000);
@@ -1025,7 +1035,8 @@ public class CdaResultGenerator {
                   contentRef,
                   null,
                   obs.getPerformer(),
-                  data, version);
+                  data,
+                  version);
 
           if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
 
@@ -1060,7 +1071,8 @@ public class CdaResultGenerator {
                 contentRef,
                 rep.getCode(),
                 obs.getPerformer(),
-                data, version));
+                data,
+                version));
       }
     }
 
@@ -1070,7 +1082,12 @@ public class CdaResultGenerator {
   }
 
   public static String getXmlForObservation(
-      LaunchDetails details, Observation obs, String contentId, int row, R4FhirData data, String version) {
+      LaunchDetails details,
+      Observation obs,
+      String contentId,
+      int row,
+      R4FhirData data,
+      String version) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
     String contentRef = contentId + Integer.toString(row);
@@ -1115,7 +1132,8 @@ public class CdaResultGenerator {
                 contentRef,
                 null,
                 obs.getPerformer(),
-                data, version);
+                data,
+                version);
 
         if (!compString.isEmpty()) {
           foundComponent = true;
@@ -1140,7 +1158,8 @@ public class CdaResultGenerator {
               contentRef,
               null,
               obs.getPerformer(),
-              data, version));
+              data,
+              version));
     }
 
     logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
@@ -1157,7 +1176,8 @@ public class CdaResultGenerator {
       List<CodeableConcept> interpretation,
       int rowNum,
       List<Reference> performerRefs,
-      R4FhirData data, String version) {
+      R4FhirData data,
+      String version) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -1183,7 +1203,8 @@ public class CdaResultGenerator {
 
     String contentRef =
         CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
-    Pair<Boolean, String> obsCodeXml = getObservationCodeXml(details, cd, false, contentRef, paths, version);
+    Pair<Boolean, String> obsCodeXml =
+        getObservationCodeXml(details, cd, false, contentRef, paths, version);
 
     Pair<Boolean, String> obsValueXml = null;
     contentRef = CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT + Integer.toString(rowNum);
@@ -1248,23 +1269,23 @@ public class CdaResultGenerator {
 
     return lrEntry.toString();
   }
-  
+
   public static String getTriggerCodeTemplateXml(String version) {
-	  
-	  String tcXml = "";
-	  if(version.contentEquals("CDA_R31")) {
-		  tcXml = CdaGeneratorUtils.getXmlForTemplateId(
-	              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
-	              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT_31);  
-	  }
-	  else {
-		  tcXml = CdaGeneratorUtils.getXmlForTemplateId(
-	              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
-	              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT);
-	  }
-	  
-	  return tcXml;
-	  
+
+    String tcXml = "";
+    if (version.contentEquals("CDA_R31")) {
+      tcXml =
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT_31);
+    } else {
+      tcXml =
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT);
+    }
+
+    return tcXml;
   }
 
   public static String getXmlForObservationComponent(
@@ -1277,7 +1298,8 @@ public class CdaResultGenerator {
       String contentRef,
       CodeableConcept altCode,
       List<Reference> performerRefs,
-      R4FhirData data, String version) {
+      R4FhirData data,
+      String version) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -1301,7 +1323,8 @@ public class CdaResultGenerator {
     paths.add("DiagnosticReport.code");
     paths.add("Observation.value");
 
-    Pair<Boolean, String> obsCodeXml = getObservationCodeXml(details, cd, false, contentRef, paths, version);
+    Pair<Boolean, String> obsCodeXml =
+        getObservationCodeXml(details, cd, false, contentRef, paths, version);
 
     Pair<Boolean, String> altObsCodeXml = null;
     if (altCode != null) {
@@ -1329,8 +1352,7 @@ public class CdaResultGenerator {
       // Observation.code does
       // not exist
       // or is not the same.
-      lrEntry.append(
-    		  getTriggerCodeTemplateXml(version));
+      lrEntry.append(getTriggerCodeTemplateXml(version));
     }
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
@@ -1390,7 +1412,8 @@ public class CdaResultGenerator {
       CodeableConcept code,
       Boolean valElement,
       String contentRef,
-      List<String> paths, String version) {
+      List<String> paths,
+      String version) {
 
     String elementType =
         valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
@@ -1668,92 +1691,102 @@ public class CdaResultGenerator {
     }
     return null;
   }
-  
-  public static String getSpecimenXml(Specimen spec, LaunchDetails details) {
-	  
-	  StringBuilder sb = new StringBuilder(2000);
-	  
-	  if(spec != null) {
-		  
-		  sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
-		  sb.append(
-			        CdaGeneratorUtils.getXmlForAct(
-			            CdaGeneratorConstants.PROC_ACT_EL_NAME,
-			            CdaGeneratorConstants.PROC_CLASS_CODE,
-			            CdaGeneratorConstants.MOOD_CODE_DEF));
 
-		  sb.append(
-			        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.SPECIMEN_TEMPLATE_ID));
-		  sb.append(
-			        CdaGeneratorUtils.getXmlForTemplateId(
-			            CdaGeneratorConstants.SPECIMEN_TEMPLATE_ID,
-			            CdaGeneratorConstants.SPECIMEN_TEMPLATE_ID_EXT));
-		  sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.CODE_EL_NAME, 
-				  CdaGeneratorConstants.SPECIMEN_COLLECTION_CODE, 
-				  CdaGeneratorConstants.SNOMED_CODESYSTEM_OID));
-		  
-		  if(spec.hasCollection() && spec.getCollection().hasCollectedDateTimeType()) {
-			  sb.append(CdaFhirUtilities.getXmlForType(spec.getCollection().getCollected(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
-		  }
-		  
-		  if(spec.hasCollection() && spec.getCollection().hasBodySite()) {
-			  List<CodeableConcept> cds = new ArrayList<>();
-			  cds.add(spec.getCollection().getBodySite());
-			  
-			  sb.append(CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-					  cds, CdaGeneratorConstants.TARGET_SITE_CODE_EL_NAME, 
-					  false, CdaGeneratorConstants.FHIR_SNOMED_URL, 
-					  true, ""));
-		  }
-		  
-		  if(spec.hasType()) {
-			  // Add participant
-			  sb.append(CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
-					  CdaGeneratorConstants.PARTICIPANT_EL_NAME, 
-					  CdaGeneratorConstants.TYPE_CODE_PRD));
-			  sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID));
-			  sb.append(
-				        CdaGeneratorUtils.getXmlForTemplateId(
-				            CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID,
-				            CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID_EXT));
-			  sb.append(CdaGeneratorUtils.getXmlForStartElementWithClassCode(
-					  CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME, 
-					  CdaGeneratorConstants.SPECIMEN_ROLE_CLASS_CODE));
-			  sb.append(CdaGeneratorUtils.getXmlForII(
-					  details.getAssigningAuthorityId(), spec.getIdElement().getIdPart()));
-			  sb.append(CdaGeneratorUtils.getXmlForStartElement(
-					  CdaGeneratorConstants.PLAYING_ENTITY));
-			  
-			  sb.append(CdaFhirUtilities.getCodeableConceptXml(
-					  spec.getType(), CdaGeneratorConstants.CODE_EL_NAME, ""));
-			  
-			  sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PLAYING_ENTITY));
-			  sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
-			  sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
-			  
-		  }
-		  
-		  
-		  sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PROC_ACT_EL_NAME));
-		  sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
-	  }
-	  
-	  return sb.toString();
+  public static String getSpecimenXml(Specimen spec, LaunchDetails details) {
+
+    StringBuilder sb = new StringBuilder(2000);
+
+    if (spec != null) {
+
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
+      sb.append(
+          CdaGeneratorUtils.getXmlForAct(
+              CdaGeneratorConstants.PROC_ACT_EL_NAME,
+              CdaGeneratorConstants.PROC_CLASS_CODE,
+              CdaGeneratorConstants.MOOD_CODE_DEF));
+
+      sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.SPECIMEN_TEMPLATE_ID));
+      sb.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.SPECIMEN_TEMPLATE_ID,
+              CdaGeneratorConstants.SPECIMEN_TEMPLATE_ID_EXT));
+      sb.append(
+          CdaGeneratorUtils.getXmlForCD(
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.SPECIMEN_COLLECTION_CODE,
+              CdaGeneratorConstants.SNOMED_CODESYSTEM_OID));
+
+      if (spec.hasCollection() && spec.getCollection().hasCollectedDateTimeType()) {
+        sb.append(
+            CdaFhirUtilities.getXmlForType(
+                spec.getCollection().getCollected(),
+                CdaGeneratorConstants.EFF_TIME_EL_NAME,
+                false));
+      }
+
+      if (spec.hasCollection() && spec.getCollection().hasBodySite()) {
+        List<CodeableConcept> cds = new ArrayList<>();
+        cds.add(spec.getCollection().getBodySite());
+
+        sb.append(
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.TARGET_SITE_CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_SNOMED_URL,
+                true,
+                ""));
+      }
+
+      if (spec.hasType()) {
+        // Add participant
+        sb.append(
+            CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+                CdaGeneratorConstants.PARTICIPANT_EL_NAME, CdaGeneratorConstants.TYPE_CODE_PRD));
+        sb.append(
+            CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID));
+        sb.append(
+            CdaGeneratorUtils.getXmlForTemplateId(
+                CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID,
+                CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID_EXT));
+        sb.append(
+            CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+                CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME,
+                CdaGeneratorConstants.SPECIMEN_ROLE_CLASS_CODE));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), spec.getIdElement().getIdPart()));
+        sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PLAYING_ENTITY));
+
+        sb.append(
+            CdaFhirUtilities.getCodeableConceptXml(
+                spec.getType(), CdaGeneratorConstants.CODE_EL_NAME, ""));
+
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PLAYING_ENTITY));
+        sb.append(
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+      }
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PROC_ACT_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
+    }
+
+    return sb.toString();
   }
-  
-  public static String getSpecimenXmls(List<Reference> refs, R4FhirData data, LaunchDetails details) {
-	
-	  StringBuilder sb = new StringBuilder(2000);
-	  if(refs != null) {
-		  
-		  for(Reference r : refs) {
-			  Specimen spec = data.getSpecimenById(r.getReferenceElement().getIdPart());
-			  sb.append(getSpecimenXml(spec, details));
-		  }
-		  
-	  }
-	
-	  return sb.toString();
-	  
+
+  public static String getSpecimenXmls(
+      List<Reference> refs, R4FhirData data, LaunchDetails details) {
+
+    StringBuilder sb = new StringBuilder(2000);
+    if (refs != null) {
+
+      for (Reference r : refs) {
+        Specimen spec = data.getSpecimenById(r.getReferenceElement().getIdPart());
+        sb.append(getSpecimenXml(spec, details));
+      }
+    }
+
+    return sb.toString();
   }
 }

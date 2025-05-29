@@ -210,7 +210,8 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     String contentRef = "contentRef";
 
     String actual =
-        CdaPlanOfTreatmentGenerator.getPlannedObservationXml(sr, details, contentRef, data, "CDA_R31");
+        CdaPlanOfTreatmentGenerator.getPlannedObservationXml(
+            sr, details, contentRef, data, "CDA_R31");
     assertNotNull(actual);
   }
 
@@ -230,7 +231,8 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String contentRef = "contentRef";
     String actual =
-        CdaPlanOfTreatmentGenerator.getDiagnosticReportXml(dr, details, contentRef, data, "CDA_R31");
+        CdaPlanOfTreatmentGenerator.getDiagnosticReportXml(
+            dr, details, contentRef, data, "CDA_R31");
     assertNotNull(actual);
   }
 

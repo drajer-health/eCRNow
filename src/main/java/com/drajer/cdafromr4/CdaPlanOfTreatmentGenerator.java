@@ -416,7 +416,11 @@ public class CdaPlanOfTreatmentGenerator {
   }
 
   public static String getPlannedObservationXml(
-      ServiceRequest sr, LaunchDetails details, String contentRef, R4FhirData data, String version) {
+      ServiceRequest sr,
+      LaunchDetails details,
+      String contentRef,
+      R4FhirData data,
+      String version) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -449,18 +453,17 @@ public class CdaPlanOfTreatmentGenerator {
 
       if (!mCd.isEmpty()) {
 
-    	  if(version.contentEquals("CDA_R31")) {
-      		sb.append(
-      	            CdaGeneratorUtils.getXmlForTemplateId(
-      	                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
-      	                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT_31));
-      	}
-      	else {
+        if (version.contentEquals("CDA_R31")) {
+          sb.append(
+              CdaGeneratorUtils.getXmlForTemplateId(
+                  CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
+                  CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT_31));
+        } else {
           sb.append(
               CdaGeneratorUtils.getXmlForTemplateId(
                   CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
                   CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
-      	}
+        }
 
         codeXml =
             CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
@@ -550,7 +553,11 @@ public class CdaPlanOfTreatmentGenerator {
   }
 
   public static String getDiagnosticReportXml(
-      DiagnosticReport dr, LaunchDetails details, String contentRef, R4FhirData data, String version) {
+      DiagnosticReport dr,
+      LaunchDetails details,
+      String contentRef,
+      R4FhirData data,
+      String version) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -583,18 +590,17 @@ public class CdaPlanOfTreatmentGenerator {
 
       if (!mCd.isEmpty()) {
 
-    	if(version.contentEquals("CDA_R31")) {
-    		sb.append(
-    	            CdaGeneratorUtils.getXmlForTemplateId(
-    	                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
-    	                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT_31));
-    	}
-    	else {
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
-                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
-    	}
+        if (version.contentEquals("CDA_R31")) {
+          sb.append(
+              CdaGeneratorUtils.getXmlForTemplateId(
+                  CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
+                  CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT_31));
+        } else {
+          sb.append(
+              CdaGeneratorUtils.getXmlForTemplateId(
+                  CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
+                  CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
+        }
 
         codeXml =
             CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(

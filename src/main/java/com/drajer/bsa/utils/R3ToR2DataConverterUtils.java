@@ -517,10 +517,10 @@ public class R3ToR2DataConverterUtils {
               logger.info(" Found Nationality Observation ");
               nationalityObs.add(sochisObs);
             }
-            
-            if(sochisObs.hasCode() && isPregnancyIntentionObservation(sochisObs.getCode())) {
-            	logger.info(" Found Pregnancy Intention Observation ");
-            	pregnancyIntentionObs.add(sochisObs);
+
+            if (sochisObs.hasCode() && isPregnancyIntentionObservation(sochisObs.getCode())) {
+              logger.info(" Found Pregnancy Intention Observation ");
+              pregnancyIntentionObs.add(sochisObs);
             }
           }
 
@@ -761,25 +761,25 @@ public class R3ToR2DataConverterUtils {
 
     return false;
   }
-  
+
   public static Boolean isPregnancyIntentionObservation(CodeableConcept cd) {
-	  
-	  if (cd != null && cd.hasCoding()) {
 
-	      List<Coding> cds = cd.getCoding();
+    if (cd != null && cd.hasCoding()) {
 
-	      for (Coding c : cds) {
+      List<Coding> cds = cd.getCoding();
 
-	        if (c.hasCode()
-	            && c.hasSystem()
-	            && ((c.getCode().contentEquals(CdaGeneratorConstants.PREGNANCY_INTENTION_CODE)
-	                && c.getSystem().contains("http://loinc.org")))) {
-	          return true;
-	        }
-	      }
-	    }
+      for (Coding c : cds) {
 
-	    return false;
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals(CdaGeneratorConstants.PREGNANCY_INTENTION_CODE)
+                && c.getSystem().contains("http://loinc.org")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   public static Boolean isLastMenstrualPeriodObservation(CodeableConcept cd) {

@@ -525,7 +525,7 @@ public class R4FhirData extends FhirData {
   public void addNationalityObs(List<Observation> nationalityObs) {
     this.nationalityObs.addAll(nationalityObs);
   }
-  
+
   public Address getJurisdiction() {
     return jurisdiction;
   }
@@ -569,21 +569,20 @@ public class R4FhirData extends FhirData {
   public void addSpecimen(List<Specimen> specimens) {
     this.specimenList.addAll(specimens);
   }
- 
+
   public List<Observation> getPregnancyIntentionObservations() {
-	return pregnancyIntentionObservations;
-}
+    return pregnancyIntentionObservations;
+  }
 
-public void setPregnancyIntentionObservations(List<Observation> pregnancyIntentObservations) {
-	this.pregnancyIntentionObservations = pregnancyIntentObservations;
-}
+  public void setPregnancyIntentionObservations(List<Observation> pregnancyIntentObservations) {
+    this.pregnancyIntentionObservations = pregnancyIntentObservations;
+  }
 
-public void addPregnancyIntentionObs(List<Observation> pregnancyObs) {
+  public void addPregnancyIntentionObs(List<Observation> pregnancyObs) {
     this.pregnancyIntentionObservations.addAll(pregnancyObs);
   }
 
-
-@Override
+  @Override
   public String toString() {
     return "R4FhirData [data="
         + data

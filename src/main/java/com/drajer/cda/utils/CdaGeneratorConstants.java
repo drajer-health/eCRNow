@@ -473,7 +473,7 @@ public class CdaGeneratorConstants {
   public static final String SPECIMEN_COLLECTION_CODE = "17636008";
   public static final String PARTICIPANT_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.410";
   public static final String PARTICIPANT_TEMPLATE_ID_EXT = "2018-09-01";
-  
+
   public static final String QRDA_LAB_RESULTS_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.40";
   public static final String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.24.3.38";
