@@ -1935,7 +1935,6 @@ public class CdaFhirUtilities {
     return StringEscapeUtils.escapeXml11(val);
   }
 
-
   public static String getCombinationStringForCodeSystem(
       CodeableConcept code, Type value, String codeSystemUrl, Boolean csOptional) {
 
