@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -1931,8 +1932,9 @@ public class CdaFhirUtilities {
 
     val = (val.isEmpty()) ? CdaGeneratorConstants.UNKNOWN_VALUE : val;
 
-    return val;
+    return StringEscapeUtils.escapeXml11(val);
   }
+
 
   public static String getCombinationStringForCodeSystem(
       CodeableConcept code, Type value, String codeSystemUrl, Boolean csOptional) {
@@ -2343,7 +2345,7 @@ public class CdaFhirUtilities {
       }
 
       logger.debug("Printing the class name {} and value {}", dt.getClass(), val);
-      return val.toString();
+      return StringEscapeUtils.escapeXml11(val.toString());
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
@@ -3303,7 +3305,7 @@ public class CdaFhirUtilities {
       }
     }
 
-    return result;
+    return StringEscapeUtils.escapeXml11(result);
   }
 
   public static String getRaceOrEthnicityXml(List<Extension> exts, String elName, String extUrl) {
