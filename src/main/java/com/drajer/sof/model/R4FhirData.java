@@ -54,6 +54,7 @@ public class R4FhirData extends FhirData {
   private Address jurisdiction;
   private List<Address> jurisdictions;
   private List<Specimen> specimenList;
+  private List<Observation> pregnancyIntentionObservations;
 
   public void prepareJurisdicationData() {
 
@@ -143,6 +144,9 @@ public class R4FhirData extends FhirData {
     vaccineCredObs = new ArrayList<>();
     residencyObs = new ArrayList<>();
     nationalityObs = new ArrayList<>();
+    jurisdictions = new ArrayList<>();
+    specimenList = new ArrayList<>();
+    pregnancyIntentionObservations = new ArrayList<>();
   }
 
   public Bundle getData() {
@@ -564,6 +568,18 @@ public class R4FhirData extends FhirData {
 
   public void addSpecimen(List<Specimen> specimens) {
     this.specimenList.addAll(specimens);
+  }
+
+  public List<Observation> getPregnancyIntentionObservations() {
+    return pregnancyIntentionObservations;
+  }
+
+  public void setPregnancyIntentionObservations(List<Observation> pregnancyIntentObservations) {
+    this.pregnancyIntentionObservations = pregnancyIntentObservations;
+  }
+
+  public void addPregnancyIntentionObs(List<Observation> pregnancyObs) {
+    this.pregnancyIntentionObservations.addAll(pregnancyObs);
   }
 
   @Override

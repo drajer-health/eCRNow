@@ -1,5 +1,7 @@
 package com.drajer.cdafromdstu2;
 
+import static org.junit.Assert.assertNotNull;
+
 import ca.uhn.fhir.model.api.IDatatype;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
@@ -11,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,19 +36,7 @@ public class CdaResultGeneratorTest extends BaseGenerator {
     dstu2FhirDataForPatient.setLabResults(results);
     String actualXml =
         Dstu2CdaResultGenerator.generateResultsSection(dstu2FhirDataForPatient, launchDetails);
-    System.out.println(actualXml);
-
-    /*  assert (codeXml.length() == 88);
-    assert (valueXml.toString().length() == 0);
-
-    StringBuilder codeXml1 = new StringBuilder(200);
-    StringBuilder valueXml1 = new StringBuilder(200);
-
-    Dstu2CdaResultGenerator.doesTriggerCodesMatchObservation(
-            getObservation2(), getMtc(), codeXml1, valueXml1);
-
-    assert (codeXml1.length() == 88);
-    assert (valueXml1.toString().length() == 127);*/
+    assertNotNull(actualXml);
   }
 
   @Ignore
@@ -98,7 +87,7 @@ public class CdaResultGeneratorTest extends BaseGenerator {
   public void addEntry() {
     Observation observation = getObservation1();
     String actualXml = Dstu2CdaResultGenerator.addEntry(observation, launchDetails, "", "");
-    Assert.assertNotNull(actualXml);
+    assertNotNull(actualXml);
   }
 
   public Observation getObservation1() {

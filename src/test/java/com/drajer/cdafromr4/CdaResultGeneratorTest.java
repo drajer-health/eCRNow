@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
@@ -113,22 +112,10 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaResultGenerator.getXmlForComponents(
-            report, allObs, launchDetails, contentId, row, r4FhirData);
+            report, allObs, launchDetails, contentId, row, r4FhirData, "CDA_R31");
 
     assertNotNull(actualXml);
     assertFalse(actualXml.isEmpty());
-  }
-
-  @Test
-  public void testAddTriggerCodes() {
-    DateTimeType dateTimeType = new DateTimeType("2022-04-01T00:00:00Z");
-    Observation observation = new Observation();
-    observation.setId("5474974");
-    observation.setEffective(dateTimeType);
-
-    String actual = CdaResultGenerator.addTriggerCodes(launchDetails, observation, null);
-
-    assertNotNull(actual);
   }
 
   @Test
