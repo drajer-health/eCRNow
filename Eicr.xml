@@ -11,7 +11,7 @@
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
 <code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
 <title>Initial Public Health Case Report</title>
-<effectiveTime value="20250225155141+0000"/>
+<effectiveTime value="20250529075447+0000"/>
 <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
 <languageCode code="en-US"/>
 <setId root="2.16.840.1.113883.1.1.1.1" extension="1"/>
@@ -86,6 +86,9 @@
 <representedOrganization>
 <id root="2.16.840.1.113883.4.6" extension="1245319599"/>
 <name>Neighborhood Physicians</name>
+<telecom value="tel:(555)555-1004"/>
+<telecom value="fax:(555)555-1004"/>
+<telecom value="mailto:provider@email.com"/>
 <addr>
 <streetAddressLine>30 Davis Road</streetAddressLine>
 <city>BEAVERTON</city>
@@ -98,24 +101,7 @@
 </assignedAuthor>
 </author>
 <author>
-<time value="20250225155141+0000"/>
-<assignedAuthor>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
-<streetAddressLine nullFlavor="NI"/>
-<city nullFlavor="NI"/>
-<state nullFlavor="NI"/>
-<postalCode nullFlavor="NI"/>
-<country nullFlavor="NI"/>
-</addr>
-<telecom nullFlavor="NI"/>
-<assignedAuthoringDevice>
-<manufacturerModelName>Example-Ehr-Software</manufacturerModelName>
-<softwareName>1.0.0</softwareName>
-</assignedAuthoringDevice>
-</assignedAuthor>
-</author>
-<author>
-<time value="20250225155141+0000"/>
+<time value="20250529075447+0000"/>
 <assignedAuthor>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
 <streetAddressLine nullFlavor="NI"/>
@@ -128,23 +114,6 @@
 <assignedAuthoringDevice>
 <manufacturerModelName>ecrNowApp</manufacturerModelName>
 <softwareName>Version 3.1.9</softwareName>
-</assignedAuthoringDevice>
-</assignedAuthor>
-</author>
-<author>
-<time value="20250225155141+0000"/>
-<assignedAuthor>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
-<streetAddressLine nullFlavor="NI"/>
-<city nullFlavor="NI"/>
-<state nullFlavor="NI"/>
-<postalCode nullFlavor="NI"/>
-<country nullFlavor="NI"/>
-</addr>
-<telecom nullFlavor="NI"/>
-<assignedAuthoringDevice>
-<manufacturerModelName>System-Integrator</manufacturerModelName>
-<softwareName>3.1.5</softwareName>
 </assignedAuthoringDevice>
 </assignedAuthor>
 </author>
