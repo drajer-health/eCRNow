@@ -1,5 +1,6 @@
 package com.drajer.test.util;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -11,6 +12,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -20,7 +22,7 @@ import org.xml.sax.SAXException;
 public class TestUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(TestUtils.class);
-
+  public static final FhirContext fhirContext = FhirContext.forR4();
   private static final ObjectMapper mapper = new ObjectMapper();
   private static final ClassLoader classLoader = TestUtils.class.getClassLoader();
 
@@ -83,5 +85,14 @@ public class TestUtils {
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document document = builder.parse(IOUtils.toInputStream(xmlContent.replace("\n", "")));
     return document;
+  }
+
+  public static Bundle loadBundleFromFile(String filename) {
+    try (InputStream in = new ClassPathResource(filename).getInputStream()) {
+      return fhirContext.newJsonParser().parseResource(Bundle.class, in);
+    } catch (Exception e) {
+      logger.error("Exception while reading", e);
+      return null;
+    }
   }
 }

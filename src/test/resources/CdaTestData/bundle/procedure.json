@@ -1,0 +1,245 @@
+{
+  "resourceType": "Bundle",
+  "id": "78a2eae7-9b3e-4566-8582-600446b13c66",
+  "meta": {
+    "lastUpdated": "2025-02-15T18:46:19.900+00:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation?patient=Patient%2FTesting2"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "rehab",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure"
+          ]
+        },
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/rehab"
+          }
+        ],
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "24165007",
+              "display": "Alcoholism counseling"
+            },
+            {
+              "system": "http://www.cms.gov/Medicare/Coding/ICD10",
+              "code": "HZ30ZZZ",
+              "display": "Individual Counseling for Substance Abuse Treatment, Cognitive"
+            }
+          ],
+          "text": "Alcohol rehabilitation"
+        },
+        "subject": {
+          "reference": "Patient/Testing2",
+          "display": "Amy Shaw"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-1",
+          "display": "Office Visit"
+        },
+        "performedDateTime": "2002-05-23"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "defib-implant",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:uuid:b2a737f2-2fdb-49c1-b097-dac173d07aff"
+          }
+        ],
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "33249",
+              "display": "Defibrillator Implant"
+            }
+          ],
+          "text": "Insertion or replacement of permanent implantable defibrillator system"
+        },
+        "subject": {
+          "reference": "Patient/Testing2"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-1",
+          "display": "Office Visit"
+        },
+        "performedPeriod": {
+          "start": "2019-03-26T12:55:26-07:00",
+          "end": "2019-03-26T13:25:26-07:00"
+        },
+        "performer": [
+          {
+            "actor": {
+              "reference": "Practitioner/practitioner-1"
+            }
+          }
+        ],
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                "code": "I49.01",
+                "display": "Ventricular fibrillation"
+              }
+            ],
+            "text": "Ventricular fibrillation"
+          }
+        ],
+        "focalDevice": [
+          {
+            "manipulated": {
+              "reference": "Device/udi-2"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "5f0e217d-c6c2-42d6-bc2e-d2d94f301d7c",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "56251003",
+              "display": "Nebulizer Therapy"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/Testing2",
+          "display": "Amy Shaw"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-1",
+          "display": "Office Visit"
+        },
+        "performedDateTime": "2023-12-27T00:00:00+00:00",
+        "performer": [
+          {
+            "actor": {
+              "reference": "Practitioner/practitioner-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "practitioner-1",
+        "meta": {
+          "versionId": "2"
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "9999993519"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Carter",
+            "given": ["Kristin", "Alice"],
+            "prefix": ["Dr."]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(816)674-2878",
+            "use": "mobile"
+          },
+          {
+            "system": "email",
+            "value": "Kristin.Carter@gmail.com"
+          }
+        ],
+        "address": [
+          {
+            "line": ["1234 Main St"],
+            "city": "New York City",
+            "state": "NY",
+            "postalCode": "64113",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      }
+    },
+    {"resource": {
+
+      "resourceType": "Procedure",
+      "id": "procedure-example",
+      "meta": {
+        "profile": [
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure"
+        ]
+      },
+      "status": "completed",
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "47527-7",
+            "display": "Surgical operation note"
+          }
+        ],
+        "text": "Surgical operation note"
+      },
+      "subject": {
+        "reference": "Patient/example",
+        "display": "John Doe"
+      },
+      "performedDateTime": "2024-02-17T10:30:00Z",
+      "recorder": {
+        "reference": "Practitioner/example",
+        "display": "Dr. Smith"
+      },
+      "performer": [
+        {
+          "actor": {
+            "reference": "Practitioner/example",
+            "display": "Dr. Smith"
+          }
+        }
+      ],
+      "encounter": {
+        "reference": "Encounter/example"
+      }
+    }
+
+    }
+  ]
+}

@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "hs_kar_status")
+@Table(
+    name = "hs_kar_status",
+    indexes = {@Index(name = "idx_hs_id", columnList = "hs_id")})
 @DynamicUpdate
 public class KnowledgeArtifactStatus {
 

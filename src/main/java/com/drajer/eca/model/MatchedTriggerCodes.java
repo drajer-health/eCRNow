@@ -123,7 +123,7 @@ public class MatchedTriggerCodes {
 
       if (intersection != null && !intersection.isEmpty()) {
 
-        logger.info("Number of Matched Codes = {}", intersection.size());
+        logger.info("Number of Matched Codes = {} for resource type {}", intersection.size(), type);
 
         retval = intersection;
 

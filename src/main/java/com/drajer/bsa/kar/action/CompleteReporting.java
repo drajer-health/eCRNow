@@ -10,7 +10,6 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;

@@ -1,1 +1,0 @@
-CREATE INDEX idx_exec_time ON scheduled_tasks (execution_time);

@@ -250,14 +250,16 @@ public class ApplicationUtils {
 
         List<Coding> cds = cd.getCoding();
 
-        for (Coding code : cds) {
+        if (cds != null) {
+          for (Coding code : cds) {
 
-          if (code.getSystem() != null && code.getCode() != null) {
+            if (code.hasSystem() && code.hasCode()) {
 
-            retVal.add(code.getSystem() + "|" + code.getCode());
+              retVal.add(code.getSystem() + "|" + code.getCode());
+            }
           }
-        }
-      }
+        } // if
+      } // for
     }
 
     return retVal;

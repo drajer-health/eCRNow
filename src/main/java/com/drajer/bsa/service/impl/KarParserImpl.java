@@ -140,8 +140,23 @@ public class KarParserImpl implements KarParser {
   @Value("${fhirpath.enabled:true}")
   boolean fhirpathEnabled;
 
+  @Value("${validate.eicr.cdar11:false}")
+  boolean eicrCdaR11ValidationEnabled;
+
+  @Value("${validate.eicr.cdar31:false}")
+  boolean eicrCdaR31ValidationEnabled;
+
+  @Value("${validate.eicr.fhir:false}")
+  boolean eicrFhirValidationEnabled;
+
   @Value("${bsa.output.directory:bsa-output}")
   String logDirectory;
+
+  @Value("${schematron.file.location}")
+  String eicrCdaR11SchematronPath;
+
+  @Value("${eicr.R31.schematron.file.location}")
+  String eicrCdaR31SchematronPath;
 
   @Autowired BsaServiceUtils utils;
 
@@ -212,13 +227,13 @@ public class KarParserImpl implements KarParser {
   private static final String ECR_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String PH_QUERY_EXTENSION_URL =
-	      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String MEDMORPH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String ECR_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
   private static final String PH_RELATED_DATA_EXTENSION_URL =
-	      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
   private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
 
@@ -404,7 +419,7 @@ public class KarParserImpl implements KarParser {
       KnowledgeArtifact art = new KnowledgeArtifact();
 
       // Setup the Id.
-      art.setKarId(karBundle.getId());
+      art.setKarId(karBundle.getIdPart());
 
       // Setup Version.
       if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
@@ -495,24 +510,42 @@ public class KarParserImpl implements KarParser {
   }
 
   /**
-   * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing.
-   * Resources are only inserted if they are not already present.
+   * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing. Resources
+   * are only inserted if they are not already present.
    *
    * @param resource the resource to store.
    */
   private void addKarResourceToFhirRepository(Resource resource) {
     Bundle bundle;
     if (resource instanceof Library library) {
-      bundle = this.repository.search(Bundle.class, library.getClass(), Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              library.getClass(),
+              Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
     } else if (resource instanceof PlanDefinition planDef) {
-      bundle = this.repository.search(Bundle.class, planDef.getClass(), Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              planDef.getClass(),
+              Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
     } else if (resource instanceof Measure measure) {
-      bundle = this.repository.search(Bundle.class, measure.getClass(), Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              measure.getClass(),
+              Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
     } else if (resource instanceof ValueSet valueSet) {
-      bundle = this.repository.search(Bundle.class, valueSet.getClass(), Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              valueSet.getClass(),
+              Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
     } else {
       logger.info("Unexpected Resource Type - attempting to retrieve by ID");
-      bundle = this.repository.search(Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
+      bundle =
+          this.repository.search(
+              Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
     }
 
     if (!bundle.hasEntry()) {
@@ -723,9 +756,9 @@ public class KarParserImpl implements KarParser {
         Extension queryExt = dr.getExtensionByUrl(ECR_QUERY_EXTENSION_URL);
 
         if (queryExt == null) {
-            queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+          queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
         }
-        
+
         if (queryExt == null) {
           queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
         }
@@ -747,9 +780,9 @@ public class KarParserImpl implements KarParser {
         Extension relatedDataExt = dr.getExtensionByUrl(ECR_RELATED_DATA_EXTENSION_URL);
 
         if (relatedDataExt == null) {
-            relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+          relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
         }
-        
+
         if (relatedDataExt == null) {
           relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
         }
@@ -820,6 +853,11 @@ public class KarParserImpl implements KarParser {
       ValidateReport vr = (ValidateReport) (action);
       vr.setValidatorEndpoint(validatorEndpoint);
       vr.setPhDao(phDao);
+      vr.setValidateEicrR11Data(eicrCdaR11ValidationEnabled);
+      vr.setValidateEicrR31Data(eicrCdaR31ValidationEnabled);
+      vr.setValidateEicrFhirData(eicrFhirValidationEnabled);
+      vr.setEicrR11SchematronPath(eicrCdaR11SchematronPath);
+      vr.setEicrR31SchematronPath(eicrCdaR31SchematronPath);
     } else if (action.getType() == ActionType.SUBMIT_REPORT) {
       SubmitReport sr = (SubmitReport) (action);
       sr.setSubmissionEndpoint(reportSubmissionEndpoint);

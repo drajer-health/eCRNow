@@ -1,10 +1,10 @@
 package com.drajer.bsa.utils;
 
+import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.fhirecr.FhirGeneratorConstants;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import org.hl7.fhir.dstu3.model.codesystems.ObservationCategory;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -46,6 +46,56 @@ public class ReportGenerationUtils {
     }
 
     return returnVal;
+  }
+
+  public static Set<Resource> filterSocialHistoryObservations(Set<Resource> res) {
+
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      logger.info(" Total No of Observations = {}", res.size());
+
+      for (Resource r : res) {
+
+        Observation obs = (Observation) (r);
+
+        if (!observationBelongsToCategory(obs, ObservationCategory.LABORATORY.toCode())
+            && !observationBelongsToCategory(obs, ObservationCategory.VITALSIGNS.toCode())) {
+
+          returnVal.add(r);
+        }
+      }
+    }
+
+    return returnVal;
+  }
+
+  public static Boolean observationBelongsToCategory(Observation obs, String category) {
+
+    Boolean retVal = false;
+    if (obs != null && obs.hasCategory()) {
+
+      List<CodeableConcept> cds = obs.getCategory();
+
+      for (CodeableConcept cd : cds) {
+
+        if (cd.hasCoding()) {
+
+          List<Coding> codings = cd.getCoding();
+
+          for (Coding c : codings) {
+
+            if (c.getSystem().contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY)
+                && c.getCode().contentEquals(category)) {
+
+              retVal = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return retVal;
   }
 
   public static Set<Resource> filterDiagnosticReports(Set<Resource> res, Boolean resultFlag) {
@@ -168,5 +218,30 @@ public class ReportGenerationUtils {
       }
     }
     return text;
+  }
+
+  public static Set<Resource> filterPregancyObservationn(
+      Set<Resource> res, List<Map<String, Object>> pregnancyCodes) {
+
+    logger.info(" Getting observations for codes {}", pregnancyCodes);
+    Set<Resource> returnVal = new HashSet<>();
+    if (res != null) {
+      for (Resource r : res) {
+
+        Observation obs = (Observation) (r);
+
+        if (obs.hasCode() && obs.getCode().hasCoding()) {
+          for (Map<String, Object> pregnancyCodeMap : pregnancyCodes) {
+            String system = (String) pregnancyCodeMap.get("system");
+            String code = (String) pregnancyCodeMap.get("code");
+            if (CdaFhirUtilities.isCodePresent(
+                Collections.singletonList(obs.getCode()), code, system)) {
+              returnVal.add(r);
+            }
+          }
+        }
+      }
+    }
+    return returnVal;
   }
 }

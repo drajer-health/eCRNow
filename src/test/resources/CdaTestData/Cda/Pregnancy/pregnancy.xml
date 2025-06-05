@@ -1,0 +1,212 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.80"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.80" extension="2018-04-01"/>
+        <code code="90767-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnancy summary Document"/>
+        <title>Pregnancy Section</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Pregnancy Information</th>
+                        <th>Observed Pregnancy Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="pregInfo0">Pregnancy Condition</content>
+                        </td>
+                        <td>
+                            <content ID="pregResult0">Patient currently pregnant (finding)</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="pregInfo1">Pregnancy (finding)</content>
+                        </td>
+                        <td>
+                            <content ID="pregResult1">Pregnancy (finding)</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="lmpInfo2">Last Menstrual Period</content>
+                        </td>
+                        <td>
+                            <content ID="lmpResult2">20231028000000+0000</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="pregInfo2">Pregnancy Status</content>
+                        </td>
+                        <td>
+                            <content ID="pregResult2">Pregnancy status</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="lmpInfo3">Last Menstrual Period</content>
+                        </td>
+                        <td>
+                            <content ID="lmpResult3">20231028000000+0000</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="pregInfo4">Maternal condition during puerperium (observable entity)</content>
+                        </td>
+                        <td>
+                            <content ID="pregResult4">Mid postpartum state (finding)</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="pregInfo5">Outcome of Pregnancy</content>
+                        </td>
+                        <td>
+                            <content ID="pregResult5">Immediate post-septic abortion</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.293"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.293" extension="2018-04-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="16a12ec8-085f-4bf5-87a7-4f5db6f3e535"/>
+                <code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low nullFlavor="NI"/>
+                    <high value="20240830000000+0000"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+                <author>
+                    <time value="20240102000000+0000"/>
+                    <assignedAuthor>
+                        <id nullFlavor="NA"/>
+                    </assignedAuthor>
+                </author>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.297"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.297" extension="2018-04-01"/>
+                        <code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Estimated date of delivery"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="TS" value="20240830"/>
+                    </observation>
+                </entryRelationship>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.293"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.293" extension="2018-04-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="7a5a1f8c-6e22-4b38-8a0a-e2093c999b1e"/>
+                <code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20231227000000+0000"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+                <author>
+                    <time nullFlavor="NI"/>
+                    <assignedAuthor>
+                        <id nullFlavor="NA"/>
+                    </assignedAuthor>
+                </author>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.297"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.297" extension="2018-04-01"/>
+                        <code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Delivery date Estimated"></code>
+                        <statusCode code="completed"/>
+                        <value xsi:type="TS" value="20231227"/>
+                    </observation>
+                </entryRelationship>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.30.3.34"/>
+                <templateId root="2.16.840.1.113883.10.20.30.3.34" extension="2014-06-09"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="8665-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Last Menstrual Period"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20231227000000+0000"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.293"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.293" extension="2018-04-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="1bd47e05-52e6-4f2f-bed9-ad06a945a085"/>
+                <code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20231227000000+0000"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+                <author>
+                    <time nullFlavor="NI"/>
+                    <assignedAuthor>
+                        <id nullFlavor="NA"/>
+                    </assignedAuthor>
+                </author>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.297"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.297" extension="2018-04-01"/>
+                        <code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Delivery date Estimated"></code>
+                        <statusCode code="completed"/>
+                        <value xsi:type="TS" value="20231227"/>
+                    </observation>
+                </entryRelationship>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.30.3.34"/>
+                <templateId root="2.16.840.1.113883.10.20.30.3.34" extension="2014-06-09"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="8665-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Last Menstrual Period"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20231227000000+0000"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.285"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.285" extension="2018-04-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="249197004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Maternal condition during puerperium (observable entity)"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20240105000000+0000"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="42814007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Mid postpartum state (finding)"></value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.284"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.284" extension="2018-04-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="63893-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Outcome of Pregnancy"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20240105000000+0000"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="17369002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Immediate post-septic abortion"></value>
+            </observation>
+        </entry>
+    </section>
+</component>

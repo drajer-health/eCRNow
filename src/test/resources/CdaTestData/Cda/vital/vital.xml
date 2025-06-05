@@ -1,0 +1,73 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.4.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.4.1" extension="2015-08-01"/>
+        <code code="8716-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Vital Signs"/>
+        <title>Vital Signs</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Vital Sign</th>
+                        <th>Measured Value</th>
+                        <th>Measurement Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="vitalSign1">Blood pressure panel with all children optional</content>
+                        </td>
+                        <td>
+                            <content ID="vitalSignValue1">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="vitalSignDate1">20120917</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.26"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.26" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="74728-7"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="74728-7"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime value="20120917"/>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.27"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.27" extension="2014-06-09"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="blood-pressure-dar-1"/>
+                        <code code="8480-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Systolic blood pressure"><originalText>
+                            <reference value="#vitalSign1"/>
+                        </originalText>
+                            <translation code="271649006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Systolic blood pressure"/>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20120917"/>
+                        <value xsi:type="PQ" value="107" unit="mm[Hg]"/>
+                        <interpretationCode code="L" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="low"></interpretationCode>
+                    </observation>
+                </component>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.27"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.27" extension="2014-06-09"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="blood-pressure-dar-1-10"/>
+                        <code code="8462-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diastolic blood pressure"><originalText>
+                            <reference value="#vitalSign1"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20120917"/>
+                        <value xsi:type="PQ" value="107" unit="mm[Hg]"/>
+                        <interpretationCode code="L" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="low"></interpretationCode>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+    </section>
+</component>

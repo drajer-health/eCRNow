@@ -1,0 +1,10 @@
+<entry>
+    <act classCode="PROC" moodCode="RQO">
+        <templateId root="2.16.840.1.113883.10.20.22.4.39"/>
+        <templateId root="2.16.840.1.113883.10.20.22.4.39" extension="2014-06-09"/>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="536b2fd1-6962-4362-9a27-fa5a0cf94df8"/>
+        <code code="89648-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Chlamydia trachomatis [Presence] in Throat by Organism specific culture"></code>
+        <statusCode code="active"/>
+        <effectiveTime value="20240107000000+0000"/>
+    </act>
+</entry>

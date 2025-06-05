@@ -45,14 +45,6 @@
 <content ID="potObsDate4">20110304083000+1100</content>
 </td>
 </tr>
-<tr>
-<td>
-<content ID="potObsContent5">http://loinc.org|94308-4</content>
-</td>
-<td>
-<content ID="potObsDate5">20220920084400-0400</content>
-</td>
-</tr>
 </tbody>
 </table>
 </text>
@@ -100,19 +92,6 @@
 </code>
 <statusCode code="active"/>
 <effectiveTime value="20110304083000+1100"/>
-</observation>
-</entry>
-<entry>
-<observation classCode="OBS" moodCode="RQO">
-<templateId root="2.16.840.1.113883.10.20.22.4.44"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptresultlab-1484"/>
-<code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-<reference value="#potObsContent5"/>
-</originalText>
-</code>
-<statusCode code="active"/>
-<effectiveTime value="20220920084400-0400"/>
 </observation>
 </entry>
 </section>

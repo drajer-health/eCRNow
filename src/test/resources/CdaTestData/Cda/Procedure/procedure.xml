@@ -1,0 +1,99 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.7.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.7.1" extension="2014-06-09"/>
+        <code code="47519-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Procedures"/>
+        <title>PROCEDURES</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Procedure Name</th>
+                        <th>Procedure Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="procedure0">Alcohol rehabilitation</content>
+                        </td>
+                        <td>
+                            <content ID="procedureDate0">20020523</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="procedure1">Insertion or replacement of permanent implantable defibrillator system</content>
+                        </td>
+                        <td>
+                            <content ID="procedureDate1">20190326125526-0700|20190326132526-0700</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="procedure2">Nebulizer Therapy</content>
+                        </td>
+                        <td>
+                            <content ID="procedureDate2">20231227000000+0000</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="procedure3">Surgical operation note</content>
+                        </td>
+                        <td>
+                            <content ID="procedureDate3">20240217103000+0000</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry>
+            <procedure classCode="PROC" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.14"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.14" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="rehab"/>
+                <code code="24165007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Alcoholism counseling"></code>
+                <statusCode code="completed"/>
+                <effectiveTime value="20020523"/>
+            </procedure>
+        </entry>
+        <entry>
+            <procedure classCode="PROC" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.14"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.14" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="defib-implant"/>
+                <code code="33249" codeSystem="2.16.840.1.113883.6.12" codeSystemName="CPT" displayName="Defibrillator Implant"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20190326125526-0700"/>
+                    <high value="20190326132526-0700"/>
+                </effectiveTime>
+            </procedure>
+        </entry>
+        <entry>
+            <procedure classCode="PROC" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.14"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.14" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="5f0e217d-c6c2-42d6-bc2e-d2d94f301d7c"/>
+                <code code="56251003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Nebulizer Therapy"></code>
+                <statusCode code="completed"/>
+                <effectiveTime value="20231227000000+0000"/>
+            </procedure>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.13"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.13" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="procedure-example"/>
+                <code code="47527-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Surgical operation note"><originalText>
+                    <reference value="#3"/>
+                </originalText>
+                </code>
+                <statusCode code="completed"/>
+                <effectiveTime value="20240217103000+0000"/>
+                <value xsi:type="CD" nullFlavor="NI"/>
+            </observation>
+        </entry>
+    </section>
+</component>
