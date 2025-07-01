@@ -334,9 +334,10 @@ public class CdaVitalSignsGenerator {
 
       lrEntry.append(CdaFhirUtilities.getQuantityXml(dt, CdaGeneratorConstants.VAL_EL_NAME, true));
     } else {
+
       lrEntry.append(
-          CdaGeneratorUtils.getXmlForNfQuantity(
-              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI, true));
+          CdaGeneratorUtils.getXmlForNfDimensionlessQuantity(
+              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
 
     // Add interpretation code.

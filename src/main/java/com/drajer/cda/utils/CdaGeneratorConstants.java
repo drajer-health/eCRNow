@@ -981,6 +981,7 @@ public class CdaGeneratorConstants {
   public static final String ED_TYPE = "ED";
   public static final String ST_TYPE = "ST";
   public static final String BL_TYPE = "BL";
+  public static final String DIMENSIONLESS_UNIT_VALUE = "1";
 
   // Table Values
   public static final int TABLE_BORDER = 1;

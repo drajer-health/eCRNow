@@ -163,27 +163,30 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     List<ContactComponent> contactComponents = r4FhirData1.getPatient().getContact();
 
     String expectedXml =
-        "<participant typeCode=\"IND\">\r\n"
-            + "<associatedEntity classCode=\"NOK\">\r\n"
-            + "<addr use=\"HP\">\r\n"
-            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
-            + "<city>PleasantVille</city>\r\n"
-            + "<county>Rainbow</county>\r\n"
-            + "<state>Vic</state>\r\n"
-            + "<postalCode>3999</postalCode>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "<telecom value=\"tel:(323)799-8327\"/>\r\n"
-            + "<associatedPerson>\r\n"
-            + "<name>\r\n"
-            + "<given>B�n�dicte</given>\r\n"
-            + "<family>du March�</family>\r\n"
-            + "</name>\r\n"
-            + "</associatedPerson>\r\n"
-            + "</associatedEntity>\r\n"
-            + "</participant>";
+        "<participant typeCode=\"IND\">\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
+            + "<associatedEntity classCode=\"NOK\">\n"
+            + "<addr use=\"HP\">\n"
+            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\n"
+            + "<city>PleasantVille</city>\n"
+            + "<county>Rainbow</county>\n"
+            + "<state>Vic</state>\n"
+            + "<postalCode>3999</postalCode>\n"
+            + "<country nullFlavor=\"NI\"/>\n"
+            + "</addr>\n"
+            + "<telecom value=\"tel:(323)799-8327\"/>\n"
+            + "<associatedPerson>\n"
+            + "<name>\n"
+            + "<given>B�n�dicte</given>\n"
+            + "<family>du March�</family>\n"
+            + "</name>\n"
+            + "</associatedPerson>\n"
+            + "</associatedEntity>\n"
+            + "</participant>\n";
 
-    String actualXml = CdaHeaderGenerator.getParticipantXml(contactComponents.get(0), coding);
+    String actualXml =
+        CdaHeaderGenerator.getParticipantXml(
+            contactComponents.get(0), coding, launchDetails, r4FhirData1.getOrganization());
 
     assertThat(actualXml).isNotNull();
 
