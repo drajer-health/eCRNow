@@ -1,0 +1,98 @@
+version: '3.9'
+
+services:
+  ecrnow:
+    image: drajerhealth/ecr-now:ecr-now-keycloak-v5
+    container_name: ecrnow
+    depends_on:
+      ecrnow-database:
+        condition: service_healthy
+      ecrnow-keycloak:
+        condition: service_healthy
+    networks:
+      - ecrnow_network
+    environment:
+      bsa.output.directory: /config/bsa-output/
+      custom-query.directory: /config/custom-queries
+      disable.hostname.verifier: true
+      ersd.file.location: /config/esrd/eRSDv3_specification_bundle.json
+      jdbc.url: jdbc:postgresql://ecrnow-database:5432/ecrnow
+      jdbc.username: ecrnow
+      jdbc.password: Password123@
+      kar.directory: /config/kars
+      keycloak.auth.server: http://ecrnow-keycloak:9000
+      keycloak.client.id: uyyyHhPmeEpFJ4gLa96gPBFPQoAmyu7
+      keycloak.client.secret: Q6spWh8UYwWNmDbr96I1J8mc9msqtOOg
+      keycloak.realm: ecrNow
+      logging.file.name: /config/kars/ecrnow.log
+      logging.level.root: INFO
+      logging.level.com.github.kagkarlsson.scheduler: INFO
+      schematron.file.location: dummy
+      security.key: test123
+      xsd.schemas.location: dummy
+      jwks.keystore.location: /secret/ecr-now.p12
+      jwks.keystore.password: <keystore Password>
+    ports:
+      - "8081:8081"
+    volumes:
+      - "/home/ubuntu/ecr-now:/config"
+      - "/home/ubuntu/ecr-now/secret:/secret"
+
+
+  ecrnow-database:
+    image: postgres:17
+    container_name: ecrnow-database
+    user: root
+    ports:
+      - "5432:5432"
+    networks:
+      - ecrnow_network
+    environment:
+      POSTGRES_DB: ecrnow
+      POSTGRES_USER: ecrnow
+      POSTGRES_PASSWORD: Password123@
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecrnow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ecrnow-keycloak:
+    image: quay.io/keycloak/keycloak:26.1.1
+    container_name: ecrnow-keycloak
+    command: ["start", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_LOG_LEVEL: INFO
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080"]
+      interval: 20s
+      timeout: 3s
+      start_period: 60s
+      retries: 3
+    networks:
+      - ecrnow_network
+    ports:
+      - "9000:8080"
+    volumes:
+      - /home/ubuntu/keycloak-import:/opt/keycloak/data/import
+
+  ecrNow-ui:
+    image: drajerhealth/ecr-now:ecr-now-ui-3.1.2
+    container_name: ecrNow-ui
+    restart: always
+    environment:
+      - REACT_APP_ECR_BASE_URL=http://localhost:8081
+      - REACT_APP_BYPASS_AUTH=true
+    depends_on:
+      - ecr-now
+    ports:
+      - "3000:3000"
+networks:
+  ecrnow_network:
+    name: ecrnow_network
