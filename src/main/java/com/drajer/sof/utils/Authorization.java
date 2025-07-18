@@ -100,7 +100,7 @@ public class Authorization {
       logger.info(
           "Received AccessToken for Client: {}",
           StringEscapeUtils.escapeJava(tokenDetails.getClientId()));
-      logger.info("Received AccessToken: {}", tokenResponse);
+      logger.info("Received AccessToken: {}", StringEscapeUtils.escapeJava(tokenResponse.toString()));
 
     } catch (Exception e) {
       logger.error(
