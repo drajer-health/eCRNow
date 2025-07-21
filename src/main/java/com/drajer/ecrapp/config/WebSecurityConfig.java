@@ -84,8 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
           .authorizeRequests()
           .antMatchers("/api/auth/**")
-          .permitAll() // Publicly accessible endpoints
-          .authenticated();
+          .permitAll(); // Publicly accessible endpoints
     } else {
       logger.info("Token Filter class Name is empty");
       http.cors()

@@ -60,12 +60,10 @@ public class AESEncryption {
         logger.error("Overflow or invalid length detected during buffer allocation in encrypt().");
         return null;
       }
-      return Base64.getEncoder().encodeToString(cipherTextWithIvSalt);
     } catch (Exception ex) {
       logger.error("Error while encrypting:", ex);
+      return null;
     }
-
-    return null;
   }
 
   public static String decrypt(String cText) {
