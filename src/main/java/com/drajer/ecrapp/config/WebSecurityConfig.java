@@ -79,14 +79,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       http.cors()
           .and()
           .csrf()
-          .disable()
+          .ignoringAntMatchers("/api/auth/**") // Exempt public auth endpoints from CSRF
+          .and()
           .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
           .authorizeRequests()
-          .antMatchers("/api/**")
-          .authenticated();
+          .antMatchers("/api/auth/**")
+          .permitAll(); // Publicly accessible endpoints
     } else {
       logger.info("Token Filter class Name is empty");
-      http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
+      http.cors()
+          .and()
+          .csrf()
+          .ignoringAntMatchers("/api/auth/**") // Exempt auth endpoints
+          .and()
+          .authorizeRequests()
+          .anyRequest()
+          .permitAll();
     }
   }
 }

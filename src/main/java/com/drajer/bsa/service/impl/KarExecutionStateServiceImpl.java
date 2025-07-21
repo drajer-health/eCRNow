@@ -59,7 +59,9 @@ public class KarExecutionStateServiceImpl implements KarExecutionStateService {
     return karExecutionStateDao.getAllKarExecutionStates();
   }
 
-  /** @param state - KarExecutionState that needs to be deleted. */
+  /**
+   * @param state - KarExecutionState that needs to be deleted.
+   */
   @Override
   public void delete(KarExecutionState state) {
     karExecutionStateDao.delete(state);

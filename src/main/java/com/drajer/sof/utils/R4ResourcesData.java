@@ -189,10 +189,7 @@ public class R4ResourcesData {
               List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
               for (Coding categoryCoding : categoryCodingList) {
                 boolean foundPregnancyCondition =
-                    condition
-                        .getCode()
-                        .getCoding()
-                        .stream()
+                    condition.getCode().getCoding().stream()
                         .anyMatch(
                             coding ->
                                 Arrays.stream(QueryConstants.getPregnancySmtCodes())
@@ -492,13 +489,10 @@ public class R4ResourcesData {
       Observation observation = (Observation) entryComp.getResource();
       List<CodeableConcept> observationCategories = observation.getCategory();
       boolean isSocialHistory =
-          observationCategories
-              .stream()
+          observationCategories.stream()
               .anyMatch(
                   category ->
-                      category
-                          .getCoding()
-                          .stream()
+                      category.getCoding().stream()
                           .anyMatch(coding -> coding.getCode().equals(observationSocialHistory)));
       if (isSocialHistory) {
         filteredEntryComponents.add(new BundleEntryComponent().setResource(observation));
@@ -1291,8 +1285,7 @@ public class R4ResourcesData {
             String medReference = medRef.getReferenceElement().getValue();
             if (medReference.startsWith("#")) {
               List<Resource> medAdministrationContained = medAdministration.getContained();
-              if (medAdministrationContained
-                  .stream()
+              if (medAdministrationContained.stream()
                   .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
                 logger.debug(
                     "Medication Resource {} exists in MedicationAdministration.contained, So no need to add again in Bundle.",
@@ -1335,8 +1328,7 @@ public class R4ResourcesData {
             String medReference = medRef.getReferenceElement().getValue();
             if (medReference.startsWith("#")) {
               List<Resource> medRequestContained = medRequest.getContained();
-              if (medRequestContained
-                  .stream()
+              if (medRequestContained.stream()
                   .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
                 logger.debug(
                     "Medication Resource {} exists in MedicationRequest.contained, So no need to add again in Bundle.",

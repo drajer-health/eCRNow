@@ -68,9 +68,7 @@ public class Authorization {
   }
 
   protected String formatQueryParams(Map<String, String> params) {
-    return params
-        .entrySet()
-        .stream()
+    return params.entrySet().stream()
         .map(p -> p.getKey() + "=" + p.getValue())
         .reduce((p1, p2) -> p1 + "&" + p2)
         .map(s -> "?" + s)
@@ -100,7 +98,8 @@ public class Authorization {
       logger.info(
           "Received AccessToken for Client: {}",
           StringEscapeUtils.escapeJava(tokenDetails.getClientId()));
-      logger.info("Received AccessToken: {}", tokenResponse);
+      logger.info(
+          "Received AccessToken: {}", StringEscapeUtils.escapeJava(tokenResponse.toString()));
 
     } catch (Exception e) {
       logger.error(
