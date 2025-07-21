@@ -106,7 +106,9 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     return new JSONObject(Objects.requireNonNull(response.getBody()));
   }
 
-  /** @param fsd The processing context which contains information such as patient, encounter */
+  /**
+   * @param fsd The processing context which contains information such as patient, encounter
+   */
   @Override
   public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
     String baseUrl = fsd.getFhirServerBaseURL();

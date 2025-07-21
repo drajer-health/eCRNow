@@ -248,13 +248,10 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     List<NotificationContext> notificationContexts = criteria.list();
 
     Map<String, List<NotificationContext>> notificationsById =
-        notificationContexts
-            .stream()
+        notificationContexts.stream()
             .sorted(Comparator.comparing(NotificationContext::getLastUpdated).reversed())
             .collect(Collectors.groupingBy(NotificationContext::getNotificationResourceId));
-    return notificationsById
-        .entrySet()
-        .stream()
+    return notificationsById.entrySet().stream()
         .flatMap(
             entry -> {
               return IntStream.range(0, entry.getValue().size())

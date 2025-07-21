@@ -172,9 +172,7 @@ public class BsaServiceUtils {
     } else if (!res.hasMeta() || !res.getMeta().hasProfile()) {
       return false;
     } else {
-      return !res.getMeta()
-          .getProfile()
-          .stream()
+      return !res.getMeta().getProfile().stream()
           .filter(resProfile -> resProfile.getValueAsString().equals(drProfile.getValueAsString()))
           .collect(Collectors.toList())
           .isEmpty();
@@ -278,8 +276,7 @@ public class BsaServiceUtils {
     logger.info("KarProcessingData in matchesCose:{}", kd);
     if (ib instanceof Coding) {
       Coding ibc = (Coding) ib;
-      return codes
-          .stream()
+      return codes.stream()
           .anyMatch(
               coding ->
                   ibc.getSystem().equals(coding.getSystem())
@@ -288,12 +285,10 @@ public class BsaServiceUtils {
     if (ib instanceof CodeableConcept) {
       CodeableConcept ibc = (CodeableConcept) ib;
       List<Coding> ibcCodings = ibc.getCoding();
-      return ibcCodings
-          .stream()
+      return ibcCodings.stream()
           .anyMatch(
               ibcCoding ->
-                  codes
-                      .stream()
+                  codes.stream()
                       .anyMatch(
                           coding ->
                               ibcCoding.getSystem().equals(coding.getSystem())
@@ -311,8 +306,7 @@ public class BsaServiceUtils {
   }
 
   public static Boolean isCodeableConceptPresentInValueSet(ValueSet vs, CodeableConcept cc) {
-    return cc.getCoding()
-        .stream()
+    return cc.getCoding().stream()
         .anyMatch(coding -> isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode()));
   }
 

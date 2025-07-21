@@ -709,8 +709,7 @@ public class CdaResultGenerator {
 
               // If we find the reference, add it to the overall list
               obs.addAll(
-                  allObservations
-                      .stream()
+                  allObservations.stream()
                       .filter(
                           s ->
                               s.getIdElement()
@@ -824,8 +823,7 @@ public class CdaResultGenerator {
     // Create a map of all Observations to ids for faster lookup
     HashMap<String, Observation> observations = new HashMap<>();
 
-    allResults
-        .stream()
+    allResults.stream()
         .forEach(
             (obs) -> {
               observations.put(obs.getIdElement().getIdPart(), obs);

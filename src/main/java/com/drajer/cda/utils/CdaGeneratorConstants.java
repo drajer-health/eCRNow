@@ -1233,9 +1233,7 @@ public class CdaGeneratorConstants {
     if (valueSetToCodes != null && valueSetToCodes.containsKey(valueset)) {
 
       String found =
-          valueSetToCodes
-              .get(valueset)
-              .stream()
+          valueSetToCodes.get(valueset).stream()
               .filter(value -> code.contentEquals(value))
               .findAny()
               .orElse(null);

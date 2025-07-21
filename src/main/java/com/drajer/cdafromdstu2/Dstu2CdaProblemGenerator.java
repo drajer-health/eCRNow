@@ -354,8 +354,7 @@ public class Dstu2CdaProblemGenerator {
         if (matchedCodes != null && !matchedCodes.isEmpty()) {
 
           // Split the system and code.
-          matchedCodes
-              .stream()
+          matchedCodes.stream()
               .filter(Objects::nonNull)
               .findFirst()
               .ifPresent(

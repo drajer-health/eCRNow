@@ -50,15 +50,11 @@ public class AESEncryption {
       byte[] cipherText = cipher.doFinal(pText.getBytes());
 
       int totalLength = iv.length + salt.length + cipherText.length;
-      if ((iv.length > 0 && salt.length > 0 && cipherText.length > 0) &&
-          (iv.length <= Integer.MAX_VALUE - salt.length) &&
-          (iv.length + salt.length <= Integer.MAX_VALUE - cipherText.length)) {
+      if ((iv.length > 0 && salt.length > 0 && cipherText.length > 0)
+          && (iv.length <= Integer.MAX_VALUE - salt.length)
+          && (iv.length + salt.length <= Integer.MAX_VALUE - cipherText.length)) {
         byte[] cipherTextWithIvSalt =
-            ByteBuffer.allocate(totalLength)
-                .put(iv)
-                .put(salt)
-                .put(cipherText)
-                .array();
+            ByteBuffer.allocate(totalLength).put(iv).put(salt).put(cipherText).array();
         return Base64.getEncoder().encodeToString(cipherTextWithIvSalt);
       } else {
         logger.error("Overflow or invalid length detected during buffer allocation in encrypt().");

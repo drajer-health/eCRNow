@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class PublicHealthAuthorityServiceImpl implements PublicHealthAuthorityService {
 
   @Autowired PublicHealthAuthorityDao phaDao;
+
   /**
    * Method to create or update a PublicHealthAuthority.
    *
