@@ -57,11 +57,7 @@ public class AESEncryption {
       }
 
       byte[] cipherTextWithIvSalt =
-          ByteBuffer.allocate(Math.toIntExact(capacity))
-              .put(iv)
-              .put(salt)
-              .put(cipherText)
-              .array();
+          ByteBuffer.allocate(Math.toIntExact(capacity)).put(iv).put(salt).put(cipherText).array();
       return Base64.getEncoder().encodeToString(cipherTextWithIvSalt);
     } catch (Exception ex) {
       logger.error("Error while encrypting:", ex);
