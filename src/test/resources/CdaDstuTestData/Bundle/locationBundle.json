@@ -1,0 +1,34 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "loc-1",
+        "identifier": [
+          {
+            "system": "http://hospital.smarthealthit.org",
+            "value": "LOC-123"
+          }
+        ],
+        "name": "General Hospital - Ward 1",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-123-4567",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "line": ["123 Main St"],
+          "city": "Metropolis",
+          "state": "NY",
+          "postalCode": "10001",
+          "country": "USA"
+        }
+      }
+    }
+  ]
+}

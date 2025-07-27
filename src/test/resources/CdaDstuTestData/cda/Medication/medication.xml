@@ -1,0 +1,78 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.38"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>
+        <code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>
+        <title>Medications Administered</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Medication Name</th>
+                        <th>Medication Start Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="medication1">Amoxicillin</content>
+                        </td>
+                        <td>
+                            <content ID="medicationDate1">2025-07-27T08:30:00Z</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="medication2">Metformin</content>
+                        </td>
+                        <td>
+                            <content ID="medicationDate2">Sun Jun 01 00:00:00 UTC 2025|Tue Jul 01 00:00:00 UTC 2025</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="medadmin1"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20250727083000+0000"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <doseQuantity value="5"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="1049630" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="Amoxicillin 250mg/5ml Suspension"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="medstat1"/>
+                <statusCode code="active"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20250601"/>
+                    <high value="20250701"/>
+                </effectiveTime>
+                <value xsi:type="PQ" nullFlavor="NI"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="582620" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="Metformin 500mg Tablet"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
+    </section>
+</component>

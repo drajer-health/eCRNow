@@ -1,0 +1,74 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "MedicationAdministration",
+        "id": "medadmin1",
+        "status": "completed",
+        "patient": {
+          "reference": "Patient/example"
+        },
+        "practitioner": {
+          "reference": "Practitioner/example"
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049630",
+              "display": "Amoxicillin 250mg/5ml Suspension"
+            }
+          ],
+          "text": "Amoxicillin"
+        },
+        "effectiveTimeDateTime": "2025-07-27T08:30:00Z",
+        "dosage": {
+          "text": "5 mL orally every 8 hours for 7 days",
+          "route": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "26643006",
+                "display": "Oral route"
+              }
+            ]
+          },
+          "quantity": {
+            "value": 5,
+            "unit": "mL"
+          }
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "medstat1",
+        "patient": {
+          "reference": "Patient/example"
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "582620",
+              "display": "Metformin 500mg Tablet"
+            }
+          ],
+          "text": "Metformin"
+        },
+        "status": "active",
+        "effectivePeriod": {
+          "start": "2025-06-01",
+          "end": "2025-07-01"
+        },
+        "dateAsserted": "2025-06-01",
+        "informationSource": {
+          "reference": "Practitioner/example"
+        }
+      }
+    }
+  ]
+}

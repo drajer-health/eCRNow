@@ -1,0 +1,86 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-1",
+        "name": [
+          {
+            "use": "official",
+            "family": ["Doe"],
+            "given": ["Jane"]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1985-08-15"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "encounter-1",
+        "status": "finished",
+        "class": "outpatient",
+        "patient": {
+          "reference": "Patient/patient-1"
+        },
+        "period": {
+          "start": "2023-06-01T09:00:00Z",
+          "end": "2023-06-01T09:30:00Z"
+        },
+        "reason": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "44054006",
+                "display": "Diabetes mellitus type 2"
+              }
+            ],
+            "text": "Follow-up on Diabetes"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "condition-1",
+        "clinicalStatus": "active",
+        "verificationStatus": "confirmed",
+        "category": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/condition-category",
+              "code": "problem-list-item",
+              "display": "Problem List Item"
+            }
+          ],
+          "text": "Problem List"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "44054006",
+              "display": "Type 2 Diabetes mellitus"
+            }
+          ],
+          "text": "Type 2 Diabetes"
+        },
+        "subject": {
+          "reference": "Patient/patient-1"
+        },
+        "encounter": {
+          "reference": "Encounter/encounter-1"
+        },
+        "onsetDateTime": "2020-01-15",
+        "asserter": {
+          "reference": "Patient/patient-1"
+        }
+      }
+    }
+  ]
+}
