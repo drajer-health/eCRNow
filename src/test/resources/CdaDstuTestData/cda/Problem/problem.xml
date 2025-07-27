@@ -1,0 +1,68 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.5.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.5.1" extension="2015-08-01"/>
+        <code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="PROBLEM LIST"/>
+        <title>PROBLEMS - DIAGNOSES</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Problem or Diagnosis</th>
+                        <th>Problem Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="problem1">Type 2 Diabetes mellitus</content>
+                        </td>
+                        <td>
+                            <content ID="problemStatus1">Active</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+                <statusCode code="active"/>
+                <effectiveTime>
+                    <low nullFlavor="NI"/>
+                </effectiveTime>
+                <entryRelationship typeCode="SUBJ">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="Condition/condition-1"/>
+                        <code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime>
+                            <low value="20200115"/>
+                        </effectiveTime>
+                        <value xsi:type="CD" code="44054006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Type 2 Diabetes mellitus"></value>
+                    </observation>
+                </entryRelationship>
+                <entryRelationship typeCode="RSON">
+                    <observation classCode="OBS" moodCode="EVN" negationInd="false" >
+                        <templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+                        <templateId root="2.16.840.1.113883.10.20.15.2.3.3" extension="2016-12-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="condition-1"/>
+                        <code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime>
+                            <low value="20200115"/>
+                        </effectiveTime>
+                        <value xsi:type="CD" code="Observation" codeSystem="" codeSystemName=""/>
+                    </observation>
+                </entryRelationship>
+            </act>
+        </entry>
+    </section>
+</component>

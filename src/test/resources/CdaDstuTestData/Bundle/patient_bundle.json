@@ -1,0 +1,116 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "example-patient",
+        "name": [
+          {
+            "use": "official",
+            "family": ["Doe"],
+            "given": ["John"]
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1970-01-01",
+        "deceasedBoolean": true,
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-1234",
+            "use": "home"
+          }
+        ],
+        "contact": [
+          {
+            "relationship": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/patient-contact-relationship",
+                    "code": "guardian"
+                  }
+                ]
+              }
+            ],
+            "name": {
+              "family": ["Doe"],
+              "given": ["Jane"]
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "555-6789",
+                "use": "mobile"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "example-practitioner",
+        "name": {
+          "family": ["Smith"],
+          "given": ["Gregory"]
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "example-org",
+        "name": "HealthCare Org"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "example-location",
+        "name": "General Hospital Room 101",
+        "address": {
+          "line": ["123 Main St"],
+          "city": "Metropolis",
+          "state": "NY",
+          "postalCode": "10001"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "example-encounter",
+        "status": "finished",
+        "class": "inpatient",
+        "patient": {
+          "reference": "Patient/example-patient"
+        },
+        "participant": [
+          {
+            "individual": {
+              "reference": "Practitioner/example-practitioner"
+            }
+          }
+        ],
+        "location": [
+          {
+            "location": {
+              "reference": "Location/example-location"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/example-org"
+        },
+        "period": {
+          "start": "2025-07-20T10:00:00Z",
+          "end": "2025-07-21T10:00:00Z"
+        }
+      }
+    }
+  ]
+}

@@ -3,9 +3,17 @@ package com.drajer.cdafromdstu2;
 import static org.junit.Assert.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.Condition;
+import ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder;
+import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
+import ca.uhn.fhir.model.dstu2.resource.Immunization;
 import ca.uhn.fhir.model.dstu2.resource.Location;
+import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
+import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
+import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
@@ -16,8 +24,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.InputStream;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu2.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -109,19 +116,62 @@ public class BaseGenerator {
 
   public static void addResourceToFhirData(Bundle bundle, Dstu2FhirData data) {
     if (bundle != null && bundle.getEntry() != null) {
+
+      List<ca.uhn.fhir.model.dstu2.resource.Observation> observations = new ArrayList<>();
+      List<ca.uhn.fhir.model.dstu2.resource.Condition> conditions = new ArrayList<>();
+      List<ca.uhn.fhir.model.dstu2.resource.DiagnosticReport> diagnosticReports = new ArrayList<>();
+      List<ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder> diagnosticOrders = new ArrayList<>();
+      List<ca.uhn.fhir.model.dstu2.resource.MedicationAdministration>
+          medicationAdministrationsList = new ArrayList<>();
+      List<ca.uhn.fhir.model.dstu2.resource.MedicationStatement> medicationStatements =
+          new ArrayList<>();
+      List<ca.uhn.fhir.model.dstu2.resource.Immunization> immunizations = new ArrayList<>();
+
       for (Bundle.Entry entry : bundle.getEntry()) {
         if (entry.getResource() instanceof Patient) {
           data.setPatient((Patient) entry.getResource());
+
         } else if (entry.getResource() instanceof Practitioner) {
           data.setPractitioner((Practitioner) entry.getResource());
+
         } else if (entry.getResource() instanceof Encounter) {
           data.setEncounter((Encounter) entry.getResource());
+
         } else if (entry.getResource() instanceof Location) {
           data.setLocation((Location) entry.getResource());
+
         } else if (entry.getResource() instanceof Organization) {
           data.setOrganization((Organization) entry.getResource());
+
+        } else if (entry.getResource() instanceof Observation) {
+          observations.add((Observation) entry.getResource());
+
+        } else if (entry.getResource() instanceof Condition) {
+          conditions.add((Condition) entry.getResource());
+        } else if (entry.getResource() instanceof DiagnosticReport) {
+          diagnosticReports.add((DiagnosticReport) entry.getResource());
+
+        } else if (entry.getResource() instanceof DiagnosticOrder) {
+          diagnosticOrders.add((DiagnosticOrder) entry.getResource());
+
+        } else if (entry.getResource() instanceof MedicationAdministration) {
+          medicationAdministrationsList.add((MedicationAdministration) entry.getResource());
+
+        } else if (entry.getResource() instanceof MedicationStatement) {
+          medicationStatements.add((MedicationStatement) entry.getResource());
+
+        } else if (entry.getResource() instanceof Immunization) {
+          immunizations.add((Immunization) entry.getResource());
         }
       }
+      data.setImmunizations(immunizations);
+      data.setDiagReports(diagnosticReports);
+      data.setDiagOrders(diagnosticOrders);
+      data.setConditions(conditions);
+      data.setMedicationAdministrations(medicationAdministrationsList);
+      data.setMedications(medicationStatements);
+      // Apply filters once after collecting all observations and conditions
+      ObservationFactory.applyAllFilters(data, observations, conditions);
     }
   }
 }

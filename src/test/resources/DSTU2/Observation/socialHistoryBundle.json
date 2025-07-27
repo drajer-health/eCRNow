@@ -1,0 +1,13 @@
+{
+"resourceType": "Bundle",
+"id": "7af348a0-11b1-49a1-bd26-b8bd60645bcb",
+"type": "searchset",
+"total": 1,
+"link": [
+{
+"relation": "self",
+"url": "https://fhir-ehr-code.cerner.com/dstu2/ec2458f2-1e24-41c8-b71b-0e701af7583d/Encounter?patient=12742571"
+}
+],
+"entry": []
+}

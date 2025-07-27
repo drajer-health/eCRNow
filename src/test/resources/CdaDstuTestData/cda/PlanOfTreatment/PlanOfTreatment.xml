@@ -1,0 +1,37 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>
+        <code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+        <title>Plan of Treatment</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Planned Observation</th>
+                        <th>Planned Observation Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="potObsContent1">Pregnancy test</content>
+                        </td>
+                        <td>
+                            <content ID="potObsDate1">Unknown</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry>
+            <observation classCode="OBS" moodCode="RQO">
+                <templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="57021-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnancy test"></code>
+                <statusCode code="active"/>
+                <effectiveTime nullFlavor="NI"/>
+            </observation>
+        </entry>
+    </section>
+</component>

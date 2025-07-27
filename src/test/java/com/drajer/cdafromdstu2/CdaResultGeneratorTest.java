@@ -9,14 +9,17 @@ import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.sof.model.Dstu2FhirData;
+import com.drajer.test.util.TestUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class CdaResultGeneratorTest extends BaseGenerator {
+
+  public static final String EMPTY_RESULT_CDA_FILE = "CdaDstuTestData/cda/Result/empty_result.xml";
 
   @Test
   public void generateResultsSectionTest() {
@@ -39,7 +42,6 @@ public class CdaResultGeneratorTest extends BaseGenerator {
     assertNotNull(actualXml);
   }
 
-  @Ignore
   @Test
   public void doesTriggerCodesMatchObservationTest() {
 
@@ -150,5 +152,14 @@ public class CdaResultGeneratorTest extends BaseGenerator {
     obs.setSubject(pat);
 
     return obs;
+  }
+
+  @Test
+  public void estGenerateEmptyLabResults() {
+    Dstu2FhirData data = new Dstu2FhirData();
+
+    String exceptedXml = TestUtils.getFileContentAsString(EMPTY_RESULT_CDA_FILE);
+    String actualXml = Dstu2CdaResultGenerator.generateEmptyLabResults();
+    assertXmlEquals(exceptedXml, actualXml);
   }
 }
