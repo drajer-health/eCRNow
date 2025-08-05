@@ -15,7 +15,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CdaGeneratorUtils.class})
 public class Dstu2CdaEncounterGeneratorTest extends BaseGenerator {
-
   public static final String XML_FOR_ENC_TEMPLATE_ID =
       "<templateId root=\"2.16.840.1.113883.10.20.22.2.22.1\" extension=\"2015-08-01\"/>";
 
