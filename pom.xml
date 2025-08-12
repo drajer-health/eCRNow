@@ -69,28 +69,6 @@
 			<groupId>org.opencds.cqf.fhir</groupId>
 			<artifactId>cqf-fhir-cr</artifactId>
 			<version>3.13.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.fhir</groupId>
-					<artifactId>ucum</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.27.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.fhir</groupId>
-			<artifactId>ucum</artifactId>
-			<version>1.0.9</version>
 		</dependency>
 
 		<dependency>
@@ -125,10 +103,6 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -223,6 +197,11 @@
 			<version>${fhir.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.12.0</version>
+		</dependency>
 
 
 		<dependency>
@@ -241,6 +220,12 @@
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-validation-resources-r4</artifactId>
 			<version>${fhir.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.12.0</version>
 		</dependency>
 
 		<dependency>
@@ -442,6 +427,17 @@
 			<artifactId>logback-json-classic</artifactId>
 			<version>${logback-contrib.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 
 		<!--  <dependency>
@@ -454,7 +450,26 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
-
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.43.0</version> <!-- Latest Spotless -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal> <!-- Checks formatting -->
+							<goal>apply</goal> <!-- Auto-fixes formatting -->
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.17.0</version> <!-- Supports Java 17 -->
+						</googleJavaFormat>
+					</java>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -609,20 +624,7 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>com.coveo</groupId>
-				<artifactId>fmt-maven-plugin</artifactId>
-				<version>2.5.1</version>
-				<executions>
-					<execution>
-						<id>fmt-check</id>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<phase>validate</phase>
-					</execution>
-				</executions>
-			</plugin>
+
 		</plugins>
 	</build>
 

@@ -2,6 +2,7 @@ package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.NotificationContext;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -45,6 +46,12 @@ public interface NotificationContextService {
    */
   public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseURL, String notificationResourceId, String patientId);
+
+  List<NotificationContext> getAllNotificationContextData(
+      UUID id, Map<String, String> searchParams);
+
+  public List<NotificationContext> getNotificationContextForReprocessing(
+      UUID id, Map<String, String> searchParams);
 
   /**
    * Method to delete NotificationContext by NotificationContext

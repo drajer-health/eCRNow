@@ -2,6 +2,8 @@ package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.ScheduledJobData;
+import com.github.kagkarlsson.scheduler.task.ExecutionContext;
+import com.github.kagkarlsson.scheduler.task.TaskInstance;
 
 /**
  *
@@ -21,5 +23,6 @@ public interface KarProcessor {
    */
   public void applyKarForNotification(KarProcessingData data);
 
-  public void applyKarForScheduledJob(ScheduledJobData data);
+  public void applyKarForScheduledJob(
+      ScheduledJobData data, TaskInstance<ScheduledJobData> inst, ExecutionContext ctx);
 }

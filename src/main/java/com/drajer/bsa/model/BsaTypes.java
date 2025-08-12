@@ -14,6 +14,7 @@ public final class BsaTypes {
     SOF_PROVIDER,
     USER_NAME_PWD,
     SOF_BACKEND,
+    SOF_SYSTEM,
     UNKNOWN
   }
 
@@ -23,6 +24,7 @@ public final class BsaTypes {
     COMPLETED,
     CANCELLED,
     RELAUNCHED,
+    REPROCESSED,
     FAILED,
     Unknown
   }
@@ -58,6 +60,14 @@ public final class BsaTypes {
     SUSPENDED,
     FAILED,
     CANCELLED
+  }
+
+  public enum SubmissionStatusType {
+    DATA_SUBMISSION_SUCCCESSFUL,
+    DATA_SUBMISSION_FAILED,
+    RESPONSE_PROCESSING_SUCCESSFUL,
+    RESPONSE_PROCESSING_FAILED,
+    UNKOWN
   }
 
   public enum MessageType {
@@ -112,6 +122,7 @@ public final class BsaTypes {
     else if (nst == NotificationProcessingStatusType.COMPLETED) return "COMPLETED";
     else if (nst == NotificationProcessingStatusType.CANCELLED) return "CANCELLED";
     else if (nst == NotificationProcessingStatusType.RELAUNCHED) return "RELAUNCHED";
+    else if (nst == NotificationProcessingStatusType.REPROCESSED) return "REPROCESSED";
     else if (nst == NotificationProcessingStatusType.FAILED) return "FAILED";
     else return UNKNOWN;
   }
@@ -123,6 +134,7 @@ public final class BsaTypes {
     else if (s.contentEquals("COMPLETED")) return NotificationProcessingStatusType.COMPLETED;
     else if (s.contentEquals("CANCELLED")) return NotificationProcessingStatusType.CANCELLED;
     else if (s.contentEquals("RELAUNCHED")) return NotificationProcessingStatusType.RELAUNCHED;
+    else if (s.contentEquals("REPROCESSED")) return NotificationProcessingStatusType.REPROCESSED;
     else if (s.contentEquals("FAILED")) return NotificationProcessingStatusType.FAILED;
     else return NotificationProcessingStatusType.Unknown;
   }
@@ -235,6 +247,7 @@ public final class BsaTypes {
     else if (t == AuthenticationType.USER_NAME_PWD) return "UserNamePwd";
     else if (t == AuthenticationType.SOF_BACKEND) return "SofBackend";
     else if (t == AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH) return "MultiTenantSystemLaunch";
+    else if (t == AuthenticationType.SOF_SYSTEM) return "SofSystem";
     else return UNKNOWN;
   }
 
@@ -244,9 +257,34 @@ public final class BsaTypes {
     else if (s.contentEquals("SofProvider")) return AuthenticationType.SOF_PROVIDER;
     else if (s.contentEquals("UserNamePwd")) return AuthenticationType.USER_NAME_PWD;
     else if (s.contentEquals("SofBackend")) return AuthenticationType.SOF_BACKEND;
-    else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_BACKEND;
+    else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_SYSTEM;
     else if (s.contentEquals("MultiTenantSystemLaunch"))
       return AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH;
     else return AuthenticationType.UNKNOWN;
+  }
+
+  public static SubmissionStatusType getSubmissionStatus(String s) {
+
+    if (s.contentEquals("DATA_SUBMISSION_SUCCCESSFUL"))
+      return SubmissionStatusType.DATA_SUBMISSION_SUCCCESSFUL;
+    else if (s.contentEquals("DATA_SUBMISSION_FAILED"))
+      return SubmissionStatusType.DATA_SUBMISSION_FAILED;
+    else if (s.contentEquals("RESPONSE_PROCESSING_SUCCESSFUL"))
+      return SubmissionStatusType.RESPONSE_PROCESSING_SUCCESSFUL;
+    else if (s.contentEquals("RESPONSE_PROCESSING_FAILED"))
+      return SubmissionStatusType.RESPONSE_PROCESSING_FAILED;
+    else return SubmissionStatusType.UNKOWN;
+  }
+
+  public static String getString(SubmissionStatusType type) {
+
+    if (type == SubmissionStatusType.DATA_SUBMISSION_SUCCCESSFUL)
+      return "DATA_SUBMISSION_SUCCCESSFUL";
+    else if (type == SubmissionStatusType.DATA_SUBMISSION_FAILED) return "DATA_SUBMISSION_FAILED";
+    else if (type == SubmissionStatusType.RESPONSE_PROCESSING_SUCCESSFUL)
+      return "RESPONSE_PROCESSING_SUCCESSFUL";
+    else if (type == SubmissionStatusType.RESPONSE_PROCESSING_FAILED)
+      return "RESPONSE_PROCESSING_FAILED";
+    else return "UNKOWN";
   }
 }

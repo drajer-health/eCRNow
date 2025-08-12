@@ -41,6 +41,7 @@ public class AuthorizationUtils {
         token = backendAuthorizationService.getAuthorizationToken(fsd);
         break;
       case SYSTEM:
+      case SOF_SYSTEM:
       case MULTI_TENANT_SYSTEM_LAUNCH:
         token = ehrAuthorizationService.getAuthorizationToken(fsd);
         break;

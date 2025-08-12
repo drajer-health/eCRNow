@@ -55,4 +55,12 @@ public interface FhirServerDetails {
   String getBackendAuthKeyAlias();
 
   void setBackendAuthKeyAlias(String alias);
+
+  String getBackendAuthAlg();
+
+  void setBackendAuthAlg(String alg);
+
+  String getBackendAuthKid();
+
+  void setBackendAuthKid(String kid);
 }

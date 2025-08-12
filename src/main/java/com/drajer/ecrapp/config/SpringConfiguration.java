@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 import okhttp3.OkHttpClient;
 import org.cqframework.cql.cql2elm.LibraryBuilder;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
@@ -61,6 +63,9 @@ import org.springframework.retry.support.RetryTemplate;
 @Configuration
 @EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class SpringConfiguration {
+
+  @Value("${disable.hostname.verifier}")
+  private boolean disableHostnameVerifier;
 
   @Autowired RetryStatusCode retryStatusCode;
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
@@ -203,6 +208,13 @@ public class SpringConfiguration {
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(300, TimeUnit.SECONDS)
         .writeTimeout(300, TimeUnit.SECONDS)
+        .hostnameVerifier(
+            new HostnameVerifier() {
+              @Override
+              public boolean verify(String hostname, SSLSession sslSession) {
+                return disableHostnameVerifier;
+              }
+            })
         .build();
   }
 }

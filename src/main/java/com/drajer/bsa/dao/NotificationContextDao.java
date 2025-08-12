@@ -2,6 +2,7 @@ package com.drajer.bsa.dao;
 
 import com.drajer.bsa.model.NotificationContext;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -69,6 +70,20 @@ public interface NotificationContextDao {
    */
   public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId);
+
+  /**
+   * Method to retrieve a NotificationContext by id, fhir_server_base_url, patient_id,
+   * notification_resource_id,
+   *
+   * @param id The id to retrieve the notification context.
+   * @param searchParams The searchParams used filtering and retrieve context based on param
+   *     provided .
+   * @return Returns the NotificationContext for the provided unique constraints.
+   */
+  List<NotificationContext> getAllNotificationContext(UUID id, Map<String, String> searchParams);
+
+  public List<NotificationContext> getNotificationContextForReprocessing(
+      UUID id, Map<String, String> searchParams);
 
   /**
    * Method to delete the NotificationContext

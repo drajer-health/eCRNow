@@ -24,13 +24,13 @@ import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
-import io.micrometer.core.instrument.util.StringUtils;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
@@ -255,8 +255,17 @@ public class SubmitReport extends BsaAction {
     } else {
       logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
 
-      if (data.getHealthcareSetting().getTrustedThirdParty() != null
-          && !data.getHealthcareSetting().getTrustedThirdParty().isEmpty()) {
+      if (data.getHealthcareSetting() != null
+          && StringUtils.isNotBlank(data.getHealthcareSetting().getPhaUrl())) {
+        logger.info(
+            "Sending to trusted thrid party {}",
+            StringEscapeUtils.escapeJava(data.getHealthcareSetting().getTrustedThirdParty()));
+        submitResources(
+            resourcesToSubmit, data, ehrService, data.getHealthcareSetting().getPhaUrl());
+      }
+
+      if (data.getHealthcareSetting() != null
+          && StringUtils.isNotBlank(data.getHealthcareSetting().getTrustedThirdParty())) {
         logger.info(
             "Sending to trusted thrid party {}",
             StringEscapeUtils.escapeJava(data.getHealthcareSetting().getTrustedThirdParty()));

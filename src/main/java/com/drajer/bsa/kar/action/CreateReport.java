@@ -76,8 +76,7 @@ public class CreateReport extends BsaAction {
         // not specified.
         List<DataRequirement> inputRequirements = getInputData();
         ehrService.getFilteredData(data, inputRequirements);
-        inputRequirements
-            .stream()
+        inputRequirements.stream()
             .filter(
                 ir ->
                     data.getResourcesById(ir.getId()) != null

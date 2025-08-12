@@ -29,4 +29,13 @@ public class SchedulerController {
 
     return schedulerService.getScheduledTasks(actionType, launchId);
   }
+
+  @CrossOrigin
+  @GetMapping("/api/scheduledTasks/search")
+  public List<ScheduledTasks> getScheduledTasksBySearchQuery(
+      @RequestParam(name = "taskInstance", required = false) String taskInstance) {
+    logger.info("Received request to get Scheduled Tasks by taskInstance:{} ", taskInstance);
+
+    return schedulerService.getScheduledTasksBySearchQuery(taskInstance);
+  }
 }

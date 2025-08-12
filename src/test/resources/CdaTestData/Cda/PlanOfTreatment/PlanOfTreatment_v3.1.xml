@@ -1,0 +1,62 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>
+        <code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+        <title>Plan of Treatment</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Planned Observation</th>
+                        <th>Planned Observation Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="potObsContent1">Coronavirus Panel</content>
+                        </td>
+                        <td>
+                            <content ID="potObsDate1">20200430031500-0500|20200430152923-0500</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="potObsContent2">Complete Blood Count</content>
+                        </td>
+                        <td>
+                            <content ID="potObsDate2">20110304083000+1100</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry>
+            <observation classCode="OBS" moodCode="RQO">
+                <templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="311539773"/>
+                <code code="94531-1" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+                    <reference value="#potObsContent1"/>
+                </originalText>
+                </code>
+                <statusCode code="active"/>
+                <effectiveTime value="20200430031500-0500"/>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="RQO">
+                <templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="101"/>
+                <code code="58410-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Complete blood count (hemogram) panel - Blood by Automated count"><originalText>
+                    <reference value="#potObsContent2"/>
+                </originalText>
+                </code>
+                <statusCode code="active"/>
+                <effectiveTime value="20110304083000+1100"/>
+            </observation>
+        </entry>
+    </section>
+</component>

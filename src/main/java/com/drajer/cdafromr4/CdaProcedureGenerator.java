@@ -258,7 +258,7 @@ public class CdaProcedureGenerator {
     return sb.toString();
   }
 
-  private static String generateProcedureSectionHeader(String nf) {
+  public static String generateProcedureSectionHeader(String nf) {
 
     StringBuilder sb = new StringBuilder();
 
