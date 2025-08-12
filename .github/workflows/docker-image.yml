@@ -3,7 +3,7 @@ name: Build Docker Image and Send Email
 on:
   push:
     branches:
-      - main
+      - new_cql_upgrade_rb
   workflow_dispatch:
 
 jobs:
