@@ -1,0 +1,83 @@
+{
+  "resourceType": "Encounter",
+  "id": "1f43c338-0811-415a-b96b-3b5720e6a69a",
+  "meta": {
+    "versionId": "4"
+  },
+  "identifier": [ {
+    "use": "official",
+    "system": "https://github.com/synthetichealth/synthea",
+    "value": "539bad28-c13b-4807-96e2-33a16652c77f"
+  } ],
+  "status": "in-progress",
+  "class": {
+    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+    "code": "IMP",
+    "display": "inpatient encounter",
+    "userSelected": false
+  },
+  "type": [ {
+    "coding": [ {
+      "system": "http://terminology.hl7.org/CodeSystem/v2-0004",
+      "code": "I",
+      "display": "Inpatient"
+    } ],
+    "text": "Inpatient"
+  } ],
+  "subject": {
+    "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+    "display": "Alice C Newman"
+  },
+  "participant": [ {
+    "type": [ {
+      "coding": [ {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+        "code": "REF",
+        "display": "referrer"
+      } ],
+      "text": "Referring Physician"
+    } ],
+    "period": {
+      "start": "2023-12-25T00:00:00+00:00"
+    },
+    "individual": {
+      "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3",
+      "display": "Arthur James Smith"
+    }
+  }, {
+    "type": [ {
+      "coding": [ {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+        "code": "ATND",
+        "display": "attender"
+      } ],
+      "text": "Attending Physician"
+    } ],
+    "period": {
+      "start": "2023-12-25T00:00:00+00:00"
+    },
+    "individual": {
+      "reference": "Practitioner/d7134a56-18a5-41a6-82f9-393a77865da2",
+      "display": "Kristin Alice Carter"
+    }
+  } ],
+  "period": {
+    "start": "2023-12-25T00:00:00+00:00"
+  },
+  "reasonCode": [ {
+    "coding": [ {
+      "system": "http://snomed.info/sct",
+      "code": "282752000",
+      "display": "Injury of eye region"
+    } ],
+    "text": "eye injury"
+  } ],
+  "location": [ {
+    "location": {
+      "reference": "Location/8614f9d9-af54-47b2-8da4-7bea05f8d032"
+    }
+  } ],
+  "serviceProvider": {
+    "reference": "Organization/380dcfda-7b18-40ee-881d-190993359319"
+  }
+}

@@ -84,7 +84,7 @@ public class KarExecutionState {
    */
   @Transient private List<BsaActionStatus> actionStatuses;
 
-  KarExecutionState() {}
+  public KarExecutionState() {}
 
   public UUID getId() {
     return id;
