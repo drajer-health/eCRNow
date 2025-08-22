@@ -4,12 +4,7 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -968,8 +963,7 @@ public class CdaSocialHistoryGenerator {
         CdaFhirUtilities.getXmlForType(
             obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
-    sb.append(
-        CdaFhirUtilities.getXmlForType(obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+    sb.append(getDisabilityBooleanValue(obs.getValue()));
 
     // End Tag for Entry Relationship
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -1247,5 +1241,39 @@ public class CdaSocialHistoryGenerator {
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
 
     return sb.toString();
+  }
+
+  public static String getDisabilityBooleanValue(Type type) {
+    if (type == null) {
+      return CdaGeneratorUtils.getXmlForNullValueBL(CdaGeneratorConstants.NF_NI);
+    }
+
+    final String SNOMED_YES = "373066001";
+    final String SNOMED_NO = "373067005";
+
+    String valueCode =
+        CdaFhirUtilities.getMatchingCodeFromTypeForCodeSystem(
+            Arrays.asList(SNOMED_YES, SNOMED_NO), type, CdaGeneratorConstants.FHIR_SNOMED_URL);
+
+    if (StringUtils.isNotEmpty(valueCode)) {
+      if (SNOMED_YES.equals(valueCode)) {
+        return CdaGeneratorUtils.getXmlForValueBoolean("true");
+      }
+      if (SNOMED_NO.equals(valueCode)) {
+        return CdaGeneratorUtils.getXmlForValueBoolean("false");
+      }
+    }
+
+    String valueText = CdaFhirUtilities.getStringForType(type);
+    if (StringUtils.isNotEmpty(valueText)) {
+      if ("yes".equalsIgnoreCase(valueText)) {
+        return CdaGeneratorUtils.getXmlForValueBoolean("true");
+      }
+      if ("no".equalsIgnoreCase(valueText)) {
+        return CdaGeneratorUtils.getXmlForValueBoolean("false");
+      }
+    }
+
+    return CdaGeneratorUtils.getXmlForNullValueBL(CdaGeneratorConstants.NF_NI);
   }
 }

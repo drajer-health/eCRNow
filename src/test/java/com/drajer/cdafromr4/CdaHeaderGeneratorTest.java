@@ -164,8 +164,8 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     String expectedXml =
         "<participant typeCode=\"IND\">\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
             + "<associatedEntity classCode=\"NOK\">\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
             + "<addr use=\"HP\">\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\n"
             + "<city>PleasantVille</city>\n"

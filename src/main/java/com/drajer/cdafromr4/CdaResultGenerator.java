@@ -345,9 +345,9 @@ public class CdaResultGenerator {
     }
 
     String referenceRangeValue = "";
+    Observation.ObservationReferenceRangeComponent referenceRange = null;
     if (obs.hasReferenceRange()) {
-      Observation.ObservationReferenceRangeComponent referenceRange =
-          getReferenceRange(obs.getReferenceRange());
+      referenceRange = getReferenceRange(obs.getReferenceRange());
       if (referenceRange == null) {
         referenceRange = obs.getReferenceRangeFirstRep();
       }
@@ -360,8 +360,12 @@ public class CdaResultGenerator {
         referenceRangeValue +=
             "High: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh());
       }
-    }
 
+      if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
+        String refRangeString = "Reference Range: " + referenceRange.getText();
+        referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
+      }
+    }
     if (StringUtils.isBlank(referenceRangeValue)) {
       referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
     }
@@ -433,8 +437,12 @@ public class CdaResultGenerator {
         referenceRangeValue +=
             "High: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh());
       }
-    }
 
+      if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
+        String refRangeString = "Reference Range: " + referenceRange.getText();
+        referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
+      }
+    }
     if (StringUtils.isBlank(referenceRangeValue)) {
       referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
     }

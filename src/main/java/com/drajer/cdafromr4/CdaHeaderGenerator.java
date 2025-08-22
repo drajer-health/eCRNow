@@ -244,11 +244,11 @@ public class CdaHeaderGenerator {
     String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
 
     String identifierXml = getOrganizationIdentifierXml(organization, details);
-    s.append(identifierXml);
 
     s.append(
         CdaGeneratorUtils.getXmlForStartElementWithClassCode(
             CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
+    s.append(identifierXml);
 
     if (cc.hasAddress()) {
       s.append(CdaFhirUtilities.getAddressXml(cc.getAddress()));

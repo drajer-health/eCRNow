@@ -2309,6 +2309,7 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForValueBoolean(String val) {
+
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.VAL_EL_NAME
         + CdaGeneratorConstants.SPACE
@@ -2331,6 +2332,22 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.XSI_TYPE
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.PQ_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + nf
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
+  public static String getXmlForNullValueBL(String nf) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.BL_TYPE
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
