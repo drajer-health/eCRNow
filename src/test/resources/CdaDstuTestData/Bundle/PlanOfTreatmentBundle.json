@@ -1,0 +1,92 @@
+{
+	"resourceType": "Bundle",
+	"type": "collection",
+	"entry": [
+		{
+			"resource": {
+				"resourceType": "DiagnosticOrder",
+				"id": "diagorder1",
+				"status": "accepted",
+				"subject": {
+					"reference": "Patient/12345"
+				},
+				"item": [
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "57021-8",
+									"display": "Pregnancy test"
+								}
+							],
+							"text": "Pregnancy Test"
+						}
+					}
+				]
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "obs1",
+				"status": "final",
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "57021-8",
+							"display": "Pregnancy test"
+						}
+					],
+					"text": "Pregnancy Test"
+				},
+				"valueCodeableConcept": {
+					"coding": [
+						{
+							"system": "http://snomed.info/sct",
+							"code": "77386006",
+							"display": "Pregnant"
+						}
+					],
+					"text": "Pregnant"
+				},
+				"subject": {
+					"reference": "Patient/12345"
+				},
+				"effectiveDateTime": "2025-07-27T14:00:00Z"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "DiagnosticReport",
+				"id": "dr1",
+				"status": "final",
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "57021-8",
+							"display": "Pregnancy test"
+						}
+					],
+					"text": "Pregnancy Test Report"
+				},
+				"subject": {
+					"reference": "Patient/12345"
+				},
+				"issued": "2025-07-27T15:00:00Z",
+				"request": [
+					{
+						"reference": "DiagnosticOrder/diagorder1"
+					}
+				],
+				"result": [
+					{
+						"reference": "Observation/obs1"
+					}
+				]
+			}
+		}
+	]
+}
