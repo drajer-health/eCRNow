@@ -60,7 +60,7 @@ To validate against CDA R3.1, update your configuration as follows:
 validate.eicr.cdar31=true
 ```
 
-### 📝 Notes
+###  Notes
 
 - Always ensure that the configured file paths are accessible and have the correct read permissions.
 - Use the **latest Schematron files** provided for **eICR 3.1.13** to ensure compliance with updated business rules.

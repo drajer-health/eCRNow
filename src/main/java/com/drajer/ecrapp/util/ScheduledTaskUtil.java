@@ -139,6 +139,10 @@ public class ScheduledTaskUtil {
    * @throws IOException if an I/O error occurs
    */
   public ScheduledJobData deserialize(byte[] serializedData) throws IOException {
+    if (serializedData == null || serializedData.length == 0) {
+      throw new IllegalArgumentException("Cannot deserialize: task data is null or empty");
+    }
+
     try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedData);
         ObjectInputStream ois = new ObjectInputStream(bis)) {
       Object obj = ois.readObject();

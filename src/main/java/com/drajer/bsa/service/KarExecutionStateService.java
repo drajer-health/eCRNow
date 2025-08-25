@@ -46,4 +46,17 @@ public interface KarExecutionStateService {
    * @param state - KarExecutionState that needs to be deleted.
    */
   public void delete(KarExecutionState state);
+
+  /**
+   * Retrieves a list of execution IDs for KarExecutionState entities that match the given patient
+   * ID, FHIR server base URL, and notification resource ID.
+   *
+   * @param patientId The patient identifier.
+   * @param fhirServerBaseUrl The base URL of the FHIR server.
+   * @param notificationResourceId The notification resource identifier (e.g., encounter or event
+   *     ID).
+   * @return A list of String representing the matching KarExecutionState execution IDs.
+   */
+  List<String> getExecutionIdsByNotificationContextDetails(
+      String patientId, String fhirServerBaseUrl, String notificationResourceId);
 }
