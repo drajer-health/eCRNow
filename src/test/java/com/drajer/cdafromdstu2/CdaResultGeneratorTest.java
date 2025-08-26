@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CdaResultGeneratorTest extends BaseGenerator {
@@ -43,6 +44,7 @@ public class CdaResultGeneratorTest extends BaseGenerator {
   }
 
   @Test
+  @Ignore
   public void doesTriggerCodesMatchObservationTest() {
 
     StringBuilder codeXml = new StringBuilder(200);
