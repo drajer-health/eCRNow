@@ -120,6 +120,67 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void shouldGenerateR31SocialHistorySection1() {
+    R4FhirData data = new R4FhirData();
+    Bundle b = loadBundleFromFile("CdaTestData/bundle/ENC_bundle.json");
+
+    List<Bundle.BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+
+    Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
+
+    for (Bundle.BundleEntryComponent ent : entries) {
+      Resource resource = ent.getResource();
+      ResourceType resourceType = resource.getResourceType();
+
+      resourcesByType.computeIfAbsent(resourceType, k -> new LinkedHashSet<>()).add(resource);
+    }
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (Bundle.BundleEntryComponent ent : entries) {
+
+      ResourceType resourceType = ent.getResource().getResourceType();
+
+      resourceSet.addAll(resourcesByType.getOrDefault(resourceType, Collections.EMPTY_SET));
+
+      if (!resourceSet.isEmpty()) {
+        R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+            "1",
+            bundle,
+            data,
+            launchDetails,
+            resourceSet,
+            resourceType.toString(),
+            uniqueResourceIdsByType);
+        resourceSet.clear();
+        resourcesByType.remove(resourceType);
+      }
+    }
+
+    data.getTravelObs().sort(Comparator.comparing(Observation::getId));
+    data.getResidencyObs().sort(Comparator.comparing(Observation::getId));
+    data.getNationalityObs().sort(Comparator.comparing(Observation::getId));
+    data.getVaccineCredObs().sort(Comparator.comparing(Observation::getId));
+    data.getHomelessObs().sort(Comparator.comparing(Observation::getId));
+    data.getDisabilityObs().sort(Comparator.comparing(Observation::getId));
+    data.setData(bundle);
+    String expectedXml = TestUtils.getFileContentAsString(SOCIAL_HISTORY_R31_CDA_FILE);
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    String actualXml =
+        (String) CdaSocialHistoryGenerator.generateR31SocialHistorySection(data, launchDetails, "");
+
+    assertNotNull(actualXml);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
   public void testGenerateBirthSexEntry() {
     CodeType birthSex = new CodeType("M");
 
