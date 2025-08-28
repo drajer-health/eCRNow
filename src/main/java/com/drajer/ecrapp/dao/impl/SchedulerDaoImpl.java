@@ -48,7 +48,7 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
     List<ScheduledTasks> scheduledTasks = criteria.list();
 
-    if (scheduledTasks != null && scheduledTasks.isEmpty()) {
+    if (scheduledTasks != null && !scheduledTasks.isEmpty()) {
       return scheduledTasks;
     }
     return Collections.EMPTY_LIST;
@@ -57,6 +57,12 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
   @Override
   public ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks) {
     getSession().saveOrUpdate(scheduledTasks);
+    return scheduledTasks;
+  }
+
+  @Override
+  public ScheduledTasks delete(ScheduledTasks scheduledTasks) {
+    getSession().delete(scheduledTasks);
     return scheduledTasks;
   }
 }

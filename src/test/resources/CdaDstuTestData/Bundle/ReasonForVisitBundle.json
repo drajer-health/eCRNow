@@ -1,0 +1,104 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "example",
+        "name": [
+          {
+            "use": "official",
+            "family": ["Doe"],
+            "given": ["Jane"]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1990-04-15"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "encounter-example",
+        "status": "finished",
+        "class": "outpatient",
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185349003",
+                "display": "Encounter for check up"
+              }
+            ],
+            "text": "Checkup"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/example"
+        },
+        "participant": [
+          {
+            "individual": {
+              "reference": "Practitioner/example"
+            }
+          }
+        ],
+        "period": {
+          "start": "2025-07-20T10:00:00Z",
+          "end": "2025-07-20T10:30:00Z"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/example"
+            },
+            "status": "completed"
+          }
+        ],
+        "reason": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "65363002",
+                "display": "Otitis media"
+              }
+            ],
+            "text": "Patient has ear infection"
+          }
+        ],
+        "indication": [
+          {
+            "reference": "Condition/condition-example"
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/example"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "condition-example",
+        "patient": {
+          "reference": "Patient/example"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "65363002",
+              "display": "Otitis media"
+            }
+          ],
+          "text": "Ear infection"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2025-07-19"
+      }
+    }
+  ]
+}

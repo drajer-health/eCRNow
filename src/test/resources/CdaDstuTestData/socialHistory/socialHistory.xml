@@ -1,0 +1,73 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+        <code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+        <title>SOCIAL HISTORY</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Social History Observation</th>
+                        <th>Social History Observation Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="socContent0">Birth Sex</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult0">M</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent1">Occupation History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult1">History of occupation</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="socContent2">Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="socObservationResult2">Travel abroad-Travel abroad</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.200" extension="2016-06-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="76689-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Birth Sex"/>
+                <statusCode code="completed"/>
+                <value xsi:type="CD" code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="Administrative Gender"/>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.38"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.38" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail"><translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>
+                <translation code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of occupation"></translation>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime value="20250727120000+0000"/>
+                <value xsi:type="CD" code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of occupation"></value>
+            </observation>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel abroad-Travel abroad</text>
+                <statusCode code="completed"/>
+                <effectiveTime value="20250727120000+0000"/>
+            </act>
+        </entry>
+    </section>
+</component>

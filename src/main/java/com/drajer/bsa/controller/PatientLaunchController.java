@@ -10,10 +10,11 @@ import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.OperationOutcomeUtil;
 import com.drajer.bsa.utils.StartupUtils;
+import com.drajer.ecrapp.model.ScheduledTasks;
+import com.drajer.ecrapp.service.SchedulerService;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -39,10 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * This controller is used to receive notifications from EHRs to launch specific patient instances
@@ -58,6 +56,8 @@ public class PatientLaunchController {
   @Autowired EhrQueryService ehrService;
 
   @Autowired SubscriptionNotificationReceiver notificationReceiver;
+
+  @Autowired SchedulerService schedulerService;
 
   /** The token refresh threshold value for refreshing access tokens */
   @Value("${token.refresh.threshold:25}")
@@ -475,5 +475,57 @@ public class PatientLaunchController {
     nb.addEntry(new BundleEntryComponent().setResource(res));
 
     return nb;
+  }
+
+  /**
+   * Deletes scheduled tasks for the specified patient and encounter.
+   *
+   * <p>This endpoint deletes all scheduled tasks associated with the given patientId and
+   * encounterId, optionally filtered by id and fhirServerBaseUrl. Returns an appropriate HTTP
+   * response based on the result.
+   *
+   * @param fhirServerBaseUrl Optional FHIR server base URL to filter tasks.
+   * @param patientId The patient identifier (required).
+   * @param encounterId The encounter identifier (required).
+   * @return ResponseEntity with a message indicating the result and appropriate HTTP status code.
+   * @throws IOException If an error occurs during task deletion.
+   */
+  @DeleteMapping("/api/scheduledTasks")
+  public ResponseEntity<Object> deleteScheduledTasks(
+      @RequestParam(required = false) String fhirServerBaseUrl,
+      @RequestParam(required = false) String patientId,
+      @RequestParam(required = false) String encounterId)
+      throws IOException {
+
+    Map<String, Object> response = new HashMap<>();
+    if (StringUtils.isBlank(patientId)
+        || StringUtils.isBlank(encounterId)
+        || StringUtils.isBlank(fhirServerBaseUrl)) {
+      response.put("message", "PatientId , EncounterId and fhirServerBaseUrl are required.");
+      response.put("status", HttpStatus.BAD_REQUEST.value());
+      return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    List<ScheduledTasks> deletedScheduledTasks =
+        schedulerService.delete(null, fhirServerBaseUrl, patientId, encounterId);
+
+    if (deletedScheduledTasks != null && !deletedScheduledTasks.isEmpty()) {
+      response.put("message ", " Scheduled Tasks is deleted Successfully.");
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } else {
+
+      logger.info(
+          "No Scheduled Tasks found to delete for patientId={} and encounterId={}",
+          patientId,
+          encounterId);
+      response.put(
+          "message ",
+          "No Scheduled Tasks found to delete for patientId="
+              + patientId
+              + "and encounterId="
+              + encounterId);
+      response.put("status", HttpStatus.NOT_FOUND.value());
+      return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
   }
 }

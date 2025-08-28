@@ -1,0 +1,268 @@
+{
+  "resourceType": "Bundle",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "e9bd7100-48af-4c69-a557-c13235f72f74",
+        "meta": {
+          "versionId": "1"
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2106-3",
+                  "display": "White"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "White"
+              }
+            ]
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/ValueSet/detailed-race",
+            "extension": [
+              {
+                "url": "detailed",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "1072-8",
+                  "display": "Mexican American Indian"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Mexican American Indian"
+              }
+            ]
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2135-2",
+                  "display": "Hispanic or Latino"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Not Hispanic or Latino"
+              }
+            ]
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity",
+            "extension": [
+              {
+                "url": "detailed",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2178-2",
+                  "display": "Latin American"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Latin American"
+              }
+            ]
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-religion",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation",
+                  "code": "1013",
+                  "display": "Christian (non-Catholic, non-specific)"
+                }
+              ],
+              "text": "Christian"
+            }
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
+            "valueAddress": {
+              "line": [
+                "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]"
+              ],
+              "city": "New York City",
+              "district": "Northeast",
+              "state": "NY",
+              "postalCode": "10001",
+              "country": "US"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical Record Number"
+                }
+              ]
+            },
+            "system": "http://hospital.smarthealthit.org",
+            "value": "34332234"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "SS",
+                  "display": "Social Security Number"
+                }
+              ]
+            },
+            "system": "http://hl7.org/fhir/sid/us-ssn",
+            "value": "12345"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Newman",
+            "given": [
+              "Alice",
+              "C"
+            ],
+            "prefix": [
+              "Mr."
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(573)923-4567",
+            "use": "work"
+          },
+          {
+            "system": "phone",
+            "value": "(816)234-5123",
+            "use": "work"
+          },
+          {
+            "system": "phone",
+            "value": "(913)222-1324",
+            "use": "home"
+          },
+          {
+            "system": "phone",
+            "value": "(212)555-5554",
+            "use": "mobile"
+          },
+          {
+            "system": "email",
+            "value": "Alice.Newman@gmail.com"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1980-11-15",
+        "deceasedBoolean": false,
+        "address": [
+          {
+            "line": [
+              "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]"
+            ],
+            "city": "New York City",
+            "district": "Northeast",
+            "state": "NY",
+            "postalCode": "10001",
+            "country": "US",
+            "period": {
+              "start": "2023-07-05T00:00:00+00:00"
+            }
+          }
+        ],
+        "maritalStatus": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+              "code": "M",
+              "display": "Married"
+            }
+          ],
+          "text": "Single"
+        },
+        "contact": [
+          {
+            "relationship": [
+              {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                    "code": "N"
+                  }
+                ]
+              }
+            ],
+            "name": {
+              "family": "Jacob",
+              "given": [
+                "Newman"
+              ]
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "(212)555-5553",
+                "use": "mobile"
+              },
+              {
+                "system": "email",
+                "value": "Jnewman@gmail.com"
+              }
+            ],
+            "address": {
+              "line": [
+                "[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"2801 ROCK CREEK PKWY\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]"
+              ],
+              "city": "New York City",
+              "district": "Northeast",
+              "state": "NY",
+              "postalCode": "10001",
+              "country": "US",
+              "period": {
+                "start": "2023-07-05T00:00:00+00:00"
+              }
+            }
+          }
+        ],
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "en",
+                  "display": "English"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -40,7 +40,7 @@
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.27"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.27" extension="2014-06-09"/>
-                        <id root="2.16.840.1.113883.1.1.1.1" extension="blood-pressure-dar-1"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="blood-pressure-dar1-1"/>
                         <code code="8480-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Systolic blood pressure"><originalText>
                             <reference value="#vitalSign1"/>
                         </originalText>
@@ -48,7 +48,7 @@
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime value="20120917"/>
-                        <value xsi:type="PQ" value="107" unit="mm[Hg]"/>
+                        <value xsi:type="PQ" unit="1" nullFlavor="NI"/>
                         <interpretationCode code="L" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="low"></interpretationCode>
                     </observation>
                 </component>
@@ -56,14 +56,14 @@
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.27"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.27" extension="2014-06-09"/>
-                        <id root="2.16.840.1.113883.1.1.1.1" extension="blood-pressure-dar-1-10"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="blood-pressure-dar1-1-10"/>
                         <code code="8462-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diastolic blood pressure"><originalText>
                             <reference value="#vitalSign1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime value="20120917"/>
-                        <value xsi:type="PQ" value="107" unit="mm[Hg]"/>
+                        <value xsi:type="PQ" unit="1" nullFlavor="NI"/>
                         <interpretationCode code="L" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="low"></interpretationCode>
                     </observation>
                 </component>

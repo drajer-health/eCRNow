@@ -40,4 +40,18 @@ public interface KarExecutionStateDao {
 
   /** @param state - KarExecutionState that needs to be deleted. */
   public void delete(KarExecutionState state);
+
+  /**
+   * Retrieves a list of execution IDs for {@link KarExecutionState} entities that match the given
+   * patient ID, FHIR server base URL, and notification resource ID.
+   *
+   * <p>If any parameter is null, it will not be used as a filter.
+   *
+   * @param patientId The patient identifier to filter by (nullable).
+   * @param fhirServerBaseUrl The FHIR server base URL to filter by (nullable).
+   * @param notificationResourceId The notification resource identifier to filter by (nullable).
+   * @return A list of String representing the matching KarExecutionState execution IDs.
+   */
+  List<String> getExecutionIdsByNotificationContextDetails(
+      String patientId, String fhirServerBaseUrl, String notificationResourceId);
 }

@@ -55,7 +55,12 @@ public class AppConfig {
           Map<String, Object> source = (Map<String, Object>) propertySource.getSource();
           for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (!props.containsKey(entry.getKey())) {
-              props.put(entry.getKey(), String.valueOf(entry.getValue()));
+              String rawValue = String.valueOf(entry.getValue());
+
+              // Resolve nested placeholders like ${ehr.product.version}
+              String resolvedValue = environment.resolvePlaceholders(rawValue);
+
+              props.put(entry.getKey(), resolvedValue);
             }
           }
         }

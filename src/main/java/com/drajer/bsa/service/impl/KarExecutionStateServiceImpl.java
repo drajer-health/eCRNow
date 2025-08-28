@@ -64,4 +64,11 @@ public class KarExecutionStateServiceImpl implements KarExecutionStateService {
   public void delete(KarExecutionState state) {
     karExecutionStateDao.delete(state);
   }
+
+  @Override
+  public List<String> getExecutionIdsByNotificationContextDetails(
+      String patientId, String fhirServerBaseUrl, String notificationResourceId) {
+    return karExecutionStateDao.getExecutionIdsByNotificationContextDetails(
+        patientId, fhirServerBaseUrl, notificationResourceId);
+  }
 }

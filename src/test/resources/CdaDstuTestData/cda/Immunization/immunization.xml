@@ -1,0 +1,46 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.2.1" extension="2015-08-01"/>
+        <code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>
+        <title>IMMUNIZATIONS</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Vaccine Name</th>
+                        <th>Vaccination Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="vaccine1">COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5 mL dose</content>
+                        </td>
+                        <td>
+                            <content ID="vaccinationDate1">Sun Jul 20 00:00:00 UTC 2025</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
+                <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="example-immunization"/>
+                <statusCode code="completed"/>
+                <effectiveTime value="20250720"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.54"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.54" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="207" codeSystem="2.16.840.1.113883.12.292" codeSystemName="CVX" displayName="COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5 mL dose"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
+    </section>
+</component>

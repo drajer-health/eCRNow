@@ -1,5 +1,6 @@
 package com.drajer.cdafromr4;
 
+import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3;
 import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_NPI_URL;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
@@ -42,7 +43,7 @@ public class CdaHeaderGenerator {
   private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  private static String SW_APP_VERSION = "Version 3.1.9";
+  private static String SW_APP_VERSION = "Version 3.1.13";
   private static String SW_APP_NAME = "ecrNowApp";
   private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
@@ -221,7 +222,8 @@ public class CdaHeaderGenerator {
           Coding c = getTranslatableCodeableConceptCoding(cc.getRelationship());
 
           if (c != null) {
-            s.append(getParticipantXml(cc, c));
+
+            s.append(getParticipantXml(cc, c, details, data.getOrganization()));
           }
         }
       }
@@ -230,7 +232,8 @@ public class CdaHeaderGenerator {
     return s.toString();
   }
 
-  public static String getParticipantXml(ContactComponent cc, Coding c) {
+  public static String getParticipantXml(
+      ContactComponent cc, Coding c, LaunchDetails details, Organization organization) {
 
     StringBuilder s = new StringBuilder(200);
 
@@ -240,9 +243,12 @@ public class CdaHeaderGenerator {
 
     String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
 
+    String identifierXml = getOrganizationIdentifierXml(organization, details);
+
     s.append(
         CdaGeneratorUtils.getXmlForStartElementWithClassCode(
             CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
+    s.append(identifierXml);
 
     if (cc.hasAddress()) {
       s.append(CdaFhirUtilities.getAddressXml(cc.getAddress()));
@@ -680,19 +686,17 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RESP_PARTY_EL_NAME));
 
     // Add all practitioners
+
     sb.append(getXmlForAllRelevantPractitioners(practMap));
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
 
-    if (data.getLocation() != null && data.getLocation().hasAddress()) {
-      Address address = data.getLocation().getAddress();
-      if (address.hasCity() && address.hasState() && address.hasPostalCode() && address.hasLine()) {
-        sb.append(getLocationXml(data.getLocation(), data.getOrganization(), details));
-      } else {
-        sb.append(getLocationXml(null, data.getOrganization(), details));
-      }
+    Location location = filterLocation(data.getLocationList());
+
+    if (location != null) {
+      sb.append(getLocationXml(data.getLocation(), data.getOrganization(), details));
     } else {
       sb.append(getLocationXml(null, data.getOrganization(), details));
     }
@@ -1095,5 +1099,66 @@ public class CdaHeaderGenerator {
     }
 
     return patientDetails.toString();
+  }
+
+  private static String getOrganizationIdentifierXml(
+      Organization organization, LaunchDetails details) {
+    if (organization == null) {
+      return CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI);
+    }
+
+    Identifier npi =
+        CdaFhirUtilities.getIdentifierForSystem(organization.getIdentifier(), FHIR_NPI_URL);
+
+    if (npi != null && !StringUtils.isEmpty(npi.getValue())) {
+      return CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue());
+    }
+
+    String orgId =
+        organization.hasIdElement() && organization.getIdElement().hasIdPart()
+            ? organization.getIdElement().getIdPart()
+            : null;
+
+    if (!StringUtils.isEmpty(orgId)) {
+      return CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), orgId);
+    }
+
+    return CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI);
+  }
+
+  public static Location filterLocation(List<Location> locations) {
+    Location fallbackLocation = null;
+
+    for (Location location : locations) {
+
+      if (location.hasAddress()) {
+        Address address = location.getAddress();
+
+        if (hasValidAddress(address)) {
+
+          if (location.hasType()) {
+            List<CodeableConcept> typeConcepts = location.getType();
+            Coding validCoding =
+                CdaFhirUtilities.getSingleCodingForCodeSystems(
+                    typeConcepts, FHIR_LOC_ROLE_CODE_TYPE_V3);
+
+            if (validCoding != null) {
+              return location;
+            } else if (fallbackLocation == null) {
+              fallbackLocation = location;
+            }
+
+          } else if (fallbackLocation == null) {
+            fallbackLocation = location;
+          }
+        }
+      }
+    }
+
+    return fallbackLocation;
+  }
+
+  public static boolean hasValidAddress(Address address) {
+    return address.hasCity() && address.hasState() && address.hasPostalCode() && address.hasLine();
   }
 }

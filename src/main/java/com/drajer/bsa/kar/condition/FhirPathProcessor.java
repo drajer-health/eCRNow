@@ -13,29 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Expression;
-import org.hl7.fhir.r4.model.Immunization;
-import org.hl7.fhir.r4.model.MedicationAdministration;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.ParameterDefinition;
-import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
-import org.hl7.fhir.r4.model.Procedure;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.ServiceRequest;
-import org.hl7.fhir.r4.model.Type;
-import org.hl7.fhir.r4.model.ValueSet;
 import org.javatuples.Pair;
 import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.slf4j.Logger;
@@ -249,19 +229,86 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           if (med instanceof CodeableConcept) {
             CodeableConcept cc = (CodeableConcept) med;
             filterByCode(dr, cc, kd, ctc, resources, res, false);
+          } else if (med instanceof Reference) {
+            Reference medRef = (Reference) med;
+            String medId =
+                medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
+            if (medId != null && !medId.isEmpty()) {
+              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
+              if (meds != null && !meds.isEmpty()) {
+                for (Resource r : meds) {
+                  if ((r.hasId() && medId.equals(r.getId()))
+                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
+                    Medication m = (Medication) r;
+                    if (m.hasCode()) {
+                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+                    }
+                  }
+                }
+              }
+            }
           } else {
             logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
           }
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
+            && res.getResourceType() == ResourceType.MedicationStatement) {
+
+          logger.debug(" Found MedicationStatement Resource {}", res.getId());
+          MedicationStatement mr = (MedicationStatement) res;
+          Type med = mr.getMedication();
+
+          if (med instanceof CodeableConcept) {
+            CodeableConcept cc = (CodeableConcept) med;
+            filterByCode(dr, cc, kd, ctc, resources, res, false);
+          } else if (med instanceof Reference) {
+            Reference medRef = (Reference) med;
+            String medId =
+                medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
+            if (medId != null && !medId.isEmpty()) {
+              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
+              if (meds != null && !meds.isEmpty()) {
+                for (Resource r : meds) {
+                  if ((r.hasId() && medId.equals(r.getId()))
+                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
+                    Medication m = (Medication) r;
+                    if (m.hasCode()) {
+                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
+          }
+
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.MedicationAdministration) {
 
           logger.debug(" Found MedicationAdministration Resource {}", res.getId());
           MedicationAdministration mr = (MedicationAdministration) res;
           Type med = mr.getMedication();
-
           if (med instanceof CodeableConcept) {
             CodeableConcept cc = (CodeableConcept) med;
             filterByCode(dr, cc, kd, ctc, resources, res, false);
+          } else if (med instanceof Reference) {
+            Reference medRef = (Reference) med;
+            String medId =
+                medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
+            if (medId != null && !medId.isEmpty()) {
+              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
+              if (meds != null && !meds.isEmpty()) {
+                for (Resource r : meds) {
+                  if ((r.hasId() && medId.equals(r.getId()))
+                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
+                    Medication m = (Medication) r;
+                    if (m.hasCode()) {
+                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+                    }
+                  }
+                }
+              }
+            }
           } else {
             logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
           }

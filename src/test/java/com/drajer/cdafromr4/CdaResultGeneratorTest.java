@@ -56,8 +56,6 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
     String actualXml =
         CdaResultGenerator.generateResultsSection(fhirData, launchDetails, "CDA_R11");
 
-    logger.info(" Actual XML ", actualXml);
-
     assertNotNull("CDA result section should not be null", actualXml);
 
     assertXmlEquals(expectedXml, actualXml);

@@ -624,6 +624,7 @@ public class CdaGeneratorConstants {
   public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT_31 = "2019-04-01";
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE =
       "2.16.840.1.113883.10.20.15.2.3.2";
+
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT = "2016-12-01";
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT_31 = "2019-04-01";
   public static final String PLANNED_PROCEDURE_TRIGGER_CODE_TEMPLATE =
@@ -689,6 +690,9 @@ public class CdaGeneratorConstants {
   public static final String ODH_SECTION_CODE_DISPLAY = "SOCIAL HISTORY-ODH";
   public static final String ODH_SECTION_TITLE = "SOCIAL HISTORY-ODH";
 
+  public static final String MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.15.2.3.36";
+  public static final String MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID_EXT_31 = "2019-04-01";
   // Payer Related Information.
   public static final String PAYERS_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.18";
   public static final String PAYERS_SEC_TEMPLATE_ID_EXT = "2015-08-01";
@@ -981,6 +985,7 @@ public class CdaGeneratorConstants {
   public static final String ED_TYPE = "ED";
   public static final String ST_TYPE = "ST";
   public static final String BL_TYPE = "BL";
+  public static final String DIMENSIONLESS_UNIT_VALUE = "1";
 
   // Table Values
   public static final int TABLE_BORDER = 1;

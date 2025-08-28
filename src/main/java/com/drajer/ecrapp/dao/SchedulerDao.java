@@ -12,4 +12,6 @@ public interface SchedulerDao {
   List<ScheduledTasks> getScheduledTasks();
 
   public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance);
+
+  ScheduledTasks delete(ScheduledTasks scheduledTasks);
 }

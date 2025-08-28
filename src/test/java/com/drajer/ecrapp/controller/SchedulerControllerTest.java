@@ -2,6 +2,7 @@ package com.drajer.ecrapp.controller;
 
 import static org.junit.Assert.*;
 
+import com.drajer.bsa.controller.SchedulerController;
 import com.drajer.ecrapp.model.ScheduledTasks;
 import com.drajer.ecrapp.service.SchedulerService;
 import java.util.Arrays;

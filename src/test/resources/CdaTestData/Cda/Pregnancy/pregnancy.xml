@@ -26,7 +26,7 @@
                             <content ID="pregInfo1">Pregnancy (finding)</content>
                         </td>
                         <td>
-                            <content ID="pregResult1">Pregnancy (finding)</content>
+                            <content ID="pregResult1">Pregnant</content>
                         </td>
                     </tr>
                     <tr>
@@ -42,7 +42,7 @@
                             <content ID="pregInfo2">Pregnancy Status</content>
                         </td>
                         <td>
-                            <content ID="pregResult2">Pregnancy status</content>
+                            <content ID="pregResult2">Pregnant</content>
                         </td>
                     </tr>
                     <tr>

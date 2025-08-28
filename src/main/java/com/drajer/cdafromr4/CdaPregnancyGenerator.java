@@ -12,14 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Quantity;
-import org.hl7.fhir.r4.model.Type;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,6 +179,7 @@ public class CdaPregnancyGenerator {
 
     } else if (pi.hasEffective() && pi.getEffective() instanceof DateTimeType) {
       start = CdaFhirUtilities.getActualDate(pi.getEffective());
+      end = new Pair<>(null, null);
     }
 
     sb.append(
@@ -388,11 +383,17 @@ public class CdaPregnancyGenerator {
     String dispName = CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getCode());
     bodyvals.put(CdaGeneratorConstants.PREGNANCY_OBSERVATION_TABLE_COL_1_BODY_CONTENT, dispName);
 
+    String displayValue = "";
+
+    if (obs.hasValue() && obs.getValue() instanceof CodeableConcept) {
+      Pair<String, Boolean> resultPair =
+          CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
+              obs.getValueCodeableConcept(), CdaGeneratorConstants.FHIR_SNOMED_URL, true);
+      displayValue =
+          resultPair != null ? resultPair.getValue0() : CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
     bodyvals.put(
-        CdaGeneratorConstants.PREGNANCY_OBSERVATION_TABLE_COL_2_BODY_CONTENT,
-        CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
-                obs.getCode(), CdaGeneratorConstants.FHIR_SNOMED_URL, true)
-            .getValue0());
+        CdaGeneratorConstants.PREGNANCY_OBSERVATION_TABLE_COL_2_BODY_CONTENT, displayValue);
 
     table.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 

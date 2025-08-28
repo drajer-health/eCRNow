@@ -1839,31 +1839,6 @@
       }
     },
     {
-      "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/3cffb8ba-613d-4868-a316-c724a6e2ae95",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "3cffb8ba-613d-4868-a316-c724a6e2ae95",
-        "meta": {
-          "versionId": "1"
-        },
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "69856-3",
-              "display": "Are you deaf, or do you have serious difficulty hearing"
-            }
-          ]
-        },
-        "subject": {
-          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
-          "display": "Alice C NewMan"
-        },
-        "effectiveDateTime": "2023-12-27T00:00:00+00:00"
-      }
-    },
-    {
       "fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/d9236a8d-c5a2-4364-a567-c4c30c7f3498",
       "resource": {
         "resourceType": "Observation",
@@ -3365,6 +3340,50 @@
         }
       ]
     }
+    }
+    ,
+
+    {
+      "resource":
+      {
+        "resourceType": "Observation",
+        "id": "disability-observation-1",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69856-3",
+              "display": "Are you deaf, or do you have serious difficulty hearing"
+            }
+          ],
+          "text": "Disability Status"
+        },
+        "subject": {
+          "reference": "Patient/example"
+        },
+        "effectiveDateTime": "2025-08-20T10:00:00Z",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "373066001",
+              "display": "Yes"
+            }
+          ],
+          "text": "Patient has disability"
+        }}
     }
   ]
 }
