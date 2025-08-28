@@ -2,6 +2,9 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -11,16 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Dosage;
-import org.hl7.fhir.r4.model.Medication;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.Quantity;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.ServiceRequest;
-import org.hl7.fhir.r4.model.Timing;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.*;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -247,7 +242,7 @@ public class CdaPlanOfTreatmentGenerator {
 
         medReqXml.append(
             getPlannedMedicationXml(
-                mr, details, contentRef, data, startDate, dosage, dose, medList));
+                mr, details, contentRef, data, startDate, dosage, dose, medList, details, version));
       }
 
       // Close the Text Element
@@ -281,7 +276,9 @@ public class CdaPlanOfTreatmentGenerator {
       DateTimeType startDate,
       Dosage dosage,
       Quantity dose,
-      List<Medication> medList) {
+      List<Medication> medList,
+      LaunchDetails launchDetails,
+      String version) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -379,31 +376,49 @@ public class CdaPlanOfTreatmentGenerator {
             CdaGeneratorConstants.CONSUMABLE_ENTRY_TEMPLATE_ID,
             CdaGeneratorConstants.CONSUMABLE_ENTRY_TEMPLATE_ID_EXT));
 
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
-    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
+    List<String> paths = new ArrayList<>();
+    paths.add("MedicationRequest.medication");
 
-    String codeXml =
-        CdaFhirUtilities.getXmlForMedicationTypeForCodeSystem(
-            mr.getMedication(),
-            CdaGeneratorConstants.CODE_EL_NAME,
-            false,
-            CdaGeneratorConstants.FHIR_RXNORM_URL,
-            false,
-            mr,
-            medList);
+    CodeableConcept medicationConcept =
+        getMedicationCodeableConcept(mr.getMedication(), data.getMedicationList());
 
-    if (!codeXml.isEmpty()) {
-      sb.append(codeXml);
-    } else {
+    String codeXml = "";
+    Pair<Boolean, String> codeXmlPair =
+        getMedicationCodeXml(launchDetails, medicationConcept, false, "", paths, version);
+
+    if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
       sb.append(
-          CdaFhirUtilities.getXmlForTypeForCodeSystem(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID,
+              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID_EXT_31));
+      codeXml = codeXmlPair.getValue1();
+    } else {
+
+      codeXml =
+          CdaFhirUtilities.getXmlForMedicationTypeForCodeSystem(
               mr.getMedication(),
               CdaGeneratorConstants.CODE_EL_NAME,
               false,
               CdaGeneratorConstants.FHIR_RXNORM_URL,
-              true));
-    }
+              false,
+              mr,
+              medList);
 
+      if (!codeXml.isEmpty()) {
+        codeXml = codeXml;
+      } else {
+        codeXml =
+            CdaFhirUtilities.getXmlForTypeForCodeSystem(
+                mr.getMedication(),
+                CdaGeneratorConstants.CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_RXNORM_URL,
+                true);
+      }
+    }
+    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
+    sb.append(codeXml);
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
@@ -1050,5 +1065,109 @@ public class CdaPlanOfTreatmentGenerator {
     }
 
     return retVal;
+  }
+
+  public static String getTriggerCodeTemplateXml(String version) {
+
+    String tcXml = "";
+
+    if (version.contentEquals("CDA_R31")) {
+
+      tcXml =
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID,
+              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID_EXT_31);
+    }
+
+    return tcXml;
+  }
+
+  public static Pair<Boolean, String> getMedicationCodeXml(
+      LaunchDetails details,
+      CodeableConcept code,
+      Boolean valElement,
+      String contentRef,
+      List<String> paths,
+      String version) {
+
+    String elementType =
+        valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
+    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+
+    for (MatchedTriggerCodes mtc : mtcs) {
+      Pair<String, String> matchedCode = findMatchingCode(mtc, code, paths);
+      if (matchedCode != null) {
+        String systemUrl =
+            valElement
+                ? CdaGeneratorConstants.FHIR_SNOMED_URL
+                : CdaGeneratorConstants.FHIR_RXNORM_URL;
+
+        logger.info("Found a matched {} for the observation or diagnostic report", elementType);
+
+        Pair<String, String> systemName =
+            CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
+        String xml =
+            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
+                elementType,
+                matchedCode.getValue0(),
+                systemName.getValue0(),
+                systemName.getValue1(),
+                details.getRctcOid(),
+                details.getRctcVersion(),
+                code,
+                systemUrl,
+                contentRef,
+                valElement);
+        return new Pair<>(true, xml);
+      }
+    }
+
+    logger.info("Did not find a matched Code or value for the Medication");
+
+    String xml =
+        valElement
+            ? CdaFhirUtilities.getCodeableConceptXmlForValue(code, elementType, contentRef)
+            : CdaFhirUtilities.getCodeableConceptXml(code, elementType, contentRef);
+    return new Pair<>(false, xml);
+  }
+
+  private static Pair<String, String> findMatchingCode(
+      MatchedTriggerCodes mtc, CodeableConcept code, List<String> paths) {
+
+    for (String s : paths) {
+      Pair<String, String> matchedCode = mtc.getMatchingCode(code, s);
+      if (matchedCode != null) {
+        return matchedCode;
+      }
+    }
+    return null; // Indicate no matching code found
+  }
+
+  public static CodeableConcept getMedicationCodeableConcept(Type mr, List<Medication> medList) {
+
+    CodeableConcept cc = null;
+
+    if (mr instanceof CodeableConcept) {
+      cc = (CodeableConcept) mr;
+    } else if (mr instanceof Reference) {
+      Reference medRef = (Reference) mr;
+      String medId = medRef.getReference();
+      if (medId != null && !medId.isEmpty()) {
+        if (medId.startsWith("Medication/")) {
+          medId = medId.substring(11);
+        }
+        for (Medication m : medList) {
+          if (m.getIdElement().getIdPart().equals(medId)) {
+            if (m.hasCode()) {
+              cc = m.getCode();
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return cc;
   }
 }

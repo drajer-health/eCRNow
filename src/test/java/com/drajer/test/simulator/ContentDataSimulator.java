@@ -116,7 +116,7 @@ public class ContentDataSimulator {
       ld.setLaunchPatientId(r4Data.getPatient().getIdElement().getId());
       ld.setEncounterId(r4Data.getEncounter().getIdElement().getId());
 
-      String secXml = CdaMedicationGenerator.generateMedicationSection(r4Data, ld);
+      String secXml = CdaMedicationGenerator.generateMedicationSection(r4Data, ld, "");
 
       List<MedicationRequest> mrList =
           CdaMedicationGenerator.getValidMedicationRequests(r4Data, medications);

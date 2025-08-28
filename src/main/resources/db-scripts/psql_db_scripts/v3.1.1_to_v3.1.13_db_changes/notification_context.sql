@@ -1,4 +1,4 @@
-DO $$
+	DO $$
 DECLARE
   duplicate_count INTEGER;
 BEGIN

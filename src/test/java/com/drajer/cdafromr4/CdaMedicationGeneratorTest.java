@@ -24,7 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CdaGeneratorUtils.class})
 public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
-
+  private static final String VERSION = "R1.1";
   static final String MEDICATION_BUNDLE_SAMPLE = "R4/Medication/Medication_bundle_sample.json";
   private static final String MEDICATION_CDA_FILE = "CdaTestData/Cda/Medication/Medication.xml";
 
@@ -41,7 +41,8 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     String actualXml =
-        CdaMedicationGenerator.generateMedicationSection(medicationResourceData, launchDetails);
+        CdaMedicationGenerator.generateMedicationSection(
+            medicationResourceData, launchDetails, VERSION);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -150,7 +151,7 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   public void testGenerateMedicationSectionWithEmptyData() {
 
     String actual =
-        CdaMedicationGenerator.generateMedicationSection(new R4FhirData(), launchDetails);
+        CdaMedicationGenerator.generateMedicationSection(new R4FhirData(), launchDetails, VERSION);
 
     assertNotNull(actual);
   }

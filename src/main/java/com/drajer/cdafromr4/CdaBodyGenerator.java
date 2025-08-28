@@ -83,7 +83,7 @@ public class CdaBodyGenerator {
         eICRBody.append(CdaResultGenerator.generateResultsSection(data, details, version));
 
         logger.info("Starting Medication Administered Section generation ");
-        eICRBody.append(CdaMedicationGenerator.generateMedicationSection(data, details));
+        eICRBody.append(CdaMedicationGenerator.generateMedicationSection(data, details, version));
 
         logger.info("Starting Immunization Section generation ");
         eICRBody.append(
