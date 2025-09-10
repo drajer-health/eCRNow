@@ -166,12 +166,18 @@ public class FhirContextInitializer {
     } else {
       logger.debug("AccessToken not supplied for %{}", StringEscapeUtils.escapeJava(url));
     }
+    // Add HTTP Header Interceptor^M
+    AdditionalRequestHeadersInterceptor hi = null;
 
-    // Add HTTP Header Interceptor
     if (ehrContext != null && !ehrContext.isEmpty()) {
-      AdditionalRequestHeadersInterceptor hi = headerInterceptor.getHeaderInterceptor(ehrContext);
-      client.registerInterceptor(hi);
+      hi = headerInterceptor.getHeaderInterceptor(ehrContext);
     }
+    if (hi == null) {
+      hi = new AdditionalRequestHeadersInterceptor();
+    }
+    hi.addHeaderValue("Accept", "application/fhir+json");
+    hi.addHeaderValue("Content-Type", "application/fhir+json");
+    client.registerInterceptor(hi);
 
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
