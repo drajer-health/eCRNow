@@ -3,6 +3,7 @@ package com.drajer.cdafromr4;
 import static org.junit.Assert.assertNotNull;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
@@ -103,6 +104,7 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     data.getVaccineCredObs().sort(Comparator.comparing(Observation::getId));
     data.getHomelessObs().sort(Comparator.comparing(Observation::getId));
     data.getDisabilityObs().sort(Comparator.comparing(Observation::getId));
+    data.getOccupationObs().sort(Comparator.comparing(Observation::getId));
     data.setData(bundle);
     String expectedXml = TestUtils.getFileContentAsString(SOCIAL_HISTORY_R31_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
@@ -112,7 +114,9 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     String actualXml =
-        (String) CdaSocialHistoryGenerator.generateR31SocialHistorySection(data, launchDetails, "");
+        (String)
+            CdaSocialHistoryGenerator.generateR31SocialHistorySection(
+                data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     assertNotNull(actualXml);
 
@@ -195,6 +199,7 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateEmptySocialHistorySection() {
     StringBuilder expectedXml = new StringBuilder();
+    String version = CdaGeneratorConstants.CDA_EICR_VERSION_R11;
     expectedXml.append("<component>").append(System.lineSeparator());
     expectedXml.append("<section nullFlavor=\"NI\">").append(System.lineSeparator());
     expectedXml
@@ -213,10 +218,24 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     expectedXml.append("</section>").append(System.lineSeparator());
     expectedXml.append("</component>").append(System.lineSeparator());
 
-    String actualXml = CdaSocialHistoryGenerator.generateEmptySocialHistorySection();
+    String actualXml = CdaSocialHistoryGenerator.generateEmptySocialHistorySection(version);
     assertNotNull(actualXml);
 
     assertXmlEquals(expectedXml.toString(), actualXml);
+  }
+
+  @Test
+  public void testGenerateEmptySocialHistorySectionWithVersionR31() {
+
+    String version = CdaGeneratorConstants.CDA_EICR_VERSION_R31;
+
+    String expectedXml =
+        "<component>\n<section nullFlavor=\"NI\">\n<templateId root=\"2.16.840.1.113883.10.20.22.2.17\"/>\n<templateId root=\"2.16.840.1.113883.10.20.22.2.17\" extension=\"2015-08-01\"/>\n<templateId root=\"2.16.840.1.113883.10.20.22.2.17\" extension=\"2020-09-01\"/>\n<code code=\"29762-2\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Social History\"/>\n<title>SOCIAL HISTORY</title>\n<text>No Social History Information</text>\n</section>\n</component>\n";
+
+    String actualXml = CdaSocialHistoryGenerator.generateEmptySocialHistorySection(version);
+    assertNotNull(actualXml);
+
+    assertXmlEquals(expectedXml, actualXml);
   }
 
   @Test
