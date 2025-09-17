@@ -4,14 +4,12 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -584,6 +582,72 @@ public class CdaOdhDataGenerator {
         return true;
     }
     return false;
+  }
+
+  public static String generateOccHistoryEntry(Observation obs, LaunchDetails details) {
+
+    StringBuilder sb = new StringBuilder();
+
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID_EXT));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.SNOMED_OCC_HISTORY_CODE,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
+            CdaGeneratorConstants.SNOMED_OCC_HISTORY_CODE_DISPLAY));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.TRANSLATION_EL_NAME,
+            CdaGeneratorConstants.LOINC_OCC_HISTORY_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.LOINC_OCC_HISTORY_CODE_DISPLAY));
+
+    List<CodeableConcept> cds = new ArrayList<>();
+    cds.add(obs.getCode());
+    sb.append(
+        CdaFhirUtilities.getCodeableConceptXml(
+            cds, CdaGeneratorConstants.TRANSLATION_EL_NAME, false));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(obs.getEffective());
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+
+    sb.append(
+        CdaFhirUtilities.getXmlForType(obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+
+    // End Tag for Entry
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    return sb.toString();
   }
 
   private static boolean isPastOrPresentOccupation(Observation obs) {
