@@ -4,7 +4,12 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Observation;
@@ -584,6 +589,19 @@ public class CdaOdhDataGenerator {
     return false;
   }
 
+  private static boolean isPastOrPresentOccupation(Observation obs) {
+    if (obs != null && obs.hasCode()) {
+
+      List<CodeableConcept> cds = new ArrayList<>();
+      cds.add(obs.getCode());
+      if (CdaFhirUtilities.isCodePresent(
+          cds,
+          CdaGeneratorConstants.PAST_PRESENT_OCCUPATION_CODE,
+          CdaGeneratorConstants.FHIR_LOINC_URL)) return true;
+    }
+    return false;
+  }
+
   public static String generateOccHistoryEntry(Observation obs, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
@@ -648,19 +666,6 @@ public class CdaOdhDataGenerator {
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
 
     return sb.toString();
-  }
-
-  private static boolean isPastOrPresentOccupation(Observation obs) {
-    if (obs != null && obs.hasCode()) {
-
-      List<CodeableConcept> cds = new ArrayList<>();
-      cds.add(obs.getCode());
-      if (CdaFhirUtilities.isCodePresent(
-          cds,
-          CdaGeneratorConstants.PAST_PRESENT_OCCUPATION_CODE,
-          CdaGeneratorConstants.FHIR_LOINC_URL)) return true;
-    }
-    return false;
   }
 
   public static String generateEmptyOdhSection() {
