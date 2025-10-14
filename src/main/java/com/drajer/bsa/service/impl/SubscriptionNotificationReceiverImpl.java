@@ -170,6 +170,9 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
             }
 
           } else {
+            nc.setNotificationProcessingStatus(NotificationProcessingStatusType.FAILED.toString());
+            ncDao.saveOrUpdate(nc);
+
             logger.error(
                 " Cannot proceed with the processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.");
           }

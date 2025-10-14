@@ -1121,6 +1121,8 @@ public class CdaGeneratorConstants {
   public static final String CDA_EICR_VERSION_R11 = "CDA_R11";
   public static final String CDA_EICR_VERSION_R31 = "CDA_R31";
 
+  public static final String ASSIGNED = "ASSIGNED";
+
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();

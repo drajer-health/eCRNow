@@ -1,5 +1,7 @@
 package com.drajer.cdafromr4;
 
+import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_NPI_URL;
+
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
@@ -139,7 +141,8 @@ public class CdaResultGenerator {
             details,
             data,
             obsWithComponents.getIssuedElement(),
-            obsWithComponents.getPerformer()));
+            obsWithComponents.getPerformer(),
+            obsWithComponents.getBasedOn()));
 
     int i = 1;
     for (ObservationComponentComponent obs : obsWithComponents.getComponent()) {
@@ -195,7 +198,12 @@ public class CdaResultGenerator {
     // Add dynamic organizer data
     lrEntry.append(
         getOrganizerEntryDynamicData(
-            obs.getCode(), details, data, obs.getIssuedElement(), obs.getPerformer()));
+            obs.getCode(),
+            details,
+            data,
+            obs.getIssuedElement(),
+            obs.getPerformer(),
+            obs.getBasedOn()));
 
     // Add result entry component
     lrEntry.append(
@@ -254,7 +262,8 @@ public class CdaResultGenerator {
       LaunchDetails details,
       R4FhirData data,
       InstantType issued,
-      List<Reference> performerReferences) {
+      List<Reference> performerReferences,
+      List<Reference> serviceRequestReference) {
 
     logger.info("Generating Dynamic Data for Organizer ");
 
@@ -302,9 +311,14 @@ public class CdaResultGenerator {
               CdaGeneratorConstants.EFF_TIME_EL_NAME, issuedDate, issuedDate, true));
     }
 
-    if (performerReferences != null && !performerReferences.isEmpty())
+    if (performerReferences != null && !performerReferences.isEmpty()) {
       lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerReferences, data));
+    }
 
+    if (serviceRequestReference != null && !serviceRequestReference.isEmpty()) {
+
+      lrEntry.append(getParticipant(serviceRequestReference, data, details));
+    }
     return lrEntry.toString();
   }
 
@@ -543,7 +557,12 @@ public class CdaResultGenerator {
     // Add dynamic organizer data
     lrEntry.append(
         getOrganizerEntryDynamicData(
-            report.getCode(), details, data, report.getIssuedElement(), report.getPerformer()));
+            report.getCode(),
+            details,
+            data,
+            report.getIssuedElement(),
+            report.getPerformer(),
+            report.getBasedOn()));
 
     int i = 1;
     for (Observation obs : observations) {
@@ -1792,6 +1811,96 @@ public class CdaResultGenerator {
       for (Reference r : refs) {
         Specimen spec = data.getSpecimenById(r.getReferenceElement().getIdPart());
         sb.append(getSpecimenXml(spec, details));
+      }
+    }
+
+    return sb.toString();
+  }
+
+  public static String getParticipant(
+      List<Reference> serviceRequestReferences, R4FhirData data, LaunchDetails details) {
+
+    StringBuilder sb = new StringBuilder();
+
+    if (serviceRequestReferences != null) {
+      for (Reference reference : serviceRequestReferences) {
+
+        // Only process if reference is ServiceRequest
+        if (CdaFhirUtilities.isResourceOfType(reference, ResourceType.ServiceRequest)) {
+
+          ServiceRequest serviceRequest =
+              data.getServiceRequestById(reference.getReferenceElement().getIdPart());
+
+          if (serviceRequest != null && serviceRequest.hasRequester()) {
+
+            Reference requesterRef = serviceRequest.getRequester();
+
+            // Only handle Practitioner requester
+            if (CdaFhirUtilities.isResourceOfType(requesterRef, ResourceType.Practitioner)) {
+
+              String practitionerId = requesterRef.getReferenceElement().getIdPart();
+              Practitioner practitioner = data.getPractitionerById(practitionerId);
+
+              if (practitioner != null) {
+
+                // Start participant (typeCode = AUT for authorizing provider)
+                sb.append(
+                    CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+                        CdaGeneratorConstants.PARTICIPANT_EL_NAME, "AUT"));
+
+                sb.append(
+                    CdaGeneratorUtils.getXmlForTemplateId(
+                        CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID));
+                sb.append(
+                    CdaGeneratorUtils.getXmlForTemplateId(
+                        CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID,
+                        CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID_EXT));
+
+                // ParticipantRole with classCode ASSIGNED
+                sb.append(
+                    CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+                        CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME,
+                        CdaGeneratorConstants.ASSIGNED));
+
+                // Add Practitioner identifiers (e.g., NPI)
+                if (practitioner.hasIdentifier()) {
+                  Identifier npi =
+                      CdaFhirUtilities.getIdentifierForSystem(
+                          practitioner.getIdentifier(), FHIR_NPI_URL);
+                  if (npi != null) {
+                    sb.append(
+                        CdaGeneratorUtils.getXmlForII(
+                            CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+                  } else {
+                    sb.append(
+                        CdaGeneratorUtils.getXmlForII(
+                            details.getAssigningAuthorityId(),
+                            practitioner.getIdElement().getIdPart()));
+                  }
+                }
+                // PlayingEntity with name
+                sb.append(
+                    CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PLAYING_ENTITY));
+
+                sb.append(
+                    CdaGeneratorUtils.getXmlForNullCD(
+                        CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+
+                sb.append(CdaFhirUtilities.getNameXml(practitioner.getName()));
+                sb.append(
+                    CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PLAYING_ENTITY));
+
+                // Close tags
+                sb.append(
+                    CdaGeneratorUtils.getXmlForEndElement(
+                        CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
+                sb.append(
+                    CdaGeneratorUtils.getXmlForEndElement(
+                        CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+              }
+            }
+          }
+        }
       }
     }
 

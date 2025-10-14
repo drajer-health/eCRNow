@@ -497,35 +497,40 @@ public class PatientLaunchController {
       @RequestParam(required = false) String encounterId)
       throws IOException {
 
+    logger.info(
+        " Delete Scheduled Tasks request received for fhirServerUrl: {}, patientId: {}, encounterId: {}",
+        StringEscapeUtils.escapeJava(fhirServerBaseUrl),
+        StringEscapeUtils.escapeJava(patientId),
+        StringEscapeUtils.escapeJava(encounterId));
+
     Map<String, Object> response = new HashMap<>();
     if (StringUtils.isBlank(patientId)
         || StringUtils.isBlank(encounterId)
         || StringUtils.isBlank(fhirServerBaseUrl)) {
-      response.put("message", "PatientId , EncounterId and fhirServerBaseUrl are required.");
-      response.put("status", HttpStatus.BAD_REQUEST.value());
-      return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          OperationOutcomeUtil.createErrorOperationOutcome(
+              "PatientId , EncounterId and fhirServerBaseUrl are required."),
+          HttpStatus.BAD_REQUEST);
     }
 
     List<ScheduledTasks> deletedScheduledTasks =
         schedulerService.delete(null, fhirServerBaseUrl, patientId, encounterId);
 
     if (deletedScheduledTasks != null && !deletedScheduledTasks.isEmpty()) {
-      response.put("message ", " Scheduled Tasks is deleted Successfully.");
-      return new ResponseEntity<>(response, HttpStatus.OK);
-    } else {
 
-      logger.info(
-          "No Scheduled Tasks found to delete for patientId={} and encounterId={}",
-          patientId,
-          encounterId);
-      response.put(
-          "message ",
-          "No Scheduled Tasks found to delete for patientId="
+      return new ResponseEntity<>(
+          OperationOutcomeUtil.createSuccessOperationOutcome(
+              " Scheduled Tasks is deleted Successfully."),
+          HttpStatus.OK);
+    } else {
+      String message =
+          "No Scheduled Tasks found to delete for patientId: "
               + patientId
-              + "and encounterId="
-              + encounterId);
-      response.put("status", HttpStatus.NOT_FOUND.value());
-      return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+              + " and encounterId: "
+              + encounterId;
+      logger.info(message);
+      return new ResponseEntity<>(
+          OperationOutcomeUtil.createErrorOperationOutcome(message), HttpStatus.NOT_FOUND);
     }
   }
 }

@@ -1596,6 +1596,25 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           }
         }
       }
+
+      if (report.hasPerformer()) {
+        for (Reference reference : report.getPerformer()) {
+          ResourceType type = getResourceType(reference);
+          if ((type == ResourceType.Practitioner || type == ResourceType.Organization)) {
+            getAndAddSecondaryResource(kd, reference, type, genericClient, context);
+          }
+        }
+      }
+
+    } else if (res != null && rType == ResourceType.ServiceRequest) {
+      ServiceRequest serviceRequest = (ServiceRequest) res;
+      if (serviceRequest.hasRequester()) {
+        Reference requesterRef = serviceRequest.getRequester();
+        if (isResourceOfType(requesterRef, ResourceType.Practitioner)) {
+          getAndAddSecondaryResource(
+              kd, requesterRef, ResourceType.Practitioner, genericClient, context);
+        }
+      }
     }
   }
 
@@ -1846,5 +1865,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
 
     return false;
+  }
+
+  private ResourceType getResourceType(Reference reference) {
+    try {
+      return reference != null && reference.hasReferenceElement()
+          ? ResourceType.valueOf(reference.getReferenceElement().getResourceType())
+          : null;
+    } catch (Exception e) {
+      return null;
+    }
   }
 }

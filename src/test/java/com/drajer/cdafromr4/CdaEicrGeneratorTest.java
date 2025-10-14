@@ -132,6 +132,148 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testConvertR4FhirBundleToEicr1() {
+    R4FhirData data = new R4FhirData();
+    Bundle b =
+        loadBundleFromFile(
+            "CdaTestData/LoadingQuery/2025-09-11T10_39_22.000000000+00_00_LoadingQueryBundle_5b71004efca076fb7397d4018c1d26d9ae3d671d_c07306087761ba86619e7c401b1fc30da39c2638.json");
+
+    List<BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new HashSet<>(); // Initialize HashSet outside the loop
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (BundleEntryComponent ent : entries) {
+
+      resourceSet.add(ent.getResource());
+      ResourceType resourceType = ent.getResource().getResourceType();
+      R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+          "1",
+          bundle,
+          data,
+          launchDetails,
+          resourceSet,
+          resourceType.toString(),
+          uniqueResourceIdsByType);
+      resourceSet.clear();
+    }
+    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
+    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
+    data.setData(bundle);
+
+    String expectedXml = TestUtils.getFileContentAsString(EICR_CDA_FILE);
+    String labSection = TestUtils.getFileContentAsString(LAB_SECTION_FILE);
+
+    PowerMockito.mockStatic(ActionRepo.class);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+
+    ActionRepo actionRepoMock = PowerMockito.mock(ActionRepo.class);
+
+    PowerMockito.when(ActionRepo.getInstance()).thenReturn(actionRepoMock);
+
+    EicrServiceImpl eicrRRServiceMock = PowerMockito.mock(EicrServiceImpl.class);
+
+    PowerMockito.when(actionRepoMock.getEicrRRService()).thenReturn(eicrRRServiceMock);
+    PowerMockito.when(eicrRRServiceMock.getMaxVersionId(Mockito.any(Eicr.class))).thenReturn(0);
+
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    PowerMockito.when(CdaGeneratorUtils.getGuid())
+        .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
+
+    PowerMockito.when(CdaGeneratorUtils.getCurrentDateTime()).thenReturn("20240819101316");
+
+    PowerMockito.when(
+            CdaGeneratorUtils.getXmlForEffectiveTime(
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()))
+        .thenReturn("<effectiveTime value=\"20240819101316\"/>");
+
+    PowerMockito.mockStatic(CdaResultGenerator.class);
+    PowerMockito.when(CdaResultGenerator.generateResultsSection(data, launchDetails, "CDA_R11"))
+        .thenReturn(labSection);
+
+    String actualXml =
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
+
+    // saveDataToFile(actualXml,
+    // "C://codebase/eCRNow/src/test/resources/CdaTestData/Eicr/eicr.xml");
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testConvertR4FhirBundleToEicr2() {
+    R4FhirData data = new R4FhirData();
+    Bundle b =
+        loadBundleFromFile(
+            "CdaTestData/LoadingQuery/LoadingQueryBundle_e9bd7100-48af-4c69-a557-c13235f72f74_abc.json");
+
+    List<BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new HashSet<>(); // Initialize HashSet outside the loop
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (BundleEntryComponent ent : entries) {
+
+      resourceSet.add(ent.getResource());
+      ResourceType resourceType = ent.getResource().getResourceType();
+      R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+          "1",
+          bundle,
+          data,
+          launchDetails,
+          resourceSet,
+          resourceType.toString(),
+          uniqueResourceIdsByType);
+      resourceSet.clear();
+    }
+    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
+    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
+    data.setData(bundle);
+
+    String expectedXml = TestUtils.getFileContentAsString(EICR_CDA_FILE);
+    String labSection = TestUtils.getFileContentAsString(LAB_SECTION_FILE);
+
+    PowerMockito.mockStatic(ActionRepo.class);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+
+    ActionRepo actionRepoMock = PowerMockito.mock(ActionRepo.class);
+
+    PowerMockito.when(ActionRepo.getInstance()).thenReturn(actionRepoMock);
+
+    EicrServiceImpl eicrRRServiceMock = PowerMockito.mock(EicrServiceImpl.class);
+
+    PowerMockito.when(actionRepoMock.getEicrRRService()).thenReturn(eicrRRServiceMock);
+    PowerMockito.when(eicrRRServiceMock.getMaxVersionId(Mockito.any(Eicr.class))).thenReturn(0);
+
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    PowerMockito.when(CdaGeneratorUtils.getGuid())
+        .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
+
+    PowerMockito.when(CdaGeneratorUtils.getCurrentDateTime()).thenReturn("20240819101316");
+
+    PowerMockito.when(
+            CdaGeneratorUtils.getXmlForEffectiveTime(
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()))
+        .thenReturn("<effectiveTime value=\"20240819101316\"/>");
+
+    PowerMockito.mockStatic(CdaResultGenerator.class);
+    PowerMockito.when(CdaResultGenerator.generateResultsSection(data, launchDetails, "CDA_R11"))
+        .thenReturn(labSection);
+
+    String actualXml =
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
+
+    // saveDataToFile(actualXml,
+    // "C://codebase/eCRNow/src/test/resources/CdaTestData/Eicr/eicr.xml");
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
   public void testConvertR4FhirBundleToCdaEicrDynamic() {
     // Initialize test data
     R4FhirData r4Data = createR4FhirData(R4_DUPLICATE_SOC_HISTORY_ENTRIES_FILE);

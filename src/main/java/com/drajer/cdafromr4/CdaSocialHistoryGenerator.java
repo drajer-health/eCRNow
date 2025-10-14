@@ -1367,6 +1367,7 @@ public class CdaSocialHistoryGenerator {
           CdaFhirUtilities.getXmlForType(
               obs.getValueCodeableConcept(), CdaGeneratorConstants.VAL_EL_NAME, true));
     } else {
+      bodyvals.put(CdaGeneratorConstants.ODH_TABLE_COL_2_BODY_CONTENT, display);
       sb.append(
           CdaGeneratorUtils.getXmlForNullValueCD(
               CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
@@ -1436,6 +1437,7 @@ public class CdaSocialHistoryGenerator {
           CdaFhirUtilities.getXmlForType(
               obs.getValueCodeableConcept(), CdaGeneratorConstants.VAL_EL_NAME, true));
     } else {
+      bodyvals.put(CdaGeneratorConstants.ODH_TABLE_COL_2_BODY_CONTENT, display);
       sb.append(
           CdaGeneratorUtils.getXmlForNullValueCD(
               CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
@@ -1593,6 +1595,7 @@ public class CdaSocialHistoryGenerator {
           CdaFhirUtilities.getXmlForType(
               obs.getValueCodeableConcept(), CdaGeneratorConstants.VAL_EL_NAME, true));
     } else {
+      bodyvals.put(CdaGeneratorConstants.ODH_TABLE_COL_2_BODY_CONTENT, display);
       sb.append(
           CdaGeneratorUtils.getXmlForNullValueCD(
               CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
