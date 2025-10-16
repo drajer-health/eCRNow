@@ -1,0 +1,117 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>
+        <code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+        <title>Plan of Treatment</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Planned Observation</th>
+                        <th>Planned Observation Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="potObsContent1">custom candida molecular panel - thinprep/aptima swab</content>
+                        </td>
+                        <td>
+                            <content ID="potObsDate1">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="potObsContent2">custom candida molecular panel - thinprep/aptima swab</content>
+                        </td>
+                        <td>
+                            <content ID="potObsDate2">20251006000000+0000</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry>
+            <observation classCode="OBS" moodCode="RQO">
+                <templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.4" extension="2019-04-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="43b72a5f-0551-4b1b-8f1b-736ee3ca1d52"/>
+                <code code="91081-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" sdtc:valueSet="2.16.840.1.114222.4.11.7508" sdtc:valueSetVersion="UNKNOWN_VERSION">
+                    <originalText>
+                        <reference value="#potObsContent1"/>
+                    </originalText>
+                </code>
+                <statusCode code="active"/>
+                <effectiveTime nullFlavor="NI"/>
+                <performer typeCode="PRF">
+                    <assignedEntity>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
+                        <streetAddressLine nullFlavor="NI"/>
+                        <city nullFlavor="NI"/>
+                        <state nullFlavor="NI"/>
+                        <postalCode nullFlavor="NI"/>
+                        <country nullFlavor="NI"/>
+                    </addr>
+                        <telecom nullFlavor="NI"/>
+                        <assignedPerson>
+                            <name>
+                                <given nullFlavor="NI"/>
+                                <family nullFlavor="NI"/>
+                            </name>
+                        </assignedPerson>
+                        <representedOrganization>
+                            <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><name>Model Hospital</name>
+                            <telecom value="tel:(555)555-0013" use="WP"/>
+                            <addr>
+                                <streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;[\\\\\\\\\\\\\\\&quot;6276 Rockriver Drive\\\\\\\\\\\\\\\&quot;]\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+                                <city>Kansas City</city>
+                                <state>MO</state>
+                                <postalCode>64117</postalCode>
+                                <country>US</country>
+                            </addr>
+                        </representedOrganization>
+                    </assignedEntity>
+                </performer>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="RQO">
+                <templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.4" extension="2019-04-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="43b72a5f-0551-4b1b-8f1b-736ee3ca1d53"/>
+                <code code="91081-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" sdtc:valueSet="2.16.840.1.114222.4.11.7508" sdtc:valueSetVersion="UNKNOWN_VERSION">
+                    <originalText>
+                        <reference value="#potObsContent2"/>
+                    </originalText>
+                </code>
+                <statusCode code="active"/>
+                <effectiveTime value="20251006000000+0000"/>
+                <performer typeCode="PRF">
+                    <assignedEntity>
+                        <id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+                        <addr>
+                            <streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;[\\\\\\\\\\\\\\\&quot;[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\&quot;5400 N Oak Trfy\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\&quot;]\\\\\\\\\\\\\\\&quot;]\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+                            <city>New York City</city>
+                            <county>Manhattan</county>
+                            <state>NY</state>
+                            <postalCode>10001</postalCode>
+                            <country>US</country>
+                        </addr>
+                        <telecom value="tel:(816)673-2878" use="MC"/>
+                        <telecom value="mailto:arthur.james73@gmail.com"/>
+                        <assignedPerson>
+                            <name>
+                                <given>Arthur</given>
+                                <given>James</given>
+                                <family>Smith</family>
+                            </name>
+                        </assignedPerson>
+                    </assignedEntity>
+                </performer>
+            </observation>
+        </entry>
+    </section>
+</component>

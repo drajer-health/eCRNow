@@ -1,7 +1,5 @@
 package com.drajer.cdafromr4;
 
-import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_NPI_URL;
-
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
@@ -142,7 +140,7 @@ public class CdaResultGenerator {
             data,
             obsWithComponents.getIssuedElement(),
             obsWithComponents.getPerformer(),
-            obsWithComponents.getBasedOn()));
+            version));
 
     int i = 1;
     for (ObservationComponentComponent obs : obsWithComponents.getComponent()) {
@@ -198,12 +196,7 @@ public class CdaResultGenerator {
     // Add dynamic organizer data
     lrEntry.append(
         getOrganizerEntryDynamicData(
-            obs.getCode(),
-            details,
-            data,
-            obs.getIssuedElement(),
-            obs.getPerformer(),
-            obs.getBasedOn()));
+            obs.getCode(), details, data, obs.getIssuedElement(), obs.getPerformer(), version));
 
     // Add result entry component
     lrEntry.append(
@@ -252,8 +245,6 @@ public class CdaResultGenerator {
             CdaGeneratorConstants.LAB_RESULTS_ORG_TEMPLATE_ID,
             CdaGeneratorConstants.LAB_RESULTS_ORG_TEMPLATE_ID_EXT));
 
-    lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
-
     return lrEntry.toString();
   }
 
@@ -263,42 +254,31 @@ public class CdaResultGenerator {
       R4FhirData data,
       InstantType issued,
       List<Reference> performerReferences,
-      List<Reference> serviceRequestReference) {
+      String version) {
 
     logger.info("Generating Dynamic Data for Organizer ");
-
     StringBuilder lrEntry = new StringBuilder(200);
-
-    if (cd != null && cd.hasCoding()) {
-
-      logger.debug("Find the Loinc Code as a priority first for Lab Results");
-      String codeXml =
-          CdaFhirUtilities.getCodingXmlForCodeSystem(
-              cd.getCoding(),
-              CdaGeneratorConstants.CODE_EL_NAME,
-              CdaGeneratorConstants.FHIR_LOINC_URL,
-              true,
-              "");
-
-      logger.debug("Code Xml = {}", codeXml);
-
-      if (!codeXml.isEmpty()) {
-        lrEntry.append(codeXml);
-      } else {
+    List<String> paths = new ArrayList<>();
+    paths.add("DiagnosticReport.code");
+    Pair<Boolean, String> obsCodeXml = null;
+    if (version.contentEquals("CDA_R31")) {
+      obsCodeXml = getObservationCodeXml(details, cd, false, "", paths, version);
+      if (obsCodeXml != null || obsCodeXml.getValue0()) {
         lrEntry.append(
-            CdaFhirUtilities.getCodingXml(cd.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, ""));
+            CdaGeneratorUtils.getXmlForTemplateId(
+                CdaGeneratorConstants.LAB_TEST_RESULT_ORGANIZER_TRIGGER_TEMPLATE,
+                CdaGeneratorConstants.LAB_TEST_RESULT_ORGANIZER_TRIGGER_TEMPLATE_EXT));
       }
-    } else if (cd != null && cd.hasText()) {
-
-      // Add text value for code in dynamic data
-      lrEntry.append(
-          CdaGeneratorUtils.getXmlForNullCDWithText(
-              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_OTH, cd.getText()));
-    } else {
-      // Add null flavor for code in dynamic data
-      lrEntry.append(CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, ""));
     }
+    lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
+    if (obsCodeXml != null && obsCodeXml.getValue0()) {
+
+      lrEntry.append(obsCodeXml.getValue1());
+    } else {
+
+      lrEntry.append(getCodeXml(cd));
+    }
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
@@ -311,14 +291,9 @@ public class CdaResultGenerator {
               CdaGeneratorConstants.EFF_TIME_EL_NAME, issuedDate, issuedDate, true));
     }
 
-    if (performerReferences != null && !performerReferences.isEmpty()) {
+    if (performerReferences != null && !performerReferences.isEmpty())
       lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerReferences, data));
-    }
 
-    if (serviceRequestReference != null && !serviceRequestReference.isEmpty()) {
-
-      lrEntry.append(getParticipant(serviceRequestReference, data, details));
-    }
     return lrEntry.toString();
   }
 
@@ -562,7 +537,7 @@ public class CdaResultGenerator {
             data,
             report.getIssuedElement(),
             report.getPerformer(),
-            report.getBasedOn()));
+            version));
 
     int i = 1;
     for (Observation obs : observations) {
@@ -1817,93 +1792,39 @@ public class CdaResultGenerator {
     return sb.toString();
   }
 
-  public static String getParticipant(
-      List<Reference> serviceRequestReferences, R4FhirData data, LaunchDetails details) {
-
-    StringBuilder sb = new StringBuilder();
-
-    if (serviceRequestReferences != null) {
-      for (Reference reference : serviceRequestReferences) {
-
-        // Only process if reference is ServiceRequest
-        if (CdaFhirUtilities.isResourceOfType(reference, ResourceType.ServiceRequest)) {
-
-          ServiceRequest serviceRequest =
-              data.getServiceRequestById(reference.getReferenceElement().getIdPart());
-
-          if (serviceRequest != null && serviceRequest.hasRequester()) {
-
-            Reference requesterRef = serviceRequest.getRequester();
-
-            // Only handle Practitioner requester
-            if (CdaFhirUtilities.isResourceOfType(requesterRef, ResourceType.Practitioner)) {
-
-              String practitionerId = requesterRef.getReferenceElement().getIdPart();
-              Practitioner practitioner = data.getPractitionerById(practitionerId);
-
-              if (practitioner != null) {
-
-                // Start participant (typeCode = AUT for authorizing provider)
-                sb.append(
-                    CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
-                        CdaGeneratorConstants.PARTICIPANT_EL_NAME, "AUT"));
-
-                sb.append(
-                    CdaGeneratorUtils.getXmlForTemplateId(
-                        CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID));
-                sb.append(
-                    CdaGeneratorUtils.getXmlForTemplateId(
-                        CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID,
-                        CdaGeneratorConstants.PARTICIPANT_TEMPLATE_ID_EXT));
-
-                // ParticipantRole with classCode ASSIGNED
-                sb.append(
-                    CdaGeneratorUtils.getXmlForStartElementWithClassCode(
-                        CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME,
-                        CdaGeneratorConstants.ASSIGNED));
-
-                // Add Practitioner identifiers (e.g., NPI)
-                if (practitioner.hasIdentifier()) {
-                  Identifier npi =
-                      CdaFhirUtilities.getIdentifierForSystem(
-                          practitioner.getIdentifier(), FHIR_NPI_URL);
-                  if (npi != null) {
-                    sb.append(
-                        CdaGeneratorUtils.getXmlForII(
-                            CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
-                  } else {
-                    sb.append(
-                        CdaGeneratorUtils.getXmlForII(
-                            details.getAssigningAuthorityId(),
-                            practitioner.getIdElement().getIdPart()));
-                  }
-                }
-                // PlayingEntity with name
-                sb.append(
-                    CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PLAYING_ENTITY));
-
-                sb.append(
-                    CdaGeneratorUtils.getXmlForNullCD(
-                        CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
-
-                sb.append(CdaFhirUtilities.getNameXml(practitioner.getName()));
-                sb.append(
-                    CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PLAYING_ENTITY));
-
-                // Close tags
-                sb.append(
-                    CdaGeneratorUtils.getXmlForEndElement(
-                        CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
-                sb.append(
-                    CdaGeneratorUtils.getXmlForEndElement(
-                        CdaGeneratorConstants.PARTICIPANT_EL_NAME));
-              }
-            }
-          }
-        }
-      }
+  /**
+   * Builds XML representation for a given CodeableConcept. Prioritizes LOINC codes, then falls back
+   * to other codings or text.
+   */
+  private static String getCodeXml(CodeableConcept cd) {
+    if (cd == null) {
+      return CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, "");
     }
 
-    return sb.toString();
+    if (cd.hasCoding()) {
+      logger.debug("Finding LOINC Code (preferred) for Lab Results");
+
+      String codeXml =
+          CdaFhirUtilities.getCodingXmlForCodeSystem(
+              cd.getCoding(),
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.FHIR_LOINC_URL,
+              true,
+              "");
+
+      if (codeXml.isEmpty()) {
+        codeXml =
+            CdaFhirUtilities.getCodingXml(cd.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, "");
+      }
+
+      return codeXml;
+    }
+
+    if (cd.hasText()) {
+      return CdaGeneratorUtils.getXmlForNullCDWithText(
+          CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_OTH, cd.getText());
+    }
+
+    return CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, "");
   }
 }
