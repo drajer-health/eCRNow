@@ -34,7 +34,7 @@ services:
       - ecrnow_network
 
   ecr-now:
-    image: drajerhealth/ecr-now:ecr-now-keycloak-lts
+    image: drajerhealth/ecr-now:ecr-now-keycloak-3.1.14-postgres 
     container_name: ecr-now
     restart: always
     env_file: C:/ecr-now/env.list
