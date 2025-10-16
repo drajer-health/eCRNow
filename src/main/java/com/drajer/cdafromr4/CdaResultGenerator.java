@@ -263,7 +263,7 @@ public class CdaResultGenerator {
     Pair<Boolean, String> obsCodeXml = null;
     if (version.contentEquals("CDA_R31")) {
       obsCodeXml = getObservationCodeXml(details, cd, false, "", paths, version);
-      if (obsCodeXml != null || obsCodeXml.getValue0()) {
+      if (obsCodeXml != null && obsCodeXml.getValue0()) {
         lrEntry.append(
             CdaGeneratorUtils.getXmlForTemplateId(
                 CdaGeneratorConstants.LAB_TEST_RESULT_ORGANIZER_TRIGGER_TEMPLATE,

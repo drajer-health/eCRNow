@@ -48,7 +48,13 @@ public class CdaPlanOfTreatmentGenerator {
       sortServiceRequestsByType(data, obsReqs, procReqs);
     }
 
-    List<DiagnosticReport> reports = getValidDiagnosticOrders(data);
+    List<DiagnosticReport> reports = new ArrayList<>();
+
+    if (CdaGeneratorConstants.CDA_EICR_VERSION_R31.equals(version)) {
+      reports.addAll(getValidDiagnosticOrders(data));
+    } else {
+      reports.addAll(data.getDiagReports());
+    }
 
     if ((obsReqs != null && !obsReqs.isEmpty())
         || (reports != null && !reports.isEmpty())
