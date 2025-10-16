@@ -8,6 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Encounter;
 
 public class CdaReasonForVisitGenerator {
@@ -62,19 +65,22 @@ public class CdaReasonForVisitGenerator {
     int rowNum = 1;
     String text = CdaGeneratorConstants.UNKNOWN_REASON_FOR_VISIT;
 
-    if (encounter != null && encounter.getReasonCodeFirstRep() != null) {
-
-      if (!StringUtils.isEmpty(encounter.getReasonCodeFirstRep().getText())) {
-        text = encounter.getReasonCodeFirstRep().getText();
-      } else if (encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
-          && !StringUtils.isEmpty(
-              encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
-        text = encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay();
+    if (encounter != null) {
+      CodeableConcept reasonCode = encounter.getReasonCodeFirstRep();
+      if (reasonCode != null && reasonCode.hasCoding()) {
+        Coding coding = reasonCode.getCodingFirstRep();
+        if (coding != null && coding.hasCode() && coding.hasSystem()) {
+          text = coding.getCode() + "|" + coding.getSystem();
+        } else if (coding != null && !StringUtils.isEmpty(coding.getDisplay())) {
+          text = coding.getDisplay();
+        }
+      } else if (!StringUtils.isEmpty(reasonCode.getText())) {
+        text = reasonCode.getText();
       }
     }
 
     Map<String, String> bodyvals = new LinkedHashMap<>();
-    bodyvals.put(CdaGeneratorConstants.TEXT_EL_NAME, text);
+    bodyvals.put(CdaGeneratorConstants.TEXT_EL_NAME, StringEscapeUtils.escapeXml11(text));
 
     sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 

@@ -691,7 +691,7 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
-  public void getXmlForParticipantRoleTest() {
+  public void getXmlForeTest() {
     String expectedResult = "<participantRole classCode=\"NURSE\">\n";
     String actualResult = CdaGeneratorUtils.getXmlForParticipantRole("NURSE");
     assertEquals(expectedResult, actualResult);

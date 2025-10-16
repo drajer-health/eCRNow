@@ -278,7 +278,7 @@ public class CdaImmunizationGenerator {
           Practitioner pract = data.getPractitionerById(actor.getReferenceElement().getIdPart());
 
           if (pract != null) {
-            sb.append(CdaFhirUtilities.getPerformerXml(pract, functionCode));
+            sb.append(CdaFhirUtilities.getPerformerXml(pract, functionCode, null));
             return sb.toString();
           }
         }

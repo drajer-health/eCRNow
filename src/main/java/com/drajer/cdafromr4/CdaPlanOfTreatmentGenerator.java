@@ -2,9 +2,6 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.MatchedTriggerCodes;
-import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -380,11 +377,12 @@ public class CdaPlanOfTreatmentGenerator {
     paths.add("MedicationRequest.medication");
 
     CodeableConcept medicationConcept =
-        getMedicationCodeableConcept(mr.getMedication(), data.getMedicationList());
+        CdaFhirUtilities.getMedicationCodeableConcept(mr.getMedication(), data.getMedicationList());
 
     String codeXml = "";
     Pair<Boolean, String> codeXmlPair =
-        getMedicationCodeXml(launchDetails, medicationConcept, false, "", paths, version);
+        CdaFhirUtilities.getMedicationCodeXml(
+            launchDetails, medicationConcept, false, "", paths, version);
 
     if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
       sb.append(
@@ -689,6 +687,8 @@ public class CdaPlanOfTreatmentGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForEffectiveTime(
             CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+
+    sb.append(getPerformerXml(dr.getPerformer(), data));
 
     // End Tag for Entry
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -1067,107 +1067,32 @@ public class CdaPlanOfTreatmentGenerator {
     return retVal;
   }
 
-  public static String getTriggerCodeTemplateXml(String version) {
-
-    String tcXml = "";
-
-    if (version.contentEquals("CDA_R31")) {
-
-      tcXml =
-          CdaGeneratorUtils.getXmlForTemplateId(
-              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID,
-              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID_EXT_31);
+  public static String getPerformerXml(List<Reference> performerRefs, R4FhirData data) {
+    if (performerRefs == null || performerRefs.isEmpty()) {
+      return "";
     }
 
-    return tcXml;
-  }
+    StringBuilder sb = new StringBuilder();
+    String functionCode = "";
 
-  public static Pair<Boolean, String> getMedicationCodeXml(
-      LaunchDetails details,
-      CodeableConcept code,
-      Boolean valElement,
-      String contentRef,
-      List<String> paths,
-      String version) {
+    for (Reference reference : performerRefs) {
+      if (reference.hasReferenceElement() && reference.getReferenceElement().hasIdPart()) {
+        String idPart = reference.getReferenceElement().getIdPart();
 
-    String elementType =
-        valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
-    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
-    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
-
-    for (MatchedTriggerCodes mtc : mtcs) {
-      Pair<String, String> matchedCode = findMatchingCode(mtc, code, paths);
-      if (matchedCode != null) {
-        String systemUrl =
-            valElement
-                ? CdaGeneratorConstants.FHIR_SNOMED_URL
-                : CdaGeneratorConstants.FHIR_RXNORM_URL;
-
-        logger.info("Found a matched {} for the observation or diagnostic report", elementType);
-
-        Pair<String, String> systemName =
-            CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
-        String xml =
-            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-                elementType,
-                matchedCode.getValue0(),
-                systemName.getValue0(),
-                systemName.getValue1(),
-                details.getRctcOid(),
-                details.getRctcVersion(),
-                code,
-                systemUrl,
-                contentRef,
-                valElement);
-        return new Pair<>(true, xml);
-      }
-    }
-
-    logger.info("Did not find a matched Code or value for the Medication");
-
-    String xml =
-        valElement
-            ? CdaFhirUtilities.getCodeableConceptXmlForValue(code, elementType, contentRef)
-            : CdaFhirUtilities.getCodeableConceptXml(code, elementType, contentRef);
-    return new Pair<>(false, xml);
-  }
-
-  private static Pair<String, String> findMatchingCode(
-      MatchedTriggerCodes mtc, CodeableConcept code, List<String> paths) {
-
-    for (String s : paths) {
-      Pair<String, String> matchedCode = mtc.getMatchingCode(code, s);
-      if (matchedCode != null) {
-        return matchedCode;
-      }
-    }
-    return null; // Indicate no matching code found
-  }
-
-  public static CodeableConcept getMedicationCodeableConcept(Type mr, List<Medication> medList) {
-
-    CodeableConcept cc = null;
-
-    if (mr instanceof CodeableConcept) {
-      cc = (CodeableConcept) mr;
-    } else if (mr instanceof Reference) {
-      Reference medRef = (Reference) mr;
-      String medId = medRef.getReference();
-      if (medId != null && !medId.isEmpty()) {
-        if (medId.startsWith("Medication/")) {
-          medId = medId.substring(11);
-        }
-        for (Medication m : medList) {
-          if (m.getIdElement().getIdPart().equals(medId)) {
-            if (m.hasCode()) {
-              cc = m.getCode();
-              break;
-            }
+        if (CdaFhirUtilities.isResourceOfType(reference, ResourceType.Practitioner)) {
+          Practitioner practitioner = data.getPractitionerById(idPart);
+          if (practitioner != null) {
+            sb.append(CdaFhirUtilities.getPerformerXml(practitioner, functionCode, null));
+          }
+        } else if (CdaFhirUtilities.isResourceOfType(reference, ResourceType.Organization)) {
+          Organization organization = data.getOrganizationForId(idPart);
+          if (organization != null) {
+            sb.append(CdaFhirUtilities.getPerformerXml(null, functionCode, organization));
           }
         }
       }
     }
 
-    return cc;
+    return sb.toString();
   }
 }

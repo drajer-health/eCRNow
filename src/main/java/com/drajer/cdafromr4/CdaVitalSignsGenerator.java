@@ -313,14 +313,23 @@ public class CdaVitalSignsGenerator {
 
     List<CodeableConcept> cds = new ArrayList<CodeableConcept>();
     cds.add(cd);
-    lrEntry.append(
+
+    String codeXml =
         CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
             cds,
             CdaGeneratorConstants.CODE_EL_NAME,
             false,
             CdaGeneratorConstants.FHIR_LOINC_URL,
             false,
-            contentRef));
+            contentRef);
+
+    if (!StringUtils.isEmpty(codeXml)) {
+      lrEntry.append(codeXml);
+    } else {
+      lrEntry.append(
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+    }
 
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(

@@ -223,7 +223,8 @@ public final class BsaTypes {
     if (t == OutputContentType.FHIR || t == OutputContentType.TEST_FHIR_NOT_FOR_PRODUCTION)
       return "FHIR";
     else if (t == OutputContentType.CDA_R11) return "CDA_R11";
-    else if (t == OutputContentType.CDA_R30 || t == OutputContentType.CDA_R31) return "CDA_R30";
+    else if (t == OutputContentType.CDA_R30) return "CDA_R30";
+    else if (t == OutputContentType.CDA_R31) return "CDA_R31";
     else if (t == OutputContentType.BOTH || t == OutputContentType.BOTH) return "Both";
     else return UNKNOWN;
   }
@@ -233,8 +234,8 @@ public final class BsaTypes {
     if (code.equalsIgnoreCase("FHIR") || code.equalsIgnoreCase("TEST_FHIR_NOT_FOR_PRODUCTION"))
       return OutputContentType.FHIR;
     else if (code.equalsIgnoreCase("CDA_R11")) return OutputContentType.CDA_R11;
-    else if (code.equalsIgnoreCase("CDA_R30") || code.equalsIgnoreCase("CDAR31"))
-      return OutputContentType.CDA_R30;
+    else if (code.equalsIgnoreCase("CDA_R30")) return OutputContentType.CDA_R30;
+    else if (code.equalsIgnoreCase("CDA_R31")) return OutputContentType.CDA_R31;
     else if (code.equalsIgnoreCase("Both")) return OutputContentType.BOTH;
     else return OutputContentType.UNKNOWN;
   }

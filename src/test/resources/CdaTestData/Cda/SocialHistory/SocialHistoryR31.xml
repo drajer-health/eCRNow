@@ -2,6 +2,7 @@
     <section>
         <templateId root="2.16.840.1.113883.10.20.22.2.17"/>
         <templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2020-09-01"/>
         <code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
         <title>SOCIAL HISTORY</title>
         <text>
@@ -139,6 +140,54 @@
                         </td>
                         <td>
                             <content ID="socObservationResult15">Do you have difficulty dressing or bathing|value=Yes</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="occHist16">Past or Present Occupation</content>
+                        </td>
+                        <td>
+                            <content ID="occHistResult16">Writing Tutor [Tutors]</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="occHist17">Usual Occupation</content>
+                        </td>
+                        <td>
+                            <content ID="occHistResult17">Writing Tutor [Tutors]</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="occHist18">Past or Present Occupation</content>
+                        </td>
+                        <td>
+                            <content ID="occHistResult18">Writing Tutor [Tutors]</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="occHist19">Past or Present Occupation</content>
+                        </td>
+                        <td>
+                            <content ID="occHistResult19">Writing Tutor [Tutors]</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="occHist20">Employment Status</content>
+                        </td>
+                        <td>
+                            <content ID="occHistResult20">Employed</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="occHist21">Employment Status</content>
+                        </td>
+                        <td>
+                            <content ID="occHistResult21">Employed</content>
                         </td>
                     </tr>
                 </tbody>
@@ -374,6 +423,159 @@
                 <statusCode code="completed"/>
                 <effectiveTime value="20240107000000+0000"/>
                 <value xsi:type="BL" value="true"/>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.217"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.217" extension="2020-09-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="3cf46a5f-cec0-4961-975c-8369469ecb10"/>
+                <code code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Past or Present Occupation"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
+                <participant typeCode="IND">
+                    <participantRole classCode="ROL">
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/></participantRole>
+                </participant>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.216"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.216" extension="2020-09-01"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="86188-0"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="CD" nullFlavor="NI"/>
+                    </observation>
+                </entryRelationship>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.215"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.215" extension="2017-11-30"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="87729-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Occupational Hazard"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="ST" nullFlavor="NI"/>
+                    </observation>
+                </entryRelationship>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.221"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.221" extension="2020-09-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="61dde85e-d4fc-4e8e-b152-b354f5f269e3"/>
+                <code code="21843-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Usual Occupation"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.219"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.219" extension="2020-09-01"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="21844-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Usual Industry"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="CD" code="621610.008495" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Home nursing services"></value>
+                    </observation>
+                </entryRelationship>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.217"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.217" extension="2020-09-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="64ad5cd5-842a-4be7-8305-e3f13c6a1df5"/>
+                <code code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Past or Present Occupation"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
+                <participant typeCode="IND">
+                    <participantRole classCode="ROL">
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/></participantRole>
+                </participant>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.216"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.216" extension="2020-09-01"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="86188-0"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
+                    </observation>
+                </entryRelationship>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.215"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.215" extension="2017-11-30"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="87729-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Occupational Hazard"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="ST" nullFlavor="NI"/>
+                    </observation>
+                </entryRelationship>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.217"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.217" extension="2020-09-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="9e3d00a1-6924-4090-9dd5-b6b96655fd41"/>
+                <code code="11341-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Past or Present Occupation"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
+                <participant typeCode="IND">
+                    <participantRole classCode="ROL">
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/></participantRole>
+                </participant>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.216"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.216" extension="2020-09-01"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="86188-0"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
+                    </observation>
+                </entryRelationship>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.215"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.215" extension="2017-11-30"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="87729-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Occupational Hazard"/>
+                        <statusCode code="completed"/>
+                        <value xsi:type="ST" nullFlavor="NI"/>
+                    </observation>
+                </entryRelationship>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.212"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.212" extension="2017-11-30"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="b7bd427b-9d2e-4e8c-ae1e-9b33818efa49"/>
+                <code code="74165-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Employment Status"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="Employed" codeSystem="2.16.840.1.113883.5.1063" codeSystemName="v3-ObservationValue" displayName="Employed"></value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.212"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.212" extension="2017-11-30"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="d0eb62ca-9c18-4752-ae04-9adb8ab4df8b"/>
+                <code code="74165-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Employment Status"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="Employed" codeSystem="2.16.840.1.113883.5.1063" codeSystemName="v3-ObservationValue" displayName="Employed"></value>
             </observation>
         </entry>
     </section>

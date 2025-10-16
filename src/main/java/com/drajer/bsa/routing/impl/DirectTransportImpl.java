@@ -14,17 +14,7 @@ import java.util.Properties;
 import java.util.UUID;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.Address;
-import javax.mail.BodyPart;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Header;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -58,6 +48,9 @@ public class DirectTransportImpl implements DataTransportInterface {
 
   @Value("${bsa.output.directory:bsa-output}")
   String logDirectory;
+
+  @Value("${mail.read.retries}")
+  private Integer imapReadRetryLimit;
 
   public class DirectMimeMessage extends MimeMessage {
 
@@ -271,166 +264,6 @@ public class DirectTransportImpl implements DataTransportInterface {
   }
 
   /**
-   * The method is used to receive the mail using HISP's INBOX using IMAP protocol.
-   *
-   * @param host
-   * @param username
-   * @param password
-   * @param port
-   * @param coorleationId
-   */
-  public void readMailUsingImap(
-      String host,
-      String username,
-      String password,
-      String port,
-      String coorleationId,
-      String directTlsVersion) {
-
-    try {
-
-      String mId;
-      logger.info("Reading mail..");
-      logger.info("coorleationId:{}", coorleationId);
-
-      // Properties for Javamail
-      Properties props = new Properties();
-      props.put("mail.imap.auth", "true");
-      props.put("mail.imap.ssl.enable", "true");
-      props.put("mail.imap.ssl.trust", "*");
-      if (!StringUtils.isEmpty(directTlsVersion)) {
-        props.put("mail.imap.ssl.protocols", directTlsVersion);
-      }
-
-      Session session = Session.getInstance(props, null);
-
-      Store store = session.getStore(IMAP);
-
-      int portNum = Integer.parseInt(port);
-      logger.info("Connecting to IMAP Inbox");
-      store.connect(host, portNum, username, password);
-
-      Folder inbox = store.getFolder(INBOX);
-      inbox.open(Folder.READ_WRITE);
-
-      Flags seen = new Flags(Flags.Flag.SEEN);
-      FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-      Message[] messages = inbox.search(unseenFlagTerm);
-
-      for (Message message : messages) {
-
-        logger.info("Found unread email");
-        message.getAllHeaders();
-
-        mId = getMessageId(message);
-        logger.info("Message-ID: {}", mId);
-
-        Address[] froms = message.getFrom();
-        String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
-
-        if (message.getContent() instanceof Multipart) {
-          Multipart multipart = (Multipart) message.getContent();
-          for (int i = 0; i < multipart.getCount(); i++) {
-            BodyPart bodyPart = multipart.getBodyPart(i);
-
-            if (bodyPart.getFileName() != null
-                && (bodyPart.getFileName().contains(".xml")
-                    || bodyPart.getFileName().contains(".XML"))) {
-
-              logger.debug("Found XML Attachment");
-
-              try (InputStream stream = bodyPart.getInputStream()) {
-
-                ReportabilityResponse data = new ReportabilityResponse();
-                data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
-                String rrXml = "<?xml version=\"1.0\"?>";
-                rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
-                data.setRrXml(rrXml);
-
-                String filename = logDirectory + "_" + UUID.randomUUID() + ".xml";
-                BsaServiceUtils.saveDataToFile(data.getRrXml(), filename);
-
-                // Invoke the rrReceiver Handler for handling Reportability Response.
-                logger.debug(" RrXML : {}", data.getRrXml());
-
-                rrReceiver.handleReportabilityResponse(data, mId);
-              }
-              message.setFlag(Flags.Flag.SEEN, true);
-              logger.info(
-                  " Need to determine what to do with the response received from :  {}",
-                  senderAddress);
-            } else {
-
-              message.setFlag(Flags.Flag.SEEN, true);
-              logger.info(" Not an XML attachment, so ignoring the multipart file ");
-            }
-          }
-        } else {
-
-          // Handle Processed and Failure MDN Messages
-          // The MDN format according to RFC3798 is as outlined at
-          // https://datatracker.ietf.org/doc/html/rfc3798#section-3.2.6:
-
-          // Retrieve the Disposition Header
-
-          // Parse to remove the Disposition Mode attribute and retrieve Disposition Type
-
-          // If Type is Processed, dispatchedjust ignore it.
-          // If Type is failed - process Failure MDN
-
-          logger.info("Not a multipart email, so ignoring for now ");
-        }
-      } // for all messages
-
-      // Close the inbox since all the reads are done.
-      inbox.close(true);
-
-      // Open a new connection to remove all the deleted messages.
-      deleteMailUsingImap(host, portNum, username, password, session);
-
-    } catch (Exception e) {
-
-      logger.error("Error while reading mail", e);
-    }
-  }
-
-  /**
-   * The method connects to a Direct HISP's INBOX for a specific account and deletes all emails that
-   * have been read already.
-   *
-   * @param host
-   * @param port
-   * @param username
-   * @param password
-   * @param session
-   * @throws Exception
-   */
-  public void deleteMailUsingImap(
-      String host, int port, String username, String password, Session session) throws Exception {
-    logger.info("Deleting mail..");
-
-    Store store = session.getStore(IMAP);
-
-    logger.info("Connecting to IMAP Inbox");
-    store.connect(host, port, username, password);
-
-    Folder inbox = store.getFolder(INBOX);
-    inbox.open(Folder.READ_WRITE);
-    Flags seen = new Flags(Flags.Flag.SEEN);
-
-    FlagTerm seenFlagTerm = new FlagTerm(seen, true);
-    Message[] messages = inbox.search(seenFlagTerm);
-
-    for (Message message : messages) {
-
-      logger.info(" Deleting message with id {}", getMessageId(message));
-      message.setFlag(Flags.Flag.DELETED, true);
-    }
-
-    inbox.close(true);
-  }
-
-  /**
    * The method returns the Header Value for the Header Element with name Message-ID.
    *
    * @param m
@@ -462,5 +295,135 @@ public class DirectTransportImpl implements DataTransportInterface {
     logger.error(error);
 
     return null;
+  }
+
+  private void readMailUsingImap(
+      String host,
+      String username,
+      String password,
+      String port,
+      String correlationId,
+      String directTlsVersion) {
+
+    int attempt = 0;
+    boolean success = false;
+
+    while (attempt < imapReadRetryLimit && !success) {
+      attempt++;
+      try {
+        readMail(host, username, password, port, correlationId, directTlsVersion);
+        success = true;
+      } catch (FolderClosedException fce) {
+        logger.warn("FolderClosedException occurred. Retrying {}/{}", attempt, imapReadRetryLimit);
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+      } catch (Exception e) {
+        logger.error("Error reading mail on attempt {}", attempt, e);
+      }
+    }
+
+    if (!success) {
+      logger.error("Failed to read mail after {} attempts", imapReadRetryLimit);
+    }
+  }
+
+  private void readMail(
+      String host,
+      String username,
+      String password,
+      String port,
+      String correlationId,
+      String directTlsVersion)
+      throws Exception {
+
+    Properties props = new Properties();
+    props.put("mail.imap.auth", "true");
+    props.put("mail.imap.ssl.enable", "true");
+    props.setProperty("mail.imap.ssl.trust", "*");
+    props.put("mail.imap.connectionpoolsize", "1"); // limit parallelism
+    if (!StringUtils.isEmpty(directTlsVersion)) {
+      props.put("mail.imap.ssl.protocols", directTlsVersion);
+    }
+
+    Session session = Session.getInstance(props, null);
+    Store store = session.getStore(IMAP);
+    store.connect(host, Integer.parseInt(port), username, password);
+
+    Folder inbox = store.getFolder(INBOX);
+    inbox.open(Folder.READ_WRITE);
+
+    try {
+      processMessages(inbox);
+      deleteReadMessages(inbox); // delete read emails after processing
+    } finally {
+      inbox.close(true); // commit deletions
+      store.close();
+    }
+  }
+
+  private void processMessages(Folder inbox) throws Exception {
+    Flags seen = new Flags(Flags.Flag.SEEN);
+    FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
+    Message[] messages = inbox.search(unseenFlagTerm);
+
+    for (Message message : messages) {
+      logger.info("Found unread email: {}", getMessageId(message));
+
+      Address[] froms = message.getFrom();
+      String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
+
+      if (message.getContent() instanceof Multipart) {
+
+        Multipart multipart = (Multipart) message.getContent();
+        for (int i = 0; i < multipart.getCount(); i++) {
+          BodyPart bodyPart = multipart.getBodyPart(i);
+          if (bodyPart.getFileName() != null
+              && bodyPart.getFileName().toLowerCase().contains(".xml")) {
+            logger.debug("Found XML Attachment");
+            try (InputStream stream = bodyPart.getInputStream()) {
+              ReportabilityResponse data = new ReportabilityResponse();
+              data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+              String rrXml =
+                  "<?xml version=\"1.0\"?>" + IOUtils.toString(stream, StandardCharsets.UTF_8);
+              data.setRrXml(rrXml);
+
+              String filename = logDirectory + "_" + UUID.randomUUID() + ".xml";
+              BsaServiceUtils.saveDataToFile(data.getRrXml(), filename);
+
+              rrReceiver.handleReportabilityResponse(data, getMessageId(message));
+            }
+            message.setFlag(Flags.Flag.SEEN, true);
+            logger.info(
+                " Need to determine what to do with the response received from :  {}",
+                senderAddress);
+          } else {
+            message.setFlag(Flags.Flag.SEEN, true);
+            logger.info("Not an XML attachment, ignoring the multipart file");
+          }
+        }
+      } else {
+        logger.info("Not a multipart email, ignoring");
+      }
+    }
+  }
+
+  private void deleteReadMessages(Folder inbox) {
+    try {
+      Flags seen = new Flags(Flags.Flag.SEEN);
+      if (inbox != null && inbox.isOpen()) {
+
+        FlagTerm seenFlagTerm = new FlagTerm(seen, true);
+        Message[] messages = inbox.search(seenFlagTerm);
+
+        for (Message message : messages) {
+          logger.info("Deleting message with id {}", getMessageId(message));
+          message.setFlag(Flags.Flag.DELETED, true);
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Error deleting read messages", e);
+    }
   }
 }

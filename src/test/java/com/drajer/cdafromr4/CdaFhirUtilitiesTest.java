@@ -3064,4 +3064,15 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertTrue(result); // Empty code should return false
   }
+
+  @Test
+  public void testGetPerformerXml() {
+    Organization organization =
+        (Organization)
+            loadResourceDataFromFile(Organization.class, "R4/Organization/Organization.json");
+
+    String actualXml = CdaFhirUtilities.getPerformerXml(null, "", organization).toString();
+
+    assertNotNull(actualXml);
+  }
 }
