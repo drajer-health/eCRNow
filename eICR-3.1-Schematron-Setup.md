@@ -8,14 +8,16 @@ This guide explains how to configure Schematron and XSD files to validate eICRs 
 
 The Schematron file is used to validate eICRs. Make sure the configuration points to the correct file for the release you are using.
 
-| eICR Version | Schematron File | Repository URL |
-|--------------|----------------|----------------|
-| **R3.1 (D3)** | `CDAR2_IG_PHCASERPT_R2_D3_SCHEMATRON.sch` | [HL7 CDA-phcaserpt-1.3.0 Validation](https://github.com/HL7/CDA-phcaserpt-1.3.0/tree/main/validation) |
+| eICR Version  | Schematron File                           | Repository URL                                                                                                                                                    |
+|---------------|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **R3.1 (D3)** | `CDAR2_IG_PHCASERPT_R2_D3_SCHEMATRON.sch` |[HL7 CDA-phcaserpt Validation Reference](https://github.com/HL7/CDA-phcaserpt/blob/main/CDA-phcaserpt-3.1.1/validation/CDAR2_IG_PHCASERPT_R2_STU3.1.1_SCHEMATRON.sch)|
 
  **Important:**  
 Also include the vocabulary files (`CDAR2_IG_PHCASERPT_R2_D3_VOCABULARY.xml`) in the same directory as the Schematron for proper validation.
 
+
 **Example configuration in `application.properties`:**
+
 
 ```properties
 # Schematron file locations

@@ -5,7 +5,9 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.sof.utils.Authorization;
 import com.microsoft.sqlserver.jdbc.StringUtils;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -219,6 +221,37 @@ public class HealthcareSettingsController {
       logger.error("Error in processing the request", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("Error in processing the request");
+    }
+  }
+
+  @GetMapping("/api/healthcareSettings/check")
+  @CrossOrigin
+  public ResponseEntity<Object> checkHealthCareSettingExist(@RequestParam String url) {
+    try {
+      logger.info("Received URL: {} for checking healthcareSettings", url);
+
+      if (url == null || url.isEmpty()) {
+        return ResponseEntity.badRequest().body("Requested FHIR URL is missing or empty");
+      }
+
+      HealthcareSetting healthcareSetting =
+          healthcareSettingsService.getHealthcareSettingByUrl(url);
+
+      Map<String, Object> response = new HashMap<>();
+      if (healthcareSetting != null) {
+        response.put("message", "HealthcareSetting already exists");
+        response.put("exists", true);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+      }
+
+      response.put("message", "HealthcareSetting does not exists");
+      response.put("exists", false);
+      return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+      logger.error("Error in processing the request", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(ERROR_IN_PROCESSING_THE_REQUEST);
     }
   }
 }

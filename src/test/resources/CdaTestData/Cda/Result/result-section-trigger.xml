@@ -1,0 +1,73 @@
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
+        <code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+        <title>RESULTS</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Lab Test Name</th>
+                        <th>Lab Test Result Value</th>
+                        <th>Lab Test Result Date</th>
+                        <th>Lab Test Interpretation</th>
+                        <th>Lab Test Reference Range</th>
+                        <th>Lab Test Specimen Collection Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="labTestName1">Panel Name: custom candida molecular panel - thinprep/aptima swab</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue1">Component Name: candida albicans, Result = positive</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate1">20251006000000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation1">abnormal</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange1">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate1">Unknown</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.35" extension="2022-05-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="91081-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Candida sp DNA [Presence] in Specimen by NAA with probe detection" sdtc:valueSet="2.16.840.1.114222.4.11.7508" sdtc:valueSetVersion="UNKNOWN_VERSION"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20251007000000+0000"/>
+                    <high value="20251007000000+0000"/>
+                </effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="3407eeea-cff5-4211-8cb3-858982f34886"/>
+                        <code nullFlavor="OTH">
+                            <originalText>
+                                candida albicans</originalText>
+
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20251007000000+0000"/>
+                        <value xsi:type="ST">positive</value>
+                        <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+    </section>
+</component>

@@ -7,6 +7,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
+import org.assertj.core.api.Assertions;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -93,6 +94,6 @@ public class CdaPregnancyGeneratorTest extends BaseGeneratorTest {
 
     String actualXml = CdaPregnancyGenerator.generatePregnancySection(data, launchDetails, "");
 
-    assertXmlEquals(expectedXml, actualXml);
+    Assertions.assertThat(actualXml).isEmpty();
   }
 }

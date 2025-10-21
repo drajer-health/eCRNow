@@ -680,4 +680,17 @@ public class R4FhirData extends FhirData {
     }
     return null;
   }
+
+  public ServiceRequest getServiceRequestById(String id) {
+
+    logger.debug("Id for retrieving specimen = {}", id);
+    if (serviceRequests != null) {
+      for (ServiceRequest sr : serviceRequests) {
+        if (sr.getId().contains(id)) {
+          return sr;
+        }
+      }
+    }
+    return null;
+  }
 }

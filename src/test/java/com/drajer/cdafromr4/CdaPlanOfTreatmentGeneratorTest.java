@@ -33,6 +33,9 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
   static final String PLAN_OF_TREATMENT_V31_CDA_FILE =
       "CdaTestData//Cda//PlanOfTreatment//PlanOfTreatment_v3.1.xml";
 
+  static final String PLAN_OF_TREATMENT_V31_CDA_V2_FILE =
+      "CdaTestData//Cda//PlanOfTreatment//PlanOfTreatment_3.1_v2.xml";
+
   static final String PLANNED_PROCEDURE_ENTRY_CDA_FILE =
       "CdaTestData//Cda//PlanOfTreatment//plannedProcedureEntry.xml";
 
@@ -458,5 +461,61 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
             + "            </assignedAuthor>\n"
             + "        </author>";
     return authorXml;
+  }
+
+  @Test
+  public void testGeneratePlanOfTreatmentSection_T2() {
+
+    R4FhirData data = new R4FhirData();
+    Bundle b = loadBundleFromFile("CdaTestData/LoadingQuery/LoadingQueryBundle_Result.json");
+
+    List<Bundle.BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+
+    Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
+
+    for (Bundle.BundleEntryComponent ent : entries) {
+      Resource resource = ent.getResource();
+      ResourceType resourceType = resource.getResourceType();
+
+      resourcesByType.computeIfAbsent(resourceType, k -> new LinkedHashSet<>()).add(resource);
+    }
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (Bundle.BundleEntryComponent ent : entries) {
+
+      ResourceType resourceType = ent.getResource().getResourceType();
+
+      resourceSet.addAll(resourcesByType.getOrDefault(resourceType, Collections.EMPTY_SET));
+
+      if (!resourceSet.isEmpty()) {
+        R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+            "1",
+            bundle,
+            data,
+            launchDetails,
+            resourceSet,
+            resourceType.toString(),
+            uniqueResourceIdsByType);
+        resourceSet.clear();
+        resourcesByType.remove(resourceType);
+      }
+    }
+    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
+    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
+    data.setData(bundle);
+
+    String expectedXml = TestUtils.getFileContentAsString(PLAN_OF_TREATMENT_V31_CDA_V2_FILE);
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    PowerMockito.when(CdaGeneratorUtils.getXmlForII(any())).thenReturn(XML_FOR_II_USING_GUID);
+
+    String actualXml =
+        CdaPlanOfTreatmentGenerator.generatePlanOfTreatmentSection(
+            data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
+
+    assertXmlEquals(expectedXml, actualXml);
   }
 }

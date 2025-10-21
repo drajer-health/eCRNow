@@ -234,16 +234,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             String medId =
                 medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
             if (medId != null && !medId.isEmpty()) {
-              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
-              if (meds != null && !meds.isEmpty()) {
-                for (Resource r : meds) {
-                  if ((r.hasId() && medId.equals(r.getId()))
-                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
-                    Medication m = (Medication) r;
-                    if (m.hasCode()) {
-                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
-                    }
-                  }
+              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
+              if (medication != null && !medication.isEmpty()) {
+                Medication m = (Medication) medication;
+                if (m.hasCode()) {
+                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
                 }
               }
             }
@@ -265,16 +260,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             String medId =
                 medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
             if (medId != null && !medId.isEmpty()) {
-              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
-              if (meds != null && !meds.isEmpty()) {
-                for (Resource r : meds) {
-                  if ((r.hasId() && medId.equals(r.getId()))
-                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
-                    Medication m = (Medication) r;
-                    if (m.hasCode()) {
-                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
-                    }
-                  }
+              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
+              if (medication != null && !medication.isEmpty()) {
+                Medication m = (Medication) medication;
+                if (m.hasCode()) {
+                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
                 }
               }
             }
@@ -296,16 +286,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             String medId =
                 medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
             if (medId != null && !medId.isEmpty()) {
-              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
-              if (meds != null && !meds.isEmpty()) {
-                for (Resource r : meds) {
-                  if ((r.hasId() && medId.equals(r.getId()))
-                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
-                    Medication m = (Medication) r;
-                    if (m.hasCode()) {
-                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
-                    }
-                  }
+              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
+              if (medication != null && !medication.isEmpty()) {
+                Medication m = (Medication) medication;
+                if (m.hasCode()) {
+                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
                 }
               }
             }

@@ -625,6 +625,10 @@ public class CdaGeneratorConstants {
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE =
       "2.16.840.1.113883.10.20.15.2.3.2";
 
+  public static final String LAB_TEST_RESULT_ORGANIZER_TRIGGER_TEMPLATE =
+      "2.16.840.1.113883.10.20.15.2.3.35";
+  public static final String LAB_TEST_RESULT_ORGANIZER_TRIGGER_TEMPLATE_EXT = "2022-05-01";
+
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT = "2016-12-01";
   public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT_31 = "2019-04-01";
   public static final String PLANNED_PROCEDURE_TRIGGER_CODE_TEMPLATE =
@@ -1120,6 +1124,8 @@ public class CdaGeneratorConstants {
   // CDA eICR versions supported
   public static final String CDA_EICR_VERSION_R11 = "CDA_R11";
   public static final String CDA_EICR_VERSION_R31 = "CDA_R31";
+
+  public static final String ASSIGNED = "ASSIGNED";
 
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();

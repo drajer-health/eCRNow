@@ -115,7 +115,9 @@ public class CdaPregnancyGenerator {
       sb.append(generatePregnancySectionEndHeader());
 
     } else {
-      sb.append(generateEmptyPregnancySection());
+
+      return sb.toString();
+      // sb.append(generateEmptyPregnancySection());
     }
 
     return sb.toString();

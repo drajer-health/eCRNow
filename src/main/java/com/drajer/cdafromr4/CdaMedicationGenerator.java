@@ -2,9 +2,6 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.MatchedTriggerCodes;
-import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -481,10 +478,12 @@ public class CdaMedicationGenerator {
     paths.add("MedicationRequest.medication");
     paths.add("MedicationAdministration.medication");
     paths.add("MedicationStatement.medication");
-    CodeableConcept medicationConcept = getMedicationCodeableConcept(medication, medList);
+    CodeableConcept medicationConcept =
+        CdaFhirUtilities.getMedicationCodeableConcept(medication, medList);
     String codeXml = "";
     Pair<Boolean, String> codeXmlPair =
-        getMedicationCodeXml(details, medicationConcept, false, "", paths, version);
+        CdaFhirUtilities.getMedicationCodeXml(
+            details, medicationConcept, false, "", paths, version);
 
     if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
       sb.append(
@@ -1767,109 +1766,5 @@ public class CdaMedicationGenerator {
     }
 
     return dosage;
-  }
-
-  public static String getTriggerCodeTemplateXml(String version) {
-
-    String tcXml = "";
-
-    if (version.contentEquals("CDA_R31")) {
-
-      tcXml =
-          CdaGeneratorUtils.getXmlForTemplateId(
-              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID,
-              CdaGeneratorConstants.MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID_EXT_31);
-    }
-
-    return tcXml;
-  }
-
-  public static Pair<Boolean, String> getMedicationCodeXml(
-      LaunchDetails details,
-      CodeableConcept code,
-      Boolean valElement,
-      String contentRef,
-      List<String> paths,
-      String version) {
-
-    String elementType =
-        valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
-    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
-    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
-
-    for (MatchedTriggerCodes mtc : mtcs) {
-      Pair<String, String> matchedCode = findMatchingCode(mtc, code, paths);
-      if (matchedCode != null) {
-        String systemUrl =
-            valElement
-                ? CdaGeneratorConstants.FHIR_SNOMED_URL
-                : CdaGeneratorConstants.FHIR_RXNORM_URL;
-
-        logger.info("Found a matched {} for the observation or diagnostic report", elementType);
-
-        Pair<String, String> systemName =
-            CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
-        String xml =
-            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-                elementType,
-                matchedCode.getValue0(),
-                systemName.getValue0(),
-                systemName.getValue1(),
-                details.getRctcOid(),
-                details.getRctcVersion(),
-                code,
-                systemUrl,
-                contentRef,
-                valElement);
-        return new Pair<>(true, xml);
-      }
-    }
-
-    logger.info("Did not find a matched Code or value for the Medication");
-
-    String xml =
-        valElement
-            ? CdaFhirUtilities.getCodeableConceptXmlForValue(code, elementType, contentRef)
-            : CdaFhirUtilities.getCodeableConceptXml(code, elementType, contentRef);
-    return new Pair<>(false, xml);
-  }
-
-  private static Pair<String, String> findMatchingCode(
-      MatchedTriggerCodes mtc, CodeableConcept code, List<String> paths) {
-
-    for (String s : paths) {
-      Pair<String, String> matchedCode = mtc.getMatchingCode(code, s);
-      if (matchedCode != null) {
-        return matchedCode;
-      }
-    }
-    return null; // Indicate no matching code found
-  }
-
-  public static CodeableConcept getMedicationCodeableConcept(Type mr, List<Medication> medList) {
-
-    CodeableConcept cc = null;
-
-    if (mr instanceof CodeableConcept) {
-      cc = (CodeableConcept) mr;
-    } else if (mr instanceof Reference) {
-      Reference medRef = (Reference) mr;
-      String medId = medRef.getReference();
-      if (medId != null && !medId.isEmpty()) {
-        if (medId.startsWith("Medication/")) {
-          medId = medId.substring(11);
-        }
-        for (Medication m : medList) {
-          if (m.getIdElement().getIdPart().equals(medId)) {
-            if (m.hasCode()) {
-              cc = m.getCode();
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    return cc;
   }
 }

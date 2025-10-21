@@ -139,7 +139,8 @@ public class CdaResultGenerator {
             details,
             data,
             obsWithComponents.getIssuedElement(),
-            obsWithComponents.getPerformer()));
+            obsWithComponents.getPerformer(),
+            version));
 
     int i = 1;
     for (ObservationComponentComponent obs : obsWithComponents.getComponent()) {
@@ -195,7 +196,7 @@ public class CdaResultGenerator {
     // Add dynamic organizer data
     lrEntry.append(
         getOrganizerEntryDynamicData(
-            obs.getCode(), details, data, obs.getIssuedElement(), obs.getPerformer()));
+            obs.getCode(), details, data, obs.getIssuedElement(), obs.getPerformer(), version));
 
     // Add result entry component
     lrEntry.append(
@@ -244,8 +245,6 @@ public class CdaResultGenerator {
             CdaGeneratorConstants.LAB_RESULTS_ORG_TEMPLATE_ID,
             CdaGeneratorConstants.LAB_RESULTS_ORG_TEMPLATE_ID_EXT));
 
-    lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
-
     return lrEntry.toString();
   }
 
@@ -254,42 +253,32 @@ public class CdaResultGenerator {
       LaunchDetails details,
       R4FhirData data,
       InstantType issued,
-      List<Reference> performerReferences) {
+      List<Reference> performerReferences,
+      String version) {
 
     logger.info("Generating Dynamic Data for Organizer ");
-
     StringBuilder lrEntry = new StringBuilder(200);
-
-    if (cd != null && cd.hasCoding()) {
-
-      logger.debug("Find the Loinc Code as a priority first for Lab Results");
-      String codeXml =
-          CdaFhirUtilities.getCodingXmlForCodeSystem(
-              cd.getCoding(),
-              CdaGeneratorConstants.CODE_EL_NAME,
-              CdaGeneratorConstants.FHIR_LOINC_URL,
-              true,
-              "");
-
-      logger.debug("Code Xml = {}", codeXml);
-
-      if (!codeXml.isEmpty()) {
-        lrEntry.append(codeXml);
-      } else {
+    List<String> paths = new ArrayList<>();
+    paths.add("DiagnosticReport.code");
+    Pair<Boolean, String> obsCodeXml = null;
+    if (version.contentEquals("CDA_R31")) {
+      obsCodeXml = getObservationCodeXml(details, cd, false, "", paths, version);
+      if (obsCodeXml != null && obsCodeXml.getValue0()) {
         lrEntry.append(
-            CdaFhirUtilities.getCodingXml(cd.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, ""));
+            CdaGeneratorUtils.getXmlForTemplateId(
+                CdaGeneratorConstants.LAB_TEST_RESULT_ORGANIZER_TRIGGER_TEMPLATE,
+                CdaGeneratorConstants.LAB_TEST_RESULT_ORGANIZER_TRIGGER_TEMPLATE_EXT));
       }
-    } else if (cd != null && cd.hasText()) {
-
-      // Add text value for code in dynamic data
-      lrEntry.append(
-          CdaGeneratorUtils.getXmlForNullCDWithText(
-              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_OTH, cd.getText()));
-    } else {
-      // Add null flavor for code in dynamic data
-      lrEntry.append(CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, ""));
     }
+    lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
+    if (obsCodeXml != null && obsCodeXml.getValue0()) {
+
+      lrEntry.append(obsCodeXml.getValue1());
+    } else {
+
+      lrEntry.append(getCodeXml(cd));
+    }
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
@@ -543,7 +532,12 @@ public class CdaResultGenerator {
     // Add dynamic organizer data
     lrEntry.append(
         getOrganizerEntryDynamicData(
-            report.getCode(), details, data, report.getIssuedElement(), report.getPerformer()));
+            report.getCode(),
+            details,
+            data,
+            report.getIssuedElement(),
+            report.getPerformer(),
+            version));
 
     int i = 1;
     for (Observation obs : observations) {
@@ -1796,5 +1790,41 @@ public class CdaResultGenerator {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Builds XML representation for a given CodeableConcept. Prioritizes LOINC codes, then falls back
+   * to other codings or text.
+   */
+  private static String getCodeXml(CodeableConcept cd) {
+    if (cd == null) {
+      return CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, "");
+    }
+
+    if (cd.hasCoding()) {
+      logger.debug("Finding LOINC Code (preferred) for Lab Results");
+
+      String codeXml =
+          CdaFhirUtilities.getCodingXmlForCodeSystem(
+              cd.getCoding(),
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.FHIR_LOINC_URL,
+              true,
+              "");
+
+      if (codeXml.isEmpty()) {
+        codeXml =
+            CdaFhirUtilities.getCodingXml(cd.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, "");
+      }
+
+      return codeXml;
+    }
+
+    if (cd.hasText()) {
+      return CdaGeneratorUtils.getXmlForNullCDWithText(
+          CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_OTH, cd.getText());
+    }
+
+    return CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, "");
   }
 }
