@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,32 @@ public class NotificationContextController {
         notificationContextService.getNotificationContextData(
             null, fhirServerUrl, notificationResourceId, patientId);
 
+    if (contexts.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.ok(contexts);
+    }
+  }
+
+  @GetMapping("/api/notificationContexts")
+  public ResponseEntity<List<NotificationContext>> getAllNotificationContextData(
+      @RequestParam Map<String, String> searchParams) {
+
+    List<NotificationContext> contexts =
+        notificationContextService.getAllNotificationContextData(null, searchParams);
+    if (contexts.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.ok(contexts);
+    }
+  }
+
+  @GetMapping("/api/getNotificationContextForReprocessing")
+  public ResponseEntity<List<NotificationContext>> getNotificationContextForReprocessing(
+      @RequestParam Map<String, String> searchParams) {
+
+    List<NotificationContext> contexts =
+        notificationContextService.getNotificationContextForReprocessing(null, searchParams);
     if (contexts.isEmpty()) {
       return ResponseEntity.noContent().build();
     } else {

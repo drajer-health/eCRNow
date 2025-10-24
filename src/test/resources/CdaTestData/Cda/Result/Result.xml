@@ -1,763 +1,955 @@
 <component>
-<section>
-<templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
-<code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
-<title>RESULTS</title>
-<text>
-<table border="1" width="100%">
-<thead>
-<tr>
-<th>Lab Test Name</th>
-<th>Lab Test Result Value</th>
-<th>Lab Test Result Date</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<content ID="labTestName1">SHX Alcohol type</content>
-</td>
-<td>
-<content ID="labTestResultValue1">Wine</content>
-</td>
-<td>
-<content ID="labTestResultValueDate1">Unknown</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName2">Tobacco</content>
-</td>
-<td>
-<content ID="labTestResultValue2">Unknown</content>
-</td>
-<td>
-<content ID="labTestResultValueDate2">Unknown</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName3">SHX Alcohol use</content>
-</td>
-<td>
-<content ID="labTestResultValue3">Current</content>
-</td>
-<td>
-<content ID="labTestResultValueDate3">Unknown</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName4">Gravida</content>
-</td>
-<td>
-<content ID="labTestResultValue4">1</content>
-</td>
-<td>
-<content ID="labTestResultValueDate4">20200429140159+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName5">Family Member Travel History</content>
-</td>
-<td>
-<content ID="labTestResultValue5">No recent travel</content>
-</td>
-<td>
-<content ID="labTestResultValueDate5">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName6">Discharge To, Anticipated</content>
-</td>
-<td>
-<content ID="labTestResultValue6">Home with hospice</content>
-</td>
-<td>
-<content ID="labTestResultValueDate6">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName7">Panel Name: Height/Length Measured| Component Name: Systolic blood pressure</content>
-</td>
-<td>
-<content ID="labTestResultValue7">Unknown</content>
-</td>
-<td>
-<content ID="labTestResultValueDate7">20200429133200+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName8">SHX Tobacco use</content>
-</td>
-<td>
-<content ID="labTestResultValue8">Never (less than 100 in lifetime)</content>
-</td>
-<td>
-<content ID="labTestResultValueDate8">Unknown</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName9">Recent Travel History</content>
-</td>
-<td>
-<content ID="labTestResultValue9">Last travel within 7 days</content>
-</td>
-<td>
-<content ID="labTestResultValueDate9">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName10">Preferred Written Language</content>
-</td>
-<td>
-<content ID="labTestResultValue10">English</content>
-</td>
-<td>
-<content ID="labTestResultValueDate10">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName11">Inpatient Visitor Restrictions</content>
-</td>
-<td>
-<content ID="labTestResultValue11">Yes</content>
-</td>
-<td>
-<content ID="labTestResultValueDate11">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName12">Preferred Spoken Language</content>
-</td>
-<td>
-<content ID="labTestResultValue12">English</content>
-</td>
-<td>
-<content ID="labTestResultValueDate12">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName13">Chief Complaint</content>
-</td>
-<td>
-<content ID="labTestResultValue13">Shortness of Breath, cough, fever, rule out COVID-19</content>
-</td>
-<td>
-<content ID="labTestResultValueDate13">20200428200847+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName14">Weight Dosing</content>
-</td>
-<td>
-<content ID="labTestResultValue14">70.3|http://unitsofmeasure.org|kg</content>
-</td>
-<td>
-<content ID="labTestResultValueDate14">20200429133200+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName15">D-VTE Risk Signs, Symptoms</content>
-</td>
-<td>
-<content ID="labTestResultValue15">Yes</content>
-</td>
-<td>
-<content ID="labTestResultValueDate15">20200428194323+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName16">Difficulty Breathing</content>
-</td>
-<td>
-<content ID="labTestResultValue16">Yes</content>
-</td>
-<td>
-<content ID="labTestResultValueDate16">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName17">Coronavirus COVID-19</content>
-</td>
-<td>
-<content ID="labTestResultValue17">Detected</content>
-</td>
-<td>
-<content ID="labTestResultValueDate17">20200430082500+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName18">SHX Alcohol frequency</content>
-</td>
-<td>
-<content ID="labTestResultValue18">1-2 times per week</content>
-</td>
-<td>
-<content ID="labTestResultValueDate18">Unknown</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName19">Recent Travel Location</content>
-</td>
-<td>
-<content ID="labTestResultValue19">Italy</content>
-</td>
-<td>
-<content ID="labTestResultValueDate19">20200428194000+0000</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName20">Panel Name: http://loinc.org|94308-4| Component Name: Alcohol</content>
-</td>
-<td>
-<content ID="labTestResultValue20">Unknown</content>
-</td>
-<td>
-<content ID="labTestResultValueDate20">20220920084400-0400</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="labTestName21">Panel Name: http://loinc.org|94308-4| Component Name: Alcohol</content>
-</td>
-<td>
-<content ID="labTestResultValue21">Unknown</content>
-</td>
-<td>
-<content ID="labTestResultValueDate21">20220920084400-0400</content>
-</td>
-</tr>
-</tbody>
-</table>
-</text>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625813"/>
-<code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-<reference value="#labTestName1"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime nullFlavor="NI"/>
-<value xsi:type="CD" code="35748005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Wine (substance)"><originalText>
-<reference value="#labTestResultValue1"/>
-</originalText>
-</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="SH-93-73079787"/>
-<code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-<reference value="#labTestName2"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime nullFlavor="NI"/>
-<value xsi:type="ST">No Value</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625817"/>
-<code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-<reference value="#labTestName3"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime nullFlavor="NI"/>
-<value xsi:type="CD" code="15240007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Current (qualifier value)"><originalText>
-<reference value="#labTestResultValue3"/>
-</originalText>
-</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="161732006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Gravida (observable entity)"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287440"/>
-<code code="161732006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Gravida (observable entity)"><originalText>
-<reference value="#labTestName4"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">1</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287221"/>
-<code nullFlavor="NI"/>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">No recent travel</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="35081000175103" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287241"/>
-<code code="35081000175103" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"><originalText>
-<reference value="#labTestName6"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">Home with hospice</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="8302-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><translation code="3137-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Component1"/>
-<code code="8480-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Systolic blood pressure"><originalText>
-<reference value="#labTestName7"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">No Value</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079787-q4625825"/>
-<code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-<reference value="#labTestName8"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime nullFlavor="NI"/>
-<value xsi:type="ST">Never (less than 100 in lifetime)</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="34831000175105" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287217"/>
-<code code="34831000175105" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"><originalText>
-<reference value="#labTestName9"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">Last travel within 7 days</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287207"/>
-<code nullFlavor="NI"/>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">English</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287237"/>
-<code nullFlavor="NI"/>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
-<reference value="#labTestResultValue11"/>
-</originalText>
-</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="370157003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Main spoken language (finding)"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287205"/>
-<code code="370157003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Main spoken language (finding)"><originalText>
-<reference value="#labTestName12"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">English</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="33962009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Chief complaint (finding)"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287257"/>
-<code code="33962009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Chief complaint (finding)"><originalText>
-<reference value="#labTestName13"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="ST">Shortness of Breath, cough, fever, rule out COVID-19</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="79348-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><translation code="29463-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287269"/>
-<code code="79348-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-<reference value="#labTestName14"/>
-</originalText>
-<translation code="29463-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="PQ" value="70.3" unit="kg"/>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287247"/>
-<code nullFlavor="NI"/>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
-<reference value="#labTestResultValue15"/>
-</originalText>
-</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287225"/>
-<code nullFlavor="NI"/>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
-<reference value="#labTestResultValue16"/>
-</originalText>
-</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94500-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287553"/>
-<code code="94500-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-<reference value="#labTestName17"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="260373001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Detected (qualifier value)"><originalText>
-<reference value="#labTestResultValue17"/>
-</originalText>
-</value>
-<interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="68518-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625809"/>
-<code code="68518-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-<reference value="#labTestName18"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime nullFlavor="NI"/>
-<value xsi:type="CD" code="1371000175106" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="One to two times per week (qualifier value)"><originalText>
-<reference value="#labTestResultValue18"/>
-</originalText>
-</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="161086008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Recent countries visited (observable entity)"/>
-</code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="M-197287219"/>
-<code code="161086008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Recent countries visited (observable entity)"><originalText>
-<reference value="#labTestName19"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"><originalText>
-<reference value="#labTestResultValue19"/>
-</originalText>
-</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptlabobservation-601"/>
-<code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-<reference value="#labTestName20"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime nullFlavor="NI"/>
-<value xsi:type="ST">No Value</value>
-</observation>
-</component>
-</organizer>
-</entry>
-<entry typeCode="DRIV">
-<organizer classCode="CLUSTER" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
-<statusCode code="completed"/>
-<effectiveTime>
-<effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
-<component>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptlabobservation-601"/>
-<code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-<reference value="#labTestName21"/>
-</originalText>
-</code>
-<statusCode code="completed"/>
-<effectiveTime nullFlavor="NI"/>
-<value xsi:type="ST">No Value</value>
-</observation>
-</component>
-</organizer>
-</entry>
-</section>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
+        <code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+        <title>RESULTS</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Lab Test Name</th>
+                        <th>Lab Test Result Value</th>
+                        <th>Lab Test Result Date</th>
+                        <th>Lab Test Interpretation</th>
+                        <th>Lab Test Reference Range</th>
+                        <th>Lab Test Specimen Collection Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <content ID="labTestName1">SHX Alcohol type</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue1">Wine</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate1">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation1">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange1">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate1">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName2">Tobacco</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue2">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate2">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation2">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange2">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate2">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName3">SHX Alcohol use</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue3">Current</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate3">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation3">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange3">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate3">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName4">Gravida</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue4">1</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate4">20200429140159+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation4">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange4">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate4">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName5">Family Member Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue5">No recent travel</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate5">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation5">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange5">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate5">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName6">Discharge To, Anticipated</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue6">Home with hospice</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate6">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation6">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange6">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate6">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName7">Panel Name: Height/Length Measured</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue7">Component Name: Systolic blood pressure, Result = Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate7">20200429133200+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation7">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange7">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate7">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName8">SHX Tobacco use</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue8">Never (less than 100 in lifetime)</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate8">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation8">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange8">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate8">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName9">Recent Travel History</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue9">Last travel within 7 days</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate9">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation9">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange9">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate9">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName10">Preferred Written Language</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue10">English</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate10">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation10">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange10">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate10">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName11">Inpatient Visitor Restrictions</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue11">Yes</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate11">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation11">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange11">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate11">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName12">Preferred Spoken Language</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue12">English</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate12">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation12">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange12">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate12">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName13">Chief Complaint</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue13">Shortness of Breath, cough, fever, rule out COVID-19</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate13">20200428200847+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation13">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange13">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate13">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName14">Weight Dosing</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue14">70.3|http://unitsofmeasure.org|kg</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate14">20200429133200+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation14">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange14">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate14">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName15">D-VTE Risk Signs, Symptoms</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue15">Yes</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate15">20200428194323+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation15">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange15">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate15">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName16">Difficulty Breathing</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue16">Yes</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate16">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation16">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange16">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate16">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName17">Coronavirus COVID-19</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue17">Detected</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate17">20200430082500+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation17">ABN</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange17">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate17">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName18">SHX Alcohol frequency</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue18">1-2 times per week</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate18">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation18">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange18">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate18">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName19">Recent Travel Location</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue19">Italy</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate19">20200428194000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation19">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange19">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate19">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName20">Panel Name: http://loinc.org|94308-4</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue20">Component Name: Alcohol, Result = Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate20">20220920084400-0400</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation20">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange20">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate20">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName21">Panel Name: http://loinc.org|94308-4</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue21">Component Name: Alcohol, Result = Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate21">20220920084400-0400</content>
+                        </td>
+                        <td>
+                            <content ID="labTestInterpretation21">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestReferenceRange21">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate21">Unknown</content>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625813"/>
+                        <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
+                            <reference value="#labTestName1"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime nullFlavor="NI"/>
+                        <value xsi:type="CD" code="35748005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Wine (substance)"><originalText>
+                            <reference value="#labTestResultValue1"/>
+                        </originalText>
+                        </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="SH-93-73079787"/>
+                        <code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+                            <reference value="#labTestName2"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime nullFlavor="NI"/>
+                        <value xsi:type="ST">No Value</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625817"/>
+                        <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
+                            <reference value="#labTestName3"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime nullFlavor="NI"/>
+                        <value xsi:type="CD" code="15240007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Current (qualifier value)"><originalText>
+                            <reference value="#labTestResultValue3"/>
+                        </originalText>
+                        </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="161732006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Gravida (observable entity)"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287440"/>
+                        <code code="161732006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Gravida (observable entity)"><originalText>
+                            <reference value="#labTestName4"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">1</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287221"/>
+                        <code nullFlavor="NI"/>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">No recent travel</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="35081000175103" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287241"/>
+                        <code code="35081000175103" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"><originalText>
+                            <reference value="#labTestName6"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">Home with hospice</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="8302-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><translation code="3137-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="Component1"/>
+                        <code code="8480-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Systolic blood pressure"><originalText>
+                            <reference value="#labTestName7"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">No Value</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079787-q4625825"/>
+                        <code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+                            <reference value="#labTestName8"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime nullFlavor="NI"/>
+                        <value xsi:type="ST">Never (less than 100 in lifetime)</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="34831000175105" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287217"/>
+                        <code code="34831000175105" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"><originalText>
+                            <reference value="#labTestName9"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">Last travel within 7 days</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287207"/>
+                        <code nullFlavor="NI"/>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">English</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287237"/>
+                        <code nullFlavor="NI"/>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
+                        <reference value="#labTestResultValue11"/>
+                    </originalText>
+                    </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="370157003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Main spoken language (finding)"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287205"/>
+                        <code code="370157003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Main spoken language (finding)"><originalText>
+                            <reference value="#labTestName12"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">English</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="33962009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Chief complaint (finding)"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287257"/>
+                        <code code="33962009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Chief complaint (finding)"><originalText>
+                            <reference value="#labTestName13"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="ST">Shortness of Breath, cough, fever, rule out COVID-19</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="79348-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><translation code="29463-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287269"/>
+                        <code code="79348-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+                            <reference value="#labTestName14"/>
+                        </originalText>
+                            <translation code="29463-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="PQ" value="70.3" unit="kg"/>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287247"/>
+                        <code nullFlavor="NI"/>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
+                        <reference value="#labTestResultValue15"/>
+                    </originalText>
+                    </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287225"/>
+                        <code nullFlavor="NI"/>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
+                        <reference value="#labTestResultValue16"/>
+                    </originalText>
+                    </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94500-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287553"/>
+                        <code code="94500-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+                            <reference value="#labTestName17"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="260373001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Detected (qualifier value)"><originalText>
+                        <reference value="#labTestResultValue17"/>
+                    </originalText>
+                    </value>
+                        <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="68518-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625809"/>
+                        <code code="68518-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+                            <reference value="#labTestName18"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime nullFlavor="NI"/>
+                        <value xsi:type="CD" code="1371000175106" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="One to two times per week (qualifier value)"><originalText>
+                            <reference value="#labTestResultValue18"/>
+                        </originalText>
+                        </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="OTH"><translation code="161086008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Recent countries visited (observable entity)"/>
+            </code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287219"/>
+                        <code code="161086008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Recent countries visited (observable entity)"><originalText>
+                            <reference value="#labTestName19"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"><originalText>
+                        <reference value="#labTestResultValue19"/>
+                    </originalText>
+                    </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptlabobservation-601"/>
+                        <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
+                            <reference value="#labTestName20"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime nullFlavor="NI"/>
+                        <value xsi:type="ST">No Value</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <effectiveTime value="20200428194229+0000"/><effectiveTime value="20200428194229+0000"/></effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptlabobservation-601"/>
+                        <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
+                            <reference value="#labTestName21"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime nullFlavor="NI"/>
+                        <value xsi:type="ST">No Value</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+    </section>
 </component>

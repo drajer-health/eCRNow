@@ -26,7 +26,7 @@ public class SampleRestApiReceiver {
 
   @CrossOrigin
   @PostMapping(value = "/api/receiveEicr")
-  public ResponseEntity<String> receiveEicr(
+  public ResponseEntity<Object> receiveEicr(
       @RequestBody RestApiBody body, HttpServletRequest request, HttpServletResponse response) {
 
     logger.info(
@@ -42,7 +42,6 @@ public class SampleRestApiReceiver {
 
     JSONObject responseObject = new JSONObject();
     responseObject.put("status", "Success");
-
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)
         .body(responseObject.toString());

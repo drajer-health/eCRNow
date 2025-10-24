@@ -10,6 +10,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
@@ -30,12 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NotificationContextDaoImpl extends AbstractDao implements NotificationContextDao {
 
-  /**
-   * Method to create or update a NotificationContext.
-   *
-   * @param hsd The HealthcareSettings details to be used for creation or updation.
-   * @return Returns the NotificationContext created or updated.
-   */
   @Override
   public NotificationContext saveOrUpdate(NotificationContext nc) {
     getSession().saveOrUpdate(nc);
@@ -112,7 +107,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
   public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    List<Predicate> predicates = new ArrayList<Predicate>();
+    List<Predicate> predicates = new ArrayList<>();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
     Root<NotificationContext> root = cq.from(NotificationContext.class);
@@ -135,6 +130,18 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     Query<NotificationContext> q = getSession().createQuery(cq);
 
     return q.getResultList();
+  }
+
+  @Override
+  public List<NotificationContext> getAllNotificationContext(
+      UUID id, Map<String, String> searchParams) {
+    return List.of();
+  }
+
+  @Override
+  public List<NotificationContext> getNotificationContextForReprocessing(
+      UUID id, Map<String, String> searchParams) {
+    return List.of();
   }
 
   @Override

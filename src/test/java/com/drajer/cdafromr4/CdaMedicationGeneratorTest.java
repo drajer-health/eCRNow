@@ -2,19 +2,14 @@ package com.drajer.cdafromr4;
 
 import static org.junit.Assert.*;
 
+import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Medication;
+import java.util.*;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Medication.MedicationIngredientComponent;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.Reference;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -35,6 +30,11 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   static final String MEDICATION_BUNDLE_SAMPLE = "R4/Medication/Medication_bundle_sample.json";
   private static final String MEDICATION_CDA_FILE = "CdaTestData/Cda/Medication/Medication.xml";
 
+  private static final String MEDICATION_R31_CDA_FILE =
+      "CdaTestData/Cda/Medication/MedicationR31.xml";
+  private static final String MEDICATION_ADMINSTRACTION_R31_CDA_FILE =
+      "CdaTestData/Cda/Medication/MedicationAdminR31.xml";
+
   @Test
   public void testGenerateMedicationSectionWithSampleData() {
     R4FhirData medicationResourceData = createResourceData(MEDICATION_BUNDLE_SAMPLE);
@@ -49,6 +49,106 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGenerateMedicationR31SectionWithSampleData() {
+    R4FhirData data = new R4FhirData();
+    Bundle b = loadBundleFromFile("CdaTestData/bundle/MedicationStatement.json");
+
+    List<Bundle.BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+
+    Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
+
+    for (Bundle.BundleEntryComponent ent : entries) {
+      Resource resource = ent.getResource();
+      ResourceType resourceType = resource.getResourceType();
+
+      resourcesByType.computeIfAbsent(resourceType, k -> new LinkedHashSet<>()).add(resource);
+    }
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (Bundle.BundleEntryComponent ent : entries) {
+
+      ResourceType resourceType = ent.getResource().getResourceType();
+
+      resourceSet.addAll(resourcesByType.getOrDefault(resourceType, Collections.EMPTY_SET));
+
+      if (!resourceSet.isEmpty()) {
+        R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+            "1",
+            bundle,
+            data,
+            launchDetails,
+            resourceSet,
+            resourceType.toString(),
+            uniqueResourceIdsByType);
+        resourceSet.clear();
+        resourcesByType.remove(resourceType);
+      }
+    }
+    data.getMedicationStatements().sort(Comparator.comparing(MedicationStatement::getId));
+    data.setData(bundle);
+    String expectedXml = TestUtils.getFileContentAsString(MEDICATION_R31_CDA_FILE);
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    String actualXml =
+        CdaMedicationGenerator.generateR31MedicationsSection(data, launchDetails, "");
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateR31MedicationsAdministeredSection() {
+    R4FhirData data = new R4FhirData();
+    Bundle b = loadBundleFromFile("CdaTestData/bundle/medicationAdministration.json");
+
+    List<Bundle.BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+
+    Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
+
+    for (Bundle.BundleEntryComponent ent : entries) {
+      Resource resource = ent.getResource();
+      ResourceType resourceType = resource.getResourceType();
+
+      resourcesByType.computeIfAbsent(resourceType, k -> new LinkedHashSet<>()).add(resource);
+    }
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (Bundle.BundleEntryComponent ent : entries) {
+
+      ResourceType resourceType = ent.getResource().getResourceType();
+
+      resourceSet.addAll(resourcesByType.getOrDefault(resourceType, Collections.EMPTY_SET));
+
+      if (!resourceSet.isEmpty()) {
+        R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+            "1",
+            bundle,
+            data,
+            launchDetails,
+            resourceSet,
+            resourceType.toString(),
+            uniqueResourceIdsByType);
+        resourceSet.clear();
+        resourcesByType.remove(resourceType);
+      }
+    }
+    data.getMedicationAdministrations().sort(Comparator.comparing(MedicationAdministration::getId));
+    data.setData(bundle);
+    String expectedXml = TestUtils.getFileContentAsString(MEDICATION_ADMINSTRACTION_R31_CDA_FILE);
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    String actualXml =
+        CdaMedicationGenerator.generateR31MedicationsAdministeredSection(data, launchDetails, "");
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
   public void testGenerateMedicationSectionWithEmptyData() {
 
     String actual =
@@ -58,7 +158,7 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
-  public void testGenerateEmptyMedicationsSection() {
+  public void TestGenerateEmptyMedicationsAdministeredSection() {
     String expectedXml =
         "<component>\r\n"
             + "<section nullFlavor=\"NI\">\r\n"
@@ -70,6 +170,23 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
             + "</section>\r\n"
             + "</component>";
     String actualXml = CdaMedicationGenerator.generateEmptyMedicationsAdministeredSection();
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateEmptyMedicationsSection() {
+    String expectedXml =
+        "<component>\n"
+            + "<section nullFlavor=\"NI\">\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.1.1\"/>\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.1.1\" extension=\"2014-06-09\"/>\n"
+            + "<code code=\"10160-0\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"History of Medication Use\"/>\n"
+            + "<title>MEDICATIONS</title>\n"
+            + "<text>No Medication Statement Information</text>\n"
+            + "</section>\n"
+            + "</component>\n";
+    String actualXml = CdaMedicationGenerator.generateEmptyMedicationsSection();
 
     assertXmlEquals(expectedXml, actualXml);
   }

@@ -9,10 +9,10 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.cda.utils.CdaValidatorUtil;
-import io.micrometer.core.instrument.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Resource;
@@ -28,9 +28,15 @@ public class ValidateReport extends BsaAction {
 
   private String validatorEndpoint;
 
-  private Boolean validateCdaData;
+  private Boolean validateEicrR11Data;
 
-  private Boolean validateFhirData;
+  private String eicrR11SchematronPath;
+
+  private Boolean validateEicrR31Data;
+
+  private String eicrR31SchematronPath;
+
+  private Boolean validateEicrFhirData;
 
   PublicHealthMessagesDao phDao;
 
@@ -66,7 +72,7 @@ public class ValidateReport extends BsaAction {
               || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
 
         logger.info(" Validating CDA Output ");
-        validateCdaOutput(data, actStatus);
+        validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
       } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
 
         logger.info(" Validating FHIR Output ");
@@ -75,7 +81,7 @@ public class ValidateReport extends BsaAction {
       } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
 
         logger.info(" Validating Both CDA and FHIR Output ");
-        validateCdaOutput(data, actStatus);
+        validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
         validateFhirOutput(data, actStatus);
       }
 
@@ -100,21 +106,73 @@ public class ValidateReport extends BsaAction {
     return actStatus;
   }
 
-  public boolean validateCdaOutput(KarProcessingData data, BsaActionStatus actStatus) {
+  public boolean validateCdaOutput(
+      KarProcessingData data, BsaActionStatus actStatus, OutputContentType outputFormat) {
 
     logger.info("BSA Action Status:{}", actStatus);
 
-    String cda = data.getSubmittedCdaData();
+    if (outputFormat == OutputContentType.BOTH) return true;
+
+    if (outputFormat == OutputContentType.CDA_R11)
+      return validateCdaR11Output(data, actStatus, validateEicrR11Data);
+
+    if (outputFormat == OutputContentType.CDA_R30 || outputFormat == OutputContentType.CDA_R31)
+      return validateCdaR31Output(data, actStatus, validateEicrR31Data);
+
+    // return true by default
+    return true;
+  }
+
+  private boolean validateCdaData(String cda, Boolean validationNeeded, String schematronFilePath) {
+
+    if (!validationNeeded) {
+      logger.info(" Validation of CdaData not required per configuration, hence skipping ");
+      return true;
+    }
+
+    boolean schemaValidation = true;
+    boolean schematronValidation = true;
+    if (!StringUtils.isEmpty(cda)) {
+
+      // Validate with schema
+      schemaValidation = CdaValidatorUtil.validateEicrXMLData(cda);
+
+      // Validate with schematron only if schema is successful
+      if (schemaValidation)
+        schematronValidation = CdaValidatorUtil.validateEicrToSchematron(cda, schematronFilePath);
+
+    } else {
+      logger.info(" CdaData is empty, hence cannot validate, failing validation ");
+      schemaValidation = false;
+    }
+
+    return (schemaValidation && schematronValidation);
+  }
+
+  private boolean validateCdaR31Output(
+      KarProcessingData data, BsaActionStatus actStatus, Boolean validationNeeded) {
 
     logger.info(
-        " Starting validating eICR for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
+        " Starting validating eICR R31 for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
         data.getNotificationContext().getPatientId(),
         data.getNotificationContext().getNotificationResourceId(),
         data.getNotificationContext().getxRequestId(),
         data.getNotificationContext().getxCorrelationId());
 
-    if (!StringUtils.isEmpty(cda)) return CdaValidatorUtil.validateEicrXMLData(cda);
-    else return false;
+    return validateCdaData(data.getSubmittedCdaData(), validationNeeded, eicrR31SchematronPath);
+  }
+
+  private boolean validateCdaR11Output(
+      KarProcessingData data, BsaActionStatus actStatus, Boolean validationNeeded) {
+
+    logger.info(
+        " Starting validating eICR R11 for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
+        data.getNotificationContext().getPatientId(),
+        data.getNotificationContext().getNotificationResourceId(),
+        data.getNotificationContext().getxRequestId(),
+        data.getNotificationContext().getxCorrelationId());
+
+    return validateCdaData(data.getSubmittedCdaData(), validationNeeded, eicrR11SchematronPath);
   }
 
   public void validateFhirOutput(KarProcessingData data, BsaActionStatus actStatus) {
@@ -170,7 +228,7 @@ public class ValidateReport extends BsaAction {
               .addIssue()
               .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
               .setDiagnostics(
-                  "Failed to validate the resource using the validator endpoint provided. Error was: {}"
+                  "Failed to validate the resource using the validator endpoint provided. Error was: "
                       + e.getMessage());
         }
 
@@ -201,7 +259,7 @@ public class ValidateReport extends BsaAction {
           .addIssue()
           .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
           .setDiagnostics(
-              "Failed to parse request body as JSON resource. Error was: {}" + e.getMessage());
+              "Failed to parse request body as JSON resource. Error was: " + e.getMessage());
     }
   }
 
@@ -228,5 +286,45 @@ public class ValidateReport extends BsaAction {
 
   public void setValidatorEndpoint(String validatorEndpoint) {
     this.validatorEndpoint = validatorEndpoint;
+  }
+
+  public Boolean getValidateEicrR11Data() {
+    return validateEicrR11Data;
+  }
+
+  public void setValidateEicrR11Data(Boolean validateEicrR11Data) {
+    this.validateEicrR11Data = validateEicrR11Data;
+  }
+
+  public Boolean getValidateEicrR31Data() {
+    return validateEicrR31Data;
+  }
+
+  public void setValidateEicrR31Data(Boolean validateEicrR31Data) {
+    this.validateEicrR31Data = validateEicrR31Data;
+  }
+
+  public Boolean getValidateEicrFhirData() {
+    return validateEicrFhirData;
+  }
+
+  public void setValidateEicrFhirData(Boolean validateEicrFhirData) {
+    this.validateEicrFhirData = validateEicrFhirData;
+  }
+
+  public String getEicrR11SchematronPath() {
+    return eicrR11SchematronPath;
+  }
+
+  public void setEicrR11SchematronPath(String eicrR11SchematronPath) {
+    this.eicrR11SchematronPath = eicrR11SchematronPath;
+  }
+
+  public String getEicrR31SchematronPath() {
+    return eicrR31SchematronPath;
+  }
+
+  public void setEicrR31SchematronPath(String eicrR31SchematronPath) {
+    this.eicrR31SchematronPath = eicrR31SchematronPath;
   }
 }

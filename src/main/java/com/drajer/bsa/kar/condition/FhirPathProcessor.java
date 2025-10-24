@@ -238,7 +238,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           Condition cond = (Condition) res;
           CodeableConcept cc = cond.getCode();
 
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
+          filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.Condition, false);
 
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Observation) {
@@ -247,11 +247,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           Observation obs = (Observation) res;
           CodeableConcept cc = obs.getCode();
 
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
+          filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.Observation, false);
 
           if (obs.getValue() instanceof CodeableConcept && obs.getValueCodeableConcept() != null) {
             CodeableConcept ccv = obs.getValueCodeableConcept();
-            filterByCode(dr, ccv, kd, ctc, resources, res, false);
+            filterByCode(dr, ccv, kd, ctc, resources, res, ResourceType.Observation, false);
           }
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.ServiceRequest) {
@@ -260,7 +260,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           ServiceRequest sr = (ServiceRequest) res;
           CodeableConcept cc = sr.getCode();
 
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
+          filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.ServiceRequest, false);
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.DiagnosticReport) {
 
@@ -268,7 +268,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           DiagnosticReport d = (DiagnosticReport) res;
           CodeableConcept cc = d.getCode();
 
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
+          filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.DiagnosticReport, false);
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.MedicationRequest) {
 
@@ -278,7 +278,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
           if (med instanceof CodeableConcept) {
             CodeableConcept cc = (CodeableConcept) med;
-            filterByCode(dr, cc, kd, ctc, resources, res, false);
+            filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.MedicationRequest, false);
           } else {
             logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
           }
@@ -291,7 +291,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
           if (med instanceof CodeableConcept) {
             CodeableConcept cc = (CodeableConcept) med;
-            filterByCode(dr, cc, kd, ctc, resources, res, false);
+            filterByCode(
+                dr, cc, kd, ctc, resources, res, ResourceType.MedicationAdministration, false);
           } else {
             logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
           }
@@ -302,7 +303,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           Procedure pr = (Procedure) res;
 
           CodeableConcept cc = pr.getCode();
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
+          filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.Procedure, false);
 
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Immunization) {
@@ -311,7 +312,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           Immunization immz = (Immunization) res;
 
           CodeableConcept cc = immz.getVaccineCode();
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
+          filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.Immunization, false);
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Encounter) {
 
@@ -319,7 +320,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           Encounter enc = (Encounter) res;
 
           CodeableConcept cc = enc.getReasonCodeFirstRep();
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
+          filterByCode(dr, cc, kd, ctc, resources, res, ResourceType.Encounter, false);
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.MeasureReport) {
           if (resources.get(res.fhirType()) != null) {
@@ -359,13 +360,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       CheckTriggerCodeStatus ctc,
       Map<String, Set<Resource>> res,
       Resource resourceMatched,
+      ResourceType type,
       Boolean valElem) {
 
     logger.debug("valElem:{}", valElem);
 
     List<DataRequirementCodeFilterComponent> drcfs = dr.getCodeFilter();
-    Boolean notFound = false;
-    if (drcfs != null) {
+    if (drcfs != null && drcfs.size() == 1) {
 
       for (DataRequirementCodeFilterComponent drcf : drcfs) {
 
@@ -398,15 +399,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               } else {
                 Set<Resource> resources = new HashSet<>();
                 resources.add(resourceMatched);
-                
-                // what if it already exists, it gets over written 
+
+                // what if it already exists, it gets over written
                 res.put(dr.getId(), resources);
               }
             } else {
               logger.debug(" No match found for path {}", matchPath);
-              //Set the trigger match status to be false
-              notFound = true;
-              // Also clear the resources that were added if possible..
             }
           } else {
             logger.error(" Value Set not found for id {}", drcf.getValueSet());
@@ -416,9 +414,133 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           logger.error(" Value Set and Code not present for code filter component");
         }
       } // for all data requirements
+    } else if (drcfs != null && drcfs.size() == 1) {
+      logger.info(" Handle multiple filters for the same resource ");
+
+      filterResourcesWithMultipleCodeFilters(
+          dr, kd, ctc, res, resourceMatched, resourceMatched.getResourceType(), valElem);
     } else {
       logger.error(" Code Filter Component list is null, cannot proceed with finding matches ");
     }
+  }
+
+  public void filterResourcesWithMultipleCodeFilters(
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> res,
+      Resource resourceMatched,
+      ResourceType type,
+      Boolean valElem) {
+
+    /*
+    List<DataRequirementCodeFilterComponent> drcfs = dr.getCodeFilter();
+    Boolean found = true;
+    for(DataRequirementCodeFilterComponent drcf: drcfs) {
+
+     if (drcf.getPath().toLowerCase().contains("code")
+              && drcf.getValueSet() != null) {
+
+      if(filterByCodeFilter()) {
+    	  logger.info(
+                     " Found Match for code filters using resource {}", resourceMatched.getId());
+      }
+      else {
+    	  found = false;
+    	  logger.info(
+                     " No Match Found for code filters using resource {}", resourceMatched.getId());
+      }
+          } else if( drcf.getPath().contains("value")
+              && drcf.getValueSet() != null) {
+
+          	if(filterByCodeFilter()) {
+    		  logger.info(
+                      " Found Match for code filters using resource {}", resourceMatched.getId());
+    	  }
+    	  else {
+    		  found = false;
+    		  logger.info(
+                      " No Match Found for code filters using resource {}", resourceMatched.getId());
+    	  }
+          }
+       else {
+            logger.error(" Value Set and Code not present for code filter component");
+            found = false;
+          }
+    }
+
+    ctc.setTriggerMatchStatus(found);
+
+    */
+
+  }
+
+  public Boolean applyMultipleCodeFilters(
+      String vsUrl,
+      DataRequirement dr,
+      DataRequirementCodeFilterComponent drcf,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> res,
+      Resource resourceMatched,
+      ResourceType rType) {
+
+    if (rType == ResourceType.Observation) {
+      //  filterObservationsUsingMultipleCodeFilters();
+    }
+
+    return false;
+  }
+
+  public Boolean filterByCodeFilter(
+      String vsUrl,
+      DataRequirement dr,
+      DataRequirementCodeFilterComponent drcf,
+      CodeableConcept cc,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> res,
+      Observation resourceMatched,
+      ResourceType rType) {
+
+    Boolean found = true;
+
+    Resource vsr = kd.getKar().getDependentResource(ResourceType.ValueSet, drcf.getValueSet());
+
+    if (vsr != null) {
+      logger.debug(" Found Value Set {} to compare codes.", vsr.getId());
+
+      ValueSet vs = (ValueSet) vsr;
+      String matchPath = dr.getType() + "." + drcf.getPath();
+
+      Pair<Boolean, MatchedTriggerCodes> retInfo =
+          BsaServiceUtils.isCodeableConceptPresentInValueSet(vs, cc, matchPath, false);
+
+      if (retInfo != null) {
+
+        logger.info(" Found a match for the code, adding resource {}", resourceMatched.getId());
+        ctc.setTriggerMatchStatus(retInfo.getValue0());
+        ctc.addMatchedTriggerCodes(retInfo.getValue1());
+        if (res.get(dr.getId()) != null) {
+          res.get(dr.getId()).add(resourceMatched);
+        } else {
+          Set<Resource> resources = new HashSet<>();
+          resources.add(resourceMatched);
+
+          // what if it already exists, it gets over written
+          res.put(dr.getId(), resources);
+        }
+      } else {
+        logger.debug(" No match found for path {}", matchPath);
+        // Set the trigger match status to be false
+        found = false;
+      }
+    } else {
+      logger.error(" Value Set not found for id {}", drcf.getValueSet());
+      found = false;
+    }
+
+    return found;
   }
 
   private Parameters resolveInputParameters(

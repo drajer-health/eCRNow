@@ -14,21 +14,17 @@ public class ResourceUtils {
 
   public static <T extends IBaseResource> List<T> deduplicate(Collection<T> resources) {
     Map<String, List<T>> groupedById =
-        resources
-            .stream()
+        resources.stream()
             .collect(
                 Collectors.groupingBy(
                     x -> x.getIdElement().getResourceType() + "/" + x.getIdElement().getIdPart(),
                     Collectors.toList()));
 
     List<T> sorted =
-        groupedById
-            .entrySet()
-            .stream()
+        groupedById.entrySet().stream()
             .map(
                 x ->
-                    x.getValue()
-                        .stream()
+                    x.getValue().stream()
                         .max(
                             Comparator.comparingInt(
                                 y ->

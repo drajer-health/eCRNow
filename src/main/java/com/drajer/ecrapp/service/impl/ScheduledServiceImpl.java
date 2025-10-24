@@ -24,4 +24,11 @@ public class ScheduledServiceImpl implements SchedulerService {
     logger.info("ScheduledTasks:{}", tasksList);
     return tasksList;
   }
+
+  @Override
+  public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance) {
+    List<ScheduledTasks> tasksList = schedulerDao.getScheduledTasksBySearchQuery(taskInstance);
+    logger.info("ScheduledTasks:{}", tasksList);
+    return tasksList;
+  }
 }

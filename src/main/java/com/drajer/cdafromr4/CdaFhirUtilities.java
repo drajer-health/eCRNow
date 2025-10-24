@@ -159,6 +159,10 @@ public class CdaFhirUtilities {
 
   public static Identifier getIdentifierForSystem(List<Identifier> ids, String system) {
 
+    if (StringUtils.isBlank(system)) {
+      logger.debug("System is null : {}", system);
+      return null;
+    }
     if (ids != null && !ids.isEmpty()) {
 
       for (Identifier id : ids) {
@@ -318,6 +322,47 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static CodeableConcept getCodeableConceptFromExtension(
+      List<Extension> exts, String extUrl) {
+
+    if (exts != null && !exts.isEmpty()) {
+
+      for (Extension ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          // if the top level extension has Coding then we will use it.
+          if (ext.getValue() instanceof CodeableConcept) {
+
+            logger.debug("Found Extension ");
+            return (CodeableConcept) ext.getValue();
+          }
+        }
+      }
+    }
+
+    logger.debug("Did not find the Extension for the Url {}", extUrl);
+    return null;
+  }
+
+  public static Extension getExtensionForUrl(List<Extension> exts, String extUrl) {
+
+    if (exts != null && !exts.isEmpty()) {
+
+      for (Extension ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          logger.debug("Found Extension ");
+          return ext;
+        }
+      }
+    }
+
+    logger.debug("Did not find the Extension for the Url {}", extUrl);
+    return null;
+  }
+
   public static CodeType getCodeExtension(List<Extension> exts, String extUrl) {
 
     if (exts != null && !exts.isEmpty()) {
@@ -417,12 +462,25 @@ public class CdaFhirUtilities {
   public static String getAddressXml(List<Address> addrs, Boolean includeMultiples) {
 
     StringBuilder addrString = new StringBuilder(200);
+    StringBuilder altAddr = new StringBuilder(200);
 
     if (addrs != null && !addrs.isEmpty()) {
 
       if (includeMultiples) {
+        Boolean found = false;
         for (Address addr : addrs) {
-          addrString.append(getAddressXml(addr));
+
+          if (addr.hasPeriod() && !addr.getPeriod().hasEnd()) {
+            found = true;
+            addrString.append(getAddressXml(addr));
+          } else {
+            altAddr.append(getAddressXml(addr));
+          }
+        }
+
+        // Add an address if it was not found to have an end
+        if (!found) {
+          addrString.append(altAddr);
         }
       } else {
 
@@ -2108,7 +2166,9 @@ public class CdaFhirUtilities {
 
         Reference med = (Reference) medStmtRef.getMedication();
 
-        if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+        if (med != null
+            && med.hasReference()
+            && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
@@ -2126,7 +2186,10 @@ public class CdaFhirUtilities {
             String id = med.getReferenceElement().getIdPart();
             Medication medRes = null;
             for (Medication m : medList) {
-              if (m.getIdElement().getIdPart().contentEquals(id)) {
+              if (id != null
+                  && m.hasIdElement()
+                  && m.getIdElement().hasIdPart()
+                  && m.getIdElement().getIdPart().contentEquals(id)) {
 
                 logger.info(" Found the non-contained medication reference resource {}", id);
                 medRes = m;
@@ -2159,7 +2222,31 @@ public class CdaFhirUtilities {
     if (dt != null) {
 
       StringBuilder val = new StringBuilder();
-      if (dt instanceof Coding) {
+
+      if (dt instanceof Extension) {
+
+        Extension ext = (Extension) dt;
+        if (ext.hasValue()) {
+          val.append(getStringForType(ext.getValue()));
+        } else if (ext.hasExtension()) {
+          List<Extension> exts = ext.getExtension();
+
+          String retV = "";
+          Boolean first = true;
+          for (Extension ex : exts) {
+            if (ex.hasValue() && first) {
+              retV += ex.getUrl() + "-" + (getStringForType(ex.getValue()));
+              first = false;
+            } else if (ex.hasValue()) {
+              retV += "|" + ex.getUrl() + "-" + getStringForType(ex.getValue());
+            }
+          }
+          val.append(retV);
+        } else {
+          return CdaGeneratorConstants.UNKNOWN_VALUE;
+        }
+
+      } else if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
 
         val.append(getStringForCoding(cd));
@@ -2439,7 +2526,8 @@ public class CdaFhirUtilities {
       logger.info("Found Medication of Type Reference within Domain Resource");
       Reference med = (Reference) dt;
       String codeXml = "";
-      if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+      if (med.hasReference()
+          && med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
         // Check contained.
         String refId = med.getReference().substring(1);
 
@@ -2452,7 +2540,7 @@ public class CdaFhirUtilities {
 
           for (Resource r : meds) {
 
-            if (r.getId().contains(refId) && r instanceof Medication) {
+            if (r.hasId() && r.getId().contains(refId) && r instanceof Medication) {
 
               logger.info("Found Medication in contained resource");
 
@@ -2474,7 +2562,10 @@ public class CdaFhirUtilities {
           String id = med.getReferenceElement().getIdPart();
           Medication medRes = null;
           for (Medication m : medList) {
-            if (m.getIdElement().getIdPart().contentEquals(id)) {
+            if (id != null
+                && m.hasIdElement()
+                && m.getIdElement().hasIdPart()
+                && m.getIdElement().getIdPart().contentEquals(id)) {
 
               logger.info(" Found the non-contained medication reference resource {}", id);
               medRes = m;
@@ -2845,7 +2936,7 @@ public class CdaFhirUtilities {
 
       for (Coding cd : cds) {
 
-        if (cd.hasCode() && matchedCodes.contains(cd.getCode()) && !foundCodings) {
+        if (cd.hasCode() && isCodeContained(matchedCodes, cd.getCode()) && !foundCodings) {
 
           logger.debug(" Found a Coding that is in the trigger code matches. ");
           if (cd.hasDisplay()) dispName = cd.getDisplay();
@@ -2930,6 +3021,18 @@ public class CdaFhirUtilities {
     return retval.toString();
   }
 
+  public static boolean isCodeContained(Set<String> codes, String code) {
+
+    if (codes != null && code != null) {
+
+      for (String s : codes) {
+        if (s.contains(code)) return true;
+      }
+    }
+
+    return false;
+  }
+
   public static String getStatusCodeForFhirMedStatusCodes(String val) {
 
     if (val.equalsIgnoreCase("active")
@@ -3001,7 +3104,7 @@ public class CdaFhirUtilities {
           && extension.hasValue()
           && extension.getValue() instanceof BooleanType) {
         logger.debug("Found Address Extension at top level.");
-        BooleanType retVal = (BooleanType) extension.getValueAsPrimitive().getValue();
+        BooleanType retVal = (BooleanType) extension.getValue();
         return retVal.getValue();
       }
     }
@@ -3483,5 +3586,51 @@ public class CdaFhirUtilities {
     }
 
     return sb.toString();
+  }
+
+  public static String getStringForSpecimenCollectionDate(
+      List<Reference> specimenRefs, R4FhirData data) {
+    if (data == null || specimenRefs == null || specimenRefs.isEmpty()) {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    for (Reference reference : specimenRefs) {
+      if (reference.hasReferenceElement()
+          && reference.getReferenceElement().hasResourceType()
+          && ResourceType.fromCode(reference.getReferenceElement().getResourceType())
+              == ResourceType.Specimen) {
+
+        Specimen specimen = data.getSpecimenById(reference.getReferenceElement().getIdPart());
+        if (specimen != null && specimen.hasCollection()) {
+
+          if (specimen.getCollection().hasCollectedDateTimeType()) {
+            return CdaFhirUtilities.getStringForType(
+                specimen.getCollection().getCollectedDateTimeType());
+
+          } else if (specimen.getCollection().hasCollectedPeriod()) {
+            return CdaFhirUtilities.getStringForType(specimen.getCollection().getCollectedPeriod());
+          }
+        }
+      }
+    }
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getNarrative(String frequency, String period, String periodUnit) {
+    StringBuilder narrative = new StringBuilder();
+    appendValue(narrative, "frequency", frequency);
+    appendValue(narrative, "period", period);
+    appendValue(narrative, "periodUnit", periodUnit);
+
+    return narrative.toString();
+  }
+
+  private static void appendValue(StringBuilder narrative, String label, String value) {
+    if (StringUtils.isNotBlank(value)) {
+      if (narrative.length() > 0) {
+        narrative.append("|"); // Add separator if narrative already has content
+      }
+      narrative.append(label).append(": ").append(value);
+    }
   }
 }

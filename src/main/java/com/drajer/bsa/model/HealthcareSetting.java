@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "healthcare_setting")
+@Table(
+    name = "healthcare_setting",
+    indexes = {@Index(name = "idx_fsb_url", columnList = "fhir_server_base_url")})
 @DynamicUpdate
 public class HealthcareSetting implements FhirServerDetails {
 
@@ -346,9 +348,28 @@ public class HealthcareSetting implements FhirServerDetails {
   @Column(name = "backend_auth_key_alias", columnDefinition = "TEXT")
   private String backendAuthKeyAlias;
 
+  /** The attribute represents the algorithm to be used for SMART on FHIR Backend Authorization */
+  @Column(name = "backend_auth_alg", nullable = true, columnDefinition = "TEXT")
+  private String backendAuthAlg;
+
+  /** The attribute represents the KID to be used for SMART on FHIR Backend Authorization */
+  @Column(name = "backend_auth_kid", nullable = true, columnDefinition = "TEXT")
+  private String backendAuthKid;
+
   @Column(name = "debug_enabled", nullable = true)
   @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean debugEnabled = true;
+
+  @Column(name = "direct_endpoint_cert_alias", nullable = true, columnDefinition = "TEXT")
+  private String directEndpointCertificateNameOrAlias;
+
+  @Column(name = "smtp_auth_enabled", nullable = true)
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+  private Boolean smtpAuthEnabled = false;
+
+  @Column(name = "smtp_ssl_enabled", nullable = true)
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+  private Boolean smtpSslEnabled = false;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -853,5 +874,49 @@ public class HealthcareSetting implements FhirServerDetails {
     if (kars != null) kars.log();
 
     logger.info(" **** End Printing HealthcareSetting Details **** ");
+  }
+
+  @Override
+  public String getBackendAuthAlg() {
+    return backendAuthAlg;
+  }
+
+  @Override
+  public void setBackendAuthAlg(String alg) {
+    this.backendAuthAlg = alg;
+  }
+
+  @Override
+  public String getBackendAuthKid() {
+    return backendAuthKid;
+  }
+
+  @Override
+  public void setBackendAuthKid(String kid) {
+    this.backendAuthKid = kid;
+  }
+
+  public String getDirectEndpointCertificateNameOrAlias() {
+    return directEndpointCertificateNameOrAlias;
+  }
+
+  public void setDirectEndpointCertificateNameOrAlias(String directEndpointCertificateNameOrAlias) {
+    this.directEndpointCertificateNameOrAlias = directEndpointCertificateNameOrAlias;
+  }
+
+  public Boolean getSmtpAuthEnabled() {
+    return smtpAuthEnabled;
+  }
+
+  public void setSmtpAuthEnabled(Boolean smtpAuthEnabled) {
+    this.smtpAuthEnabled = smtpAuthEnabled;
+  }
+
+  public Boolean getSmtpSslEnabled() {
+    return smtpSslEnabled;
+  }
+
+  public void setSmtpSslEnabled(Boolean smtpSslEnabled) {
+    this.smtpSslEnabled = smtpSslEnabled;
   }
 }

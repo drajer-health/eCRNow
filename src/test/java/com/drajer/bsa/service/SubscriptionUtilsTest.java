@@ -32,6 +32,6 @@ class SubscriptionUtilsTest {
     HttpServletResponse response = mock(HttpServletResponse.class);
     PatientLaunchContext launchContext = new PatientLaunchContext();
 
-    SubscriptionUtils.getNotificationContext(bund, request, response, false, launchContext);
+    SubscriptionUtils.getNotificationContext(bund, request, response, false, false, launchContext);
   }
 }

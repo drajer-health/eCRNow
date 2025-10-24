@@ -52,6 +52,11 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
   }
 
   @Override
+  public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance) {
+    return List.of();
+  }
+
+  @Override
   public ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks) {
     getSession().saveOrUpdate(scheduledTasks);
     return scheduledTasks;

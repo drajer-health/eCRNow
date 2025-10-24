@@ -37,7 +37,9 @@ public class EicrController {
       @RequestParam(name = "encounterId", required = false) String encounterId,
       @RequestParam(name = "version", required = false) String version,
       @RequestParam(name = "fhirServerUrl", required = false) String fhirServerUrl,
-      @RequestParam(name = "xRequestId", required = false) String xRequestId) {
+      @RequestParam(name = "xRequestId", required = false) String xRequestId,
+      @RequestParam(name = "startDate", required = false) String startDate,
+      @RequestParam(name = "endDate", required = false) String endDate) {
     List<JSONObject> eicrData = new ArrayList<>();
     try {
       logger.info(
@@ -83,6 +85,13 @@ public class EicrController {
       }
       if (xRequestId != null && !xRequestId.isEmpty()) {
         searchParams.put("xRequestId", xRequestId);
+      }
+      if (startDate != null) {
+        searchParams.put("startDate", startDate);
+      }
+
+      if (endDate != null) {
+        searchParams.put("endDate", endDate);
       }
       eicrData = eicrRRService.getEicrData(searchParams);
     } catch (Exception e) {
