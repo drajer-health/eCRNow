@@ -2,6 +2,7 @@ package com.drajer.ecrapp.service.impl;
 
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
+import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.ecrapp.dao.SchedulerDao;
 import com.drajer.ecrapp.model.ScheduledTasks;
 import com.drajer.ecrapp.service.SchedulerService;
@@ -10,8 +11,10 @@ import com.github.kagkarlsson.scheduler.Scheduler;
 import com.github.kagkarlsson.scheduler.task.TaskInstanceId;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import java.io.IOException;
 import java.util.List;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +26,8 @@ public class ScheduledServiceImpl implements SchedulerService {
 
   private final Logger logger = LoggerFactory.getLogger(ScheduledServiceImpl.class);
 
-  @Autowired KarExecutionStateService karExecutionStateService;
+  @Autowired
+  KarExecutionStateService karExecutionStateService;
   @Autowired SchedulerDao schedulerDao;
   @Autowired ScheduledTaskUtil scheduledTaskUtil;
 

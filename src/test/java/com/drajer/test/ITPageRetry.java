@@ -10,9 +10,12 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.util.*;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -138,9 +141,15 @@ public class ITPageRetry extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
+      EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+      Root<LaunchDetails> root = cq.from(LaunchDetails.class);
+      cq.where(cb.equal(root.get("xRequestId"), testCaseId));
+
+      Query<LaunchDetails> q = getSession().createQuery(cq);
+
+      launchDetails = q.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);
