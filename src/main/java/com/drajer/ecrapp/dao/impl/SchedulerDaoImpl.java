@@ -26,22 +26,22 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
-      EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-      CriteriaBuilder cb = em.getCriteriaBuilder();
-      CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
-      Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
+    Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
 
-      String queryString = actionType + "_" + launchId + "_";
+    String queryString = actionType + "_" + launchId + "_";
 
-      Predicate criteria =
-              cb.and(
-                      cb.equal(root.get(TASK_NAME), "EICRTask"),
-                      cb.like(root.get("launchPatientId"), queryString));
-      cq.where(criteria);
+    Predicate criteria =
+        cb.and(
+            cb.equal(root.get(TASK_NAME), "EICRTask"),
+            cb.like(root.get("task_instance"), queryString));
+    cq.where(criteria);
 
-      Query<ScheduledTasks> q = getSession().createQuery(cq);
+    Query<ScheduledTasks> q = getSession().createQuery(cq);
 
-     return q.getResultList();
+    return q.getResultList();
   }
 
 
