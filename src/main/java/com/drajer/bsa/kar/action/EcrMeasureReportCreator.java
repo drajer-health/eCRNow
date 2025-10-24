@@ -3,12 +3,10 @@ package com.drajer.bsa.kar.action;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.KarProcessingData;
-
 import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
-
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
@@ -21,7 +19,12 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
 
   @Override
   public Resource createReport(
-          KarProcessingData kd, EhrQueryService ehrService, Set<Resource> inputData, String id, String profile, BsaAction act) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      Set<Resource> inputData,
+      String id,
+      String profile,
+      BsaAction act) {
     logger.info("Ecr Measure Report Creator is executing");
 
     Resource res = super.createReport(kd, ehrService, id, profile, act);
@@ -43,7 +46,7 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
     bundle.setType(Bundle.BundleType.COLLECTION);
     bundle.setTimestamp(Date.from(Instant.now()));
 
-    for (Resource r: resources) {
+    for (Resource r : resources) {
       bundle.addEntry(new BundleEntryComponent().setResource(r));
     }
 
