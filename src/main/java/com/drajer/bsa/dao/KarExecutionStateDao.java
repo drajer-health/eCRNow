@@ -38,7 +38,9 @@ public interface KarExecutionStateDao {
    */
   public List<KarExecutionState> getAllKarExecutionStates();
 
-  /** @param state - KarExecutionState that needs to be deleted. */
+  /**
+   * @param state - KarExecutionState that needs to be deleted.
+   */
   public void delete(KarExecutionState state);
 
   /**

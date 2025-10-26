@@ -818,8 +818,7 @@ public class RespNetReportCreator extends ReportCreator {
         if (r.hasIdElement() && r.getIdElement().hasIdPart()) {
           String resourceId = r.getIdElement().getIdPart();
           boolean isRefExist =
-              sc.getEntry()
-                  .stream()
+              sc.getEntry().stream()
                   .map(Reference::getResource)
                   .filter(Objects::nonNull)
                   .map(refResource -> (Resource) refResource)

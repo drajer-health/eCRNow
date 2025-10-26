@@ -605,18 +605,24 @@
 			</plugin>
 
 			<plugin>
-				<groupId>com.coveo</groupId>
-				<artifactId>fmt-maven-plugin</artifactId>
-				<version>2.5.1</version>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.43.0</version> <!-- Latest Spotless -->
 				<executions>
 					<execution>
-						<id>fmt-check</id>
 						<goals>
-							<goal>check</goal>
+							<goal>check</goal> <!-- Checks formatting -->
+							<goal>apply</goal> <!-- Auto-fixes formatting -->
 						</goals>
-						<phase>validate</phase>
 					</execution>
 				</executions>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.17.0</version> <!-- Supports Java 17 -->
+						</googleJavaFormat>
+					</java>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

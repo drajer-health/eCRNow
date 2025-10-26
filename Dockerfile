@@ -1,11 +1,19 @@
-FROM openjdk:17-alpine
+FROM openjdk:24-ea-17-jdk-slim
 
-RUN apk --no-cache add maven && mvn --version
+# Install Maven (since slim images don't include it)
+RUN apt update && apt install -y maven && mvn --version
 
+# Set working directory
 WORKDIR /java-app
 
-COPY pom.xml .
+# Copy only pom.xml first (to cache dependencies)
+COPY pom.xml ./
+
+# Download dependencies without compiling (caching optimization)
+
+# Copy the application source code
 COPY src ./src
+
 
 # Package the Spring Boot application, skipping tests
 RUN mvn clean install  -Dmaven.test.skip=true

@@ -1276,7 +1276,9 @@ public class Dstu2CdaFhirUtilitiesTest extends BaseGenerator {
 
     String expected = "<effectiveTime value=\"20250220120000+0000\"/>";
     assertXmlEquals(expected, result);
-  };
+  }
+  ;
+
   // Test case 5: PeriodDt
   @Test
   public void testGetIDataTypeXml_PeriodDt() {

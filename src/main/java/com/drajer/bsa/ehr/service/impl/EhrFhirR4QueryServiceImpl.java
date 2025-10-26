@@ -129,6 +129,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       "http://terminology.hl7.org/CodeSystem/condition-clinical";
   private static final String CONDITION_VERIFICATION_STATUS_SYSTEM_URL =
       "http://terminology.hl7.org/CodeSystem/condition-ver-status";
+
   /**
    * The attribute stores the custom queries for each KAR.
    *
