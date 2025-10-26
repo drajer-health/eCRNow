@@ -52,7 +52,7 @@ public class CheckTriggerCodes extends BsaAction {
 
       if (queries != null && !queries.isEmpty()) {
 
-        logger.info(" Data Requirements Exist wiht Queries, so executing queries to load data ");
+        logger.info(" Data Requirements Exist with Queries, so executing queries to load data ");
         // Try to execute the queries.
         queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
 
@@ -105,7 +105,7 @@ public class CheckTriggerCodes extends BsaAction {
           }
 
         } else {
-          logger.error(" Not processing Data Requirement which is not a code filter ");
+          logger.error(" Ignoring Data Requirement which is not a code filter ");
         }
 
         // Add params
@@ -117,7 +117,8 @@ public class CheckTriggerCodes extends BsaAction {
             params);
       }
 
-      data.addParameters(actionId, params);
+      // data.addParameters(actionId, params);
+      populateParamsForConditionEvaluation(data, params);
       actStatus.setMatchedResources(idres);
       data.addActionStatus(getActionId(), actStatus);
       data.setCurrentTriggerMatchStatus(ctcsl);

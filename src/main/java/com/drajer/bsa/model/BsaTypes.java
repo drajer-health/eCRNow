@@ -145,7 +145,7 @@ public final class BsaTypes {
     else if (t == MessageType.HEP_C_REPORT_MESSAGE) return "hepc-report-message";
     else if (t == MessageType.HEALTHCARE_SURVEY_REPORT_MESSAGE)
       return "healthcare-survey-report-message";
-    else if (t == MessageType.RESPNET_CASE_REPORT_MESSAGE) return "respnet-case-report-message";
+    else if (t == MessageType.RESPNET_CASE_REPORT_MESSAGE) return "respnet-case-report";
     else if (t == MessageType.CDA_EICR_MESSAGE) return "CdaEicrMessage";
     else if (t == MessageType.EICR_CASE_REPORT_MESSAGE) return "eicr-case-report-message";
     else if (t == MessageType.CDA_REPORTABILITY_RESPONSE_MESSAGE)

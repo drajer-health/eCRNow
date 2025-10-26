@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -306,12 +307,16 @@ public abstract class BsaAction {
     }
   }
 
-  public void populateParamsForConditionEvaluation(KarProcessingData data) {
+  public void populateParamsForConditionEvaluation(KarProcessingData data, Parameters input) {
 
     Parameters params = new Parameters();
     for (DataRequirement dr : inputData) {
 
-      Set<Resource> resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+      Set<Resource> resources = getResourcesFromInput(dr, input);
+    		  
+      if(resources == null) {
+    	  resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+      }
 
       BsaServiceUtils.convertDataToParameters(
           dr.getId(),
@@ -322,6 +327,38 @@ public abstract class BsaAction {
     }
 
     data.addParameters(actionId, params);
+  }
+  
+  public Set<Resource> getResourcesFromInput(DataRequirement dr, Parameters params) {
+	  
+	  Set<Resource> res = null;
+	  if(params != null) {
+		  
+		  String id = "%" + String.format("%s", dr.getId());
+		  List<ParametersParameterComponent> ps = params.getParameters(id);
+		  
+		  if(ps != null) {
+			  
+			  for(ParametersParameterComponent r : ps) {
+				  
+				  if(r.hasResource() && res == null) {
+					  res = new HashSet<>();
+					  res.add(r.getResource());
+				  }
+				  else if(r.hasResource()) {
+					  res.add(r.getResource());
+				  }
+			  }
+			  
+		  }
+		  else {
+			  logger.info(" Could not find the parameter with name {}", id);
+		  }
+		  
+	  }
+	  
+	  return res;
+	  
   }
 
   public void scheduleJob(
