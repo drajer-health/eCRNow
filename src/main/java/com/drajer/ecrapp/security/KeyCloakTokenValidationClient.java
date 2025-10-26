@@ -1,9 +1,9 @@
 package com.drajer.ecrapp.security;
 
-import com.drajer.ecrapp.KeycloakCredentialsException;
+import com.drajer.ecrapp.exceptions.KeycloakCredentialsException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import okhttp3.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
