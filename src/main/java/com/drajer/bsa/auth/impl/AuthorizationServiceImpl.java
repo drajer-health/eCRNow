@@ -54,7 +54,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
       if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))
           || fsd.getAuthType()
-              .equals(BsaTypes.getString(BsaTypes.AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH))) {
+              .equals(BsaTypes.getString(BsaTypes.AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH))
+          || fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SOF_SYSTEM))) {
 
         logger.info(
             " System Launch/Multi-tenant System Launch authorization is configured for EHR {}",
