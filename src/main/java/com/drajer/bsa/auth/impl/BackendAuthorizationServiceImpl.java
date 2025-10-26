@@ -2,7 +2,8 @@ package com.drajer.bsa.auth.impl;
 
 import com.drajer.bsa.auth.AuthorizationService;
 import com.drajer.bsa.model.FhirServerDetails;
-import com.drajer.sof.model.Response;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,9 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.transaction.Transactional;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -72,9 +70,12 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    * @return the token response from the auth server
    * @throws KeyStoreException in case of invalid public/private keys
    */
-  public JSONObject connectToServer(String url, FhirServerDetails fsd) throws KeyStoreException {
+  public JSONObject connectToServer(String url, FhirServerDetails fsd)
+      throws KeyStoreException, JsonProcessingException {
     RestTemplate resTemplate = new RestTemplate();
     String tokenEndpoint;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     tokenEndpoint = fsd.getTokenUrl();
     if (tokenEndpoint == null || tokenEndpoint.isEmpty()) {
@@ -86,12 +87,10 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-
-    if (StringUtils.isNotBlank(fsd.getScopes())) {
-      map.add("scope", fsd.getScopes());
-    }
+    // map.add("scope", scopes);
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
@@ -106,9 +105,12 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
     logger.info(" Request {}", request);
 
-    ResponseEntity<?> response = resTemplate.postForEntity(tokenEndpoint, request, Response.class);
+    ResponseEntity<String> response =
+        resTemplate.postForEntity(tokenEndpoint, request, String.class);
     logger.info(" Response Body = ", response.getBody());
-    return new JSONObject(Objects.requireNonNull(response.getBody()));
+    String responseObj = (String) Objects.requireNonNull(response.getBody());
+
+    return new JSONObject(responseObj);
   }
 
   /**
@@ -185,40 +187,24 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       X509Certificate cert = (X509Certificate) ks.getCertificate(fsd.getBackendAuthKeyAlias());
       String x5tValue = Base64.getEncoder().encodeToString(DigestUtils.sha1(cert.getEncoded()));
 
-      Pair<String, SignatureAlgorithm> alg = getSignatureAlgorithm(fsd.getBackendAuthAlg());
-
-      if (fsd.getBackendAuthKid() != null && !fsd.getBackendAuthKid().isEmpty()) {
-        logger.info(" Kid is not empty ");
-        return Jwts.builder()
-            .setHeaderParam("typ", "JWT")
-            .setHeaderParam("kid", fsd.getBackendAuthKid())
-            .setHeaderParam("alg", alg.getKey())
-            .setHeaderParam("x5t", x5tValue)
-            .setIssuer(clientId)
-            .setSubject(clientId)
-            .setAudience(aud)
-            .setExpiration(
-                new Date(
-                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-            .setId(UUID.randomUUID().toString())
-            .signWith(alg.getValue(), key)
-            .compact();
-      } else {
-        logger.info(" Kid is empty ");
-        return Jwts.builder()
-            .setHeaderParam("typ", "JWT")
-            .setHeaderParam("alg", alg.getKey())
-            .setHeaderParam("x5t", x5tValue)
-            .setIssuer(clientId)
-            .setSubject(clientId)
-            .setAudience(aud)
-            .setExpiration(
-                new Date(
-                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-            .setId(UUID.randomUUID().toString())
-            .signWith(alg.getValue(), key)
-            .compact();
-      }
+      return Jwts.builder()
+          .setHeaderParam("typ", "JWT")
+          // .setHeaderParam("kid", "178DCA01A4118728949830333DE0DF58C1CA7BBF")
+          .setHeaderParam("alg", "RS256")
+          .setHeaderParam("x5t", x5tValue)
+          .setIssuer(clientId)
+          .setSubject(clientId)
+          // .setAudience(
+          //
+          // "https://login.microsoftonline.com/9ce70869-60db-44fd-abe8-d2767077fc8f/oauth2/token")
+          .setAudience(aud)
+          .setExpiration(
+              new Date(
+                  System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+          .setId(UUID.randomUUID().toString())
+          // .signWith(key)
+          .signWith(SignatureAlgorithm.RS256, key)
+          .compact();
     } catch (IOException
         | NoSuchAlgorithmException
         | CertificateException
@@ -226,16 +212,5 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       logger.error("Exception Occurred: ", e);
     }
     return null;
-  }
-
-  private Pair<String, SignatureAlgorithm> getSignatureAlgorithm(String backendAuthAlg) {
-
-    if (backendAuthAlg.contentEquals("RS256"))
-      return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
-    else if (backendAuthAlg.contentEquals("RS384"))
-      return new ImmutablePair<>("RS384", SignatureAlgorithm.RS384);
-    else if (backendAuthAlg.contentEquals("ES384"))
-      return new ImmutablePair<>("ES384", SignatureAlgorithm.ES384);
-    else return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
   }
 }
