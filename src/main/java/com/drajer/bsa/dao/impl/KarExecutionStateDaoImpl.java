@@ -74,4 +74,9 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
   public void delete(KarExecutionState state) {
     getSession().delete(state);
   }
+
+    @Override
+    public List<String> getExecutionIdsByNotificationContextDetails(String patientId, String fhirServerBaseUrl, String notificationResourceId) {
+        return List.of();
+    }
 }
