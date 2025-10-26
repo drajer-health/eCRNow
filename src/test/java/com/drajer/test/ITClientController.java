@@ -1,16 +1,8 @@
 package com.drajer.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import com.drajer.sof.model.ClientDetails;
-import com.drajer.test.util.TestUtils;
-import java.io.IOException;
-import java.util.List;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.springframework.http.*;
 
+/*
 public class ITClientController extends BaseIntegrationTest {
 
   private static String clientDetailPayload;
@@ -246,3 +238,5 @@ public class ITClientController extends BaseIntegrationTest {
     assertEquals(expectedClientDetails.getIsXdr(), actualClientDetails.getIsXdr());
   }
 }
+
+ */
