@@ -43,13 +43,13 @@ public class TokenFilter extends OncePerRequestFilter {
       UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
           new UsernamePasswordAuthenticationToken(
               "user", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
       SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
       chain.doFilter(request, response);
     } else {
-      //      log.error("Access token validation failed.");
-      //      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      chain.doFilter(request, response);
+      log.error("Access token validation failed.");
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
   }
 
