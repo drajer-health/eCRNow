@@ -13,73 +13,99 @@ import com.drajer.fhirecr.FhirGeneratorUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.CompositionStatus;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
+import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
 import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
+import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RespNetReportCreator extends ReportCreator {
+public class RespnetReportCreator extends ReportCreator {
 
-  private final Logger logger = LoggerFactory.getLogger(RespNetReportCreator.class);
-  public static final Logger slogger = LoggerFactory.getLogger(RespNetReportCreator.class);
+  private final Logger logger = LoggerFactory.getLogger(RespnetReportCreator.class);
+  public static final Logger slogger = LoggerFactory.getLogger(RespnetReportCreator.class);
+
+  public RespnetReportCreator() {}
 
   public static final String DEFAULT_VERSION = "1";
   public static final String BUNDLE_REL_URL = "Bundle/";
   public static final String MESSAGE_HEADER_PROFILE =
-      "http://hl7.org/fhir/us/central-cancer-registry-reporting/StructureDefinition/central-cancer-registry-reporting-messageheader";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-messageheader";
   public static final String SENDER_ORG_PROFILE =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-organization";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-organization";
   public static final String MESSAGE_TYPE =
-      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
+      "http://hl7.org/fhir/us/ph-library/ValueSet/us-ph-valueset-message-types";
   public static final String NAMED_EVENT_URL =
-      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
-
-  public static final String RESP_NET_REPORTING_BUNDLE =
+      "http://hl7.org/fhir/us/ph-library/ValueSet/us-ph-valueset-triggerdefinition-namedevent";
+  public static final String RESPNET_REPORTING_BUNDLE =
       "http://hl7.org/fhir/us/resp-net/StructureDefinition/resp-net-reporting-bundle";
-
-  public static final String RESP_NET_CONTENT_BUNDLE =
+  public static final String RESPNET_CONTENT_BUNDLE =
       "http://hl7.org/fhir/us/resp-net/StructureDefinition/resp-net-content-bundle";
-
-  public static final String RESP_NET_COMPOSITION =
+  public static final String RESPNET_COMPOSITION =
       "http://hl7.org/fhir/us/resp-net/StructureDefinition/resp-net-composition";
+  public static final String RESPNET_REPORT_CONTEXT =
+      "http://hl7.org/fhir/us/resp-net/StructureDefinition/respnet-report-context-extension";
+  public static final String RESPNET_REPORT_CONTEXT_CODESYSTEM_URL =
+      "http://hl7.org/fhir/us/resp-net/CodeSystem/respnet-report-context";
 
   private static final String VERSION_NUM_URL =
       "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
   private static final String DEVICE_NAME = "eCRNow/Backend Service App";
-  public static final String REPORT_CATEGORY_EXT_URL =
+  private static final String MESSAGE_PROCESSING_CATEGORY_URL =
       "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-message-processing-category-extension";
-
+  public static final String REPORT_INITIATION_TYPE_EXT_URL =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-report-initiation-type";
+  public static final String REPORT_INITIATION_TYPE_CODE_SYSTEM_URL =
+      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-report-initiation-types";
   public static final String REPORT_INITIATION_TYPE_CODE = "subscription-notification";
-  public static final String MESSAGE_SIGNIFICANCE_CATEGORY = "consequence";
-
-  public static final String RESP_NET_REPORT_CONTEXT_EXT_URL =
-      "http://hl7.org/fhir/us/resp-net/StructureDefinition/respnet-report-context-extension";
-  public static final String RESP_NET_REPORT_CONTEXT_SYSTEM_URL =
-      "http://hl7.org/fhir/us/resp-net/CodeSystem/respnet-report-context";
-
-  public static final String RESP_NET_REPORT_CONTEXT_CODE = "respnet-case-report";
-  public static final String RESP_NET_REPORT_CONTEXT_CODE_DISPLAY = "respnet-case-report";
-
-  public static final String RESP_NET_REPORT_CONTEXT_TEXT = "respnet-case-report";
-
-  public static final String TNM_STAGE_GROUP_PROFILE =
-      "http://hl7.org/fhir/us/mcode/StructureDefinition/mcode-tnm-stage-group";
-  public static final String ODH_USUAL_WORK_PROFILE =
-      "http://hl7.org/fhir/us/odh/StructureDefinition/odh-UsualWork";
+  public static final String MESSAGE_SIGNIFICANCE_CATEGORY =
+      "http://hl7.org/fhir/ValueSet/message-significance-category";
 
   private static final String EHR_PRODUCT_NAME = "ehr.product.name";
   private static final String EHR_PRODUCT_VERSION = "ehr.product.version";
@@ -96,7 +122,7 @@ public class RespNetReportCreator extends ReportCreator {
     String propertiesFileName = "application.properties";
 
     try (InputStream input =
-        RespNetReportCreator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
+        CcrrReportCreator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
 
       if (input != null) {
         Properties properties = new Properties();
@@ -109,23 +135,6 @@ public class RespNetReportCreator extends ReportCreator {
     } catch (IOException e) {
       slogger.error("Error loading properties file :{} ", e);
     }
-  }
-
-  public static List<Map<String, Object>> getPregnancyCodeList() {
-    List<Map<String, Object>> codeList = new ArrayList<>();
-
-    codeList.add(createCodeMap(FhirGeneratorConstants.LOINC_CS_URL, "63893-2"));
-    codeList.add(createCodeMap(FhirGeneratorConstants.LOINC_CS_URL, "82810-3"));
-    codeList.add(createCodeMap(FhirGeneratorConstants.SNOMED_CS_URL, "249197004"));
-
-    return codeList;
-  }
-
-  private static Map<String, Object> createCodeMap(String system, String code) {
-    Map<String, Object> map = new HashMap<>();
-    map.put("system", system);
-    map.put("code", code);
-    return map;
   }
 
   @Override
@@ -150,10 +159,10 @@ public class RespNetReportCreator extends ReportCreator {
     logger.info("Creating report for {}", kd.getKar().getKarId());
     returnBundle.setId(id);
     returnBundle.setType(BundleType.MESSAGE);
-    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, RESP_NET_REPORTING_BUNDLE));
+    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
-    logger.info("Resp-net  Report Resource Count {}", inputData.size());
+    logger.info("Respnet Report Resource Count {}", inputData.size());
 
     // Create the Content Bundle.
     Bundle contentBundle = createContentBundle(kd, ehrService, id, profile);
@@ -230,7 +239,7 @@ public class RespNetReportCreator extends ReportCreator {
 
       org = new Organization();
       org.setId(UUID.randomUUID().toString());
-      // org.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, SENDER_ORG_PROFILE));
+      org.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, SENDER_ORG_PROFILE));
       org.setName(hs.getOrgName());
       org.setActive(true);
 
@@ -280,10 +289,11 @@ public class RespNetReportCreator extends ReportCreator {
 
     // Add extensions
     Extension ext2 = new Extension();
-    Extension extension = ext2.setUrl(REPORT_CATEGORY_EXT_URL);
-    CodeType codeType = new CodeType(MESSAGE_SIGNIFICANCE_CATEGORY);
+    ext2.setUrl(MESSAGE_PROCESSING_CATEGORY_URL);
+    CodeType ct = new CodeType();
+    ct.setValue("consequence");
+    ext2.setValue(ct);
 
-    ext2.setValue(codeType);
     List<Extension> exts = new ArrayList<>();
     exts.add(ext2);
 
@@ -292,7 +302,7 @@ public class RespNetReportCreator extends ReportCreator {
     // Set message type.
     Coding c = new Coding();
     c.setSystem(MESSAGE_TYPE);
-    c.setCode(BsaTypes.getMessageTypeString(MessageType.RESPNET_CASE_REPORT_MESSAGE));
+    c.setCode(BsaTypes.getMessageTypeString(MessageType.EICR_CASE_REPORT_MESSAGE));
     header.setEvent(c);
 
     // set destination
@@ -301,6 +311,13 @@ public class RespNetReportCreator extends ReportCreator {
     for (UriType i : dests) {
       MessageDestinationComponent mdc = new MessageDestinationComponent();
       mdc.setEndpoint(i.asStringValue());
+      mdcs.add(mdc);
+    }
+
+    if (mdcs.isEmpty()) {
+      MessageDestinationComponent mdc = new MessageDestinationComponent();
+      mdc.setName("Example PHA");
+      mdc.setEndpoint("http://example.org/fhir/pha");
       mdcs.add(mdc);
     }
     header.setDestination(mdcs);
@@ -333,7 +350,7 @@ public class RespNetReportCreator extends ReportCreator {
     returnBundle.setId(UUID.randomUUID().toString());
     returnBundle.setType(BundleType.COLLECTION);
     returnBundle.setTimestamp(Date.from(Instant.now()));
-    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, RESP_NET_CONTENT_BUNDLE));
+    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, RESPNET_CONTENT_BUNDLE));
 
     logger.info(" Creating Composition Resource ");
     Set<Resource> resourcesTobeAdded = new HashSet<>();
@@ -376,25 +393,10 @@ public class RespNetReportCreator extends ReportCreator {
 
     Composition comp = new Composition();
     comp.setId(UUID.randomUUID().toString());
-    comp.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, RESP_NET_COMPOSITION));
+    comp.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, RESPNET_COMPOSITION));
 
     // Add clinical document version number extension.
     comp.setExtension(getExtensions());
-
-    ArrayList<Extension> ext = new ArrayList<Extension>();
-    Extension subExt = new Extension();
-    subExt.setUrl(RESP_NET_REPORT_CONTEXT_EXT_URL);
-    CodeableConcept codeableConcept = new CodeableConcept();
-    Coding coding = new Coding();
-    coding.setSystem(RESP_NET_REPORT_CONTEXT_SYSTEM_URL);
-    coding.setCode(RESP_NET_REPORT_CONTEXT_CODE);
-    coding.setDisplay(RESP_NET_REPORT_CONTEXT_CODE_DISPLAY);
-    codeableConcept.addCoding(coding);
-    codeableConcept.setText(RESP_NET_REPORT_CONTEXT_TEXT);
-    subExt.setValue(codeableConcept);
-    ext.add(subExt);
-
-    comp.setExtension(ext);
 
     // Add Identifier.
     Identifier val = new Identifier();
@@ -409,7 +411,7 @@ public class RespNetReportCreator extends ReportCreator {
         FhirGeneratorUtils.getCodeableConcept(
             FhirGeneratorConstants.LOINC_CS_URL,
             FhirGeneratorConstants.RESP_NET_COMP_TYPE_CODE,
-            ""));
+            FhirGeneratorConstants.RESPNET_COMP_TYPE_CODE_DISPLAY));
 
     // Set Patient
     Set<Resource> patients = kd.getResourcesByType(ResourceType.Patient.toString());
@@ -451,7 +453,7 @@ public class RespNetReportCreator extends ReportCreator {
     if (practs != null && !practs.isEmpty()) resTobeAdded.addAll(practs);
 
     // Add title
-    comp.setTitle(FhirGeneratorConstants.RESP_NET_COMP_SECTION_TITLE);
+    comp.setTitle(FhirGeneratorConstants.RESPNET_COMP_SECTION_TITLE);
 
     // Add Organization
     Organization org = ReportCreationUtilities.getOrganization(kd);
@@ -472,7 +474,7 @@ public class RespNetReportCreator extends ReportCreator {
     // Add Problem section.
     sc = getSection(SectionTypeEnum.PROBLEM, kd);
     if (sc != null) scs.add(sc);
-
+    profilesToIgnore.clear();
     addEntries(ResourceType.Condition, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Medications Administered section.
@@ -491,8 +493,6 @@ public class RespNetReportCreator extends ReportCreator {
     sc = getSection(SectionTypeEnum.RESULTS, kd);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    profilesToIgnore.add(TNM_STAGE_GROUP_PROFILE);
-    profilesToIgnore.add(ODH_USUAL_WORK_PROFILE);
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
     addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded, "", profilesToIgnore);
 
@@ -510,6 +510,7 @@ public class RespNetReportCreator extends ReportCreator {
     addEntries(ResourceType.MedicationRequest, kd, sc, resTobeAdded, "", profilesToIgnore);
     addEntries(ResourceType.CarePlan, kd, sc, resTobeAdded, "", profilesToIgnore);
 
+    // Add Immuniztions section.
     sc = getSection(SectionTypeEnum.IMMUNIZATIONS, kd);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
@@ -518,30 +519,24 @@ public class RespNetReportCreator extends ReportCreator {
     // Add Procedures section.
     sc = getSection(SectionTypeEnum.PROCEDURES, kd);
     if (sc != null) scs.add(sc);
+    profilesToIgnore.clear();
     addEntries(ResourceType.Procedure, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Vital Signs section.
     sc = getSection(SectionTypeEnum.VITAL_SIGNS, kd);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    profilesToIgnore.add(TNM_STAGE_GROUP_PROFILE);
-    profilesToIgnore.add(ODH_USUAL_WORK_PROFILE);
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Social History section.
     sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
-    profilesToIgnore.add(TNM_STAGE_GROUP_PROFILE);
-    profilesToIgnore.add(ODH_USUAL_WORK_PROFILE);
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
 
+    // Add Pregnancy section.
     sc = getSection(SectionTypeEnum.PREGNANCY, kd);
     if (sc != null) scs.add(sc);
-    profilesToIgnore.clear();
-    profilesToIgnore.add(TNM_STAGE_GROUP_PROFILE);
-    profilesToIgnore.add(ODH_USUAL_WORK_PROFILE);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Finalize the sections.
     comp.setSection(scs);
@@ -595,13 +590,49 @@ public class RespNetReportCreator extends ReportCreator {
     SectionComponent sc = null;
 
     switch (st) {
+      case PRIMARY_CANCER_CONDITION:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.SNOMED_CS_URL,
+                FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE,
+                FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case SECONDARY_CANCER_CONDITION:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.SNOMED_CS_URL,
+                FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE,
+                FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case CANCER_STAGE_GROUP:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.CANCER_STAGE_GROUP_SECTION_CODE,
+                FhirGeneratorConstants.CANCER_STAGE_GROUP_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case RADIO_THERAPY_COURSE_SUMMARY:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.SNOMED_CS_URL,
+                FhirGeneratorConstants.CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE,
+                FhirGeneratorConstants.CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
       case ODH:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ODH_SECTION_CODE,
                 FhirGeneratorConstants.ODH_SECTION_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PROBLEM:
@@ -610,7 +641,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Problem Section narrative");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case ALLERGIES:
@@ -619,7 +650,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case MEDICATION_ADMINISTERED:
@@ -628,7 +659,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Medications Administered Section narrative");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case ADMISSION_MEDICATIONS:
@@ -637,7 +668,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case MEDICATIONS:
@@ -646,23 +677,16 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Medications Section narrative");
+        populateDefaultNarrative(sc, kd);
         break;
-      case IMMUNIZATIONS:
-        sc =
-            FhirGeneratorUtils.getSectionComponent(
-                FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Immunizations narrative");
-        break;
+
       case RESULTS:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Results Section narrative");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PLAN_OF_TREATMENT:
@@ -671,7 +695,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Plan of Treatment narrative");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case NOTES:
@@ -680,7 +704,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Notes Section narrative");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PROCEDURES:
@@ -689,7 +713,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Procedures Section narrative");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case VITAL_SIGNS:
@@ -698,7 +722,7 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Vital Signs narrative");
+        populateDefaultNarrative(sc, kd);
         break;
 
       case SOCIAL_HISTORY:
@@ -707,15 +731,15 @@ public class RespNetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Social History Section narrative");
+        populateDefaultNarrative(sc, kd);
         break;
-      case PREGNANCY:
+      case IMMUNIZATIONS:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd, "Pregnancy Section narrative");
+                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       default:
@@ -735,6 +759,16 @@ public class RespNetReportCreator extends ReportCreator {
     ext.setValue(st);
     List<Extension> exts = new ArrayList<>();
     exts.add(ext);
+
+    Extension ext2 = new Extension();
+    ext.setUrl(RESPNET_REPORT_CONTEXT);
+    CodeableConcept rptCd = new CodeableConcept();
+    Coding rptCoding = new Coding();
+    rptCoding.setCode(BsaTypes.getMessageTypeString(MessageType.RESPNET_CASE_REPORT_MESSAGE));
+    rptCoding.setSystem(RESPNET_REPORT_CONTEXT_CODESYSTEM_URL);
+    rptCd.addCoding(rptCoding);
+    ext2.setValue(rptCd);
+    exts.add(ext2);
 
     return exts;
   }
@@ -759,17 +793,12 @@ public class RespNetReportCreator extends ReportCreator {
     sc.setText(val);
   }
 
-  public void populateDefaultNarrative(
-      SectionComponent sc, KarProcessingData kd, String narrativeText) {
+  public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
     logger.info("KarProcessingData:{}", kd);
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
-    if (StringUtils.isNotBlank(narrativeText)) {
-      val.setDivAsString(narrativeText);
-    } else {
-      val.setDivAsString("Not Generated automatically");
-    }
+    val.setDivAsString("Not Generated automatically");
     sc.setText(val);
   }
 
@@ -797,12 +826,6 @@ public class RespNetReportCreator extends ReportCreator {
         && Boolean.TRUE.equals(isSocialHistorySection(sc))) {
       res =
           filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
-    } else if (resourcesByType != null
-        && rt == ResourceType.Observation
-        && Boolean.TRUE.equals(isPregancySection(sc))) {
-
-      res =
-          ReportGenerationUtils.filterPregancyObservationn(resourcesByType, getPregnancyCodeList());
     } else res = resourcesByType;
 
     res = filterResourcesByProfile(res, profile, profilesToIgnore);
@@ -812,34 +835,18 @@ public class RespNetReportCreator extends ReportCreator {
       logger.info(" Adding resources of type {}", rt);
 
       for (Resource r : res) {
+
         Reference refRes = new Reference();
         refRes.setResource(r);
 
-        if (r.hasIdElement() && r.getIdElement().hasIdPart()) {
-          String resourceId = r.getIdElement().getIdPart();
-          boolean isRefExist =
-              sc.getEntry().stream()
-                  .map(Reference::getResource)
-                  .filter(Objects::nonNull)
-                  .map(refResource -> (Resource) refResource)
-                  .anyMatch(
-                      refResource ->
-                          refResource.hasIdElement()
-                              && refResource.getIdElement().hasIdPart()
-                              && refResource.getIdElement().getIdPart().equals(resourceId));
+        // Add Trigger Code extension if appropriate.
+        addExtensionIfAppropriate(refRes, r, kd, rt);
 
-          if (!isRefExist) {
+        // Add Reference to the entry.
+        sc.addEntry(refRes);
 
-            // Add Trigger Code extension if appropriate.
-            addExtensionIfAppropriate(refRes, r, kd, rt);
-
-            // Add Reference to the entry.
-            sc.addEntry(refRes);
-
-            // Add the resource to the set
-            resTobeAdded.add(r);
-          }
-        }
+        // add the resource to the set
+        resTobeAdded.add(r);
       }
     }
   }
@@ -989,27 +996,6 @@ public class RespNetReportCreator extends ReportCreator {
     return false;
   }
 
-  public Boolean isPregancySection(SectionComponent sc) {
-
-    if (sc.getCode() != null
-        && sc.getCode().getCodingFirstRep() != null
-        && sc.getCode().getCodingFirstRep().getSystem() != null
-        && sc.getCode()
-            .getCodingFirstRep()
-            .getSystem()
-            .contentEquals(FhirGeneratorConstants.LOINC_CS_URL)
-        && sc.getCode().getCodingFirstRep().getCode() != null
-        && sc.getCode()
-            .getCodingFirstRep()
-            .getCode()
-            .contentEquals(FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE)) {
-      logger.info("SocialHistorySection");
-      return true;
-    }
-
-    return false;
-  }
-
   public void removeExtensions(Resource res) {
 
     if (res instanceof DomainResource) {
@@ -1075,15 +1061,6 @@ public class RespNetReportCreator extends ReportCreator {
   }
 
   public Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
-
-    if (ObservationCategory.SOCIALHISTORY.toCode().contentEquals(category)) {
-      return ReportGenerationUtils.getSmokingStatusObservation(res);
-    } else {
-      return ReportGenerationUtils.filterObservationsByCategory(res, category);
-    }
-  }
-
-  public Set<Resource> filterPregancyObservationsByCategory(Set<Resource> res, String category) {
 
     if (ObservationCategory.SOCIALHISTORY.toCode().contentEquals(category)) {
       return ReportGenerationUtils.getSmokingStatusObservation(res);

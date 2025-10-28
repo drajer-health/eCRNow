@@ -49,16 +49,24 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public List<KnowledgeArtifactRepository> getAllKARs() {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaBuilder cb = getSession().getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactRepository> cq =
         cb.createQuery(KnowledgeArtifactRepository.class);
+
     Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
 
-    Query<KnowledgeArtifactRepository> q = getSession().createQuery(cq);
+    Predicate repoStatusPredicate = cb.equal(root.get("repoStatus"), true);
+    cq.where(repoStatusPredicate);
+
+    // Add ORDER BY clause: ORDER BY id DESC
     cq.orderBy(cb.desc(root.get("id")));
 
-    return q.getResultList();
+    // Execute query
+    List<KnowledgeArtifactRepository> kars = getSession().createQuery(cq).getResultList();
+
+    kars = removeKarsNotAvailable(kars);
+
+    return kars;
   }
 
   private List<KnowledgeArtifactRepository> removeKarsNotAvailable(

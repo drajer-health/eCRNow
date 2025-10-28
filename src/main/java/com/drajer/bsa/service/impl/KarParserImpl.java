@@ -227,13 +227,13 @@ public class KarParserImpl implements KarParser {
   private static final String ECR_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String PH_QUERY_EXTENSION_URL =
-	      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String MEDMORPH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String ECR_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
   private static final String PH_RELATED_DATA_EXTENSION_URL =
-	      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
   private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
 
@@ -756,9 +756,9 @@ public class KarParserImpl implements KarParser {
         Extension queryExt = dr.getExtensionByUrl(ECR_QUERY_EXTENSION_URL);
 
         if (queryExt == null) {
-            queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+          queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
         }
-        
+
         if (queryExt == null) {
           queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
         }
@@ -780,9 +780,9 @@ public class KarParserImpl implements KarParser {
         Extension relatedDataExt = dr.getExtensionByUrl(ECR_RELATED_DATA_EXTENSION_URL);
 
         if (relatedDataExt == null) {
-            relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+          relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
         }
-        
+
         if (relatedDataExt == null) {
           relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
         }

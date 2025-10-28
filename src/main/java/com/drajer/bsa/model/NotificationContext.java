@@ -3,7 +3,6 @@ package com.drajer.bsa.model;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.UUID;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hl7.fhir.r4.model.Resource;

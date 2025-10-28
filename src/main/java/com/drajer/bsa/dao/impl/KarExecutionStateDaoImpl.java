@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,8 +76,27 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
     getSession().delete(state);
   }
 
-    @Override
-    public List<String> getExecutionIdsByNotificationContextDetails(String patientId, String fhirServerBaseUrl, String notificationResourceId) {
-        return List.of();
-    }
+  @Override
+  public List<String> getExecutionIdsByNotificationContextDetails(
+      String patientId, String fhirServerBaseUrl, String notificationResourceId) {
+
+    String hql =
+        "select ks from KarExecutionState ks "
+            + "left join NotificationContext nc on ks.ncId = nc.id "
+            + "where (:patientId is null or nc.patientId = :patientId) "
+            + "and (:notificationResourceId is null or nc.notificationResourceId = :notificationResourceId) "
+            + "and (:fhirServerBaseUrl is null or nc.fhirServerBaseUrl = :fhirServerBaseUrl)";
+
+    Query<KarExecutionState> query = getSession().createQuery(hql, KarExecutionState.class);
+    query.setParameter("patientId", patientId);
+    query.setParameter("notificationResourceId", notificationResourceId);
+    query.setParameter("fhirServerBaseUrl", fhirServerBaseUrl);
+
+    List<KarExecutionState> result = query.getResultList();
+    List<String> ids =
+        result.stream()
+            .map(karExecutionState -> karExecutionState.getId().toString())
+            .collect(Collectors.toList());
+    return ids;
+  }
 }

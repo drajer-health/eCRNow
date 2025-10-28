@@ -8,11 +8,9 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,27 +42,25 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
     return q.getResultList();
   }
 
+  @Override
+  public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance) {
+    CriteriaBuilder cb = getSession().getCriteriaBuilder();
+    CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
+    Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
 
-    @Override
-    public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance) {
-        CriteriaBuilder cb = getSession().getCriteriaBuilder();
-        CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
-        Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
+    cq.select(root).distinct(true);
 
-        cq.select(root).distinct(true);
-
-        if (StringUtils.isNotBlank(taskInstance)) {
-            // Match anywhere (equivalent to MatchMode.ANYWHERE)
-            String pattern = "%" + taskInstance.trim().toLowerCase() + "%";
-            Predicate predicate = cb.like(cb.lower(root.get("taskInstance")), pattern);
-            cq.where(predicate);
-        }
-
-        return getSession().createQuery(cq).getResultList();
+    if (StringUtils.isNotBlank(taskInstance)) {
+      // Match anywhere (equivalent to MatchMode.ANYWHERE)
+      String pattern = "%" + taskInstance.trim().toLowerCase() + "%";
+      Predicate predicate = cb.like(cb.lower(root.get("taskInstance")), pattern);
+      cq.where(predicate);
     }
 
+    return getSession().createQuery(cq).getResultList();
+  }
 
-    @Override
+  @Override
   public List<ScheduledTasks> getScheduledTasks() {
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -72,13 +68,12 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
     Query<ScheduledTasks> q = getSession().createQuery(cq);
 
-    List<ScheduledTasks> scheduledTasks =q.getResultList();
+    List<ScheduledTasks> scheduledTasks = q.getResultList();
     if (scheduledTasks != null && !scheduledTasks.isEmpty()) {
       return scheduledTasks;
     }
     return Collections.EMPTY_LIST;
   }
-
 
   @Override
   public ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks) {

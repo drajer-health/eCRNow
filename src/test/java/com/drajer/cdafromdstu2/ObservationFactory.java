@@ -32,30 +32,26 @@ public class ObservationFactory {
       Collections.unmodifiableSet(new HashSet<>(Arrays.asList("77386006")));
 
   public static List<Observation> filterPregnancyObservations(List<Observation> obsList) {
-    return obsList
-        .stream()
+    return obsList.stream()
         .filter(obs -> hasMatchingCode(obs.getCode(), SNOMED_CODE_SYSTEM, PREGNANCY_SNOMED_CODES))
         .collect(Collectors.toList());
   }
 
   public static List<Observation> filterTravelHistory(List<Observation> obsList) {
-    return obsList
-        .stream()
+    return obsList.stream()
         .filter(
             obs -> hasMatchingCode(obs.getCode(), SNOMED_CODE_SYSTEM, TRAVEL_HISTORY_SNOMED_CODES))
         .collect(Collectors.toList());
   }
 
   public static List<Condition> filterPregnancyConditions(List<Condition> condList) {
-    return condList
-        .stream()
+    return condList.stream()
         .filter(cond -> hasMatchingCode(cond.getCode(), SNOMED_CODE_SYSTEM, PREGNANCY_SNOMED_CODES))
         .collect(Collectors.toList());
   }
 
   public static List<Observation> filterOccupationObservations(List<Observation> obsList) {
-    return obsList
-        .stream()
+    return obsList.stream()
         .filter(
             obs ->
                 hasMatchingCode(obs.getCode(), SNOMED_CODE_SYSTEM, OCCUPATION_SNOMED_CODES)
@@ -66,9 +62,7 @@ public class ObservationFactory {
   private static boolean hasMatchingCode(
       CodeableConceptDt codeableConcept, String system, Set<String> allowedCodes) {
     if (codeableConcept == null || codeableConcept.getCoding() == null) return false;
-    return codeableConcept
-        .getCoding()
-        .stream()
+    return codeableConcept.getCoding().stream()
         .anyMatch(c -> system.equals(c.getSystem()) && allowedCodes.contains(c.getCode()));
   }
 
