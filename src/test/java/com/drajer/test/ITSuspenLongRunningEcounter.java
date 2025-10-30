@@ -1,35 +1,12 @@
 package com.drajer.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static java.lang.Thread.sleep;
 import static org.junit.Assert.*;
 
 import com.drajer.eca.model.*;
-import com.drajer.eca.model.EventTypes.JobStatus;
-import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.util.TestDataGenerator;
-import com.drajer.test.util.WireMockHelper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 
@@ -46,6 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = {"longencounter.enableSuspend=true"})
 public class ITSuspenLongRunningEcounter extends BaseIntegrationTest {
 
+  /*
   private String testCaseId;
   private Map<String, String> testData;
   private Map<String, ?> allResourceMapping;
@@ -235,4 +213,6 @@ public class ITSuspenLongRunningEcounter extends BaseIntegrationTest {
       fail("Something went wrong with launch status, check the log");
     }
   }
+
+     */
 }

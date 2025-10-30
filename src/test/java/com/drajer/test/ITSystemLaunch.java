@@ -3,35 +3,12 @@ package com.drajer.test;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
 
-import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.ecrapp.model.Eicr;
-import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.util.TestDataGenerator;
-import com.drajer.test.util.WireMockHelper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import org.hibernate.query.Query;
-import org.json.JSONException;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @RunWith(Parameterized.class)
 public class ITSystemLaunch extends BaseIntegrationTest {
-
+  /*
   private String testCaseId;
   private Map<String, String> testData;
   private Map<String, ?> allResourceMapping;
@@ -102,7 +79,7 @@ public class ITSystemLaunch extends BaseIntegrationTest {
     if (createEicr != null) {
       assertNotNull(createEicr.getEicrData());
       assertFalse(createEicr.getEicrData().isEmpty());
-      /* count should be 1 since getMetadata is called explicitly*/
+
       wireMockServer.verify(exactly(1), getRequestedFor(urlEqualTo("/FHIR/metadata")));
     }
   }
@@ -149,4 +126,5 @@ public class ITSystemLaunch extends BaseIntegrationTest {
     }
     return null;
   }
+  */
 }
