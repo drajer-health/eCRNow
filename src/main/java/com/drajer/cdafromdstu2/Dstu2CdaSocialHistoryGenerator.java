@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import jline.internal.Log;
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -48,7 +47,7 @@ public class Dstu2CdaSocialHistoryGenerator {
         || (occHistory != null && !occHistory.isEmpty())
         || (travelHistory != null && !travelHistory.isEmpty())) {
 
-      Log.info(" Generating Social History data ");
+      logger.info(" Generating Social History data ");
 
       sb.append(generateSocialHistorySectionHeader(""));
 

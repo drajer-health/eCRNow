@@ -9,10 +9,10 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.*;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 @RunWith(Parameterized.class)
+@Transactional
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   protected String testCaseId;
@@ -168,8 +169,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaBuilder cb = getSession().getCriteriaBuilder();
       CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
       Root<LaunchDetails> root = cq.from(LaunchDetails.class);
       cq.where(cb.equal(root.get("xRequestId"), testCaseId));
