@@ -108,7 +108,7 @@ The eCRNow-UI project and application is used to configure the eCRNow App. Altho
 ## 4.1 Pre-Requisites: ##
 The following technologies should have been installed on your machine where you will build, test and deploy your applications.
 
-* Java 17 is supported by eCRNow App Release 3.1.5 or later releases. 
+* Java 17 or higher
 * Pick a specific release from the master branch and install the JDK that you would like to use.
 * PostgresSQL Database 10.x or higher.
 * NodeJS 12.4.1 or above
