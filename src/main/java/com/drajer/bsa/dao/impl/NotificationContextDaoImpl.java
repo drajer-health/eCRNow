@@ -8,13 +8,15 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
@@ -135,13 +137,158 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
   @Override
   public List<NotificationContext> getAllNotificationContext(
       UUID id, Map<String, String> searchParams) {
-    return List.of();
+    Session session = getSession();
+    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
+    Root<NotificationContext> root = cq.from(NotificationContext.class);
+
+    List<Predicate> predicates = new ArrayList<>();
+
+    if (id != null) {
+      predicates.add(cb.equal(root.get("id"), id));
+    } else {
+      if (searchParams.get("fhirServerBaseURL") != null) {
+        predicates.add(
+            cb.equal(root.get("fhirServerBaseUrl"), searchParams.get("fhirServerBaseURL")));
+      }
+      if (searchParams.get("notificationResourceId") != null) {
+        predicates.add(
+            cb.equal(
+                root.get("notificationResourceId"), searchParams.get("notificationResourceId")));
+      }
+      if (searchParams.get("patientId") != null) {
+        predicates.add(cb.equal(root.get("patientId"), searchParams.get("patientId")));
+      }
+
+      if (searchParams.get("notificationProcessingStatus") != null) {
+        String notificationProcessingStatus = searchParams.get("notificationProcessingStatus");
+        List<String> searchStatusList =
+            notificationProcessingStatus.contains(",")
+                ? Arrays.asList(notificationProcessingStatus.split(","))
+                : Collections.singletonList(notificationProcessingStatus);
+        predicates.add(root.get("notificationProcessingStatus").in(searchStatusList));
+      }
+
+      String startDate = searchParams.get("startDateTime");
+      String endDate = searchParams.get("endDateTime");
+      String lastUpdatedStartTime = searchParams.get("lastUpdatedStartTime");
+      String lastUpdatedEndTime = searchParams.get("lastUpdatedEndTime");
+
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+      try {
+        if (startDate != null) {
+          Date eicrStartDate = sdf.parse(startDate);
+          predicates.add(cb.greaterThanOrEqualTo(root.get("encounterStartTime"), eicrStartDate));
+        }
+        if (endDate != null) {
+          Date eicrEndDate = sdf.parse(endDate);
+          predicates.add(cb.lessThanOrEqualTo(root.get("encounterEndTime"), eicrEndDate));
+        }
+        if (lastUpdatedStartTime != null) {
+          Date eicrLastUpdatedStartTime = sdf.parse(lastUpdatedStartTime);
+          predicates.add(
+              cb.greaterThanOrEqualTo(root.get("lastUpdated"), eicrLastUpdatedStartTime));
+        }
+        if (lastUpdatedEndTime != null) {
+          Date eicrLastUpdatedEndTime = sdf.parse(lastUpdatedEndTime);
+          predicates.add(cb.lessThanOrEqualTo(root.get("lastUpdated"), eicrLastUpdatedEndTime));
+        }
+      } catch (ParseException e) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "Invalid date format: " + e.getMessage());
+      }
+    }
+
+    cq.select(root)
+        .where(cb.and(predicates.toArray(new Predicate[0])))
+        .orderBy(cb.asc(root.get("lastUpdated")));
+
+    Query<NotificationContext> query = session.createQuery(cq);
+
+    if (searchParams.get("limit") != null) {
+      query.setMaxResults(Integer.parseInt(searchParams.get("limit")));
+    }
+
+    return query.getResultList();
   }
 
   @Override
   public List<NotificationContext> getNotificationContextForReprocessing(
       UUID id, Map<String, String> searchParams) {
-    return List.of();
+
+    Date lastUpdatedStart = null;
+    Date lastUpdatedEnd = null;
+    int limit =
+        searchParams.get("limit") != null ? Integer.parseInt(searchParams.get("limit")) : 10;
+
+    final String startParam = searchParams.get("lastUpdatedStartTime");
+    final String endParam = searchParams.get("lastUpdatedEndTime");
+    try {
+      if (startParam != null) {
+        lastUpdatedStart =
+            new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(startParam);
+      }
+      if (endParam != null) {
+        lastUpdatedEnd = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(endParam);
+      }
+    } catch (Exception e) {
+      throw new org.springframework.web.server.ResponseStatusException(
+          org.springframework.http.HttpStatus.BAD_REQUEST,
+          "Invalid date format: " + e.getMessage());
+    }
+
+    var cb = getSession().getCriteriaBuilder();
+    var cq = cb.createQuery(NotificationContext.class);
+    var f = cq.from(NotificationContext.class); // alias "f" (FAILED row candidate)
+
+    var notExists = cq.subquery(Long.class);
+    var nc = notExists.from(NotificationContext.class);
+    notExists
+        .select(cb.literal(1L))
+        .where(
+            cb.equal(nc.get("notificationResourceId"), f.get("notificationResourceId")),
+            cb.notEqual(nc.get("notificationProcessingStatus"), "FAILED"),
+            cb.greaterThan(
+                nc.<java.util.Date>get("lastUpdated"), f.<java.util.Date>get("lastUpdated")));
+
+    java.util.List<jakarta.persistence.criteria.Predicate> preds = new java.util.ArrayList<>();
+    preds.add(cb.equal(f.get("notificationProcessingStatus"), "FAILED"));
+
+    if (lastUpdatedStart != null) {
+      preds.add(cb.greaterThanOrEqualTo(f.<java.util.Date>get("lastUpdated"), lastUpdatedStart));
+    }
+    // (Your original code parsed end time but didn’t apply it; adding it here is usually intended.)
+    if (lastUpdatedEnd != null) {
+      preds.add(cb.lessThanOrEqualTo(f.<java.util.Date>get("lastUpdated"), lastUpdatedEnd));
+    }
+
+    preds.add(cb.not(cb.exists(notExists)));
+
+    cq.select(f)
+        .where(preds.toArray(new jakarta.persistence.criteria.Predicate[0]))
+        .orderBy(cb.asc(f.get("lastUpdated")));
+
+    var results = getSession().createQuery(cq).getResultList();
+
+    var byId =
+        results.stream()
+            .sorted(java.util.Comparator.comparing(NotificationContext::getLastUpdated).reversed())
+            .collect(
+                java.util.stream.Collectors.groupingBy(
+                    NotificationContext::getNotificationResourceId));
+
+    return byId.entrySet().stream()
+        .flatMap(
+            e ->
+                java.util.stream.IntStream.range(0, e.getValue().size())
+                    .mapToObj(
+                        i -> new java.util.AbstractMap.SimpleEntry<>(e.getValue().get(i), i + 1)))
+        .filter(pair -> pair.getValue() == 1)
+        .map(java.util.Map.Entry::getKey)
+        .sorted(java.util.Comparator.comparing(NotificationContext::getLastUpdated))
+        .limit(limit)
+        .collect(java.util.stream.Collectors.toList());
   }
 
   @Override
