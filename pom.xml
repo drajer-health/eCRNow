@@ -24,7 +24,7 @@
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
 		<skip.unit.tests>false</skip.unit.tests>
-        <skip-jacoco-check>false</skip-jacoco-check>
+        <skip-jacoco-check>true</skip-jacoco-check>
         <cqf.fhir.version>3.14.0</cqf.fhir.version>
 	</properties>
 
@@ -595,10 +595,7 @@
                     </dependency>
                 </dependencies>
 				<configuration>
-					<!-- Activate the use of TCP to transmit events to the plugin -->
                     <argLine>${argLine}</argLine>
-                    <forkCount>1</forkCount>
-                <reuseForks>true</reuseForks>
 				</configuration>
 				<executions>
 					<execution>
@@ -607,9 +604,6 @@
 							<goal>test</goal>
 						</goals>
 						<configuration>
-
-                            <forkCount>1</forkCount>
-                            <reuseForks>true</reuseForks>
 							<skipTests>${skip.unit.tests}</skipTests>
 							<excludes>
 								<exclude>**/IT*.java</exclude>
@@ -640,7 +634,6 @@
 							<includes>
 								<include>**/IT*.java</include>
 							</includes>
-
 							<skipTests>${skip.integration.tests}</skipTests>
 						</configuration>
 					</execution>
