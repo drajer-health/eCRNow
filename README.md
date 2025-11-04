@@ -160,29 +160,17 @@ Change the logfile location to reflect where you want to log the data.
 
 4. Build the App by running the following maven command.
 ```
-mvn clean install -Djava.version=<JAVA VERSION>
-```
-
-For Java 8
-
-```
-mvn clean install -Djava.version=1.8
-```
-
-For Java 17
-
-```
-mvn clean install -Djava.version=17
+mvn clean install
 ```
 
 5. Run the App using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -jar ./target/ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -jar ./target/ecr-now.war```
 
 The security.key is something that you can configure in the environment or your container approach and is used for encrypting sensitive information such as clientids, client secrets and direct transport account information in the database.
 
 NOTE: If you are using Windows system to run the application, then use the command formatted like below.
-```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" "-Djava.version=<JAVA VERSION>" -jar .\target\ecr-now.war```
+```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" -jar .\target\ecr-now.war```
  
 # 6.  Running the Application with SSL.
 
@@ -193,19 +181,19 @@ Keystore File: You will need a valid keystore file (.p12 or .jks) for SSL encryp
 
 #### 6.1  Running the Application with a .p12 Keystore (Self-Signed) using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.p12 -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=PKCS12 -jar .\target\ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123  -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.p12 -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=PKCS12 -jar .\target\ecr-now.war```
 
 
 #### 6.2  Running the Application with a .jks Keystore (Self-Signed) using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.jks -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=jks -jar .\target\ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123  -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.jks -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=jks -jar .\target\ecr-now.war```
 
 
 ### Properties  Explanation
 
 | **Property Name**             | **Description**                                                                                   | **Default Value** | **Example Value**                                  |
 |-------------------------------|---------------------------------------------------------------------------------------------------|-------------------|----------------------------------------------------|
-| `java.version`                 | Specifies the Java version required to run the application.                                      | `1.8`             | `17`                                               |
+| `java.version`                 | Specifies the Java version required to run the application.                                      | `17`             | `17`                                               |
 | `security.key`                 | Encryption key used to protect sensitive data like client IDs, client secrets, and transport info. | `test123`         | `mySecureKey!`                                     |
 | `server.ssl.enabled`           | Enables or disables SSL for secure communication.                                                 | `false`           | `true`                                             |
 | `server.ssl.key-alias`         | Alias for the key inside the keystore.                                                            | `ecrnow`          | `mykey`                                            |
