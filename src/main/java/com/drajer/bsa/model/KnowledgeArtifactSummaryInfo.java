@@ -24,16 +24,16 @@ public class KnowledgeArtifactSummaryInfo {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  @Column(name = "kar_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_id", nullable = false, length = 8000)
   private String karId;
 
-  @Column(name = "kar_name", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_name", nullable = false, length = 8000)
   private String karName;
 
-  @Column(name = "kar_publisher", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_publisher", nullable = false, length = 8000)
   private String karPublisher;
 
-  @Column(name = "kar_version", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_version", nullable = false, length = 8000)
   private String karVersion;
 
   @Column(name = "kar_available", nullable = true)

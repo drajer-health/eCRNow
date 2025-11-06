@@ -6,6 +6,7 @@ import com.drajer.ecrapp.security.AESEncryption;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;
+import org.hibernate.Length;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
@@ -41,13 +42,13 @@ public class HealthcareSetting implements FhirServerDetails {
   private Integer id;
 
   /** The attribute represents the client id that is to be used for SMART on FHIR Authorization. */
-  @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "clientId", nullable = false, length = 8000)
   private String clientId;
 
   /**
    * The attribute represents the client secret that is to be used for SMART on FHIR Authorization.
    */
-  @Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "clientSecret", nullable = true, length = 8000)
   private String clientSecret;
 
   /**
@@ -65,21 +66,21 @@ public class HealthcareSetting implements FhirServerDetails {
    * The attribute represents the Token URL for requesting access tokens as part of SMART on FHIR
    * Authorization. This is provided to override what is present in the CapabilityStatement.
    */
-  @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "token_url", nullable = true, length = 8000)
   private String tokenUrl;
 
   /**
    * The attribute represents the scopes for which permission is requested during the SMART on FHIR
    * Authorization. This is provided to override what is present in the CapabilityStatement.
    */
-  @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "scopes", nullable = false, length = Length.LONG32)
   private String scopes;
 
   /**
    * The attribute represents the Default Provider ID that has to be used for sending or receiving
    * messages and posting to EHR by some EHR vendors.
    */
-  @Column(name = "default_provider_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "default_provider_id", nullable = true, length = 8000)
   private String defaultProviderId;
 
   /*
@@ -113,7 +114,7 @@ public class HealthcareSetting implements FhirServerDetails {
   /*
    * The domain of the direct server, (for example abc.direct.org) that will be used as the HISP to send the direct messages.
    */
-  @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "direct_host", nullable = true, length = 8000)
   private String directHost;
 
   /*
@@ -244,11 +245,11 @@ public class HealthcareSetting implements FhirServerDetails {
    * HealthcareSetting. This is populated using the HealthcareSettingOperationalKnowledgeArtifacts
    * class which is converted to a JSON string and stored.
    */
-  @Column(name = "kars_active", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "kars_active", nullable = true, length = Length.LONG32)
   private String karsActive;
 
   /** This attribute represents the type of authentication to be used by the healthcare setting. */
-  @Column(name = "auth_type", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "auth_type", nullable = false, length = 8000)
   private String authType;
 
   /**
@@ -257,7 +258,7 @@ public class HealthcareSetting implements FhirServerDetails {
    * and not needed in these cases and hence it will be stored in HealthcareSetting based on
    * AuthType.
    */
-  @Column(name = "ehr_access_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "ehr_access_token", nullable = true, length = Length.LONG32)
   private String ehrAccessToken;
 
   /** The expiry duration in seconds for the EHR Access Token */
@@ -280,15 +281,15 @@ public class HealthcareSetting implements FhirServerDetails {
   /**
    * This attribute defines the trusted third party end point that reports should be submitted to.
    */
-  @Column(name = "trusted_third_party", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "trusted_third_party", nullable = true, length = 8000)
   private String trustedThirdParty;
 
   /** This attribute defines the PHA end point that reports should be submitted to. */
-  @Column(name = "pha_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "pha_url", nullable = true, length = 8000)
   private String phaUrl;
 
   /** The attribute represents the default name of the organization. */
-  @Column(name = "org_name", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "org_name", nullable = true, length = 8000)
   private String orgName;
 
   /**
@@ -296,11 +297,11 @@ public class HealthcareSetting implements FhirServerDetails {
    * reporting, the Assigning Authority Id will be used. For FHIR based systems, if a URL is
    * provided, it can be stored in this attribute.
    */
-  @Column(name = "org_id_system", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "org_id_system", nullable = true, length = 8000)
   private String orgIdSystem;
 
   /** The attribute represents a unique identifier for the organization */
-  @Column(name = "org_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "org_id", nullable = true, length = 8000)
   private String orgId;
 
   /**
@@ -326,7 +327,7 @@ public class HealthcareSetting implements FhirServerDetails {
   private Integer offHoursEndMin;
 
   /** The attribute represents the timezone for the offhours. Currently only UTC is supported. */
-  @Column(name = "off_hours_timezone", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "off_hours_timezone", nullable = true, length = 8000)
   private String offHoursTimezone;
 
   @Column(name = "off_hours_enabled", nullable = true)
@@ -334,33 +335,33 @@ public class HealthcareSetting implements FhirServerDetails {
   private Boolean offhoursEnabled = true;
 
   /** The attribute represents a username that may be used with password-based Authorization. */
-  @Column(name = "username", columnDefinition = "TEXT")
+  @Column(name = "username", length = 8000)
   private String username;
 
   /**
    * The attribute represents a password associated with the username for password-based
    * authorization.
    */
-  @Column(name = "password", columnDefinition = "TEXT")
+  @Column(name = "password", length = 8000)
   private String password;
 
   /** The attribute represents the Key Alias for the Private Key to be used for signing. */
-  @Column(name = "backend_auth_key_alias", columnDefinition = "TEXT")
+  @Column(name = "backend_auth_key_alias", length = 8000)
   private String backendAuthKeyAlias;
 
   /** The attribute represents the algorithm to be used for SMART on FHIR Backend Authorization */
-  @Column(name = "backend_auth_alg", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "backend_auth_alg", nullable = true, length = 8000)
   private String backendAuthAlg;
 
   /** The attribute represents the KID to be used for SMART on FHIR Backend Authorization */
-  @Column(name = "backend_auth_kid", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "backend_auth_kid", nullable = true, length = 8000)
   private String backendAuthKid;
 
   @Column(name = "debug_enabled", nullable = true)
   @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean debugEnabled = true;
 
-  @Column(name = "direct_endpoint_cert_alias", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "direct_endpoint_cert_alias", nullable = true, length = 8000)
   private String directEndpointCertificateNameOrAlias;
 
   @Column(name = "smtp_auth_enabled", nullable = true)

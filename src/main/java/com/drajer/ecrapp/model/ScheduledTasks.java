@@ -7,9 +7,9 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.sql.Types;
 import java.util.Date;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -26,8 +26,8 @@ public class ScheduledTasks implements Serializable {
   private String task_name;
 
   @Lob
-  @Column(name = "task_data", length = 1000000)
-  @JdbcTypeCode(SqlTypes.BINARY)
+  @Column(name = "task_data")
+  @JdbcTypeCode(Types.LONGVARBINARY)
   private byte[] task_data;
 
   @Column(name = "execution_time")

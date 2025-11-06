@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import org.hibernate.Length;
 import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +53,14 @@ public class KnowledgeArtifactStatus {
    * The Version of the Knowledge Artifact as defined by the Public Health Agency or Research
    * Organization.
    */
-  @Column(name = "kar_version", columnDefinition = "TEXT", nullable = false)
+  @Column(name = "kar_version", length = 8000, nullable = false)
   String karVersion;
 
   /**
    * The version unique id of the Knowledge Artifact as defined by the Public Health Agency or
    * Research Organization. This is a concatenation of Id and version.
    */
-  @Column(name = "map_versionid_karid", columnDefinition = "TEXT", nullable = false)
+  @Column(name = "map_versionid_karid", length = 8000, nullable = false)
   String versionUniqueKarId;
 
   /**
@@ -93,7 +94,7 @@ public class KnowledgeArtifactStatus {
    * HealthcareSetting.
    */
   @Convert(converter = SetOfStringsConverter.class)
-  @Column(name = "subscriptions", columnDefinition = "TEXT")
+  @Column(name = "subscriptions", length = Length.LONG32)
   Set<String> subscriptions;
 
   @Column(name = "is_only_covid", nullable = false)
@@ -106,7 +107,7 @@ public class KnowledgeArtifactStatus {
    * produced for the KAR.
    */
   @Enumerated(EnumType.STRING)
-  @Column(name = "output_format", columnDefinition = "TEXT")
+  @Column(name = "output_format", length = 8000)
   OutputContentType outputFormat;
 
   public KnowledgeArtifactStatus() {

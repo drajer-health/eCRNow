@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Length;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.json.JSONObject;
@@ -44,22 +45,22 @@ public class ClientDetails {
   @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isUserAccountLaunch;
 
-  @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "clientId", nullable = false, length = 8000)
   private String clientId;
 
-  @Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "clientSecret", nullable = true, length = Length.LONG32)
   private String clientSecret;
 
   @Column(name = "fhir_server_base_url", nullable = false, unique = true)
   private String fhirServerBaseURL;
 
-  @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "token_url", nullable = true, length = 8000)
   private String tokenURL;
 
-  @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "scopes", nullable = false, length = Length.LONG32)
   private String scopes;
 
-  @Column(name = "access_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "access_token", nullable = true, length = Length.LONG32)
   private String accessToken;
 
   @Column(name = "token_expiry", nullable = true, columnDefinition = "int default 0")
@@ -81,7 +82,7 @@ public class ClientDetails {
   @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isRestAPI;
 
-  @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "direct_host", nullable = true, length = 8000)
   private String directHost;
 
   @Column(name = "direct_user", nullable = true)
