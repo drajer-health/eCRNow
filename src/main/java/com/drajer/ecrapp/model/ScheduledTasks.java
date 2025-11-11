@@ -13,8 +13,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
 @Table(
-    name = "scheduled_tasks",
-    indexes = {@Index(name = "idx_exec_time", columnList = "execution_time")})
+    name = "scheduled_tasks_v2",
+    indexes = {@Index(name = "idx_exec_time_v2", columnList = "execution_time")})
 public class ScheduledTasks implements Serializable {
 
   @Id

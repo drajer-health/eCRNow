@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(
-    name = "hs_kar_status",
-    indexes = {@Index(name = "idx_hs_id", columnList = "hs_id")})
+    name = "hs_kar_status_v2",
+    indexes = {@Index(name = "idx_hs_id_v2", columnList = "hs_id")})
 @DynamicUpdate
 public class KnowledgeArtifactStatus {
 

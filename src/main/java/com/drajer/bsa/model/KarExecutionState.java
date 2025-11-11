@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "kar_execution_state")
+@Table(name = "kar_execution_state_v2")
 @DynamicUpdate
 public class KarExecutionState {
 

@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(
-    name = "healthcare_setting",
-    indexes = {@Index(name = "idx_fsb_url", columnList = "fhir_server_base_url")})
+    name = "healthcare_setting_v2",
+    indexes = {@Index(name = "idx_fsb_url_v2", columnList = "fhir_server_base_url")})
 @DynamicUpdate
 public class HealthcareSetting implements FhirServerDetails {
 

@@ -20,10 +20,10 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(
-    name = "ph_messages",
+    name = "ph_messages_v2",
     indexes = {
-      @Index(name = "idx_not_res_id", columnList = "notified_resource_id"),
-      @Index(name = "idx_kar_id", columnList = "kar_unique_id")
+      @Index(name = "idx_not_res_id_v2", columnList = "notified_resource_id"),
+      @Index(name = "idx_kar_id_v2", columnList = "kar_unique_id")
     })
 @DynamicUpdate
 public class PublicHealthMessage {

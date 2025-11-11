@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(
-    name = "notification_context",
+    name = "notification_context_v2",
     uniqueConstraints =
         @UniqueConstraint(
             columnNames = {

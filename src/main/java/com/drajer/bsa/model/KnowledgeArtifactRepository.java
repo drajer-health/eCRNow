@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author nbashyam
  */
 @Entity
-@Table(name = "kar_repos")
+@Table(name = "kar_repos_v2")
 @DynamicUpdate
 @JsonInclude(Include.NON_NULL)
 public class KnowledgeArtifactRepository {

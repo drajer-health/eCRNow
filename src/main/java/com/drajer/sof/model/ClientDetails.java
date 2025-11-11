@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "client_details")
+@Table(name = "client_detail_v2")
 @DynamicUpdate
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClientDetails {

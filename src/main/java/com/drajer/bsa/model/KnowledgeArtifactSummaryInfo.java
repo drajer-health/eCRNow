@@ -16,7 +16,7 @@ import org.hibernate.annotations.DynamicUpdate;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "kar_info")
+@Table(name = "kar_info_v2")
 @DynamicUpdate
 public class KnowledgeArtifactSummaryInfo {
 

@@ -12,7 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
-@Table(name = "eicr")
+@Table(name = "eicr_v2")
 @DynamicUpdate
 public class Eicr {
 

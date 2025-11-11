@@ -1,6 +1,6 @@
 package com.drajer.fhirecr;
 
-import com.microsoft.sqlserver.jdbc.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;

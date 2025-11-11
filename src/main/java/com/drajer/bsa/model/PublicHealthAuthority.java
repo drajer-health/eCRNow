@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * <h1>PublicHealthAuthority</h1>
  */
 @Entity
-@Table(name = "public_health_authority")
+@Table(name = "public_health_authority_v2")
 @DynamicUpdate
 public class PublicHealthAuthority implements FhirServerDetails {
 

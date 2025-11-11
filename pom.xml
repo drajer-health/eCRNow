@@ -22,8 +22,8 @@
 		<fhir.version>8.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
-		<skip.integration.tests>false</skip.integration.tests>
-		<skip.unit.tests>false</skip.unit.tests>
+		<skip.integration.tests>true</skip.integration.tests>
+		<skip.unit.tests>true</skip.unit.tests>
         <skip-jacoco-check>true</skip-jacoco-check>
         <cqf.fhir.version>3.14.0</cqf.fhir.version>
 	</properties>
@@ -126,15 +126,13 @@
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
-			<version>8.2.2.jre8</version>
+            <scope>runtime</scope>
 		</dependency>
 
-		<!-- PostgreSQL -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>

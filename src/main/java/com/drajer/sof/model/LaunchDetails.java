@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(
-    name = "launch_details",
+    name = "launch_details_v2",
     uniqueConstraints =
         @UniqueConstraint(columnNames = {"ehr_server_url", "launch_patient_id", "encounter_id"}))
 @DynamicUpdate
