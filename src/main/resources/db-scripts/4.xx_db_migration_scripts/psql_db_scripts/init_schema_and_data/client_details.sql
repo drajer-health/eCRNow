@@ -4,7 +4,6 @@
 -- Note: Constraints handled separately
 -- ==================================================================
 
-
 DO
 $$
 DECLARE
@@ -13,6 +12,7 @@ DECLARE
     row_count_old BIGINT;
     row_count_new BIGINT;
     missing_cols INT;
+    missing_in_new TEXT;
     col_list TEXT := '';
     select_list TEXT := '';
     col RECORD;
@@ -35,6 +35,8 @@ BEGIN
         SELECT 1 FROM information_schema.tables
         WHERE table_name = new_table AND table_schema = 'public'
     ) THEN
+        RAISE NOTICE 'Creating new table "%"...', new_table;
+
         EXECUTE format('
             CREATE TABLE %I (
                 id SERIAL PRIMARY KEY,
@@ -66,7 +68,7 @@ BEGIN
                 aa_id VARCHAR(255) NULL,
                 encounter_start_time VARCHAR(255) NULL,
                 encounter_end_time VARCHAR(255) NULL,
-                is_covid INT DEFAULT 0,
+                is_covid19 INT DEFAULT 0,
                 is_full_ecr INT DEFAULT 1,
                 is_emergent_reporting_enabled INT DEFAULT 0,
                 rrprocessing_createdocRef INT DEFAULT 0,
@@ -85,20 +87,37 @@ BEGIN
     END IF;
 
     ------------------------------------------------------------------
-    -- 3. Determine matching columns
+    -- 3. Verify column compatibility between old and new tables
     ------------------------------------------------------------------
     SELECT COUNT(*) INTO missing_cols
-    FROM information_schema.columns c1
-    WHERE c1.table_name = old_table
-    AND NOT EXISTS (
-        SELECT 1
-        FROM information_schema.columns c2
-        WHERE c2.table_name = new_table
-        AND c2.column_name = c1.column_name
-    );
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = old_table
+    ) diff;
+
+    -- Collect missing column names into a comma-separated list
+    SELECT COALESCE(string_agg(column_name, ', '), 'None')
+    INTO missing_in_new
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = old_table
+    ) diff;
 
     IF missing_cols > 0 THEN
-        RAISE NOTICE 'Some columns are missing between old and new tables.';
+        RAISE EXCEPTION 'Column mismatch detected. % column(s) missing in "%" "%".',
+            missing_cols, new_table, missing_in_new;
+    ELSE
+        RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
     END IF;
 
     ------------------------------------------------------------------

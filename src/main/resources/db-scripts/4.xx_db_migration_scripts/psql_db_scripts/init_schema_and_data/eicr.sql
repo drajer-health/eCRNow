@@ -4,8 +4,6 @@
 -- Note: Constraints handled separately
 -- ==================================================================
 
-
-
 DO
 $$
 DECLARE
@@ -16,6 +14,7 @@ DECLARE
     missing_cols INT;
     col_list TEXT := '';
     select_list TEXT := '';
+    missing_in_new TEXT;
     col RECORD;
 BEGIN
     ------------------------------------------------------------------
@@ -25,8 +24,7 @@ BEGIN
         SELECT 1 FROM information_schema.tables
         WHERE table_name = old_table AND table_schema = 'public'
     ) THEN
-        RAISE NOTICE 'Old table "%" does not exist. Exiting.', old_table;
-        RETURN;
+        RAISE EXCEPTION 'Old table "%" does not exist. Migration aborted.', old_table;
     END IF;
 
     ------------------------------------------------------------------
@@ -59,29 +57,46 @@ BEGIN
                 ehr_doc_ref_id VARCHAR(8000),
                 eicr_proc_status VARCHAR(8000),
                 rr_proc_status VARCHAR(8000),
-                last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                last_updated_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
         ', new_table);
         RAISE NOTICE 'New table "%" created successfully.', new_table;
     ELSE
-        RAISE NOTICE 'New table "%" already exists.', new_table;
+        RAISE NOTICE 'New table "%" already exists. Proceeding with validation...', new_table;
     END IF;
 
     ------------------------------------------------------------------
-    -- 3. Determine missing columns
+    -- 3. Verify column compatibility between old and new tables
     ------------------------------------------------------------------
     SELECT COUNT(*) INTO missing_cols
-    FROM information_schema.columns c1
-    WHERE c1.table_name = old_table
-    AND NOT EXISTS (
-        SELECT 1
-        FROM information_schema.columns c2
-        WHERE c2.table_name = new_table
-        AND c2.column_name = c1.column_name
-    );
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = old_table
+    ) diff;
+
+    -- Collect missing column names into a comma-separated list
+    SELECT COALESCE(string_agg(column_name, ', '), 'None')
+    INTO missing_in_new
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = old_table
+    ) diff;
 
     IF missing_cols > 0 THEN
-        RAISE NOTICE 'Some columns are missing between old and new tables.';
+        RAISE EXCEPTION 'Column mismatch detected: % column(s) missing in "%": % — please add missing columns before migration.',
+            missing_cols, old_table, missing_in_new;
+    ELSE
+        RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
     END IF;
 
     ------------------------------------------------------------------
@@ -136,5 +151,9 @@ BEGIN
         RAISE NOTICE 'No data to migrate for "%".', old_table;
     END IF;
 
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error during migration: %', SQLERRM;
+        RAISE;
 END
 $$;

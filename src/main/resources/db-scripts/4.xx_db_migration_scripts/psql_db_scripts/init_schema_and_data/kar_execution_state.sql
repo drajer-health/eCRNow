@@ -21,6 +21,7 @@ DECLARE
     col RECORD;
     old_col_type TEXT;
     new_col_type TEXT;
+    missing_in_new TEXT;
 BEGIN
     ------------------------------------------------------------------
     -- 1. Check if old table exists
@@ -60,20 +61,37 @@ BEGIN
     ------------------------------------------------------------------
     -- 3. Validate column consistency between old and new tables
     ------------------------------------------------------------------
-    SELECT COUNT(*) INTO missing_cols
-    FROM (
-        SELECT column_name FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = old_table
-        EXCEPT
-        SELECT column_name FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = new_table
-    ) diff;
+   SELECT COUNT(*) INTO missing_cols
+       FROM (
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = new_table
+           EXCEPT
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = old_table
+       ) diff;
 
-    IF missing_cols > 0 THEN
-        RAISE NOTICE '% columns missing between "%" and "%".', missing_cols, old_table, new_table;
-    ELSE
-        RAISE NOTICE 'All columns validated successfully between "%" and "%".', old_table, new_table;
-    END IF;
+    -- Collect missing column names into a comma-separated list
+       SELECT COALESCE(string_agg(column_name, ', '), 'None')
+       INTO missing_in_new
+       FROM (
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = new_table
+           EXCEPT
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = old_table
+       ) diff;
+
+       IF missing_cols > 0 THEN
+          RAISE EXCEPTION 'Column mismatch detected in : % column(s) missing in "%": % please add misssing in order to migrate ',
+               missing_cols, old_table, missing_in_new;
+       ELSE
+           RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
+       END IF;
+
 
     ------------------------------------------------------------------
     -- 4. Check if old table has data

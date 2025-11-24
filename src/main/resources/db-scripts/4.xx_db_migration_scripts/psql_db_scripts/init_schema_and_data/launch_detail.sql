@@ -3,8 +3,6 @@
 -- Purpose: Create launch_details_v2 and migrate data from launch_details
 -- Note: Constraints handled separately
 -- ==================================================================
-
-
 DO
 $$
 DECLARE
@@ -16,27 +14,28 @@ DECLARE
     col_list TEXT := '';
     select_list TEXT := '';
     col RECORD;
+    missing_in_new TEXT;
     old_col_type TEXT;
     new_col_type TEXT;
 BEGIN
     ------------------------------------------------------------------
-    -- 1️⃣ Check if old table exists
+    -- 1 Check if old table exists
     ------------------------------------------------------------------
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.tables
         WHERE table_schema = 'public' AND table_name = old_table
     ) THEN
-        RAISE EXCEPTION '❌ Source table "%" does not exist. Migration aborted.', old_table;
+        RAISE EXCEPTION ' Source table "%" does not exist. Migration aborted.', old_table;
     END IF;
 
     ------------------------------------------------------------------
-    -- 2️⃣ Create new table if not exists
+    -- 2️ Create new table if not exists
     ------------------------------------------------------------------
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.tables
         WHERE table_schema = 'public' AND table_name = new_table
     ) THEN
-        RAISE NOTICE '🆕 Creating table "%"...', new_table;
+        RAISE NOTICE 'Creating table "%"...', new_table;
 
         EXECUTE format('
             CREATE TABLE %I (
@@ -96,31 +95,47 @@ BEGIN
             );
         ', new_table);
 
-        RAISE NOTICE '✅ Table "%" created successfully.', new_table;
+        RAISE NOTICE 'Table "%" created successfully.', new_table;
     ELSE
-        RAISE NOTICE 'ℹ Table "%" already exists. Proceeding with validation...', new_table;
+        RAISE NOTICE ' Table "%" already exists. Proceeding with validation...', new_table;
     END IF;
 
     ------------------------------------------------------------------
-    -- 3️⃣ Validate column consistency
+    -- 3 Validate column consistency
     ------------------------------------------------------------------
-    SELECT COUNT(*) INTO missing_cols
-    FROM (
-        SELECT column_name FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = old_table
-        EXCEPT
-        SELECT column_name FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = new_table
-    ) diff;
+   SELECT COUNT(*) INTO missing_cols
+       FROM (
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = new_table
+           EXCEPT
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = old_table
+       ) diff;
 
-    IF missing_cols > 0 THEN
-        RAISE EXCEPTION '❌ Column mismatch: % column(s) in "%" missing in "%".', missing_cols, old_table, new_table;
-    ELSE
-        RAISE NOTICE '✅ All columns from "%" exist in "%".', old_table, new_table;
-    END IF;
+    -- Collect missing column names into a comma-separated list
+       SELECT COALESCE(string_agg(column_name, ', '), 'None')
+       INTO missing_in_new
+       FROM (
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = new_table
+           EXCEPT
+           SELECT column_name
+           FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = old_table
+       ) diff;
+
+       IF missing_cols > 0 THEN
+          RAISE EXCEPTION 'Column mismatch detected in : % column(s) missing in "%": % please add misssing in order to migrate ',
+               missing_cols, old_table, missing_in_new;
+       ELSE
+           RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
+       END IF;
 
     ------------------------------------------------------------------
-    -- 4️⃣ Check for data in old table
+    -- 4️ Check for data in old table
     ------------------------------------------------------------------
     EXECUTE format('SELECT COUNT(*) FROM %I', old_table) INTO row_count_old;
     IF row_count_old = 0 THEN
@@ -129,7 +144,7 @@ BEGIN
     END IF;
 
     ------------------------------------------------------------------
-    -- 5️⃣ Build column lists dynamically
+    -- 5️ Build column lists dynamically
     ------------------------------------------------------------------
     FOR col IN
         SELECT column_name
@@ -158,25 +173,25 @@ BEGIN
     select_list := regexp_replace(select_list, ',\s*$', '');
 
     ------------------------------------------------------------------
-    -- 6️⃣ Migrate data old → new
+    -- 6️ Migrate data old → new
     ------------------------------------------------------------------
     RAISE NOTICE '⬆ Inserting data into "%"...', new_table;
     EXECUTE format('INSERT INTO %I (%s) SELECT %s FROM %I;', new_table, col_list, select_list, old_table);
 
     ------------------------------------------------------------------
-    -- 7️⃣ Validate row counts
+    -- 7️ Validate row counts
     ------------------------------------------------------------------
     EXECUTE format('SELECT COUNT(*) FROM %I', new_table) INTO row_count_new;
 
     IF row_count_new != row_count_old THEN
-        RAISE EXCEPTION '❌ Row count mismatch! old=% new=% — rolling back.', row_count_old, row_count_new;
+        RAISE EXCEPTION 'Row count mismatch! old=% new=% — rolling back.', row_count_old, row_count_new;
     ELSE
-        RAISE NOTICE '✅ Migration successful: % rows copied from "%" → "%".', row_count_new, old_table, new_table;
+        RAISE NOTICE 'Migration successful: % rows copied from "%" → "%".', row_count_new, old_table, new_table;
     END IF;
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE NOTICE '⚠ Error during migration: %', SQLERRM;
+        RAISE NOTICE 'Error during migration: %', SQLERRM;
         RAISE;
 END;
 $$;

@@ -14,6 +14,7 @@ DECLARE
     missing_cols INT;
     col_list TEXT := '';
     select_list TEXT := '';
+    missing_in_new TEXT;
     col RECORD;
 BEGIN
     ------------------------------------------------------------------
@@ -85,19 +86,38 @@ BEGIN
     -- 3. Verify column compatibility
     ------------------------------------------------------------------
     SELECT COUNT(*) INTO missing_cols
-    FROM (
-        SELECT column_name FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = old_table
-        EXCEPT
-        SELECT column_name FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = new_table
-    ) diff;
+        FROM (
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public' AND table_name = new_table
+            EXCEPT
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public' AND table_name = old_table
+        ) diff;
 
-    IF missing_cols > 0 THEN
-        RAISE EXCEPTION 'Column mismatch: % missing column(s).', missing_cols;
-    ELSE
-        RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
-    END IF;
+     -- Collect missing column names into a comma-separated list
+        SELECT COALESCE(string_agg(column_name, ', '), 'None')
+        INTO missing_in_new
+        FROM (
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public' AND table_name = new_table
+            EXCEPT
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public' AND table_name = old_table
+        ) diff;
+
+
+
+        IF missing_cols > 0 THEN
+           RAISE EXCEPTION 'Column mismatch detected in : % column(s) missing in "%": % please add misssing in order to migrate ',
+                missing_cols, old_table, missing_in_new;
+        ELSE
+            RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
+        END IF;
+
 
     ------------------------------------------------------------------
     -- 4. Data migration

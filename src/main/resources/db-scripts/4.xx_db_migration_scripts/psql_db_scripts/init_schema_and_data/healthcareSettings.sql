@@ -1,10 +1,3 @@
--- ==================================================================
--- healthcare_setting.sql
--- Purpose: Create healthcare_setting_v2 and migrate data from healthcare_setting
--- Note: Constraints handled separately
--- ==================================================================
-
-
 DO
 $$
 DECLARE
@@ -15,6 +8,7 @@ DECLARE
     missing_cols INT;
     col_list TEXT := '';
     select_list TEXT := '';
+	missing_in_new TEXT;
     col RECORD;
 BEGIN
     ------------------------------------------------------------------
@@ -112,16 +106,31 @@ BEGIN
     FROM (
         SELECT column_name
         FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = old_table
+        WHERE table_schema = 'public' AND table_name = new_table
         EXCEPT
         SELECT column_name
         FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = new_table
+        WHERE table_schema = 'public' AND table_name = old_table
     ) diff;
 
+ -- Collect missing column names into a comma-separated list
+    SELECT COALESCE(string_agg(column_name, ', '), 'None')
+    INTO missing_in_new
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = old_table
+    ) diff;
+
+
+
     IF missing_cols > 0 THEN
-        RAISE EXCEPTION 'Column mismatch detected. % column(s) missing in "%".',
-            missing_cols, new_table;
+       RAISE EXCEPTION 'Column mismatch detected in : % column(s) missing in "%": % please add misssing in order to migrate ',
+            missing_cols, old_table, missing_in_new;
     ELSE
         RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
     END IF;
@@ -187,3 +196,8 @@ EXCEPTION
         RAISE;
 END;
 $$;
+
+
+
+ 
+ 

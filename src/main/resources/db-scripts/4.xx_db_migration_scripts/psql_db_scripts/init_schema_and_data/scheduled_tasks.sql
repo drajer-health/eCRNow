@@ -14,6 +14,7 @@ DECLARE
     missing_cols INT;
     col_list TEXT := '';
     select_list TEXT := '';
+    missing_in_new TEXT;
     col RECORD;
 BEGIN
     ------------------------------------------------------------------
@@ -21,7 +22,8 @@ BEGIN
     ------------------------------------------------------------------
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.tables
-        WHERE table_schema = 'public' AND table_name = old_table
+        WHERE table_schema = 'public'
+          AND table_name = old_table
     ) THEN
         RAISE EXCEPTION 'Old table "%" does not exist. Migration aborted.', old_table;
     END IF;
@@ -31,7 +33,8 @@ BEGIN
     ------------------------------------------------------------------
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.tables
-        WHERE table_schema = 'public' AND table_name = new_table
+        WHERE table_schema = 'public'
+          AND table_name = new_table
     ) THEN
         RAISE NOTICE 'Creating new table "%" ...', new_table;
 
@@ -41,7 +44,7 @@ BEGIN
                 task_name VARCHAR(255) NOT NULL,
                 task_data BYTEA,
                 execution_time TIMESTAMP,
-                picked boolean,
+                picked BOOLEAN,
                 picked_by VARCHAR(255),
                 last_success TIMESTAMP,
                 last_failure TIMESTAMP,
@@ -52,7 +55,6 @@ BEGIN
             );
         $fmt$, new_table);
 
-        -- Indexes
         EXECUTE format('CREATE INDEX IF NOT EXISTS idx_exec_time_v2 ON %I (execution_time);', new_table);
 
         RAISE NOTICE 'Table "%" created successfully.', new_table;
@@ -61,19 +63,36 @@ BEGIN
     END IF;
 
     ------------------------------------------------------------------
-    -- 3. Verify column compatibility
+    -- 3. Verify column compatibility (UNIFORM FORMAT)
     ------------------------------------------------------------------
     SELECT COUNT(*) INTO missing_cols
     FROM (
-        SELECT column_name FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = old_table
-        EXCEPT
-        SELECT column_name FROM information_schema.columns
+        SELECT column_name
+        FROM information_schema.columns
         WHERE table_schema = 'public' AND table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = old_table
+    ) diff;
+
+    -- Collect missing column names (uniform logic)
+    SELECT COALESCE(string_agg(column_name, ', '), 'None')
+    INTO missing_in_new
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = old_table
     ) diff;
 
     IF missing_cols > 0 THEN
-        RAISE EXCEPTION 'Column mismatch: % missing column(s).', missing_cols;
+        RAISE EXCEPTION
+            'Column mismatch detected: % column(s) in "%" missing in old table: % . Please add missing columns before migration.',
+            missing_cols, new_table, missing_in_new;
     ELSE
         RAISE NOTICE 'All columns from "%" exist in "%".', old_table, new_table;
     END IF;
@@ -81,7 +100,8 @@ BEGIN
     ------------------------------------------------------------------
     -- 4. Data migration
     ------------------------------------------------------------------
-    EXECUTE format('SELECT COUNT(*) FROM %I;', old_table) INTO row_count_old;
+    EXECUTE format('SELECT COUNT(*) FROM %I', old_table) INTO row_count_old;
+
     IF row_count_old = 0 THEN
         RAISE NOTICE 'No rows to migrate from "%".', old_table;
         RETURN;
@@ -91,12 +111,16 @@ BEGIN
     FOR col IN
         SELECT column_name
         FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = old_table
+        WHERE table_schema = 'public'
+          AND table_name = old_table
         ORDER BY ordinal_position
     LOOP
         IF EXISTS (
-            SELECT 1 FROM information_schema.columns
-            WHERE table_schema = 'public' AND table_name = new_table AND column_name = col.column_name
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND table_name = new_table
+              AND column_name = col.column_name
         ) THEN
             col_list := col_list || format('%I, ', col.column_name);
             select_list := select_list || format('%I, ', col.column_name);
@@ -106,22 +130,21 @@ BEGIN
     col_list := regexp_replace(col_list, ',\s*$', '');
     select_list := regexp_replace(select_list, ',\s*$', '');
 
-    RAISE NOTICE 'Migrating % rows from "%" to "%"...', row_count_old, old_table, new_table;
+    RAISE NOTICE 'Migrating % rows from "%" to "%"...',
+        row_count_old, old_table, new_table;
 
-    EXECUTE format('INSERT INTO %I (%s) SELECT %s FROM %I;', new_table, col_list, select_list, old_table);
+    EXECUTE format(
+        'INSERT INTO %I (%s) SELECT %s FROM %I;',
+        new_table, col_list, select_list, old_table
+    );
 
-    EXECUTE format('SELECT COUNT(*) FROM %I;', new_table) INTO row_count_new;
+    EXECUTE format('SELECT COUNT(*) FROM %I', new_table) INTO row_count_new;
 
     IF row_count_new != row_count_old THEN
-        RAISE EXCEPTION 'Row count mismatch (old=% new=%).', row_count_old, row_count_new;
+        RAISE EXCEPTION 'Row count mismatch. old=% new=%', row_count_old, row_count_new;
     ELSE
         RAISE NOTICE 'Data migration complete: % rows copied.', row_count_new;
     END IF;
 
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE NOTICE 'Error: %', SQLERRM;
-        RAISE NOTICE 'Rolling back.';
-        RAISE;
 END;
 $$;
