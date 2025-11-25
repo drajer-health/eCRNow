@@ -10,7 +10,7 @@ BEGIN TRY
 
     DECLARE
         @old_table NVARCHAR(128) = 'client_details',
-        @new_table NVARCHAR(128) = 'client_detail_v2',
+        @new_table NVARCHAR(128) = 'client_details_v2',
         @row_count_old BIGINT,
         @row_count_new BIGINT,
         @missing_cols INT,
