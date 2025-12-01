@@ -266,7 +266,7 @@ public class CdaHeaderGenerator {
     if (cc.getName() != null) {
       names.add(cc.getName());
     }
-    s.append(CdaFhirUtilities.getNameXml(names));
+    s.append(CdaFhirUtilities.getNameXml(names, true));
     s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
     s.append(
@@ -521,7 +521,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        sb.append(CdaFhirUtilities.getPractitionerXml(pr));
+        sb.append(CdaFhirUtilities.getPractitionerXml(pr, data.getOrganization()));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -530,7 +530,7 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundAuthor)) {
-      sb.append(CdaFhirUtilities.getPractitionerXml(null));
+      sb.append(CdaFhirUtilities.getPractitionerXml(null, null));
     }
 
     // add reprsented organization if it exists
@@ -674,7 +674,7 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-    sb.append(getXmlForRelevantPractitioner(practMap));
+    sb.append(getXmlForRelevantPractitioner(practMap, data.getOrganization()));
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
@@ -687,7 +687,7 @@ public class CdaHeaderGenerator {
 
     // Add all practitioners
 
-    sb.append(getXmlForAllRelevantPractitioners(practMap));
+    sb.append(getXmlForAllRelevantPractitioners(practMap, data.getOrganization()));
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     sb.append(
@@ -767,7 +767,7 @@ public class CdaHeaderGenerator {
   }
 
   public static String getXmlForRelevantPractitioner(
-      HashMap<V3ParticipationType, List<Practitioner>> practMap) {
+      HashMap<V3ParticipationType, List<Practitioner>> practMap, Organization org) {
 
     StringBuilder practXml = new StringBuilder();
 
@@ -794,7 +794,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        practXml.append(CdaFhirUtilities.getPractitionerXml(pr));
+        practXml.append(CdaFhirUtilities.getPractitionerXml(pr, org));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -803,14 +803,14 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundPrimaryPerformer)) {
-      practXml.append(CdaFhirUtilities.getPractitionerXml(null));
+      practXml.append(CdaFhirUtilities.getPractitionerXml(null, null));
     }
 
     return practXml.toString();
   }
 
   public static String getXmlForAllRelevantPractitioners(
-      HashMap<V3ParticipationType, List<Practitioner>> practs) {
+      HashMap<V3ParticipationType, List<Practitioner>> practs, Organization org) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -835,7 +835,7 @@ public class CdaHeaderGenerator {
                 CdaGeneratorUtils.getXmlForStartElement(
                     CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-            sb.append(CdaFhirUtilities.getPractitionerXml(p));
+            sb.append(CdaFhirUtilities.getPractitionerXml(p, org));
 
             sb.append(
                 CdaGeneratorUtils.getXmlForEndElement(
@@ -913,7 +913,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElementWithAttribute(
             CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
-    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName()));
+    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName(), false));
     patientDetails.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
@@ -1014,7 +1014,7 @@ public class CdaHeaderGenerator {
         List<HumanName> names = new ArrayList<>();
         names.add(guardianContact.getName());
 
-        patientDetails.append(CdaFhirUtilities.getNameXml(names));
+        patientDetails.append(CdaFhirUtilities.getNameXml(names, true));
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));

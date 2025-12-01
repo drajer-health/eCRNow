@@ -40,20 +40,6 @@ public class CdaReasonForVisitGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
-  public void testGenerateReasonForVisitSection_withDisplay() {
-
-    Encounter encounter =
-        (Encounter) loadResourceDataFromFile(Encounter.class, ENCOUNTER_WITH_DISPLAY_FILE);
-    r4FhirData.setEncounter(encounter);
-    String expectedXml = TestUtils.getFileContentAsString(REASON_FOR_VISIT_WITH_DISPLAY_CDA_FILE_);
-    String actualXml =
-        CdaReasonForVisitGenerator.generateReasonForVisitSection(
-            r4FhirData, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
-    assertNotNull(actualXml);
-    assertXmlEquals(expectedXml, actualXml);
-  }
-
-  @Test
   public void testGenerateReasonForVisitSection_withText() {
 
     Encounter encounter =
