@@ -913,7 +913,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElementWithAttribute(
             CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
-    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName(), false));
+    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName(), true));
     patientDetails.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
