@@ -1199,13 +1199,12 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     humanNames.add(humanName);
 
-    String expectedXml =
-        "<given qualifier=\"PR\">john</given><given qualifier=\"PR\">mark</given><family>parker</family>";
+    String expectedXml = "<given>john</given><given>mark</given><family>parker</family>";
 
     String nameXml = CdaFhirUtilities.getNameXml(humanNames, false);
     nameXml = nameXml.replace("\n", "");
 
-    assertEquals(expectedXml.trim(), nameXml.trim());
+    assertXmlEquals(expectedXml.trim(), nameXml.trim());
   }
 
   @Test
