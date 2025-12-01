@@ -911,7 +911,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<telecom value=\"mailto:jill@email.com\"/>\n"
             + "<patient>\n"
             + "<name use=\"L\">\n"
-            + "<given qualifier=\"PR\">Jill</given>\n"
+            + "<given>Jill</given>\n"
             + "<family>Test</family>\n"
             + "</name>\n"
             + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>\n"
@@ -951,7 +951,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     assertThat(actualXml).isNotNull();
 
-    assertEquals(expectedXml, actualXml);
+    assertXmlEquals(expectedXml, actualXml);
   }
 
   @Test
