@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Supplier;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
@@ -28,7 +29,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
-  ExpressionEvaluator expressionEvaluator;
+  private Supplier<ExpressionEvaluator> evaluatorFactory;
 
   @Override
   public Boolean evaluateExpression(
@@ -47,10 +48,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
 
     Parameters result =
-        (Parameters)
-            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+        (Parameters) newEvaluator().evaluate(cond.getLogicExpression().getExpression(), params);
     BooleanType value = (BooleanType) result.getParameter(PARAM);
-
     if (value != null) {
       return value.getValue();
     } else {
@@ -89,7 +88,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             logger.info(" Expression after resolution {}", expr);
 
-            Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
+            Parameters variableResult = (Parameters) newEvaluator().evaluate(expr, null);
 
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
@@ -234,11 +233,16 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             String medId =
                 medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
             if (medId != null && !medId.isEmpty()) {
-              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
-              if (medication != null && !medication.isEmpty()) {
-                Medication m = (Medication) medication;
-                if (m.hasCode()) {
-                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
+              if (meds != null && !meds.isEmpty()) {
+                for (Resource r : meds) {
+                  if ((r.hasId() && medId.equals(r.getId()))
+                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
+                    Medication m = (Medication) r;
+                    if (m.hasCode()) {
+                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+                    }
+                  }
                 }
               }
             }
@@ -260,11 +264,16 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             String medId =
                 medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
             if (medId != null && !medId.isEmpty()) {
-              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
-              if (medication != null && !medication.isEmpty()) {
-                Medication m = (Medication) medication;
-                if (m.hasCode()) {
-                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
+              if (meds != null && !meds.isEmpty()) {
+                for (Resource r : meds) {
+                  if ((r.hasId() && medId.equals(r.getId()))
+                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
+                    Medication m = (Medication) r;
+                    if (m.hasCode()) {
+                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+                    }
+                  }
                 }
               }
             }
@@ -286,11 +295,16 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             String medId =
                 medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
             if (medId != null && !medId.isEmpty()) {
-              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
-              if (medication != null && !medication.isEmpty()) {
-                Medication m = (Medication) medication;
-                if (m.hasCode()) {
-                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+              Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
+              if (meds != null && !meds.isEmpty()) {
+                for (Resource r : meds) {
+                  if ((r.hasId() && medId.equals(r.getId()))
+                      || (r.hasIdElement() && medId.equals(r.getIdElement().getIdPart()))) {
+                    Medication m = (Medication) r;
+                    if (m.hasCode()) {
+                      filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
+                    }
+                  }
                 }
               }
             }
@@ -492,14 +506,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     return params;
   }
 
-  public ExpressionEvaluator getExpressionEvaluator() {
-    return expressionEvaluator;
-  }
-
-  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
-    this.expressionEvaluator = expressionEvaluator;
-  }
-
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> applyCodeFilter(
       DataRequirement dr, KarProcessingData kd, BsaAction action) {
 
@@ -521,8 +527,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       BsaCondition cond, Parameters params, EhrQueryService ehrService) {
 
     Parameters result =
-        (Parameters)
-            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+        (Parameters) newEvaluator().evaluate(cond.getLogicExpression().getExpression(), params);
     BooleanType value = (BooleanType) result.getParameter(PARAM);
 
     if (value != null) {
@@ -533,5 +538,15 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
       return false;
     }
+  }
+
+  public void setExpressionEvaluatorFactory(Supplier<ExpressionEvaluator> evaluatorFactory) {
+    this.evaluatorFactory = evaluatorFactory;
+  }
+
+  ExpressionEvaluator newEvaluator() {
+    ExpressionEvaluator ev = evaluatorFactory.get();
+    logger.info("Evaluator instance: " + System.identityHashCode(ev));
+    return ev;
   }
 }

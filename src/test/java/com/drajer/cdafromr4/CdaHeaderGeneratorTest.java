@@ -21,20 +21,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -225,7 +213,6 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     Practitioner practitioner =
         (Practitioner) loadResourceDataFromFile(Practitioner.class, PRACTITIONER_FILENAME);
-
     String expectedXml =
         "<id root=\"2.16.840.1.113883.4.6\"/>\r\n"
             + "<addr use=\"HP\">\r\n"
@@ -243,7 +230,41 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</assignedPerson>\r\n"
             + "";
-    String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner);
+    String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner, null);
+
+    assertThat(actualXml).isNotNull();
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGetPractitionerXml_withOrganization() {
+
+    Practitioner practitioner =
+        (Practitioner) loadResourceDataFromFile(Practitioner.class, PRACTITIONER_FILENAME);
+    Organization organization = new Organization();
+
+    ContactPoint contactPoint = new ContactPoint();
+    contactPoint.setSystem(ContactPoint.ContactPointSystem.PHONE);
+    contactPoint.setValue("8166742878");
+    organization.setTelecom(Collections.singletonList(contactPoint));
+    String expectedXml =
+        "<id root=\"2.16.840.1.113883.4.6\"/>\n"
+            + "<addr use=\"HP\">\n"
+            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\n"
+            + "<city>PleasantVille</city>\n"
+            + "<state>Vic</state>\n"
+            + "<postalCode>3999</postalCode>\n"
+            + "<country nullFlavor=\"NI\"/>\n"
+            + "</addr>\n"
+            + "<telecom value=\"tel:(816)674-2878\"/>\n"
+            + "<assignedPerson>\n"
+            + "<name>\n"
+            + "<given>Adam</given>\n"
+            + "<family>Careful</family>\n"
+            + "</name>\n"
+            + "</assignedPerson>\n";
+    String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner, organization);
 
     assertThat(actualXml).isNotNull();
 
@@ -790,7 +811,14 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     List<Practitioner> practList = new ArrayList<Practitioner>();
     practList.add(pr);
     practMap.put(V3ParticipationType.PPRF, practList);
-    String result = CdaHeaderGenerator.getXmlForRelevantPractitioner(practMap);
+    Organization org = new Organization();
+
+    ContactPoint contactPoint = new ContactPoint();
+    contactPoint.setSystem(ContactPoint.ContactPointSystem.PHONE);
+    contactPoint.setValue("8166742878");
+
+    org.setTelecom(Collections.singletonList(contactPoint));
+    String result = CdaHeaderGenerator.getXmlForRelevantPractitioner(practMap, org);
     assertNotNull(result);
     assertTrue(result.length() > 0);
 
@@ -798,7 +826,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     practMap.put(V3ParticipationType.ATND, practList);
 
-    String result1 = CdaHeaderGenerator.getXmlForRelevantPractitioner(practMap);
+    String result1 = CdaHeaderGenerator.getXmlForRelevantPractitioner(practMap, org);
     assertNotNull(result1);
     assertTrue(result1.length() > 0);
 
@@ -806,7 +834,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     practMap.put(V3ParticipationType.SPRF, practList);
 
-    String result2 = CdaHeaderGenerator.getXmlForRelevantPractitioner(practMap);
+    String result2 = CdaHeaderGenerator.getXmlForRelevantPractitioner(practMap, org);
     assertNotNull(result2);
     assertTrue(result2.length() > 0);
   }
@@ -814,14 +842,14 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGetXmlForRelevantPractitioner_withNoPractitioner() {
 
-    String result1 = CdaHeaderGenerator.getXmlForRelevantPractitioner(null);
+    String result1 = CdaHeaderGenerator.getXmlForRelevantPractitioner(null, null);
     assertNotNull(result1);
     assertTrue(result1.length() > 0);
   }
 
   @Test
   public void testGetXmlForAllRelevantPractitioners() {
-    String result = CdaHeaderGenerator.getXmlForAllRelevantPractitioners(new HashMap<>());
+    String result = CdaHeaderGenerator.getXmlForAllRelevantPractitioners(new HashMap<>(), null);
     assertEquals("", result);
 
     // Test case 2: input with one practitioner of type ATND
@@ -830,7 +858,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     practitioners1.add(practitioner1);
     HashMap<V3ParticipationType, List<Practitioner>> input2 = new HashMap<>();
     input2.put(V3ParticipationType.ATND, practitioners1);
-    result = CdaHeaderGenerator.getXmlForAllRelevantPractitioners(input2);
+    result = CdaHeaderGenerator.getXmlForAllRelevantPractitioners(input2, null);
     assertTrue(result.contains("<encounterParticipant typeCode=\"ATND\">"));
     assertTrue(result.contains("<assignedEntity>"));
     assertTrue(result.contains("</assignedEntity>"));
@@ -846,7 +874,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     HashMap<V3ParticipationType, List<Practitioner>> input3 = new HashMap<>();
     input3.put(V3ParticipationType.CON, practitioners2);
     input3.put(V3ParticipationType.REF, practitioners3);
-    result = CdaHeaderGenerator.getXmlForAllRelevantPractitioners(input3);
+    result = CdaHeaderGenerator.getXmlForAllRelevantPractitioners(input3, null);
     assertTrue(result.contains("<encounterParticipant typeCode=\"CON\">"));
     assertTrue(result.contains("<encounterParticipant typeCode=\"REF\">"));
     assertTrue(result.contains("<assignedEntity>"));
@@ -883,7 +911,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<telecom value=\"mailto:jill@email.com\"/>\r\n"
             + "<patient>\r\n"
             + "<name use=\"L\">\r\n"
-            + "<given qualifier=\"PR\">Jill</given>\r\n"
+            + "<given>Jill</given>\r\n"
             + "<family>Test</family>\r\n"
             + "</name>\r\n"
             + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>\r\n"

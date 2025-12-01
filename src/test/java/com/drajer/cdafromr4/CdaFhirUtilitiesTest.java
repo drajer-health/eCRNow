@@ -1202,7 +1202,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     String expectedXml =
         "<given qualifier=\"PR\">john</given><given qualifier=\"PR\">mark</given><family>parker</family>";
 
-    String nameXml = CdaFhirUtilities.getNameXml(humanNames);
+    String nameXml = CdaFhirUtilities.getNameXml(humanNames, false);
     nameXml = nameXml.replace("\n", "");
 
     assertEquals(expectedXml.trim(), nameXml.trim());
@@ -1225,7 +1225,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String expectedXml = "<given nullFlavor=\"NI\"/><family nullFlavor=\"NI\"/>";
 
-    String nameXml = CdaFhirUtilities.getNameXml(null);
+    String nameXml = CdaFhirUtilities.getNameXml(null, false);
     nameXml = nameXml.replace("\n", "");
 
     assertEquals(expectedXml.trim(), nameXml.trim());

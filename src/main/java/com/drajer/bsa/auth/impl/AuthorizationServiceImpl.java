@@ -3,7 +3,6 @@ package com.drajer.bsa.auth.impl;
 import com.drajer.bsa.auth.AuthorizationService;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.FhirServerDetails;
-import com.drajer.sof.model.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
@@ -81,10 +80,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-        ResponseEntity<?> response =
-            resTemplate.exchange(fsd.getTokenUrl(), HttpMethod.POST, entity, Response.class);
-        tokenResponse = new JSONObject(Objects.requireNonNull(response.getBody()));
 
+        ResponseEntity<String> response =
+            resTemplate.exchange(fsd.getTokenUrl(), HttpMethod.POST, entity, String.class);
+
+        String body = Objects.requireNonNull(response.getBody());
+
+        tokenResponse = new JSONObject(body);
         logger.debug(
             "Received AccessToken: {}", StringEscapeUtils.escapeJson(tokenResponse.toString()));
 
