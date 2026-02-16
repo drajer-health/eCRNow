@@ -19,7 +19,7 @@ BEGIN TRY
         ALTER TABLE kar_execution_state_v2
         ADD CONSTRAINT fk_kar_execstate_v2_notificationcontext
             FOREIGN KEY (nc_fk)
-            REFERENCES notification_context(id)
+            REFERENCES notification_context_v2(id)
             ON DELETE SET NULL;
             -- SQL Server does NOT support ON UPDATE CASCADE unless PK is created with it
     END
