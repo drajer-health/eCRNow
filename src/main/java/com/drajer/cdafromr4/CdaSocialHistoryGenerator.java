@@ -1730,7 +1730,7 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.PAST_PRESENT_INDUSTRY_CODE,
             CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
             CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-            CdaGeneratorConstants.PAST_PRESENT_INDUSTRY_CODE));
+            CdaGeneratorConstants.HISTORY_OF_OCCUPATION_INDUSTRY));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(

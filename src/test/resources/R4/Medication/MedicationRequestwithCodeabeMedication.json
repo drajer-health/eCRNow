@@ -1,0 +1,38 @@
+{
+  "resourceType": "MedicationRequest",
+  "id": "medrx1001",
+  "status": "active",
+  "intent": "order",
+  "medicationCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "code": "6470",
+        "display": "Lorazepam",
+        "userSelected": false
+      },
+      {
+        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+        "code": "2762370",
+        "display": "LORazepam",
+        "userSelected": true
+      }
+    ],
+    "text": "LORazepam"
+  },
+  "subject": {
+    "reference": "Patient/pat123",
+    "display": "John Doe"
+  },
+  "authoredOn": "2025-09-06",
+  "requester": {
+    "reference": "Practitioner/pract001",
+    "display": "Dr. Smith"
+  },
+  "dosageInstruction": [
+    {
+      "sequence": 1,
+      "text": "Take one tablet daily"
+    }
+  ]
+}

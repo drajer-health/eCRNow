@@ -671,6 +671,7 @@ public class CdaGeneratorConstants {
   public static final String PREGNANCY_INTENTION_CODE_DISPLAY = "Pregnancy Intention";
   public static final String PREGNANCY_INTENTION_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.281";
   public static final String PREGNANCY_INTENTION_TEMPLATE_ID_EXT = "2018-04-01";
+  public static final String PREGNANCY_INTENTION_ROOT_ID = "2.16.840.1.113883.3.8.60.2.1.50";
   public static final String PP_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.285";
   public static final String PP_TEMPLATE_ID_EXT = "2018-04-01";
   public static final String PP_CODE = "249197004";
@@ -1126,6 +1127,8 @@ public class CdaGeneratorConstants {
   public static final String CDA_EICR_VERSION_R31 = "CDA_R31";
 
   public static final String ASSIGNED = "ASSIGNED";
+
+  public static final String HISTORY_OF_OCCUPATION_INDUSTRY = "History of Occupation Industry";
 
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();

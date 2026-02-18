@@ -12,7 +12,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -93,6 +95,23 @@ public class TestUtils {
     } catch (Exception e) {
       logger.error("Exception while reading", e);
       return null;
+    }
+  }
+
+  public static <T extends Resource> T loadResourceDataFromFile(
+      Class<T> resourceType, String filename) {
+    try (InputStream input = new ClassPathResource(filename).getInputStream()) {
+      IBaseResource resource = fhirContext.newJsonParser().parseResource(input);
+
+      if (resourceType.isInstance(resource)) {
+        return resourceType.cast(resource);
+      } else {
+        throw new IllegalArgumentException(
+            "Parsed resource is not of the expected type: " + resourceType.getSimpleName());
+      }
+    } catch (Exception e) {
+      logger.error("Error reading file: " + filename, e);
+      throw new RuntimeException("Failed to load resource data from file: " + filename, e);
     }
   }
 }

@@ -12,7 +12,6 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
-import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.ValueSetSingleton;
@@ -45,7 +44,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({
   ValueSetSingleton.class,
   ApplicationUtils.class,
-  Dstu2CdaEicrGenerator.class,
   ActionRepo.class,
   CdaEicrGeneratorFromR4.class
 })
@@ -177,27 +175,6 @@ public class EcaUtilsTest {
     // Validate
     assertEquals(true, matchTriggerStatus.getTriggerMatchStatus());
     assertEquals(true, result);
-  }
-
-  @Test
-  public void testCreateEicr_Dstu2() {
-
-    // SetUp
-    when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
-    when(mockActionRepo.getEicrRRService()).thenReturn(mockRRSrvc);
-    when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
-    when(mockQuerySrvc.getData(eq(mockDetails), eq(null), eq(null))).thenReturn(mockDstu2Data);
-
-    PowerMockito.mockStatic(Dstu2CdaEicrGenerator.class);
-    when(Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(
-            any(Dstu2FhirData.class), eq(mockDetails), any(Eicr.class), any(String.class)))
-        .thenReturn("This is DSTU2 EICR data");
-
-    // Test
-    Eicr eicr = EcaUtils.createEicr(mockDetails);
-
-    // Validate
-    assertEquals("This is DSTU2 EICR data", eicr.getEicrData());
   }
 
   @Test

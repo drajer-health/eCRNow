@@ -49,6 +49,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   public List<PublicHealthMessage> getPhMessageData(
       Map<String, String> searchParams, boolean summaryFlag) {
+    /*
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
@@ -67,9 +68,31 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
     return q.getResultList();
+    */
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+      List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+
+      if (StringUtils.isNotBlank(searchParams.getOrDefault(RESPONSE_DOC_ID, ""))) {
+        predicates.add(
+            cb.equal(
+                root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+      }
+      Predicate[] predArr = new Predicate[predicates.size()];
+      predArr = predicates.toArray(predArr);
+      Predicate criteria = cb.and(predArr);
+      cq.where(criteria);
+      cq.orderBy(cb.desc(root.get("id")));
+      Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+      return q.getResultList();
+    }
   }
 
   public List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams) {
+    /*
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
@@ -83,6 +106,21 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
     return q.getResultList();
+    */
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+      List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+      Predicate[] predArr = new Predicate[predicates.size()];
+      predArr = predicates.toArray(predArr);
+      Predicate criteria = cb.and(predArr);
+      cq.where(criteria);
+      cq.orderBy(cb.desc(root.get("id")));
+      Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+      return q.getResultList();
+    }
   }
 
   public static List<Predicate> preparePredicate(
@@ -168,6 +206,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   @Override
   public List<PublicHealthMessage> getPhMessageByXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
+    /*
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
@@ -180,11 +219,26 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
     return q.getResultList();
+    */
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+      Expression<String> xRequestIdExpression = root.get(X_REQUEST_ID);
+      Predicate xRequestIdPredicate = xRequestIdExpression.in(xRequestIds);
+      cq.where(xRequestIdPredicate);
+      cq.orderBy(cb.desc(root.get("id")));
+
+      Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+      return q.getResultList();
+    }
   }
 
   // @Override
   public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
+    /*
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
@@ -203,6 +257,26 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
     return q.getResultList();
+    */
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+      List<Predicate> predicates = new ArrayList<Predicate>();
+      for (String xRequestId : xRequestIds) {
+        predicates.add(cb.like(cb.lower(root.get(X_REQUEST_ID)), xRequestId));
+      }
+      Predicate[] predArr = new Predicate[predicates.size()];
+      predArr = predicates.toArray(predArr);
+
+      Predicate criteria = cb.and(predArr);
+      cq.where(criteria);
+      cq.orderBy(cb.desc(root.get("id")));
+
+      Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+      return q.getResultList();
+    }
   }
 
   /*private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
@@ -216,7 +290,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   @Override
   public List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData) {
-
+    /*
     EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     UUID id = publicHealthMessageData.getId();
     List<Predicate> predicates = new ArrayList<Predicate>();
@@ -257,6 +331,48 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
     return q.getResultList();
+    */
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      UUID id = publicHealthMessageData.getId();
+      List<Predicate> predicates = new ArrayList<Predicate>();
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
+      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
+      if (id != null) {
+        predicates.add(cb.equal(root.get(ID), id));
+      } else {
+
+        String fhirServerBaseUrl = publicHealthMessageData.getFhirServerBaseUrl();
+        if (fhirServerBaseUrl != null) {
+          predicates.add(cb.equal(root.get(FHIR_SERVER_BASE_URL), fhirServerBaseUrl));
+        }
+
+        String notifiedResourceId = publicHealthMessageData.getNotifiedResourceId();
+        if (notifiedResourceId != null) {
+          predicates.add(cb.equal(root.get(NOTIFIED_RESOURCE_ID), notifiedResourceId));
+        }
+
+        String patientId = publicHealthMessageData.getPatientId();
+        if (patientId != null) {
+          predicates.add(cb.equal(root.get(PATIENT_ID), patientId));
+        }
+
+        Integer submittedVersionNumber = publicHealthMessageData.getSubmittedVersionNumber();
+        if (submittedVersionNumber != null) {
+          predicates.add(cb.equal(root.get(SUBMITTED_VERSION_NUMBER), submittedVersionNumber));
+        }
+      }
+
+      Predicate[] predArr = new Predicate[predicates.size()];
+      predArr = predicates.toArray(predArr);
+
+      Predicate criteria = cb.and(predArr);
+      cq.where(criteria);
+
+      Query<PublicHealthMessage> q = getSession().createQuery(cq);
+
+      return q.getResultList();
+    }
   }
 
   @Override

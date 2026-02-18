@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,7 +52,9 @@ public class SubmitReport extends BsaAction {
 
   private String submissionEndpoint;
 
-  private static final int RR_CHECK_TIME = 60;
+  @Value("${rr_check_time}")
+  private int rrCheckTime;
+
   private static final String RR_CHECK_TIME_UNITS = "s";
 
   private static final FhirContext context = FhirContext.forR4();
@@ -189,7 +192,7 @@ public class SubmitReport extends BsaAction {
         Duration d = new Duration();
         d.setCode(RR_CHECK_TIME_UNITS);
         d.setUnit(RR_CHECK_TIME_UNITS);
-        d.setValue(RR_CHECK_TIME);
+        d.setValue(rrCheckTime);
         Instant t = ApplicationUtils.convertDurationToInstant(d);
 
         scheduler.scheduleJob(

@@ -87,19 +87,20 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
    */
   @Override
   public HealthcareSetting getHealthcareSettingByUrl(String url) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<HealthcareSetting> cq = cb.createQuery(HealthcareSetting.class);
-    Root<HealthcareSetting> root = cq.from(HealthcareSetting.class);
-    cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<HealthcareSetting> cq = cb.createQuery(HealthcareSetting.class);
+      Root<HealthcareSetting> root = cq.from(HealthcareSetting.class);
+      cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
 
-    Query<HealthcareSetting> q = getSession().createQuery(cq);
+      Query<HealthcareSetting> q = getSession().createQuery(cq);
 
-    HealthcareSetting hs = q.uniqueResult();
+      HealthcareSetting hs = q.uniqueResult();
 
-    if (hs != null) setKars(hs);
+      if (hs != null) setKars(hs);
 
-    return hs;
+      return hs;
+    }
   }
 
   /**
@@ -110,15 +111,16 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
    */
   @Override
   public List<HealthcareSetting> getAllHealthcareSettings() {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<HealthcareSetting> cq = cb.createQuery(HealthcareSetting.class);
-    Root<HealthcareSetting> root = cq.from(HealthcareSetting.class);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<HealthcareSetting> cq = cb.createQuery(HealthcareSetting.class);
+      Root<HealthcareSetting> root = cq.from(HealthcareSetting.class);
 
-    Query<HealthcareSetting> q = getSession().createQuery(cq);
-    cq.orderBy(cb.desc(root.get("id")));
+      Query<HealthcareSetting> q = getSession().createQuery(cq);
+      cq.orderBy(cb.desc(root.get("id")));
 
-    return q.getResultList();
+      return q.getResultList();
+    }
   }
 
   private void setKars(HealthcareSetting hs) {
@@ -142,15 +144,15 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
   @Override
   public List<KnowledgeArtifactStatus> getKarsActiveByHsId(Integer id) {
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
+      Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
+      cq.where(cb.equal(root.get("hsId"), id));
+      Query<KnowledgeArtifactStatus> q = getSession().createQuery(cq);
 
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
-    Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
-    cq.where(cb.equal(root.get("hsId"), id));
-    Query<KnowledgeArtifactStatus> q = getSession().createQuery(cq);
-
-    return q.getResultList();
+      return q.getResultList();
+    }
   }
 
   @Override

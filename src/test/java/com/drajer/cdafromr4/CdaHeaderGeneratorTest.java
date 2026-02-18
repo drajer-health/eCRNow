@@ -885,7 +885,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<telecom value=\"mailto:jill@email.com\"/>\r\n"
             + "<patient>\r\n"
             + "<name use=\"L\">\r\n"
-            + "<given qualifier=\"PR\">Jill</given>\r\n"
+            + "<given>Jill</given>\r\n"
             + "<family>Test</family>\r\n"
             + "</name>\r\n"
             + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>\r\n"

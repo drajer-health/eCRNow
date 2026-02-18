@@ -1,0 +1,3 @@
+suspectedDisorderConditions=Condition?patient=
+Patient/{{context.patientId}}&onset-date=ge{{context.encounterStartDate}}&onset-date=le{{context.encounterEndDate}}
+suspectedDisorderConditions=Condition?patient=Patient/{{context.patientId}}&onset-date=ge{{context.lastReportSubmissionDate}}&onset-date=le{{context.encounterEndDate}}

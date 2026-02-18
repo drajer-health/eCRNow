@@ -157,7 +157,9 @@ public class CdaPregnancyGenerator {
             CdaGeneratorConstants.PREGNANCY_INTENTION_TEMPLATE_ID,
             CdaGeneratorConstants.PREGNANCY_INTENTION_TEMPLATE_ID_EXT));
 
-    sb.append(CdaGeneratorUtils.getXmlForII(pi.getIdElement().getIdPart()));
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            CdaGeneratorConstants.PREGNANCY_INTENTION_ROOT_ID, pi.getIdElement().getIdPart()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -531,7 +533,7 @@ public class CdaPregnancyGenerator {
               CdaGeneratorUtils.getXmlForEntryRelationship(
                   CdaGeneratorConstants.ENTRY_REL_REFR_CODE));
           sb.append(
-              generateXmlforGestationalAge(obs, details, comp.getValueQuantity(), comp.getCode()));
+              generateXmlForGestationalAge(obs, details, comp.getValueQuantity(), comp.getCode()));
           sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
         }
       }
@@ -540,7 +542,7 @@ public class CdaPregnancyGenerator {
     return sb.toString();
   }
 
-  public static String generateXmlforGestationalAge(
+  public static String generateXmlForGestationalAge(
       Observation obs, LaunchDetails details, Quantity quantity, CodeableConcept code) {
 
     StringBuilder sb = new StringBuilder();
@@ -843,19 +845,6 @@ public class CdaPregnancyGenerator {
 
     sb.append(CdaFhirUtilities.getXmlForAuthorTime(obs.getIssuedElement()));
 
-    return sb.toString();
-  }
-
-  public static String generatePregnancyEntry(Condition cond, LaunchDetails details) {
-
-    StringBuilder sb = new StringBuilder();
-
-    sb.append(generatePregnancyObservationEntry(cond, details));
-
-    sb.append(generateEddEntryRelationship(cond));
-
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
     return sb.toString();
   }
 

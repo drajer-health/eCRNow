@@ -1,0 +1,2076 @@
+{
+  "resourceType": "Bundle",
+  "entry": [ {
+    "resource": {
+      "resourceType": "Patient",
+      "id": "2061440728169260",
+      "meta": {
+        "lastUpdated": "2025-04-28T06:41:29.063-07:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-patient-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><tbody><tr><td width=\"25%\">Jill Test F DOB: 1987/09/09</td><td width=\"42%\">2221 Home Street, Salt Lake City, UT 84101 US Phone: 5555555006 Email: jill@email.com</td></tr></tbody></table></div>"
+      },
+      "extension": [ {
+        "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-patient-extension-patientAsGuarantor",
+        "valueBoolean": false
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "446141000124107",
+            "display": "Identifies as Female"
+          } ],
+          "text": "Identifies as Female"
+        }
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2028-9",
+            "display": "Asian"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Asian"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2186-5",
+            "display": "Not Hispanic or Latino"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Not Hispanic or Latino"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+        "valueCode": "F"
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+        "valueCode": "248152002"
+      } ],
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "PI"
+          } ]
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/PatientId/1000-4-9390",
+        "value": "39527"
+      } ],
+      "active": true,
+      "name": [ {
+        "use": "official",
+        "family": "Test",
+        "given": [ "Jill" ]
+      }, {
+        "use": "nickname",
+        "given": [ "Jill" ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "5555555006",
+        "use": "work"
+      }, {
+        "system": "email",
+        "value": "jill@email.com",
+        "use": "home"
+      } ],
+      "gender": "female",
+      "_gender": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/gender",
+            "code": "female",
+            "display": "Female"
+          }
+        } ]
+      },
+      "birthDate": "1987-09-09",
+      "deceasedBoolean": false,
+      "address": [ {
+        "use": "home",
+        "line": [ "2221 Home Street," ],
+        "city": "Salt Lake City",
+        "state": "UT",
+        "postalCode": "84101",
+        "country": "US"
+      } ],
+      "communication": [ {
+        "language": {
+          "coding": [ {
+            "system": "urn:ietf:bcp:47",
+            "code": "en",
+            "display": "English"
+          } ],
+          "text": "English"
+        },
+        "preferred": true
+      } ],
+      "managingOrganization": {
+        "reference": "Organization/LO-1569925244250570"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Encounter",
+      "id": "2083268657961840",
+      "meta": {
+        "lastUpdated": "2026-01-05T21:45:16.983-08:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-encounter-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">Urinalysis-05-jan</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/1807526517021910\">Practitioner/1807526517021910</a>, <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "extension": [ {
+        "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-encounter-extension-SUMMARY",
+        "valueString": "Urinalysis-05-jan"
+      }, {
+        "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-encounter-extension-DESCRIPTION",
+        "valueString": "Lab Report"
+      }, {
+        "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-encounter-extension-AUTHENTICATOR",
+        "valueReference": {
+          "reference": "Practitioner/1807526517021910"
+        }
+      } ],
+      "status": "finished",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/encounterstatus",
+            "code": "S",
+            "display": "Signed"
+          }
+        } ]
+      },
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "AMB",
+        "display": "ambulatory"
+      },
+      "type": [ {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "65981005",
+          "display": "Consultation in laboratory medicine for test interpretation"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/DOCUMENTTYPE",
+          "code": "Lab-Rpt",
+          "display": "Lab Report"
+        } ]
+      } ],
+      "priority": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActPriority",
+          "code": "UR",
+          "display": "urgent"
+        } ],
+        "text": "urgent"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "participant": [ {
+        "type": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "PPRF",
+            "display": "primary performer"
+          } ],
+          "text": "primary performer"
+        } ],
+        "period": {
+          "start": "2026-01-05T00:00:00-08:00",
+          "end": "2026-01-05T21:45:16-08:00"
+        },
+        "individual": {
+          "reference": "Practitioner/1807526517021910"
+        }
+      }, {
+        "type": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "PPRF",
+            "display": "primary performer"
+          } ],
+          "text": "primary performer"
+        } ],
+        "period": {
+          "start": "2026-01-05T00:00:00-08:00",
+          "end": "2026-01-05T21:45:16-08:00"
+        },
+        "individual": {
+          "reference": "Practitioner/-3"
+        }
+      } ],
+      "period": {
+        "start": "2026-01-05T00:00:00-08:00",
+        "end": "2026-01-05T21:45:16-08:00"
+      },
+      "reasonCode": [ {
+        "text": "Urinalysis-05-jan"
+      } ],
+      "hospitalization": {
+        "dischargeDisposition": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+            "code": "oth",
+            "display": "Other"
+          } ],
+          "text": "Other"
+        }
+      },
+      "location": [ {
+        "location": {
+          "reference": "Location/1807527848054460"
+        }
+      } ],
+      "serviceProvider": {
+        "reference": "Organization/DF-18"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268657961950",
+      "meta": {
+        "versionId": "2083268657961950",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">urine color (5778-6 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">YELLOW</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268657961950"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1249",
+          "display": "Urinalysis"
+        } ],
+        "text": "Urinalysis"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "5778-6",
+          "display": "Color of Urine"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "2751",
+          "display": "UA COLOR"
+        } ],
+        "text": "urine color"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "YELLOW"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268658962090",
+      "meta": {
+        "versionId": "2083268658962090",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">vancomycin sensitivity culture (105816-3 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">Resistant (19000-9 LOINC)</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268658962090"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1241",
+          "display": "Microbiology"
+        } ],
+        "text": "Microbiology"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "105816-3"
+        }, {
+          "system": "http://loinc.org",
+          "code": "105817-1"
+        }, {
+          "system": "http://loinc.org",
+          "code": "19000-9",
+          "display": "Vancomycin [Susceptibility]"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "6509",
+          "display": "VANCOMYC SEN"
+        } ],
+        "text": "vancomycin sensitivity culture"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "19000-9",
+          "display": "Vancomycin [Susceptibility]"
+        }, {
+          "system": "http://snomed.info/sct",
+          "version": "resultCode",
+          "code": "30714006"
+        }, {
+          "system": "http://snomed.info/sct",
+          "code": "30714006"
+        }, {
+          "system": "http://snomed.info/sct",
+          "version": "resultCode",
+          "code": "30714006"
+        } ],
+        "text": "Resistant"
+      },
+      "interpretation": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "R",
+          "display": "Resistant"
+        } ],
+        "text": "Resistant"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268658962080",
+      "meta": {
+        "versionId": "2083268658962080",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">Staphylococcus aureus glycopeptide resistant identified [Type] in Isolate (11475-1 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">Staphylococcus aureus (organism)</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268658962080"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1103",
+          "display": "Lab"
+        } ],
+        "text": "Lab"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "11475-1"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "697386",
+          "display": "STAUGLYISOLT"
+        } ],
+        "text": "Staphylococcus aureus glycopeptide resistant identified [Type] in Isolate"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "Staphylococcus aureus (organism)"
+      },
+      "interpretation": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "D",
+          "display": "Significant change down"
+        } ],
+        "text": "Significant change down"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268657962010",
+      "meta": {
+        "versionId": "2083268657962010",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">ketones, urine, by test strip (5797-6 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">Negative</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268657962010"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1249",
+          "display": "Urinalysis"
+        } ],
+        "text": "Urinalysis"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "5797-6",
+          "display": "Ketones [Mass/volume] in Urine by Test strip"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "322",
+          "display": "KETONES URN"
+        } ],
+        "text": "ketones, urine, by test strip"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "Negative"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268657962030",
+      "meta": {
+        "versionId": "2083268657962030",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">(-1 1000-4-9390)</span></td><td width=\"42%\"><span class=\"text-muted\">100 mg/dL</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268657962030"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "100001",
+          "display": "Unknown"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "-1"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "100 mg/dL"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268658962120",
+      "meta": {
+        "versionId": "2083268658962120",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">carboxyhemoglobin as percent of venous blood hemoglobin (2032-1 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">3 %</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "extension": [ {
+        "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile-obstypen-exactcodedescription",
+        "valueCodeableConcept": {
+          "text": "3"
+        }
+      } ],
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268658962120"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1234",
+          "display": "Chemistry"
+        } ],
+        "text": "Chemistry"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "2032-1",
+          "display": "Carboxyhemoglobin/Hemoglobin.total in Venous blood"
+        }, {
+          "system": "http://loinc.org",
+          "code": "71884-1",
+          "display": "Carboxyhemoglobin/Hemoglobin.total [Pure mass fraction] in Venous blood"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "3279",
+          "display": "CARBOXYHB %"
+        } ],
+        "text": "carboxyhemoglobin as percent of venous blood hemoglobin"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueQuantity": {
+        "value": 3,
+        "unit": "%",
+        "system": "http://unitsofmeasure.org",
+        "code": "%"
+      },
+      "interpretation": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "N",
+          "display": "Normal "
+        } ],
+        "text": "Normal "
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268657962000",
+      "meta": {
+        "versionId": "2083268657962000",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">(-1 1000-4-9390)</span></td><td width=\"42%\"><span class=\"text-muted\">50 mg/dL</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268657962000"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "100001",
+          "display": "Unknown"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "-1"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "50 mg/dL"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268657961980",
+      "meta": {
+        "versionId": "2083268657961980",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">pH, urine, semiquantitative (5803-2 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">5.0 pH</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268657961980"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1249",
+          "display": "Urinalysis"
+        } ],
+        "text": "Urinalysis"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "5803-2",
+          "display": "pH of Urine by Test strip"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "324",
+          "display": "PH URINE"
+        } ],
+        "text": "pH, urine, semiquantitative"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "5.0 pH"
+      },
+      "referenceRange": [ {
+        "text": "5.0-8.0"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268658962110",
+      "meta": {
+        "versionId": "2083268658962110",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">(-1 1000-4-9390)</span></td><td width=\"42%\"><span class=\"text-muted\">Detected</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268658962110"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "100001",
+          "display": "Unknown"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "-1"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "Detected"
+      },
+      "interpretation": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "N",
+          "display": "Normal "
+        } ],
+        "text": "Normal "
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268658962050",
+      "meta": {
+        "versionId": "2083268658962050",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">Shigella (organism) with interpretation Code A - abnormal (46455-2 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">Detected (260373001 SNOMED CT)</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268658962050"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1103",
+          "display": "Lab"
+        } ],
+        "text": "Lab"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "46455-2",
+          "display": "Shigella sp DNA [Presence] in Specimen by NAA with probe detection"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "700127",
+          "display": "SHIGELLINTRA"
+        } ],
+        "text": "Shigella (organism) with interpretation Code A - abnormal"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "260373001",
+          "display": "Detected"
+        } ],
+        "text": "Detected"
+      },
+      "interpretation": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "N",
+          "display": "Normal "
+        } ],
+        "text": "Normal "
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268657961970",
+      "meta": {
+        "versionId": "2083268657961970",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">specific gravity, urine (5811-5 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">1.015 units</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268657961970"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1249",
+          "display": "Urinalysis"
+        } ],
+        "text": "Urinalysis"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "5811-5",
+          "display": "Specific gravity of Urine by Test strip"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "325",
+          "display": "SPEC GR URIN"
+        } ],
+        "text": "specific gravity, urine"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "1.015 units"
+      },
+      "referenceRange": [ {
+        "text": "1.005-1.030"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268658962070",
+      "meta": {
+        "versionId": "2083268658962070",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">(-1 1000-4-9390)</span></td><td width=\"42%\"><span class=\"text-muted\">Nominal</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268658962070"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "100001",
+          "display": "Unknown"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "-1"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueCodeableConcept": {
+        "text": "Nominal"
+      },
+      "interpretation": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "N",
+          "display": "Normal "
+        } ],
+        "text": "Normal "
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2083268657961960",
+      "meta": {
+        "versionId": "2083268657961960",
+        "lastUpdated": "2026-01-05T21:45:16.850-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile", "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">appearance, urine (5767-9 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">CLEAR</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2083268657961960"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/LABORDERPANEL",
+          "code": "URINALYSIS",
+          "display": "Urinalysis-05-jan"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1249",
+          "display": "Urinalysis"
+        } ],
+        "text": "Urinalysis"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "5767-9",
+          "display": "Appearance of Urine"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "328",
+          "display": "APPEARANCE U"
+        } ],
+        "text": "appearance, urine"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:45:16.850-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "valueString": "CLEAR"
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "2083268657961840",
+      "meta": {
+        "lastUpdated": "2026-01-05T21:45:16.983-08:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-diagnosticreport-lab", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-diagnosticreport-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">Laboratory (LAB V2-0074)</span></td><td width=\"42%\"><span class=\"text-muted\">Observation/2083268657961950, Observation/2083268657961960, Observation/2083268657961970, Observation/2083268657961980, Observation/2083268657962000, Observation/2083268657962010, Observation/2083268657962030, Observation/2083268658962050, Observation/2083268658962070, Observation/2083268658962080, Observation/2083268658962090, Observation/2083268658962110, Observation/2083268658962120</span></td><td width=\"8%\"><span class=\"text-muted\">2026/01/05</span></td><td width=\"25%\"> -- <a href=\"Practitioner/-3\">Practitioner/-3</a><span> 2026/01/05</span></td></tr></tbody></table></div>"
+      },
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/diagnosticreportstatus",
+            "code": "F",
+            "display": "Final"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ],
+        "text": "Laboratory"
+      } ],
+      "code": {
+        "text": "Urinalysis-05-jan"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2083268657961840"
+      },
+      "effectiveDateTime": "2026-01-05T00:00:00-08:00",
+      "issued": "2026-01-05T21:44:18.000-08:00",
+      "performer": [ {
+        "reference": "Practitioner/-3"
+      } ],
+      "result": [ {
+        "reference": "Observation/2083268657961950"
+      }, {
+        "reference": "Observation/2083268657961960"
+      }, {
+        "reference": "Observation/2083268657961970"
+      }, {
+        "reference": "Observation/2083268657961980"
+      }, {
+        "reference": "Observation/2083268657962000"
+      }, {
+        "reference": "Observation/2083268657962010"
+      }, {
+        "reference": "Observation/2083268657962030"
+      }, {
+        "reference": "Observation/2083268658962050"
+      }, {
+        "reference": "Observation/2083268658962070"
+      }, {
+        "reference": "Observation/2083268658962080"
+      }, {
+        "reference": "Observation/2083268658962090"
+      }, {
+        "reference": "Observation/2083268658962110"
+      }, {
+        "reference": "Observation/2083268658962120"
+      } ],
+      "presentedForm": [ {
+        "contentType": "text/plain",
+        "language": "en",
+        "url": "Binary/DOC-2083268657961840"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "2080985328880820",
+      "meta": {
+        "versionId": "2080985328880820",
+        "lastUpdated": "2025-12-10T11:30:47.293-08:00",
+        "profile": [ "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-observation-profile" ],
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+          "code": "N",
+          "display": "Normal"
+        } ],
+        "tag": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "New",
+          "display": "New"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "Pen",
+          "display": "Pen"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/codesystem/athenaFlex/EditTags",
+          "code": "NewPen",
+          "display": "New Pen"
+        } ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><caption><a href=\"Patient/2061440728169260\">Patient/2061440728169260</a></caption><tbody><tr><td width=\"25%\"><span class=\"text-muted\">Occupation #1 (11295-3 LOINC)</span></td><td width=\"42%\"><span class=\"text-muted\">Plumber</span></td><td width=\"8%\"><span class=\"text-muted\">2025/12/10</span></td><td width=\"25%\"> -- <a href=\"Practitioner/1807526517021910\">Practitioner/1807526517021910</a><span> 2025/12/10</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/ObservationId/1000-4-9390",
+        "value": "2080985328880820"
+      } ],
+      "status": "final",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/obsstatus",
+            "code": "F",
+            "display": "Final results; complete and verified"
+          }
+        } ]
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "social-history",
+          "display": "Social History"
+        } ]
+      }, {
+        "coding": [ {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HIERGRPS/1000-4-9390",
+          "code": "1204",
+          "display": "SH"
+        } ],
+        "text": "SH"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "11295-3"
+        }, {
+          "system": "http://snomed.info/sct",
+          "code": "364703007",
+          "display": "Employment detail"
+        }, {
+          "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/HDID/1000-4-9390",
+          "code": "360035",
+          "display": "OCCUPATION#1"
+        } ],
+        "text": "Occupation #1"
+      },
+      "subject": {
+        "reference": "Patient/2061440728169260"
+      },
+      "encounter": {
+        "reference": "Encounter/2080985328880710"
+      },
+      "effectiveDateTime": "2025-12-10T11:28:45-08:00",
+      "issued": "2025-12-10T11:30:47.293-08:00",
+      "performer": [ {
+        "reference": "Practitioner/1807526517021910"
+      } ],
+      "valueCodeableConcept": {
+        "text": "Plumber"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "-3",
+      "meta": {
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-practitioner-profile" ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><tbody><tr><td width=\"25%\">LinkLogic </td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "PN",
+            "display": "Person number"
+          } ],
+          "text": "Person number"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/DOCTORFACILITYID/1000-4-9390",
+        "value": "-1002"
+      }, {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": "1272883947"
+      } ],
+      "active": true,
+      "name": [ {
+        "family": "LinkLogic"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "1807526517021910",
+      "meta": {
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-practitioner-profile" ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><tbody><tr><td width=\"25%\">Harry S. Winston MD MD </td><td width=\"42%\">ADD1 Horsham, PA 19044 usa Phone: 21315643215612 Email: Test32@gmail.com</td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "PN",
+            "display": "Person number"
+          } ],
+          "text": "Person number"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/DOCTORFACILITYID/1000-4-9390",
+        "value": "2371"
+      }, {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": "1750496923"
+      } ],
+      "active": true,
+      "name": [ {
+        "family": "Winston MD",
+        "given": [ "Harry", "S." ],
+        "suffix": [ "MD" ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "21315643215612",
+        "use": "work"
+      }, {
+        "system": "email",
+        "value": "Test32@gmail.com",
+        "use": "work"
+      } ],
+      "address": [ {
+        "line": [ "ADD1" ],
+        "city": "Horsham",
+        "state": "PA",
+        "postalCode": "19044",
+        "country": "usa"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Location",
+      "id": "1807527848054460",
+      "meta": {
+        "versionId": "1807527848054460",
+        "lastUpdated": "2017-04-11T11:05:39.607-07:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-location-profile" ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><tbody><tr><td width=\"25%\"><span class=\"text-muted\">Southside Clinic</span></td><td width=\"25%\"> -- <a href=\"Organization/DF-18\">Organization/DF-18</a><span> 2017/04/11</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/LocationId/1000-4-9390",
+        "value": "1807527848054460"
+      } ],
+      "status": "active",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/locstatus",
+            "code": "A",
+            "display": "Active"
+          }
+        } ]
+      },
+      "name": "Southside Clinic",
+      "description": "Southside Clinic",
+      "telecom": [ {
+        "system": "phone",
+        "value": "8592000030",
+        "use": "work"
+      }, {
+        "system": "phone",
+        "value": "4033000028"
+      } ],
+      "address": {
+        "city": "riverside",
+        "state": "OK",
+        "postalCode": "73143"
+      },
+      "managingOrganization": {
+        "reference": "Organization/DF-18"
+      },
+      "partOf": {
+        "reference": "Location/0"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Location",
+      "id": "1807527848054460",
+      "meta": {
+        "versionId": "1807527848054460",
+        "lastUpdated": "2017-04-11T11:05:39.607-07:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-location-profile" ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><tbody><tr><td width=\"25%\"><span class=\"text-muted\">Southside Clinic</span></td><td width=\"25%\"> -- <a href=\"Organization/DF-18\">Organization/DF-18</a><span> 2017/04/11</span></td></tr></tbody></table></div>"
+      },
+      "identifier": [ {
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "U",
+            "display": "Unspecified Identifier"
+          } ],
+          "text": "Unspecified Identifier"
+        },
+        "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/namingsystem/LocationId/1000-4-9390",
+        "value": "1807527848054460"
+      } ],
+      "status": "active",
+      "_status": {
+        "extension": [ {
+          "url": "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-originalCode",
+          "valueCoding": {
+            "system": "https://docs.mydata.athenahealth.com/fhir-r4/athenaFlex/codesystem/locstatus",
+            "code": "A",
+            "display": "Active"
+          }
+        } ]
+      },
+      "name": "Southside Clinic",
+      "description": "Southside Clinic",
+      "telecom": [ {
+        "system": "phone",
+        "value": "8592000030",
+        "use": "work"
+      }, {
+        "system": "phone",
+        "value": "4033000028"
+      } ],
+      "address": {
+        "city": "riverside",
+        "state": "OK",
+        "postalCode": "73143"
+      },
+      "managingOrganization": {
+        "reference": "Organization/DF-18"
+      },
+      "partOf": {
+        "reference": "Location/0"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Organization",
+      "id": "DF-18",
+      "meta": {
+        "lastUpdated": "2010-08-23T09:37:57.000-07:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization", "https://docs.mydata.athenahealth.com/fhir-r4/StructureDefinition/athena-organization-profile" ]
+      },
+      "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table width=\"100%\"><tbody><tr><td width=\"25%\">Duncan Family Physicians</td><td width=\"42%\"> riverside, OK 73143 Phone: 8592000030 Fax: 4033000028</td></tr></tbody></table></div>"
+      },
+      "active": true,
+      "type": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+          "code": "prov",
+          "display": "Healthcare Provider"
+        } ],
+        "text": "Healthcare Provider"
+      } ],
+      "name": "Duncan Family Physicians",
+      "telecom": [ {
+        "system": "phone",
+        "value": "8592000030",
+        "use": "work"
+      }, {
+        "system": "fax",
+        "value": "4033000028"
+      } ],
+      "address": [ {
+        "city": "riverside",
+        "state": "OK",
+        "postalCode": "73143"
+      } ]
+    }
+  } ]
+}
