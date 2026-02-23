@@ -188,7 +188,11 @@ public class EcaUtilsTest {
 
     PowerMockito.mockStatic(CdaEicrGeneratorFromR4.class);
     when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            any(R4FhirData.class), eq(mockDetails), any(Eicr.class), any(String.class)))
+            any(R4FhirData.class),
+            eq(mockDetails),
+            any(Eicr.class),
+            any(Integer.class),
+            any(String.class)))
         .thenReturn("This is R4 EICR data");
 
     // Test

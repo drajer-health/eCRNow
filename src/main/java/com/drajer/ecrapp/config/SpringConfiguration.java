@@ -149,6 +149,13 @@ public class SpringConfiguration {
     return new R4CqlExecutionService(ecrRepository, evaluationSettings);
   }
 
+  @Bean(name = "R4CqlExecutionEvaluator")
+  @Scope("prototype")
+  R4CqlExecutionService getExecutionServiceExecutionService(
+      FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {
+    return new R4CqlExecutionService(ecrRepository, evaluationSettings);
+  }
+
   @Bean
   R4LibraryEvaluationService getLibraryEvaluationService(
       FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {

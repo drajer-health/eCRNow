@@ -63,8 +63,7 @@ public class MedMorphReportCreatorTest {
             medMorphReportCreator.createReport(
                 karProcessingData, ehrQueryService, "example", PROFILE, bsaAction);
     assertTrue(actualReport.hasId());
-    Bundle exceptedReport =
-        TestUtils.loadBundleFromFile("Bsa/report/MedMorph-report/report.json");
+    Bundle exceptedReport = TestUtils.loadBundleFromFile("Bsa/report/MedMorph-report/report.json");
     assertEquals(exceptedReport.getEntry().size(), actualReport.getEntry().size());
 
     String actualComposition = getComposition(actualReport);

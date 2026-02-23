@@ -23,7 +23,6 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
   private static final String TASK_NAME = "task_name";
 
   @Override
-
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
@@ -49,22 +48,22 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   @Override
   public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance) {
-      try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
-          CriteriaBuilder cb = em.getCriteriaBuilder();
-          CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
-          Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
+      Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
 
-          cq.select(root).distinct(true);
+      cq.select(root).distinct(true);
 
-          if (StringUtils.isNotBlank(taskInstance)) {
-              // Match anywhere (equivalent to MatchMode.ANYWHERE)
-              String pattern = "%" + taskInstance.trim().toLowerCase() + "%";
-              Predicate predicate = cb.like(cb.lower(root.get("taskInstance")), pattern);
-              cq.where(predicate);
-          }
-
-          return getSession().createQuery(cq).getResultList();
+      if (StringUtils.isNotBlank(taskInstance)) {
+        // Match anywhere (equivalent to MatchMode.ANYWHERE)
+        String pattern = "%" + taskInstance.trim().toLowerCase() + "%";
+        Predicate predicate = cb.like(cb.lower(root.get("taskInstance")), pattern);
+        cq.where(predicate);
       }
+
+      return getSession().createQuery(cq).getResultList();
+    }
   }
 
   @Override

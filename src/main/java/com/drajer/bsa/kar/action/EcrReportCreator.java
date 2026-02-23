@@ -324,6 +324,10 @@ public class EcrReportCreator extends ReportCreator {
     // logger.info("Ehr Query Service :{}", ehrService);
 
     Eicr ecr = new Eicr();
+    Integer submittedVersionNumber = 0;
+    if (kd.getPhm() != null) {
+      submittedVersionNumber = kd.getPhm().getSubmittedVersionNumber();
+    }
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
 
@@ -339,7 +343,11 @@ public class EcrReportCreator extends ReportCreator {
 
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            data.getValue0(), data.getValue1(), ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            data.getValue0(),
+            data.getValue1(),
+            ecr,
+            submittedVersionNumber,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
     returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
@@ -367,6 +375,11 @@ public class EcrReportCreator extends ReportCreator {
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
 
+    Integer submittedVersionNumber = 0;
+    if (kd.getPhm() != null) {
+      submittedVersionNumber = kd.getPhm().getSubmittedVersionNumber();
+    }
+
     // Save data to File for debugging.
     String outputFileName =
         KarProcessingData.LOADING_QUERY_FILE_NAME
@@ -379,7 +392,11 @@ public class EcrReportCreator extends ReportCreator {
 
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            data.getValue0(), data.getValue1(), ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
+            data.getValue0(),
+            data.getValue1(),
+            ecr,
+            submittedVersionNumber,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
 

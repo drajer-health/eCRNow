@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.7</version>
+        <version>3.5.10</version>
         <relativePath />
         <!-- lookup parent from repository -->
     </parent>
@@ -221,13 +221,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.12.0</version>
-        </dependency>
-
-
-        <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-r4</artifactId>
             <version>${fhir.version}</version>
@@ -287,11 +280,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.19.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.12.0</version>
         </dependency>
 
         <dependency>
@@ -463,12 +451,6 @@
             </exclusions>
         </dependency>
 
-
-        <!--  <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>tooling</artifactId>
-            <version>3.1.0</version>
-          </dependency> -->
     </dependencies>
 
     <build>

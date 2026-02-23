@@ -164,10 +164,11 @@ public class EcaUtils {
 
         logger.info("Creating eICR based on FHIR R4");
         R4FhirData r4Data = (R4FhirData) data;
+        Integer eicrdocVersion = 0;
 
         eICR =
             CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-                r4Data, details, ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+                r4Data, details, ecr, eicrdocVersion, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
       } else {
 
