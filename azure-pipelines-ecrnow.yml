@@ -1,0 +1,209 @@
+trigger:
+  branches:
+    include:
+      - master
+
+pr: none
+
+variables:
+  - group: ix-prod
+  - name: vmImageName
+    value: 'Default'
+  - name: imageRepository
+    value: 'ecrNow'
+  - name: dockerfilePath
+    value: 'Dockerfile'
+  - name: dockerRegistryServiceConnection
+    value: 'acr-ixdatabridge-connection'
+  - name: helmChartPath
+    value: 'helm/ixdatabridge-prod'
+  - name: azureRMServiceConnection
+    value: 'azsc-ixdatabridge'
+  - name: aksNamespace
+    value: 'ixdatabridge'
+  - name: aksResourceGroup
+    value: 'rg-infra-nonprod-eus2'
+  - name: aksClusterName
+    value: 'aks-infra-nonprod-eus2'
+  - name: environment
+    value: 'dev'
+  - name: Repository
+    value: 'acrdcbnpinfranonprodeus2.azurecr.io/ecrNow'
+  - name: snykServiceConnection
+    value: 'snyk-ixdata-connection'
+  - name: sonarQubeServiceConnection
+    value: 'sonar-ixdata-connection'
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build WARs, SonarQube Analysis, Snyk Scan, Create Docker Image'
+    pool:
+      name: 'Default'
+    steps:
+    - checkout: self
+
+    - task: JavaToolInstaller@0
+      displayName: 'Install JDK 17'
+      inputs:
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+
+    - task: SonarQubePrepare@5
+      displayName: 'Prepare SonarQube Analysis'
+      inputs:
+        SonarQube: '$(sonarQubeServiceConnection)'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'eCRNow'
+        cliProjectName: 'eCRNow'
+        extraProperties: |
+          sonar.projectVersion=$(Build.BuildId)
+          sonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+
+    - task: Maven@3
+      displayName: 'Run SonarQube Analysis (Maven Build + Scan)'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean verify sonar:sonar'
+        publishJUnitResults: false
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+        mavenVersionOption: 'Default'
+        options: >
+          -DskipTests=false
+          -Dng.env=$(uiconfigurations)
+          -Dsonar.sources=src/main/java
+          -Dsonar.java.test.inclusions=**/*Test.java
+      env:
+        MAVEN_OPTS: "-Xms4096m"
+
+    - task: PublishTestResults@2
+      displayName: 'Publish Unit Test Results'
+      inputs:
+        testResultsFiles: '**/target/surefire-reports/TEST-*.xml'
+        testRunTitle: 'Java Unit Tests'
+        mergeTestResults: true
+        failTaskOnFailedTests: false
+
+    - task: SonarQubePublish@5
+      displayName: 'Publish SonarQube Quality Gate Result'
+      inputs:
+        pollingTimeoutSec: '300'
+
+    - task: SnykSecurityScan@1
+      displayName: 'Snyk Security Scan (Maven Dependencies)'
+      inputs:
+        serviceConnectionEndpoint: $(snykServiceConnection)
+        testType: 'repo'
+        severityThreshold: 'low'
+        monitorWhen: 'always'
+        failOnIssues: true
+
+    - script: |
+        echo "🔄 Determining image tag..."
+        BRANCH_NAME=$(echo $(Build.SourceBranchName) | sed 's|/|-|g')
+        if [ "$BRANCH_NAME" == "master" ]; then
+          TAG="eCRNow-$(Build.BuildId)"
+        else
+          TAG="${BRANCH_NAME}-$(Build.BuildId)"
+        fi
+        echo "✅ TAG determined: $TAG"
+        echo "##vso[task.setvariable variable=tag;isOutput=true]$TAG"
+        echo $TAG > tag.txt
+      name: SetTag
+      displayName: 'Set and Persist Image Tag'
+
+    - script: |
+        TAG=$(cat tag.txt)
+        echo "Docker tag read from file: $TAG"
+        echo "##vso[task.setvariable variable=tag]$TAG"
+      displayName: 'Read Persisted Tag for Docker'
+
+    - task: Docker@2
+      displayName: 'Build and Push Docker Image'
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        buildContext: $(System.DefaultWorkingDirectory)
+        tags: |
+          $(tag)
+          latest
+
+    - task: SnykSecurityScan@1
+      displayName: 'Snyk Security Scan (Docker Image)'
+      continueOnError: true
+      inputs:
+        serviceConnectionEndpoint: $(snykServiceConnection)
+        testType: 'container'
+        dockerImageName: '$(Repository):$(tag)'
+        severityThreshold: 'low'
+        monitorWhen: 'always'
+        failOnIssues: true
+
+- stage: Deploy
+  displayName: 'Prod'
+  dependsOn: Build
+  condition: succeeded('Build')
+  variables:
+    tag: $[ stageDependencies.Build.BuildJob.outputs['SetTag.tag'] ]
+  jobs:
+  - deployment: Deploy
+    displayName: 'Deploy to AKS using Helm'
+    environment: '$(aksNamespace)'
+    pool:
+      name: 'Default'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+
+          - script: |
+              safe_branch=$(echo "$(Build.SourceBranchName)" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9]#-#g' | cut -c1-30)
+              release_name="ixdatabridge-$safe_branch"
+              echo "Sanitized Helm release name: $release_name"
+              echo "##vso[task.setvariable variable=helmReleaseName]$release_name"
+            displayName: 'Sanitize Helm Release Name'
+
+          - task: AzureCLI@2
+            displayName: 'Configure kubectl with AKS credentials'
+            inputs:
+              azureSubscription: '$(azureRMServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "🔑 Getting AKS credentials..."
+                az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName) --overwrite-existing
+
+          - script: |
+              echo "🔥 Deploying Helm chart with tag: $(tag)"
+              echo "🔎 Checking if Helm release $(helmReleaseName) exists..."
+              if helm status "$(helmReleaseName)" --namespace $(aksNamespace); then
+                echo "🆙 Helm release exists. Upgrading the release..."
+                helm upgrade "$(helmReleaseName)" $(System.DefaultWorkingDirectory)/$(helmChartPath) \
+                  --namespace $(aksNamespace) \
+                  --values $(System.DefaultWorkingDirectory)/$(helmChartPath)/values-$(environment).yml \
+                  --set image.repository=$(Repository),image.tag=$(tag) \
+                  --wait \
+                  --timeout 15m
+              else
+                echo "🆕 Helm release does not exist. Installing the release..."
+                helm install "$(helmReleaseName)" $(System.DefaultWorkingDirectory)/$(helmChartPath) \
+                  --namespace $(aksNamespace) \
+                  --values $(System.DefaultWorkingDirectory)/$(helmChartPath)/values-$(environment).yml \
+                  --set image.repository=$(Repository),image.tag=$(tag) \
+                  --wait \
+                  --timeout 15m
+              fi
+            displayName: 'Helm Upgrade if Exists, Otherwise Install - ixdatabridge'
+
+          - script: |
+              echo "⏳ Waiting for an additional 2 minutes to ensure full stabilization..."
+              sleep 120
+            displayName: 'Post-Deployment Wait for Stabilization'
