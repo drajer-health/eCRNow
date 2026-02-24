@@ -13,15 +13,11 @@ import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
 public class RestApiSenderTest {
-
   private HttpServer server;
   private String url;
 
   @Before
   public void startServer() throws Exception {
-    server = HttpServer.create(new InetSocketAddress(0), 0);
-    url = "http://localhost:" + server.getAddress().getPort() + "/echo";
-
     server.createContext(
         "/echo",
         exchange -> {
@@ -38,6 +34,8 @@ public class RestApiSenderTest {
   @Test
   public void testSendEicrXmlDocument_realData() throws Exception {
     LaunchDetails launchDetails = new LaunchDetails();
+    server = HttpServer.create(new InetSocketAddress(0), 0);
+    url = "http://localhost:" + server.getAddress().getPort() + "/echo";
     launchDetails.setRestAPIURL(url);
     Eicr ecr = new Eicr();
     ecr.setFhirServerUrl("https://fhir.example.com");
@@ -58,6 +56,8 @@ public class RestApiSenderTest {
 
   @Test
   public void testSendEicrXmlDocument_exceptionPath() throws Exception {
+    server = HttpServer.create(new InetSocketAddress(0), 0);
+    url = "http://localhost:" + server.getAddress().getPort() + "/echo";
     LaunchDetails launchDetails = new LaunchDetails();
     launchDetails.setRestAPIURL("http://invalid-url");
     Eicr ecr = new Eicr();
