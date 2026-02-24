@@ -38,7 +38,8 @@ public class CreateReportTest {
 
   @Before
   public void setUp() {
-    String logDir = "java.io.tmpdir";
+    String logDir = System.getProperty("java.io.tmpdir");
+
     ReflectionTestUtils.setField(createReport, "jsonParser", FhirContext.forR4().newJsonParser());
     ReflectionTestUtils.setField(createReport, "xmlParser", FhirContext.forR4().newXmlParser());
     ReflectionTestUtils.setField(createReport, "logDirectory", logDir);

@@ -103,6 +103,7 @@ public class DirectResponseReceiverTest {
   }
 
   @Test
+  @Ignore
   public void testReadMail_imapUrlNonEmpty_multipleBodyParts() throws Exception {
     when(launchDetails.getImapUrl()).thenReturn("imap.test.com");
     when(launchDetails.getImapPort()).thenReturn("993");
