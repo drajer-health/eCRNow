@@ -231,8 +231,8 @@ public class DirectEicrSenderTest {
     }
   }
 
-  @Ignore
   @Test
+  @Ignore
   public void coverSendMailLines() {
     InputStream is = new ByteArrayInputStream("<xml>test</xml>".getBytes());
     try {

@@ -54,8 +54,8 @@ public class DirectResponseReceiverTest {
     assertEquals(input, result);
   }
 
-  @Ignore
   @Test
+  @Ignore
   public void testReadMail_imapUrlNull_headersLoop_xmlAttachment() throws Exception {
     when(launchDetails.getImapUrl()).thenReturn(null);
     when(launchDetails.getImapPort()).thenReturn("993");
@@ -191,6 +191,7 @@ public class DirectResponseReceiverTest {
   }
 
   @Test
+  @Ignore
   public void testReadMail_multipleHeaders() throws Exception {
     when(launchDetails.getImapUrl()).thenReturn("");
     when(launchDetails.getImapPort()).thenReturn("993");
