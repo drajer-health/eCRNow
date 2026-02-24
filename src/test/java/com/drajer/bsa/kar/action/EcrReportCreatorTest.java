@@ -3,7 +3,6 @@ package com.drajer.bsa.kar.action;
 import static com.drajer.bsa.model.BsaTypes.ActionType.CHECK_TRIGGER_CODES;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.ehr.service.EhrQueryService;
@@ -455,7 +454,7 @@ public class EcrReportCreatorTest {
     status.setCovidOnly(false);
     EicrServiceImpl eicrService = Mockito.mock(EicrServiceImpl.class);
     ActionRepo.getInstance().setEicrRRService(eicrService);
-    when(eicrService.getMaxVersionId(any())).thenReturn(0);
+    Mockito.lenient().when(eicrService.getMaxVersionId(any())).thenReturn(0);
 
     return status;
   }
@@ -472,7 +471,7 @@ public class EcrReportCreatorTest {
     status.setCovidOnly(false);
     EicrServiceImpl eicrService = Mockito.mock(EicrServiceImpl.class);
     ActionRepo.getInstance().setEicrRRService(eicrService);
-    when(eicrService.getMaxVersionId(any())).thenReturn(0);
+    Mockito.lenient().when(eicrService.getMaxVersionId(any())).thenReturn(0);
 
     return status;
   }

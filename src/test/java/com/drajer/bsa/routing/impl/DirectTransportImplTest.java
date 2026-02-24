@@ -24,12 +24,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({
   Session.class,
   Transport.class,
@@ -218,23 +220,6 @@ public class DirectTransportImplTest {
     String messageId = directTransport.getMessageId(emailMessage);
     assertNull(messageId);
   }
-
-  //
-  //    @Test
-  //    public void testDeleteMailUsingImap() throws Exception {
-  //      when(inboxFolder.search(any(FlagTerm.class))).thenReturn(new Message[] {emailMessage});
-  //      doNothing().when(inboxFolder).open(Folder.READ_WRITE);
-  //      doNothing().when(inboxFolder).close(anyBoolean());
-  //      doNothing().when(emailMessage).setFlag(Flags.Flag.DELETED, true);
-  //      when(emailMessage.getAllHeaders()).thenReturn(headersEnumeration);
-  //      when(headersEnumeration.hasMoreElements()).thenReturn(false);
-  //
-  //      directTransport.deleteMailUsingImap(
-  //          "imap.test.com", 993, "test@user.com", "password", mailSession);
-  //
-  //      verify(emailMessage).setFlag(Flags.Flag.DELETED, true);
-  //      verify(inboxFolder).close(true);
-  //    }
 
   @Test
   public void testSendEicrDataUsingRestfulApi() {

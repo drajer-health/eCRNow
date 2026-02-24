@@ -1,8 +1,6 @@
 package com.drajer.cdafromr4;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
@@ -59,6 +57,14 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
     assertNotNull("CDA result section should not be null", actualXml);
 
     assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateResultsSection_else() {
+    R4FhirData fhirData = new R4FhirData();
+    String actualXml =
+        CdaResultGenerator.generateResultsSection(fhirData, launchDetails, "CDA_R11");
+    assertNotNull(actualXml);
   }
 
   @Test
@@ -195,6 +201,24 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
         CdaResultGenerator.generateResultsSection(
             data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testgetTriggerCodeTemplateXml() {
+    String expectedXml =
+        "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.2\" extension=\"2019-04-01\"/>";
+    String actualXml = CdaResultGenerator.getTriggerCodeTemplateXml("CDA_R31");
+    assertNotNull(actualXml);
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testgetTriggerCodeTemplateXml_else() {
+    String expectedXml =
+        "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.2\" extension=\"2016-12-01\"/>";
+    String actualXml = CdaResultGenerator.getTriggerCodeTemplateXml("CDA_R11");
+    assertNotNull(actualXml);
     assertXmlEquals(expectedXml, actualXml);
   }
 }

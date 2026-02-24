@@ -6,8 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.opencds.cqf.fhir.cr.measure.common.MeasureInfo.EXT_URL;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
+import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu2016may.model.codesystems.V3ParticipationType;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -30,6 +35,7 @@ import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -3076,5 +3082,826 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     String actualXml = CdaFhirUtilities.getPerformerXml(null, "", organization).toString();
 
     assertNotNull(actualXml);
+  }
+
+  @Test
+  public void testisCodeableConceptPresentForCodeSystem() {
+    CodeableConcept cc = new CodeableConcept();
+    Coding coding1 = new Coding();
+    coding1.setCode("3455");
+    coding1.setSystem("http://acme.org/mrns");
+    cc.addCoding(coding1);
+    Boolean result =
+        CdaFhirUtilities.isCodeableConceptPresentForCodeSystem(cc, "http://acme.org/mrns");
+    assertTrue(result);
+    assertNotNull(result);
+  }
+
+  @Test
+  public void testgetStringForSpecimenCollectionDate_unknown() {
+    String result = CdaFhirUtilities.getStringForSpecimenCollectionDate(null, null);
+    Assert.assertEquals("Unknown", result);
+  }
+
+  @Test
+  public void testgetStringForSpecimenCollectionDate() {
+    Reference reference = new Reference();
+    reference.setId("id123");
+    reference.setReferenceElement(new StringType("Specimen/id123"));
+
+    List<Reference> specimenRefs = new ArrayList<>();
+    specimenRefs.add(reference);
+    R4FhirData r4FhirData = new R4FhirData();
+    List<Specimen> specimenList = new ArrayList<>();
+    Specimen specimen = new Specimen();
+    specimen.setId("id123");
+    specimen.setCollection(new Specimen.SpecimenCollectionComponent());
+    Date collectionDate = new Date(1672531200000L);
+    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+    DateTimeType dateTimeType = new DateTimeType(collectionDate);
+    dateTimeType.setTimeZone(timeZone);
+    specimen.getCollection().setCollected(dateTimeType);
+    specimenList.add(specimen);
+    r4FhirData.setSpecimenList(specimenList);
+    String result = CdaFhirUtilities.getStringForSpecimenCollectionDate(specimenRefs, r4FhirData);
+    assertNotNull(result);
+    Assert.assertEquals("20230101000000+0000", result);
+  }
+
+  @Test
+  public void testgetStringForSpecimenCollectionDate_period() {
+    Reference reference = new Reference();
+    reference.setId("id123");
+    reference.setReferenceElement(new StringType("Specimen/id123"));
+    List<Reference> specimenRefs = new ArrayList<>();
+    specimenRefs.add(reference);
+    R4FhirData r4FhirData = new R4FhirData();
+    List<Specimen> specimenList = new ArrayList<>();
+    Specimen specimen = new Specimen();
+    specimen.setId("id123");
+    specimen.setCollection(new Specimen.SpecimenCollectionComponent());
+    Period period = new Period();
+    period.setStartElement(new DateTimeType(new Date(1672531200000L)));
+    period.setEndElement(new DateTimeType(new Date(1726771200000L)));
+    specimen.getCollection().setCollected(period);
+    specimenList.add(specimen);
+    r4FhirData.setSpecimenList(specimenList);
+    String result = CdaFhirUtilities.getStringForSpecimenCollectionDate(specimenRefs, r4FhirData);
+    assertNotNull(result);
+    Assert.assertEquals("20230101000000+0000|20240919184000+0000", result);
+  }
+
+  @Test
+  public void testgetNarrative() {
+    String result = CdaFhirUtilities.getNarrative("25", "2", "mg/dL");
+    assertNotNull(result);
+    Assert.assertEquals("frequency: 25|period: 2|periodUnit: mg/dL", result);
+  }
+
+  @Test
+  public void testReturnCodeableConceptWhenMatchingExtensionExists() {
+    String url = "http://example.org/fhir/StructureDefinition/test-ext";
+    CodeableConcept codeableConcept = new CodeableConcept();
+    codeableConcept.addCoding(new Coding("http://loinc.org", "1234-5", "Test Code"));
+
+    Extension extension = new Extension();
+    extension.setUrl(url);
+    extension.setValue(codeableConcept);
+
+    List<Extension> extensions = Collections.singletonList(extension);
+    CodeableConcept result = CdaFhirUtilities.getCodeableConceptFromExtension(extensions, url);
+    assertNotNull(result);
+    Assert.assertEquals("1234-5", result.getCodingFirstRep().getCode());
+    Assert.assertEquals("http://loinc.org", result.getCodingFirstRep().getSystem());
+  }
+
+  @Test
+  public void testReturnNullWhenUrlDoesNotMatch() {
+    Extension extension = new Extension();
+    extension.setUrl("http://example.org/other-ext");
+    extension.setValue(new CodeableConcept());
+
+    List<Extension> extensions = Collections.singletonList(extension);
+
+    CodeableConcept result =
+        CdaFhirUtilities.getCodeableConceptFromExtension(
+            extensions, "http://example.org/fhir/StructureDefinition/test-ext");
+
+    assertNull(result);
+  }
+
+  @Test
+  public void testReturnExtensionWhenMatchingUrlExists() {
+    String url = "http://example.org/fhir/StructureDefinition/test-ext";
+    Extension extension = new Extension();
+    extension.setUrl(url);
+    List<Extension> extensions = Collections.singletonList(extension);
+
+    Extension result = CdaFhirUtilities.getExtensionForUrl(extensions, url);
+    assertNotNull(result);
+    Assert.assertEquals(url, result.getUrl());
+  }
+
+  @Test
+  public void testReturnNullWhenExtensionUrlIsNull() {
+    Extension extension = new Extension(); // url is null
+    List<Extension> extensions = Collections.singletonList(extension);
+    Extension result =
+        CdaFhirUtilities.getExtensionForUrl(
+            extensions, "http://example.org/fhir/StructureDefinition/test-ext");
+    assertNull(result);
+  }
+
+  @Test
+  public void testgetCodeableConceptXmlForValue() {
+    Coding coding = new Coding();
+    coding.setSystem("https://acme.lab/resultcodes");
+    coding.setCode("NEG");
+    coding.setDisplay("negative");
+    CodeableConcept codeableConcept = new CodeableConcept();
+    codeableConcept.addCoding(coding);
+
+    String actualresult =
+        CdaFhirUtilities.getCodeableConceptXmlForValue(
+            codeableConcept, "negative", "https://acme.lab/resultco");
+    Assert.assertEquals(
+        "<negative xsi:type=\"CD\" nullFlavor=\"NI\"/>".trim(), actualresult.trim());
+  }
+
+  @Test
+  public void testGetPractitionersForType_usingRealR4FhirData() {
+    Practitioner practitioner = new Practitioner();
+    practitioner.setId("Practitioner/prac1");
+    practitioner.addName().setFamily("Smith");
+
+    Coding coding = new Coding();
+    coding.setSystem(CdaGeneratorConstants.FHIR_PARTICIPANT_TYPE);
+    coding.setCode(V3ParticipationType.ADM.toString());
+    CodeableConcept concept = new CodeableConcept();
+    concept.setCoding(Collections.singletonList(coding));
+    Reference reference = new Reference();
+    reference.setReference("Practitioner/prac1");
+    reference.setId("prac1");
+    reference.setReferenceElement(new StringType("prac1"));
+    reference.setReferenceElement(new IdType("prac1"));
+    reference.setDisplay("Dr Smith");
+
+    Encounter.EncounterParticipantComponent participant =
+        new Encounter.EncounterParticipantComponent();
+    participant.setIndividual(reference);
+    participant.setType(Collections.singletonList(concept));
+
+    Encounter encounter = new Encounter();
+    encounter.setParticipant(Collections.singletonList(participant));
+
+    R4FhirData data = new R4FhirData();
+    data.setEncounter(encounter);
+    data.setPractitioner(practitioner);
+    List<Practitioner> result =
+        CdaFhirUtilities.getPractitionersForType(
+            data, org.hl7.fhir.r4.model.codesystems.V3ParticipationType.ADM);
+
+    assertNotNull(result);
+    Assert.assertEquals(0, result.size());
+  }
+
+  @Test
+  public void testWithCoding_present() {
+    Coding coding = new Coding();
+    coding.setSystem("http://test-system");
+    coding.setCode("TEST_CODE");
+    coding.setDisplay("Test Display");
+
+    CodeableConcept concept = new CodeableConcept();
+    concept.setCoding(Collections.singletonList(coding));
+
+    String result =
+        CdaFhirUtilities.getCodeableConceptXmlForValueWithValueSetAndVersion(
+            concept, "testCd", "#contentRef", "testVS", "1.0");
+
+    assertNotNull(result);
+    Assert.assertEquals("<testCd xsi:type=\"CD\" nullFlavor=\"NI\"/>".trim(), result.trim());
+  }
+
+  @Test
+  public void testWithText_only() {
+
+    CodeableConcept concept = new CodeableConcept();
+    concept.setText("Free text value");
+
+    String result =
+        CdaFhirUtilities.getCodeableConceptXmlForValueWithValueSetAndVersion(
+            concept, "testCd", "#contentRef", "testVS", "1.0");
+
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+    assertTrue(result.contains("Free text value"));
+  }
+
+  @Test
+  public void testWithNullCodeableConcept() {
+    String result =
+        CdaFhirUtilities.getCodeableConceptXmlForValueWithValueSetAndVersion(
+            null, "testCd", "#contentRef", "testVS", "1.0");
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+    assertTrue(result.contains(CdaGeneratorConstants.NF_NI));
+  }
+
+  @Test
+  public void testgetStringForMedicationFromContainedResources() {
+    Coding coding = new Coding();
+    coding.setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL);
+    coding.setCode("12345");
+    coding.setDisplay("Paracetamol");
+    CodeableConcept code = new CodeableConcept();
+    code.setCoding(Collections.singletonList(coding));
+    Medication medication = new Medication();
+    medication.setId("med1");
+    medication.setCode(code);
+
+    List<Resource> resources = Collections.singletonList(medication);
+    String result =
+        CdaFhirUtilities.getStringForMedicationFromContainedResources(resources, "med1");
+    Assert.assertEquals("Paracetamol", result);
+  }
+
+  @Test
+  public void testMedicationFound_usingIngredientWhenCodeEmpty() {
+
+    CodeableConcept emptyCode = new CodeableConcept();
+    Coding ingCoding = new Coding();
+    ingCoding.setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL);
+    ingCoding.setCode("67890");
+    ingCoding.setDisplay("Ibuprofen");
+
+    CodeableConcept ingCC = new CodeableConcept();
+    ingCC.setCoding(Collections.singletonList(ingCoding));
+
+    Medication.MedicationIngredientComponent ingredient =
+        new Medication.MedicationIngredientComponent();
+    ingredient.setItem(ingCC);
+
+    Medication medication = new Medication();
+    medication.setId("med2");
+    medication.setCode(emptyCode);
+    medication.setIngredient(Collections.singletonList(ingredient));
+
+    List<Resource> resources = Collections.singletonList(medication);
+
+    String result =
+        CdaFhirUtilities.getStringForMedicationFromContainedResources(resources, "med2");
+    Assert.assertEquals("Ibuprofen", result);
+  }
+
+  @Test
+  public void testNoMatchingMedicationId() {
+
+    Medication medication = new Medication();
+    medication.setId("med4");
+    List<Resource> resources = Collections.singletonList(medication);
+    String result =
+        CdaFhirUtilities.getStringForMedicationFromContainedResources(resources, "unknown");
+    Assert.assertEquals(CdaGeneratorConstants.UNKNOWN_VALUE, result);
+  }
+
+  @Test
+  public void testContainedMedicationReference_coverContainedLoop() {
+    Coding coding = new Coding();
+    coding.setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL);
+    coding.setCode("123456");
+    coding.setDisplay("Paracetamol");
+
+    CodeableConcept codeableConcept = new CodeableConcept();
+    codeableConcept.setCoding(Collections.singletonList(coding));
+    Medication medication = new Medication();
+    medication.setId("med2");
+    medication.setCode(codeableConcept);
+    MedicationRequest resource = new MedicationRequest();
+    resource.getContained().add(medication);
+    Reference ref = new Reference();
+    ref.setReference("#med2");
+    String result =
+        CdaFhirUtilities.getXmlForMedicationTypeForCodeSystem(
+            ref, "medication", true, CdaGeneratorConstants.FHIR_RXNORM_URL, false, resource, null);
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+    assertTrue(result.contains("Paracetamol"));
+  }
+
+  @Test
+  public void testNonContainedMedicationReference_elseBlock_withValue() {
+    Coding coding = new Coding();
+    coding.setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL);
+    coding.setCode("654321");
+    coding.setDisplay("Ibuprofen");
+
+    CodeableConcept cc = new CodeableConcept();
+    cc.setCoding(Collections.singletonList(coding));
+    Medication medication = new Medication();
+    medication.setId("med10");
+    medication.setCode(cc);
+    List<Medication> medList = Collections.singletonList(medication);
+    Reference ref = new Reference();
+    ref.setReference("Medication/med10");
+
+    String result =
+        CdaFhirUtilities.getXmlForMedicationTypeForCodeSystem(
+            ref, "medication", true, CdaGeneratorConstants.FHIR_RXNORM_URL, false, null, medList);
+    assertNotNull(result);
+    Assert.assertEquals(
+        "<value xsi:type=\"CD\" code=\"654321\" codeSystem=\"2.16.840.1.113883.6.88\" codeSystemName=\"RXNORM\" displayName=\"Ibuprofen\"></value>"
+            .trim(),
+        result.trim());
+    assertTrue(result.contains("Ibuprofen"));
+  }
+
+  @Test
+  public void testNonReferenceTypeFallback() {
+    StringType stringType = new StringType("test");
+    String result =
+        CdaFhirUtilities.getXmlForMedicationTypeForCodeSystem(
+            stringType,
+            "medication",
+            true,
+            CdaGeneratorConstants.FHIR_RXNORM_URL,
+            false,
+            null,
+            null);
+
+    assertNotNull(result);
+  }
+
+  @Test
+  public void testMatchedCodeWithTranslations_valueElemFalse() {
+
+    Set<String> matchedCodes = new HashSet<>();
+    matchedCodes.add("12345");
+    Coding matching = new Coding();
+    matching.setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL);
+    matching.setCode("12345");
+    matching.setDisplay("Paracetamol");
+    Coding translation = new Coding();
+    translation.setSystem(CdaGeneratorConstants.FHIR_SNOMED_URL);
+    translation.setCode("67890");
+    translation.setDisplay("Acetaminophen");
+    CodeableConcept cc = new CodeableConcept();
+    cc.setText("Pain killer");
+    cc.setCoding(Arrays.asList(matching, translation));
+    String result =
+        CdaFhirUtilities.getXmlForMatchedCodesWithValueSetAndVersion(
+            "code",
+            matchedCodes,
+            "2.16.840.1.113762.1.4.1010.4",
+            "2024-01",
+            cc,
+            "#medText",
+            Boolean.FALSE);
+
+    assertNotNull(result);
+    assertTrue(result.contains("Paracetamol"));
+  }
+
+  @Test
+  public void testMatchedCode_valueElemTrue() {
+
+    Set<String> matchedCodes = Set.of("ABC");
+
+    Coding coding = new Coding();
+    coding.setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL);
+    coding.setCode("ABC");
+    coding.setDisplay("Ibuprofen");
+
+    CodeableConcept cc = new CodeableConcept();
+    cc.setCoding(Collections.singletonList(coding));
+
+    String result =
+        CdaFhirUtilities.getXmlForMatchedCodesWithValueSetAndVersion(
+            "value", matchedCodes, "1.2.3.4", "1.0", cc, "", Boolean.TRUE);
+
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+    assertTrue(result.contains("Ibuprofen"));
+  }
+
+  @Test
+  public void testNoMatchedCodes_fallbackPath() {
+
+    Set<String> matchedCodes = Set.of("NO_MATCH");
+
+    Coding coding = new Coding();
+    coding.setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL);
+    coding.setCode("999");
+    coding.setDisplay("Aspirin");
+
+    CodeableConcept cc = new CodeableConcept();
+    cc.setText("Aspirin text");
+    cc.setCoding(Collections.singletonList(coding));
+
+    String result =
+        CdaFhirUtilities.getXmlForMatchedCodesWithValueSetAndVersion(
+            "code", matchedCodes, "1.2.3", "v1", cc, "#text", Boolean.FALSE);
+
+    assertNotNull(result);
+    assertTrue(result.contains("Aspirin"));
+  }
+
+  @Test
+  public void testGetAddressExtensionValue_success() {
+    Address address = new Address();
+    address.setCity("Bangalore");
+    address.setCountry("India");
+
+    Extension extension = new Extension();
+    extension.setUrl(EXT_URL);
+    extension.setValue(address);
+
+    List<Extension> extensions = Arrays.asList(extension);
+
+    Address result = CdaFhirUtilities.getAddressExtensionValue(extensions, EXT_URL);
+
+    assertNotNull(result);
+    Assert.assertEquals("Bangalore", result.getCity());
+    Assert.assertEquals("India", result.getCountry());
+  }
+
+  @Test
+  public void testGetAddressExtensionValue_nullExtensions() {
+    Address result = CdaFhirUtilities.getAddressExtensionValue(null, EXT_URL);
+    assertNull(result);
+  }
+
+  @Test
+  public void testGetAddressExtensionValue_emptyExtensions() {
+    Address result = CdaFhirUtilities.getAddressExtensionValue(Collections.emptyList(), EXT_URL);
+    assertNull(result);
+  }
+
+  @Test
+  public void testGetBooleanExtensionValue_true() {
+    Extension extension = new Extension();
+    extension.setUrl(EXT_URL);
+    extension.setValue(new BooleanType(true));
+    List<Extension> extensions = Arrays.asList(extension);
+    Boolean result = CdaFhirUtilities.getBooleanExtensionValue(extensions, EXT_URL);
+    assertTrue(result);
+  }
+
+  @Test
+  public void testGetBooleanExtensionValue_nullExtensions() {
+    Boolean result = CdaFhirUtilities.getBooleanExtensionValue(null, EXT_URL);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testGetBooleanExtensionValue_emptyExtensions() {
+    Boolean result = CdaFhirUtilities.getBooleanExtensionValue(Collections.emptyList(), EXT_URL);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testGetBooleanExtensionValue_falseValue() {
+    Extension extension = new Extension();
+    extension.setUrl(EXT_URL);
+    extension.setValue(new BooleanType(false));
+    List<Extension> extensions = Arrays.asList(extension);
+    Boolean result = CdaFhirUtilities.getBooleanExtensionValue(extensions, EXT_URL);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testGetDateTimeExtensionValue_found() {
+    DateTimeType dateTime = new DateTimeType(new Date());
+
+    Extension extension = new Extension();
+    extension.setUrl(EXT_URL);
+    extension.setValue(dateTime);
+    List<Extension> extensions = Arrays.asList(extension);
+    DateTimeType result = CdaFhirUtilities.getDateTimeExtensionValue(extensions, EXT_URL);
+    assertNotNull(result);
+    Assert.assertEquals(dateTime.getValue(), result.getValue());
+  }
+
+  @Test
+  public void testGetDateTimeExtensionValue_nullExtensions() {
+    DateTimeType result = CdaFhirUtilities.getDateTimeExtensionValue(null, EXT_URL);
+
+    assertNull(result);
+  }
+
+  @Test
+  public void testGetDateTimeExtensionValue_emptyExtensions() {
+    DateTimeType result =
+        CdaFhirUtilities.getDateTimeExtensionValue(Collections.emptyList(), EXT_URL);
+    assertNull(result);
+  }
+
+  @Test
+  public void testGetTravelHistoryAddressXml_nullAddress() {
+    String result = CdaFhirUtilities.getTravelHistoryAddressXml(null);
+
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  public void testGetTravelHistoryAddressXml_allFieldsPresent() {
+    Address addr = new Address();
+    addr.setCountry("India");
+    addr.setCity("Bengaluru");
+    addr.setState("KA");
+
+    String result = CdaFhirUtilities.getTravelHistoryAddressXml(addr);
+
+    assertNotNull(result);
+    assertTrue(result.contains(CdaGeneratorConstants.ADDR_EL_NAME));
+    assertTrue(result.contains("India"));
+    assertTrue(result.contains("Bengaluru"));
+    assertTrue(result.contains("KA"));
+  }
+
+  @Test
+  public void testGetTravelHistoryAddressXml_noCountry() {
+    Address addr = new Address();
+    addr.setCity("Chennai");
+    addr.setState("TN");
+
+    String result = CdaFhirUtilities.getTravelHistoryAddressXml(addr);
+
+    assertNotNull(result);
+    assertTrue(result.contains(CdaGeneratorConstants.ADDR_EL_NAME));
+    assertTrue(result.contains(CdaGeneratorConstants.NF_NI));
+    assertTrue(result.contains("Chennai"));
+    assertTrue(result.contains("TN"));
+  }
+
+  @Test
+  public void testGetSingleCodingXmlFromCodings_firstCodingValid() {
+    Coding validCoding = new Coding();
+    validCoding.setSystem("http://loinc.org");
+    validCoding.setCode("1234-5");
+    validCoding.setDisplay("Test Code");
+
+    List<Coding> codings = Arrays.asList(validCoding);
+
+    String result = CdaFhirUtilities.getSingleCodingXmlFromCodings(codings, "code");
+
+    assertNotNull(result);
+    assertTrue(result.contains("1234-5"));
+    Assert.assertEquals(
+        "<code code=\"1234-5\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Test Code\"/>\n"
+            .trim(),
+        result.trim());
+  }
+
+  @Test
+  public void testGetSingleCodingXmlFromCodings_emptyList() {
+    String result = CdaFhirUtilities.getSingleCodingXmlFromCodings(Collections.emptyList(), "code");
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  public void testGetPractitionerXml_withNpi() {
+    Practitioner pr = new Practitioner();
+    Identifier npi = new Identifier();
+    npi.setSystem(CdaGeneratorConstants.FHIR_NPI_URL);
+    npi.setValue("1234567890");
+    pr.setIdentifier(Collections.singletonList(npi));
+    HumanName name = new HumanName();
+    name.setFamily("Smith").addGiven("Alice");
+    pr.setName(Collections.singletonList(name));
+
+    Address addr = new Address();
+    addr.setCountry("India");
+    pr.setAddress(Collections.singletonList(addr));
+
+    ContactPoint cp = new ContactPoint();
+    cp.setSystem(ContactPointSystem.EMAIL);
+    cp.setValue("alice@hospital.org");
+    pr.setTelecom(Collections.singletonList(cp));
+
+    String result = CdaFhirUtilities.getPractitionerXml(pr, null);
+
+    assertNotNull(result);
+    assertTrue(result.contains("1234567890"));
+    assertTrue(result.contains("Smith"));
+    assertTrue(result.contains("Alice"));
+    assertTrue(result.contains(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+  }
+
+  @Test
+  public void testGetPractitionerXml_nullPractitioner() {
+    String result = CdaFhirUtilities.getPractitionerXml(null, null);
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+    assertTrue(result.contains(CdaGeneratorConstants.AUTHOR_NPI_AA));
+  }
+
+  @Test
+  public void testGetXmlForAuthor_nonPractitionerReference() {
+    R4FhirData data = mock(R4FhirData.class);
+    Reference ref = new Reference();
+    ref.setReference("Patient/p1");
+    String result = CdaFhirUtilities.getXmlForAuthor(List.of(ref), data);
+
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  public void testGetXmlForAuthor_refsNull() {
+    R4FhirData data = mock(R4FhirData.class);
+
+    String result = CdaFhirUtilities.getXmlForAuthor(null, data);
+
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  public void testgetMedicationCodeXml() {
+    LaunchDetails launchDetails = new LaunchDetails();
+    launchDetails.setFhirVersion("R4");
+    launchDetails.setRctcOid("1.2.3.4");
+    launchDetails.setRctcVersion("V.3.0");
+
+    String statusJson =
+        "{\"matchTriggerStatus\":{\"matchedCodes\":[{\"valueSet\":\"http://www.nlm.nih.gov/research/umls/rxnorm\",\"matchedPath\":\"MedicationRequest.medicationCodeableConcept\"}]}}";
+    launchDetails.setStatus(statusJson);
+    Coding coding = new Coding();
+    coding.setSystem("http://www.nlm.nih.gov/research/umls/rxnorm");
+    coding.setCode("12345");
+    coding.setDisplay("Aspirin");
+
+    CodeableConcept codeableConcept = new CodeableConcept();
+    codeableConcept.addCoding(coding);
+    codeableConcept.setText("Aspirin");
+
+    List<String> paths = new ArrayList<>();
+    paths.add("MedicationRequest.medicationCodeableConcept");
+
+    Pair<Boolean, String> resultMatch =
+        CdaFhirUtilities.getMedicationCodeXml(
+            launchDetails, codeableConcept, false, "content/12", paths, "V.3.0");
+    assertNotNull(resultMatch);
+    assertNotNull(resultMatch.getValue1());
+  }
+
+  @Test
+  public void testgetMedicationCodeableConcept() {
+    Medication medication = new Medication();
+    medication.setId("Medication/med1");
+
+    CodeableConcept medCode = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setSystem("http://www.nlm.nih.gov/research/umls/rxnorm");
+    coding.setCode("12345");
+    coding.setDisplay("Aspirin");
+    medCode.addCoding(coding);
+    medication.setCode(medCode);
+
+    List<Medication> medList = new ArrayList<>();
+    medList.add(medication);
+
+    Reference ref = new Reference("Medication/med1");
+
+    CodeableConcept result = CdaFhirUtilities.getMedicationCodeableConcept(ref, medList);
+
+    assertNotNull(result);
+    Assert.assertEquals("12345", result.getCodingFirstRep().getCode());
+  }
+
+  @Test
+  public void testGetMedicationCodeableConcept_WithCodeableConcept() {
+    CodeableConcept inputCc = new CodeableConcept();
+    inputCc.setText("Aspirin");
+
+    List<Medication> medList = new ArrayList<>();
+
+    CodeableConcept result = CdaFhirUtilities.getMedicationCodeableConcept(inputCc, medList);
+
+    assertNotNull(result);
+    Assert.assertEquals("Aspirin", result.getText());
+  }
+
+  @Test
+  public void testIsResourceOfType_NotMatch() {
+    Reference ref = new Reference("Patient/123");
+    boolean result = CdaFhirUtilities.isResourceOfType(ref, ResourceType.Practitioner);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testIsResourceOfType_Match() {
+    Reference ref = new Reference("Practitioner/123");
+
+    boolean result = CdaFhirUtilities.isResourceOfType(ref, ResourceType.Practitioner);
+
+    assertTrue(result);
+  }
+
+  @Test
+  public void testGetResourceType_NoResourceType() {
+    Reference ref = new Reference();
+    ref.setReference("123"); // no resource type
+
+    ResourceType result = CdaFhirUtilities.getResourceType(ref);
+    assertNull(result);
+  }
+
+  @Test
+  public void testGetResourceType_NullReference() {
+    ResourceType result = CdaFhirUtilities.getResourceType(null);
+    assertNull(result);
+  }
+
+  @Test
+  public void testDoesCodingHaveOtherRace_DifferentCode() {
+    Coding coding = new Coding();
+    coding.setCode("9999-9");
+
+    boolean result = CdaFhirUtilities.doesCodingHaveOtherRace(coding);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testDoesCodingHaveOtherRace_MatchingCode() {
+    Coding coding = new Coding();
+    coding.setCode("2131-1");
+
+    boolean result = CdaFhirUtilities.doesCodingHaveOtherRace(coding);
+    assertTrue(result);
+  }
+
+  @Test
+  public void testGetStringForObservationsWithComponents_CodeOnly() {
+    Observation obs = new Observation();
+
+    CodeableConcept code = new CodeableConcept();
+    code.addCoding(new Coding().setCode("1234-5").setDisplay("Body Weight"));
+    obs.setCode(code);
+
+    String result = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
+
+    assertNotNull(result);
+    assertTrue(result.contains("Body Weight"));
+  }
+
+  @Test
+  public void testGetStringForObservationsWithComponents_WithValue() {
+    Observation obs = new Observation();
+
+    CodeableConcept code = new CodeableConcept();
+    code.addCoding(new Coding().setDisplay("Heart Rate"));
+    obs.setCode(code);
+
+    Quantity value = new Quantity();
+    value.setValue(72);
+    value.setUnit("beats/min");
+    obs.setValue(value);
+
+    String result = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
+    assertNotNull(result);
+    assertTrue(result.contains("Heart Rate"));
+    assertTrue(result.contains("Value"));
+  }
+
+  @Test
+  public void testGetStringForObservationsWithComponents_WithComponents() {
+    Observation obs = new Observation();
+
+    CodeableConcept obsCode = new CodeableConcept();
+    obsCode.addCoding(new Coding().setDisplay("Blood Pressure"));
+    obs.setCode(obsCode);
+    Observation.ObservationComponentComponent comp1 =
+        new Observation.ObservationComponentComponent();
+    CodeableConcept comp1Code = new CodeableConcept();
+    comp1Code.addCoding(new Coding().setDisplay("Systolic"));
+    comp1.setCode(comp1Code);
+
+    Quantity comp1Value = new Quantity();
+    comp1Value.setValue(120);
+    comp1Value.setUnit("mmHg");
+    comp1.setValue(comp1Value);
+
+    // Component 2 without value
+    Observation.ObservationComponentComponent comp2 =
+        new Observation.ObservationComponentComponent();
+    CodeableConcept comp2Code = new CodeableConcept();
+    comp2Code.addCoding(new Coding().setDisplay("Diastolic"));
+    comp2.setCode(comp2Code);
+
+    obs.addComponent(comp1);
+    obs.addComponent(comp2);
+
+    String result = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
+
+    assertNotNull(result);
+    assertTrue(result.contains("Blood Pressure"));
+    assertTrue(result.contains("Component 1"));
+    assertTrue(result.contains("Systolic"));
+    assertTrue(result.contains("Component 2"));
+    assertTrue(result.contains("Diastolic"));
   }
 }

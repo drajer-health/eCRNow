@@ -1,2 +1,0 @@
-ALTER TABLE public_health_authority
-ADD backend_auth_key_alias text;
