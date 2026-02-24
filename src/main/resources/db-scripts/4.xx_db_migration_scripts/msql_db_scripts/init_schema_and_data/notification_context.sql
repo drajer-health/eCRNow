@@ -65,14 +65,7 @@ BEGIN TRY
                 encounter_end_time DATETIME2(6) NULL,
                 encounter_class VARCHAR(255) NULL,
                 ehr_launch_context VARCHAR(255) NULL,
-                last_updated_ts DATETIME2(6) NOT NULL DEFAULT GETDATE(),
-                CONSTRAINT uq_notification_new UNIQUE (
-                    fhir_server_base_url,
-                    patient_id,
-                    notification_resource_id,
-                    notification_resource_type,
-                    trigger_event
-                )
+                last_updated_ts DATETIME2(6) NOT NULL DEFAULT GETDATE()
             );
         ';
         EXEC sp_executesql @sql;

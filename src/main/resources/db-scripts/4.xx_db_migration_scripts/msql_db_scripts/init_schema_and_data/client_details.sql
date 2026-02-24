@@ -171,7 +171,7 @@ BEGIN TRY
 
                );
 
-               CREATE INDEX idx_fhir_server_base_url ON dbo.' + QUOTENAME(@new_table) + N' (fhir_server_base_url);
+
 
                ';
 

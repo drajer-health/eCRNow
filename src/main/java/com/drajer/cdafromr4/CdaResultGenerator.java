@@ -307,24 +307,42 @@ public class CdaResultGenerator {
         "Panel Name: " + CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
 
     // Add information from Components.
-    String val = "";
+    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
+    String resultValue = "";
     Boolean first = true;
+
+    StringBuilder innerTable = new StringBuilder(); // ===== Header for INNER TABLE =====
+    int innerRow = 0;
+    List<String> headerList = new ArrayList<>();
+    headerList.add("Component");
+    headerList.add("Result Value");
+    headerList.add("Reference Range");
+    headerList.add("Interpretation");
+
+    innerTable.append(
+        CdaGeneratorUtils.getXmlForTableHeader(
+            headerList, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+
+    innerTable.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
     if (obs.hasComponent()) {
+
       for (ObservationComponentComponent o : obs.getComponent()) {
 
         if (first) {
-          val += "Component Name: ";
+          resultValue += "";
           first = false;
         } else {
-          val += "| Component Name: ";
+          resultValue += "|";
         }
 
-        val += CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
+        resultValue += CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
 
         if (o.hasValue()) {
-          val += ", Result = " + CdaFhirUtilities.getStringForType(o.getValue());
+          resultValue += CdaFhirUtilities.getStringForType(o.getValue());
         } else {
-          val += ", Result = " + CdaGeneratorConstants.UNKNOWN_VALUE;
+          resultValue += CdaGeneratorConstants.UNKNOWN_VALUE;
         }
       }
     }
@@ -353,7 +371,7 @@ public class CdaResultGenerator {
       }
 
       if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
-        String refRangeString = "Reference Range: " + referenceRange.getText();
+        String refRangeString = referenceRange.getText();
         referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
       }
     }
@@ -361,6 +379,18 @@ public class CdaResultGenerator {
       referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
     }
     referenceRangeValue = referenceRangeValue.replaceAll("\\|\\s*$", "");
+
+    Map<String, String> innerBodyVals = new LinkedHashMap<>();
+    innerBodyVals.put("Component", CdaGeneratorConstants.UNKNOWN_VALUE);
+    innerBodyVals.put("Result Value", resultValue);
+    innerBodyVals.put("Reference Range", referenceRangeValue);
+    innerBodyVals.put("Interpretation", interpretationValue);
+    innerTable.append(CdaGeneratorUtils.addTableRow(innerBodyVals, innerRow++));
+    innerTable.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+    innerTable.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+
+    val = innerTable.toString();
 
     String collectionDate =
         CdaFhirUtilities.getStringForSpecimenCollectionDate(
@@ -373,9 +403,10 @@ public class CdaResultGenerator {
         StringEscapeUtils.escapeXml11(obsDisplayName));
 
     // Get Value String
-    if (val.isEmpty()) val = CdaGeneratorConstants.UNKNOWN_VALUE;
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
+    if (val.isEmpty()) {
+      val = CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
 
     // Get the Date String
     String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -384,16 +415,6 @@ public class CdaResultGenerator {
     }
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
 
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT,
-        StringUtils.isEmpty(interpretationValue)
-            ? CdaGeneratorConstants.UNKNOWN_VALUE
-            : interpretationValue);
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_5_BODY_CONTENT,
-        StringUtils.isEmpty(referenceRangeValue)
-            ? CdaGeneratorConstants.UNKNOWN_VALUE
-            : referenceRangeValue);
     bodyvals.put(
         CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
         StringUtils.isEmpty(collectionDate) ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDate);
@@ -405,6 +426,23 @@ public class CdaResultGenerator {
       Observation obs, int rowNum, StringBuilder textEntries, R4FhirData data) {
 
     String obsDisplayName = CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
+
+    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
+
+    StringBuilder innerTable = new StringBuilder(); // ===== Header for INNER TABLE =====
+    int innerRow = 0;
+    List<String> headerList = new ArrayList<>();
+    headerList.add("Component");
+    headerList.add("Result Value");
+    headerList.add("Reference Range");
+    headerList.add("Interpretation");
+
+    innerTable.append(
+        CdaGeneratorUtils.getXmlForTableHeader(
+            headerList, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+
+    innerTable.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
     String interpretationValue = CdaGeneratorConstants.UNKNOWN_VALUE;
     if (obs.hasInterpretation()) {
@@ -430,7 +468,7 @@ public class CdaResultGenerator {
       }
 
       if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
-        String refRangeString = "Reference Range: " + referenceRange.getText();
+        String refRangeString = referenceRange.getText();
         referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
       }
     }
@@ -443,6 +481,25 @@ public class CdaResultGenerator {
         CdaFhirUtilities.getStringForSpecimenCollectionDate(
             Collections.singletonList(obs.getSpecimen()), data);
 
+    String resultValue = CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (obs.hasValue()) {
+      resultValue = getNarrativeTextObservationValue(obs);
+    }
+
+    Map<String, String> innerBodyVals = new LinkedHashMap<>();
+    innerBodyVals.put("Component", CdaGeneratorConstants.UNKNOWN_VALUE);
+    innerBodyVals.put("Result Value", StringEscapeUtils.escapeXml11(resultValue));
+    innerBodyVals.put("Reference Range", referenceRangeValue);
+    innerBodyVals.put("Interpretation", interpretationValue);
+    innerTable.append(CdaGeneratorUtils.addTableRow(innerBodyVals, innerRow++));
+
+    innerTable.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+    innerTable.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+
+    val = innerTable.toString();
+
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(
@@ -450,12 +507,8 @@ public class CdaResultGenerator {
         StringEscapeUtils.escapeXml11(obsDisplayName));
 
     // Get Value String
-    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
-    if (obs.hasValue()) {
-      val = getNarrativeTextObservationValue(obs);
-    }
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, StringEscapeUtils.escapeXml11(val));
+
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
 
     // Get the Date String
     String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -463,17 +516,6 @@ public class CdaResultGenerator {
       dt = CdaFhirUtilities.getStringForType(obs.getEffective());
     }
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
-
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT,
-        StringUtils.isEmpty(interpretationValue)
-            ? CdaGeneratorConstants.UNKNOWN_VALUE
-            : interpretationValue);
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_5_BODY_CONTENT,
-        StringUtils.isEmpty(referenceRangeValue)
-            ? CdaGeneratorConstants.UNKNOWN_VALUE
-            : referenceRangeValue);
     bodyvals.put(
         CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
         StringUtils.isEmpty(collectionDate) ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDate);
@@ -590,46 +632,40 @@ public class CdaResultGenerator {
     String interpretations = "";
     String referenceRanges = "";
     String collectionDates = "";
-    String val = "";
+    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
+
     Boolean first = true;
     if (obs != null && !obs.isEmpty()) {
+
+      StringBuilder innerTable = new StringBuilder(); // ===== Header for INNER TABLE =====
+      int innerRow = 0;
+      List<String> headerList = new ArrayList<>();
+      headerList.add("Component");
+      headerList.add("Result Value");
+      headerList.add("Reference Range");
+      headerList.add("Interpretation");
+
+      innerTable.append(
+          CdaGeneratorUtils.getXmlForTableHeader(
+              headerList, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+
+      innerTable.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
       for (Observation o : obs) {
 
-        if (first) {
-          val += "Component Name: ";
-          first = false;
-        } else {
-          val += "| Component Name: ";
-        }
+        String componentName = CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
 
-        val += CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
-
+        String resultValue = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (o.hasValue()) {
-          val += ", Result = " + CdaFhirUtilities.getStringForType(o.getValue());
-        } else {
-          val += ", Result = " + CdaGeneratorConstants.UNKNOWN_VALUE;
+          resultValue = CdaFhirUtilities.getStringForType(o.getValue());
         }
 
-        String interpretationValue = "";
+        String interpretationValue = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (o.hasInterpretation()) {
           interpretationValue =
               CdaFhirUtilities.getDisplayStringForCodeableConcept(o.getInterpretation());
         }
-        if (!interpretations.isEmpty()) {
-          interpretations += " | ";
-        }
-        interpretations += interpretationValue;
-
-        String collectionDate = "";
-        if (o.hasSpecimen()) {
-          collectionDate =
-              CdaFhirUtilities.getStringForSpecimenCollectionDate(
-                  Collections.singletonList(o.getSpecimen()), data);
-        }
-        if (!collectionDates.isEmpty()) {
-          collectionDates += " | ";
-        }
-        collectionDates += collectionDate;
 
         String referenceRangeValue = "";
         if (o.hasReferenceRange()) {
@@ -646,7 +682,7 @@ public class CdaResultGenerator {
                       + " | ";
             }
             if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
-              String refRangeString = "Reference Range: " + referenceRange.getText();
+              String refRangeString = referenceRange.getText();
               referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
             }
           }
@@ -654,15 +690,35 @@ public class CdaResultGenerator {
         if (StringUtils.isBlank(referenceRangeValue)) {
           referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
         }
-        if (!referenceRanges.isEmpty()) {
-          referenceRanges += " | ";
+
+        Map<String, String> innerBodyVals = new LinkedHashMap<>();
+        innerBodyVals.put("Component", componentName);
+        innerBodyVals.put("Result Value", resultValue);
+        innerBodyVals.put("Reference Range", referenceRangeValue);
+        innerBodyVals.put("Interpretation", interpretationValue);
+        innerTable.append(CdaGeneratorUtils.addTableRow(innerBodyVals, innerRow++));
+
+        String collectionDate = "";
+        if (o.hasSpecimen()) {
+          collectionDate =
+              CdaFhirUtilities.getStringForSpecimenCollectionDate(
+                  Collections.singletonList(o.getSpecimen()), data);
         }
+        if (!collectionDates.isEmpty()) {
+          collectionDates += " | ";
+        }
+        collectionDates += collectionDate;
+
         referenceRanges += referenceRangeValue;
       }
+      innerTable.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+      innerTable.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+
+      val = innerTable.toString();
     }
 
-    referenceRanges = referenceRanges.replaceAll("\\|\\s*$", "");
-    interpretations = interpretations.replaceAll("\\|\\s*$", "");
     collectionDates = collectionDates.replaceAll("\\|\\s*$", "");
     // Create the Test Name String
     Map<String, String> bodyvals = new LinkedHashMap<>();
@@ -678,13 +734,6 @@ public class CdaResultGenerator {
       dt = CdaFhirUtilities.getStringForType(report.getEffective());
     }
     bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
-
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT,
-        interpretations.isEmpty() ? CdaGeneratorConstants.UNKNOWN_VALUE : interpretations);
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_5_BODY_CONTENT,
-        referenceRanges.isEmpty() ? CdaGeneratorConstants.UNKNOWN_VALUE : referenceRanges);
     bodyvals.put(
         CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
         collectionDates.isEmpty() ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDates);
@@ -786,8 +835,6 @@ public class CdaResultGenerator {
     list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_1_TITLE);
     list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_2_TITLE);
     list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_3_TITLE);
-    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_4_TITLE);
-    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_5_TITLE);
     list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_6_TITLE);
     hsb.append(
         CdaGeneratorUtils.getXmlForTableHeader(

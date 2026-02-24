@@ -51,7 +51,7 @@ BEGIN TRY
                 clientSecret VARCHAR(MAX) NULL,
                 username VARCHAR(8000) NULL,
                 password VARCHAR(8000) NULL,
-                fhir_server_base_url VARCHAR(255) NOT NULL UNIQUE,
+                fhir_server_base_url VARCHAR(255) NOT NULL ,
                 fhir_version VARCHAR(255) NULL,
                 token_url VARCHAR(8000) NULL,
                 scopes VARCHAR(MAX) NOT NULL,

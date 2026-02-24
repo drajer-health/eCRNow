@@ -74,7 +74,6 @@ BEGIN TRY
 
             );
 
-            CREATE INDEX idx_eicr_doc_id ON dbo.' + QUOTENAME(@new_table) + N' (eicr_doc_id);
         ';
 
         EXEC sp_executesql @sql;
