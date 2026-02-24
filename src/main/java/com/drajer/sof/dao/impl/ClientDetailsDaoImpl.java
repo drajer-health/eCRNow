@@ -25,18 +25,6 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
     return getSession().get(ClientDetails.class, id);
   }
 
-  //  public ClientDetails getClientDetailsByUrl(String url) {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<ClientDetails> cq = cb.createQuery(ClientDetails.class);
-  //    Root<ClientDetails> root = cq.from(ClientDetails.class);
-  //    cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
-  //
-  //    Query<ClientDetails> q = getSession().createQuery(cq);
-  //
-  //    return q.uniqueResult();
-  //  }
-
   public ClientDetails getClientDetailsByUrl(String url) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
@@ -52,19 +40,6 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
       return q.uniqueResult();
     }
   }
-
-  //
-  //  public List<ClientDetails> getAllClientDetails() {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<ClientDetails> cq = cb.createQuery(ClientDetails.class);
-  //    Root<ClientDetails> root = cq.from(ClientDetails.class);
-  //
-  //    Query<ClientDetails> q = getSession().createQuery(cq);
-  //    cq.orderBy(cb.desc(root.get("id")));
-  //
-  //    return q.getResultList();
-  //  }
 
   public List<ClientDetails> getAllClientDetails() {
 

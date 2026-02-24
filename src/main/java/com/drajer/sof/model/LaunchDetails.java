@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Length;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.json.JSONObject;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(
-    name = "launch_details",
+    name = "launch_details_v2",
     uniqueConstraints =
         @UniqueConstraint(columnNames = {"ehr_server_url", "launch_patient_id", "encounter_id"}))
 @DynamicUpdate
@@ -39,19 +40,19 @@ public class LaunchDetails {
   @Column(name = "client_id", nullable = true)
   private String clientId;
 
-  @Column(name = "client_secret", nullable = true)
+  @Column(name = "client_secret", nullable = true, length = 8000)
   private String clientSecret;
 
   @Column(name = "ehr_server_url", nullable = true)
   private String ehrServerURL;
 
-  @Column(name = "auth_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "auth_url", nullable = true, length = 8000)
   private String authUrl;
 
-  @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "token_url", nullable = true, length = 8000)
   private String tokenUrl;
 
-  @Column(name = "access_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "access_token", nullable = true, length = Length.LONG32)
   private String accessToken;
 
   @Column(name = "user_id", nullable = true)
@@ -60,7 +61,7 @@ public class LaunchDetails {
   @Column(name = "expiry", nullable = true, columnDefinition = "int default 0")
   private Integer expiry;
 
-  @Column(name = "scope", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "scope", nullable = true, length = Length.LONG32)
   private String scope;
 
   @Column(name = "last_updated_ts", nullable = false)
@@ -79,7 +80,7 @@ public class LaunchDetails {
   @Temporal(TemporalType.TIMESTAMP)
   private Date tokenExpiryDateTime;
 
-  @Column(name = "refresh_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "refresh_token", nullable = true, length = Length.LONG32)
   private String refreshToken;
 
   @Column(name = "launch_patient_id", nullable = true)
@@ -94,10 +95,7 @@ public class LaunchDetails {
   @Column(name = "provider_uuid", nullable = true)
   private String providerUUID;
 
-  @Column(
-      name = "status",
-      nullable = true,
-      columnDefinition = "TEXT") // Status can be active or completed.
+  @Column(name = "status", nullable = true, length = 8000) // Status can be active or completed.
   private String status;
 
   @Column(name = "aa_id", nullable = true) // AA ID for creating CDA.

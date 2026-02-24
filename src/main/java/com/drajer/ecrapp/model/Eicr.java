@@ -1,17 +1,13 @@
 package com.drajer.ecrapp.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.util.Date;
+import org.hibernate.Length;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
-@Table(name = "eicr")
+@Table(name = "eicr_v2")
 @DynamicUpdate
 public class Eicr {
 
@@ -23,69 +19,69 @@ public class Eicr {
   private Integer id;
 
   // Request , Response Data
-  @Column(name = "x_req_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "x_req_id", nullable = true, length = 8000)
   private String xRequestId;
 
-  @Column(name = "x_correlation_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "x_correlation_id", nullable = true, length = 8000)
   private String xCorrelationId;
 
   // Eicr Data
-  @Column(name = "eicr_doc_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "eicr_doc_id", nullable = true, length = 8000)
   private String eicrDocId;
 
-  @Column(name = "set_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "set_id", nullable = true, length = 8000)
   private String setId;
 
   @Column(name = "doc_version", nullable = true, columnDefinition = "INTEGER")
   private Integer docVersion;
 
-  @Column(name = "eicr_data", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "eicr_data", nullable = true, length = Length.LONG32)
   private String eicrData;
 
-  @Column(name = "initiating_action", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "initiating_action", nullable = true, length = Length.LONG32)
   private String initiatingAction;
 
   // Response Data.
-  @Column(name = "response_type", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_type", nullable = true, length = 8000)
   private String responseType;
 
-  @Column(name = "response_type_display", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_type_display", nullable = true, length = 8000)
   private String responseTypeDisplay;
 
-  @Column(name = "response_x_request_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_x_request_id", nullable = true, length = 8000)
   private String responseXRequestId;
 
-  @Column(name = "response_doc_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_doc_id", nullable = true, length = 8000)
   private String responseDocId;
 
-  @Column(name = "rr_data", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "rr_data", nullable = true, length = Length.LONG32)
   private String responseData;
 
   // EHR Details for persisting the data to EHR
-  @Column(name = "fhir_server_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "fhir_server_url", nullable = true, length = 8000)
   private String fhirServerUrl;
 
-  @Column(name = "launch_patient_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "launch_patient_id", nullable = true, length = 8000)
   private String launchPatientId;
 
   @Column(name = "launch_details_id", nullable = true, columnDefinition = "INTEGER")
   private Integer launchDetailsId;
 
-  @Column(name = "encounter_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "encounter_id", nullable = true, length = 8000)
   private String encounterId;
 
-  @Column(name = "provider_uuid", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "provider_uuid", nullable = true, length = 8000)
   private String providerUUID;
 
-  @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "ehr_doc_ref_id", nullable = true, length = 8000)
   private String ehrDocRefId;
 
   // Status of the eicr processing to handle exceptions in the future
-  @Column(name = "eicr_proc_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "eicr_proc_status", nullable = true, length = 8000)
   private String eicrProcStatus;
 
   // Status of the rr processing to handle exceptions in the future
-  @Column(name = "rr_proc_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "rr_proc_status", nullable = true, length = 8000)
   private String rrProcStatus;
 
   // Timestamps

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author nbashyam
  */
 @Entity
-@Table(name = "kar_repos")
+@Table(name = "kar_repos_v2")
 @DynamicUpdate
 @JsonInclude(Include.NON_NULL)
 public class KnowledgeArtifactRepository {
@@ -36,7 +36,7 @@ public class KnowledgeArtifactRepository {
   private Integer id;
 
   /** The attribute represents the FHIR Server URL which hosts the Knowledge Artifact. */
-  @Column(name = "repo_fhir_url", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "repo_fhir_url", nullable = false, length = 8000)
   private String fhirServerURL;
 
   /**

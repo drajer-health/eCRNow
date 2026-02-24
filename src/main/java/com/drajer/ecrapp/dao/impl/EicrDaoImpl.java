@@ -45,27 +45,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return getSession().get(ReportabilityResponse.class, id);
   }
 
-  //  public Integer getMaxVersionId(Eicr eicr) {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-  //    Root<Eicr> root = cq.from(Eicr.class);
-  //
-  //    Predicate criteria =
-  //        cb.and(
-  //            cb.equal(root.get(FHIR_SERVER_URL), eicr.getFhirServerUrl()),
-  //            cb.equal(root.get("launchPatientId"), eicr.getLaunchPatientId()),
-  //            cb.equal(root.get(ENCOUNTER_ID), eicr.getEncounterId()));
-  //    cq.where(criteria);
-  //    cq.orderBy(cb.desc(root.get("docVersion")));
-  //
-  //    Query<Eicr> q = getSession().createQuery(cq);
-  //    q.setFirstResult(0);
-  //    q.setMaxResults(1);
-  //
-  //    return q.uniqueResultOptional().map(Eicr::getDocVersion).orElse(0);
-  //  }
-
   public Integer getMaxVersionId(Eicr eicr) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
@@ -91,17 +70,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     }
   }
 
-  //  public Eicr getEicrByCorrelationId(String xcoorrId) {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-  //    Root<Eicr> root = cq.from(Eicr.class);
-  //    cq.where(cb.equal(root.get("xCorrelationId"), xcoorrId));
-  //
-  //    Query<Eicr> q = getSession().createQuery(cq);
-  //
-  //    return q.uniqueResult();
-  //  }
   public Eicr getEicrByCorrelationId(String xcoorrId) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
@@ -118,26 +86,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     }
   }
 
-  //
-  //  public List<Eicr> getEicrData(Map<String, String> searchParams) {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-  //    Root<Eicr> root = cq.from(Eicr.class);
-  //    List<Predicate> predicates = preparePredicate(cb, root, searchParams);
-  //    predicates.add(cb.equal(root.get("id"), Integer.parseInt(searchParams.get("eicrId"))));
-  //
-  //    Predicate[] predArr = new Predicate[predicates.size()];
-  //    predArr = predicates.toArray(predArr);
-  //
-  //    Predicate criteria = cb.and(predArr);
-  //    cq.where(criteria);
-  //    cq.orderBy(cb.desc(root.get("id")));
-  //
-  //    Query<Eicr> q = getSession().createQuery(cq);
-  //
-  //    return q.getResultList();
-  //  }
   public List<Eicr> getEicrData(Map<String, String> searchParams) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
@@ -161,27 +109,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     }
   }
 
-  //  public List<Eicr> getRRData(Map<String, String> searchParams) {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-  //    Root<Eicr> root = cq.from(Eicr.class);
-  //    List<Predicate> predicates = preparePredicate(cb, root, searchParams);
-  //    predicates.add(
-  //        cb.equal(root.get(RESPONSE_DOC_ID),
-  // Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
-  //
-  //    Predicate[] predArr = new Predicate[predicates.size()];
-  //    predArr = predicates.toArray(predArr);
-  //
-  //    Predicate criteria = cb.and(predArr);
-  //    cq.where(criteria);
-  //    cq.orderBy(cb.desc(root.get("id")));
-  //
-  //    Query<Eicr> q = getSession().createQuery(cq);
-  //
-  //    return q.getResultList();
-  //  }
   public List<Eicr> getRRData(Map<String, String> searchParams) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
@@ -204,17 +131,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     }
   }
 
-  //  public List<Eicr> getEicrAndRRByXRequestId(String xRequestId) {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-  //    Root<Eicr> root = cq.from(Eicr.class);
-  //    cq.where(cb.equal(root.get(X_REQUEST_ID), xRequestId));
-  //
-  //    Query<Eicr> q = getSession().createQuery(cq);
-  //
-  //    return q.getResultList();
-  //  }
   public List<Eicr> getEicrAndRRByXRequestId(String xRequestId) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
@@ -231,18 +147,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     }
   }
 
-  //  @Override
-  //  public Eicr getEicrByDocId(String docId) {
-  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-  //    CriteriaBuilder cb = em.getCriteriaBuilder();
-  //    CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-  //    Root<Eicr> root = cq.from(Eicr.class);
-  //    cq.where(cb.equal(root.get(EICR_DOC_ID), docId));
-  //
-  //    Query<Eicr> q = getSession().createQuery(cq);
-  //
-  //    return q.uniqueResult();
-  //  }
   @Override
   public Eicr getEicrByDocId(String docId) {
 
