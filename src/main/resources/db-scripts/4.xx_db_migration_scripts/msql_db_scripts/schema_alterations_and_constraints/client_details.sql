@@ -11,12 +11,12 @@ BEGIN TRY
     IF NOT EXISTS (
         SELECT 1
         FROM sys.key_constraints kc
-        WHERE kc.[name] = 'uq_client_details_v2_fhir_server_base_url'
+        WHERE kc.[name] = 'uq_fhir_server_base_url_v2'
           AND kc.[type] = 'UQ'
     )
     BEGIN
         ALTER TABLE client_details_v2
-        ADD CONSTRAINT uq_client_details_v2_fhir_server_base_url
+        ADD CONSTRAINT uq_fhir_server_base_url_v2
         UNIQUE (fhir_server_base_url);
     END
 

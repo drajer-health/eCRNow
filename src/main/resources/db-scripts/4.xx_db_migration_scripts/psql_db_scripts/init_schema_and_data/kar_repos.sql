@@ -45,10 +45,7 @@ BEGIN
                 );
             $fmt$, new_table);
 
-            EXECUTE format(
-                'CREATE INDEX IF NOT EXISTS idx_repo_name_v2 ON %I (repo_name);',
-                new_table
-            );
+
 
             RAISE NOTICE 'Table "%" created successfully.', new_table;
 
@@ -78,11 +75,6 @@ BEGIN
                 repo_status INT
             );
         $fmt$, new_table);
-
-        EXECUTE format(
-            'CREATE INDEX IF NOT EXISTS idx_repo_name_v2 ON %I (repo_name);',
-            new_table
-        );
 
         RAISE NOTICE 'Table "%" created.', new_table;
 

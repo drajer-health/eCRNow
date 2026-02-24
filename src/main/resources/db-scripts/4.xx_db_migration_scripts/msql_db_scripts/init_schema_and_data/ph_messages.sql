@@ -80,8 +80,8 @@ BEGIN TRY
                 last_updated_ts DATETIME2(6) NOT NULL DEFAULT GETDATE()
             );
 
-            CREATE INDEX idx_not_res_id_new ON dbo.' + QUOTENAME(@new_table) + N' (notified_resource_id);
-            CREATE INDEX idx_kar_id_new ON dbo.' + QUOTENAME(@new_table) + N' (kar_unique_id);
+            CREATE INDEX idx_not_res_id_v2 ON dbo.' + QUOTENAME(@new_table) + N' (notified_resource_id);
+            CREATE INDEX idx_kar_id_v2 ON dbo.' + QUOTENAME(@new_table) + N' (kar_unique_id);
         ';
         EXEC sp_executesql @sql;
 

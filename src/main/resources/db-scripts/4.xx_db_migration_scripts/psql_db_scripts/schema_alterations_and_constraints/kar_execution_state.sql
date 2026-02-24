@@ -38,21 +38,6 @@ BEGIN
         RAISE NOTICE '[Skip] Foreign key % already exists.', v_constraint_name;
     END IF;
 
-    ------------------------------------------------------------------
-    -- 2. Create indexes if not exists
-    ------------------------------------------------------------------
-    RAISE NOTICE '[Action] Ensuring performance indexes exist...';
-
-    CREATE INDEX IF NOT EXISTS idx_kar_execstate_v2_nc_fk
-        ON public.kar_execution_state_v2 (nc_fk);
-
-    CREATE INDEX IF NOT EXISTS idx_kar_execstate_v2_nc_id
-        ON public.kar_execution_state_v2 (nc_id);
-
-    CREATE INDEX IF NOT EXISTS idx_kar_execstate_v2_kar_unique_id
-        ON public.kar_execution_state_v2 (kar_unique_id);
-
-    RAISE NOTICE '[Success] Indexes verified or created successfully.';
 
     ------------------------------------------------------------------
     -- 3. Validation of constraint (optional but recommended)
