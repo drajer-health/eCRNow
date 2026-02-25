@@ -61,18 +61,21 @@ public class CdaProcedureGenerator {
               proc.getIdElement().getIdPart());
         }
       }
+      if (StringUtils.isEmpty(procEntries.toString())) {
+        logger.info("No valid CDA Procedure entries generated. Creating empty procedure section.");
+        return generateEmptyProcedureSection();
+      } else {
 
-      // Close the Table.
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
+        // Close the Table.
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
-      // Add entry
-      if (!StringUtils.isEmpty(procEntries)) {
+        // add the entries after the text element.
         sb.append(procEntries);
-      }
 
-      sb.append(generateProcedureSectionEndHeader());
+        sb.append(generateProcedureSectionEndHeader());
+      }
 
     } else {
       sb.append(generateEmptyProcedureSection());

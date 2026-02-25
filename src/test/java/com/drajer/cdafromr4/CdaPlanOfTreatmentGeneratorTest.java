@@ -508,8 +508,11 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
+    data.getLabResults().sort(Comparator.comparing(Observation::getId));
+    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
+    data.getMedicationRequests().sort(Comparator.comparing(MedicationRequest::getId));
+    data.getServiceRequests().sort(Comparator.comparing(ServiceRequest::getId));
+
     data.setData(bundle);
 
     String expectedXml = TestUtils.getFileContentAsString(PLAN_OF_TREATMENT_V31_CDA_V2_FILE);
