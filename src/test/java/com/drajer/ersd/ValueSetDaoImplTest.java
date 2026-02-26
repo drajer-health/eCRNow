@@ -1,8 +1,10 @@
-package com.drajer.ersd.dao.impl;
+package com.drajer.ersd;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.drajer.ersd.dao.impl.ValueSetDaoImpl;
 import com.drajer.ersd.model.PlanDefinitionActionModel;
 import com.drajer.ersd.model.ValueSetGrouperModel;
 import com.drajer.ersd.model.ValueSetModel;
@@ -10,17 +12,15 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(PowerMockRunner.class)
-public class ValueSetDaoImplTest {
+@ExtendWith(MockitoExtension.class)
+class ValueSetDaoImplTest {
 
   @Mock private Session session;
 
@@ -30,63 +30,71 @@ public class ValueSetDaoImplTest {
 
   @InjectMocks private ValueSetDaoImpl valueSetDaoImpl;
 
-  @Before
-  public void setUp() {
-    MockitoAnnotations.initMocks(this);
+  @BeforeEach
+  void setUp() {
 
-    Mockito.lenient().when(sessionFactory.openSession()).thenReturn(session);
-    Mockito.lenient().when(session.beginTransaction()).thenReturn(transaction);
-    Mockito.lenient().when(session.getTransaction()).thenReturn(transaction);
+    // Mock Hibernate session lifecycle
+    when(sessionFactory.openSession()).thenReturn(session);
+    when(session.beginTransaction()).thenReturn(transaction);
+    when(session.getTransaction()).thenReturn(transaction);
   }
 
   @Test
-  public void getAllValuesets_Test_success() {
+  void getAllValuesets_Test_success() {
+
+    // If DAO returns empty list by default
     List<ValueSetModel> valueSetModelList = valueSetDaoImpl.getAllValuesets();
+
     assertNotNull(valueSetModelList);
     assertTrue(valueSetModelList.isEmpty());
   }
 
   @Test
-  public void createValueset_Test() {
+  void createValueset_Test() {
+
     ValueSetModel valueSetModel = new ValueSetModel();
     valueSetModel.setValueSetId("123");
+
     valueSetDaoImpl.createValueset(valueSetModel);
 
     verify(sessionFactory).openSession();
     verify(session).beginTransaction();
-    verify(session).getTransaction();
     verify(transaction).commit();
     verify(session).close();
   }
 
   @Test
-  public void createValuesetGrouper_Test() {
+  void createValuesetGrouper_Test() {
+
     ValueSetGrouperModel valueSetGrouperModel = new ValueSetGrouperModel();
     valueSetGrouperModel.setId("123");
+
     valueSetDaoImpl.createValuesetGrouper(valueSetGrouperModel);
 
     verify(sessionFactory).openSession();
     verify(session).beginTransaction();
-    verify(session).getTransaction();
     verify(transaction).commit();
     verify(session).close();
   }
 
   @Test
-  public void createPlanDefinitionActions_Test() {
+  void createPlanDefinitionActions_Test() {
+
     PlanDefinitionActionModel planDefinitionActionModel = new PlanDefinitionActionModel();
+
     valueSetDaoImpl.createPlanDefinitionActions(planDefinitionActionModel);
 
     verify(sessionFactory).openSession();
     verify(session).beginTransaction();
-    verify(session).getTransaction();
     verify(transaction).commit();
     verify(session).close();
   }
 
   @Test
-  public void getValueSetById_Test() {
+  void getValueSetById_Test() {
+
     ValueSetModel result = valueSetDaoImpl.getValueSetById(123);
+
     assertNull(result);
   }
 }

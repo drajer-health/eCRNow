@@ -1,4 +1,4 @@
-package com.drajer.ersd.service.impl;
+package com.drajer.ersd;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -10,6 +10,7 @@ import com.drajer.ersd.dao.ValueSetDao;
 import com.drajer.ersd.model.ValueSetGrouperModel;
 import com.drajer.ersd.model.ValueSetModel;
 import com.drajer.ersd.service.ValueSetService;
+import com.drajer.ersd.service.impl.ValueSetServiceImpl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

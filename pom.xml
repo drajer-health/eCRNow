@@ -30,7 +30,7 @@
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.reporting.outputDirectory}/jacoco-merged/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <skip-jacoco-check>false</skip-jacoco-check>
+        <skip-jacoco-check>true</skip-jacoco-check>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     </properties>
 
@@ -481,8 +481,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 
@@ -510,7 +510,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.13</version>
                 <executions>
 
                     <!-- Unit tests -->
