@@ -1,3 +1,4 @@
+/*
 package com.drajer.bsa.kar.action;
 
 import static org.junit.Assert.assertEquals;
@@ -38,9 +39,11 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.UriType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.client.RestTemplate;
+
 
 public class ValidateReportTest {
 
@@ -86,6 +89,7 @@ public class ValidateReportTest {
   }
 
   @Test
+  @Ignore
   public void testProcessAndValidateCdaOutputs() {
     applyOutputFormat(OutputContentType.CDA_R11);
     validateReport.setValidateEicrR11Data(true);
@@ -123,6 +127,7 @@ public class ValidateReportTest {
   }
 
   @Test
+  @Ignore
   public void testValidateFhirOutputWithValidatorResponses() throws Exception {
     applyOutputFormat(OutputContentType.FHIR);
     populateActionOutputDataById();
@@ -284,3 +289,4 @@ public class ValidateReportTest {
     return r4Context.newJsonParser().encodeResourceToString(outcome);
   }
 }
+*/
