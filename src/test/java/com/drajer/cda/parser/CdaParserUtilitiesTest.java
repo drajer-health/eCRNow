@@ -1,6 +1,6 @@
 package com.drajer.cda.parser;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import org.junit.Before;
