@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
@@ -50,6 +49,7 @@ import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 
 public class FhirPathProcessorTest {
@@ -73,13 +73,15 @@ public class FhirPathProcessorTest {
     Parameters inputParams = new Parameters();
     inputParams.addParameter().setName("existing").setValue(new BooleanType(true));
 
-    when(action.getActionId()).thenReturn("action-1");
-    when(kd.getParametersByActionId("action-1")).thenReturn(inputParams);
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-1");
+    Mockito.lenient().when(kd.getParametersByActionId("action-1")).thenReturn(inputParams);
 
     Parameters result = new Parameters();
     result.addParameter().setName(FhirPathProcessor.PARAM).setValue(new BooleanType(true));
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(result);
 
     Boolean actual = processor.evaluateExpression(condition, action, kd, ehrService);
@@ -95,10 +97,12 @@ public class FhirPathProcessorTest {
     KarProcessingData kd = mock(KarProcessingData.class);
     EhrQueryService ehrService = mock(EhrQueryService.class);
 
-    when(action.getActionId()).thenReturn("action-2");
-    when(kd.getParametersByActionId("action-2")).thenReturn(new Parameters());
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-2");
+    Mockito.lenient().when(kd.getParametersByActionId("action-2")).thenReturn(new Parameters());
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(new Parameters());
 
     Boolean actual = processor.evaluateExpression(condition, action, kd, ehrService);
@@ -113,8 +117,10 @@ public class FhirPathProcessorTest {
 
     Parameters result = new Parameters();
     result.addParameter().setName(FhirPathProcessor.PARAM).setValue(new IntegerType(2));
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(result);
 
     RuntimeException ex =
@@ -132,7 +138,9 @@ public class FhirPathProcessorTest {
     KarProcessingData kd = mock(KarProcessingData.class);
     String expression = "%encounterStartDate";
 
-    when(ehrService.substituteContextParams(kd, expression, true)).thenReturn("2025-01-01");
+    Mockito.lenient()
+        .when(ehrService.substituteContextParams(kd, expression, true))
+        .thenReturn("2025-01-01");
 
     String resolved = processor.resolveContextVariables(expression, ehrService, kd);
 
@@ -146,8 +154,10 @@ public class FhirPathProcessorTest {
 
     Parameters result = new Parameters();
     result.addParameter().setName(FhirPathProcessor.PARAM).setValue(new BooleanType(false));
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(result);
 
     Boolean actual =
@@ -168,16 +178,18 @@ public class FhirPathProcessorTest {
     req.setId("patientInput");
     req.setType("Patient");
 
-    when(action.getActionId()).thenReturn("action-3");
-    when(kd.getParametersByActionId("action-3")).thenReturn(null);
-    when(action.getInputData()).thenReturn(Collections.singletonList(req));
-    when(action.getRelatedDataId("patientInput")).thenReturn(null);
-    when(kd.getDataForId("patientInput", dataId)).thenReturn(null);
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-3");
+    Mockito.lenient().when(kd.getParametersByActionId("action-3")).thenReturn(null);
+    Mockito.lenient().when(action.getInputData()).thenReturn(Collections.singletonList(req));
+    Mockito.lenient().when(action.getRelatedDataId("patientInput")).thenReturn(null);
+    Mockito.lenient().when(kd.getDataForId("patientInput", dataId)).thenReturn(null);
 
     Parameters result = new Parameters();
     result.addParameter().setName(FhirPathProcessor.PARAM).setValue(new BooleanType(true));
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(result);
 
     Boolean actual = processor.evaluateExpression(condition, action, kd, ehrService);
@@ -197,7 +209,7 @@ public class FhirPathProcessorTest {
 
     Parameters params = new Parameters();
     BsaAction action = mock(BsaAction.class);
-    when(action.getActionId()).thenReturn("action-4");
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-4");
 
     processor.resolveVariables(
         condition, params, mock(KarProcessingData.class), action, mock(EhrQueryService.class));
@@ -215,15 +227,18 @@ public class FhirPathProcessorTest {
     condition.setVariables(Collections.singletonList(variable));
 
     EhrQueryService ehrService = mock(EhrQueryService.class);
-    when(ehrService.substituteContextParams(any(), anyString(), any(Boolean.class)))
+    Mockito.lenient()
+        .when(ehrService.substituteContextParams(any(), anyString(), any(Boolean.class)))
         .thenReturn("AMB");
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(new Parameters());
 
     Parameters params = new Parameters();
     BsaAction action = mock(BsaAction.class);
-    when(action.getActionId()).thenReturn("action-5");
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-5");
 
     processor.resolveVariables(
         condition, params, mock(KarProcessingData.class), action, ehrService);
@@ -243,18 +258,21 @@ public class FhirPathProcessorTest {
     condition.setVariables(Collections.singletonList(variable));
 
     EhrQueryService ehrService = mock(EhrQueryService.class);
-    when(ehrService.substituteContextParams(any(), anyString(), any(Boolean.class)))
+    Mockito.lenient()
+        .when(ehrService.substituteContextParams(any(), anyString(), any(Boolean.class)))
         .thenReturn("true");
 
     Parameters variableResult = new Parameters();
     variableResult.addParameter().setName(FhirPathProcessor.PARAM).setValue(new BooleanType(true));
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(variableResult);
 
     Parameters params = new Parameters();
     BsaAction action = mock(BsaAction.class);
-    when(action.getActionId()).thenReturn("action-6");
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-6");
 
     processor.resolveVariables(
         condition, params, mock(KarProcessingData.class), action, ehrService);
@@ -278,13 +296,15 @@ public class FhirPathProcessorTest {
     KarProcessingData kd = mock(KarProcessingData.class);
     Set<Resource> input = new HashSet<>();
     input.add(first);
-    when(kd.getResourcesByType(ResourceType.MeasureReport.toString())).thenReturn(input);
+    Mockito.lenient()
+        .when(kd.getResourcesByType(ResourceType.MeasureReport.toString()))
+        .thenReturn(input);
 
     HashMap<String, HashMap<String, Resource>> actionOutput = new HashMap<>();
     HashMap<String, Resource> outputResources = new HashMap<>();
     outputResources.put("mr2", second);
     actionOutput.put("action-x", outputResources);
-    when(kd.getActionOutputData()).thenReturn(actionOutput);
+    Mockito.lenient().when(kd.getActionOutputData()).thenReturn(actionOutput);
 
     Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> out =
         processor.filterResources(dr, kd);
@@ -307,8 +327,8 @@ public class FhirPathProcessorTest {
 
     KarProcessingData kd = mock(KarProcessingData.class);
     BsaAction action = mock(BsaAction.class);
-    when(action.getRelatedDataId("dr-apply")).thenReturn("related-1");
-    when(kd.getDataForId("dr-apply", "related-1")).thenReturn(candidates);
+    Mockito.lenient().when(action.getRelatedDataId("dr-apply")).thenReturn("related-1");
+    Mockito.lenient().when(kd.getDataForId("dr-apply", "related-1")).thenReturn(candidates);
 
     Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> out =
         processor.applyCodeFilter(dr, kd, action);
@@ -357,15 +377,18 @@ public class FhirPathProcessorTest {
     condition.setVariables(Collections.singletonList(variable));
 
     EhrQueryService ehrService = mock(EhrQueryService.class);
-    when(ehrService.substituteContextParams(any(), anyString(), any(Boolean.class)))
+    Mockito.lenient()
+        .when(ehrService.substituteContextParams(any(), anyString(), any(Boolean.class)))
         .thenReturn("2025-02-01T12:00:00Z");
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(new Parameters());
 
     Parameters params = new Parameters();
     BsaAction action = mock(BsaAction.class);
-    when(action.getActionId()).thenReturn("action-7");
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-7");
 
     processor.resolveVariables(
         condition, params, mock(KarProcessingData.class), action, ehrService);
@@ -485,7 +508,9 @@ public class FhirPathProcessorTest {
     KarProcessingData kd = mock(KarProcessingData.class);
     Medication medication = new Medication();
     medication.setCode(new CodeableConcept());
-    when(kd.getResourceById("med1", ResourceType.Medication)).thenReturn(medication);
+    Mockito.lenient()
+        .when(kd.getResourceById("med1", ResourceType.Medication))
+        .thenReturn(medication);
 
     DataRequirement dr = new DataRequirement();
     dr.setId("dr-med");
@@ -554,8 +579,8 @@ public class FhirPathProcessorTest {
     dr.setType("Condition");
 
     KarProcessingData kd = mock(KarProcessingData.class);
-    when(kd.getResourcesByType("Condition")).thenReturn(null);
-    when(kd.getActionOutputData()).thenReturn(new HashMap<>());
+    Mockito.lenient().when(kd.getResourcesByType("Condition")).thenReturn(null);
+    Mockito.lenient().when(kd.getActionOutputData()).thenReturn(new HashMap<>());
 
     Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> out =
         processor.filterResources(dr, kd);
@@ -571,10 +596,10 @@ public class FhirPathProcessorTest {
     dr.setId("dr-empty");
     dr.setType("Observation");
     BsaAction action = mock(BsaAction.class);
-    when(action.getRelatedDataId("dr-empty")).thenReturn("r-empty");
+    Mockito.lenient().when(action.getRelatedDataId("dr-empty")).thenReturn("r-empty");
 
     KarProcessingData kd = mock(KarProcessingData.class);
-    when(kd.getDataForId("dr-empty", "r-empty")).thenReturn(null);
+    Mockito.lenient().when(kd.getDataForId("dr-empty", "r-empty")).thenReturn(null);
 
     Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> out =
         processor.applyCodeFilter(dr, kd, action);
@@ -590,8 +615,10 @@ public class FhirPathProcessorTest {
 
     Parameters result = new Parameters();
     result.addParameter().setName(FhirPathProcessor.PARAM).setValue((BooleanType) null);
-    when(expressionEvaluator.evaluate(
-            any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+    Mockito.lenient()
+        .when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(result);
 
     assertThrows(
@@ -605,9 +632,9 @@ public class FhirPathProcessorTest {
     BsaAction action = mock(BsaAction.class);
     KarProcessingData kd = mock(KarProcessingData.class);
 
-    when(action.getActionId()).thenReturn("action-8");
-    when(kd.getParametersByActionId("action-8")).thenReturn(null);
-    when(action.getInputData()).thenReturn(null);
+    Mockito.lenient().when(action.getActionId()).thenReturn("action-8");
+    Mockito.lenient().when(kd.getParametersByActionId("action-8")).thenReturn(null);
+    Mockito.lenient().when(action.getInputData()).thenReturn(null);
 
     assertThrows(
         NullPointerException.class,

@@ -52,20 +52,21 @@ public class CqlProcessorTest {
   @Test
   public void testEvaluateExpression_success() {
     Bundle bundle = TestUtils.loadBundleFromFile(ENCOUNTER_BUNDLE_JSON);
-    Mockito.when(karProcessingData.getNotificationBundle()).thenReturn(bundle);
-    Mockito.when(karProcessingData.getInputResourcesAsBundle()).thenReturn(bundle);
+    Mockito.lenient().when(karProcessingData.getNotificationBundle()).thenReturn(bundle);
+    Mockito.lenient().when(karProcessingData.getInputResourcesAsBundle()).thenReturn(bundle);
 
     Endpoint endpoint = new Endpoint();
     endpoint.setAddress("http://mock-endpoint");
 
-    Mockito.when(bsaCqlCondition.getLibraryEndpoint()).thenReturn(endpoint);
-    Mockito.when(bsaCqlCondition.getTerminologyEndpoint()).thenReturn(endpoint);
-    Mockito.when(bsaCqlCondition.getDataEndpoint()).thenReturn(endpoint);
+    Mockito.lenient().when(bsaCqlCondition.getLibraryEndpoint()).thenReturn(endpoint);
+    Mockito.lenient().when(bsaCqlCondition.getTerminologyEndpoint()).thenReturn(endpoint);
+    Mockito.lenient().when(bsaCqlCondition.getDataEndpoint()).thenReturn(endpoint);
 
     Parameters resultParams = new Parameters();
     resultParams.addParameter().setName("mockExpression").setValue(new BooleanType(true));
 
-    Mockito.when(
+    Mockito.lenient()
+        .when(
             libraryExecutionService.evaluate(
                 Mockito.any(IdType.class),
                 Mockito.anyString(),

@@ -21,6 +21,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 
 public class EvaluateMeasureTest {
@@ -97,7 +98,8 @@ public class EvaluateMeasureTest {
             data.getInputResourcesAsBundle().getEntry().stream()
                 .map(e -> e.getResource())
                 .collect(Collectors.toSet())));
-    when(ehrService.getFilteredData(any(KarProcessingData.class), any(Map.class)))
+    Mockito.lenient()
+        .when(ehrService.getFilteredData(any(KarProcessingData.class), any(Map.class)))
         .thenReturn(ehrData);
 
     EvaluateMeasure testEval = new EvaluateMeasure();
@@ -105,20 +107,22 @@ public class EvaluateMeasureTest {
     testEval.setMeasureReportId("mr-1");
     testEval.setMeasureService(measureService);
 
-    when(measureService.evaluate(
-            any(),
-            any(),
-            any(),
-            anyString(),
-            anyString(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(Bundle.class),
-            any(),
-            any(),
-            any()))
+    Mockito.lenient()
+        .when(
+            measureService.evaluate(
+                any(),
+                any(),
+                any(),
+                anyString(),
+                anyString(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(Bundle.class),
+                any(),
+                any(),
+                any()))
         .thenReturn(null);
 
     BsaActionStatus status = testEval.process(data, ehrService);
@@ -140,22 +144,25 @@ public class EvaluateMeasureTest {
             data.getInputResourcesAsBundle().getEntry().stream()
                 .map(e -> e.getResource())
                 .collect(Collectors.toSet())));
-    when(ehrService.getFilteredData(any(KarProcessingData.class), any(Map.class)))
+    Mockito.lenient()
+        .when(ehrService.getFilteredData(any(KarProcessingData.class), any(Map.class)))
         .thenReturn(ehrData);
-    when(measureService.evaluate(
-            any(),
-            any(),
-            any(),
-            anyString(),
-            anyString(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(Bundle.class),
-            any(),
-            any(),
-            any()))
+    Mockito.lenient()
+        .when(
+            measureService.evaluate(
+                any(),
+                any(),
+                any(),
+                anyString(),
+                anyString(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(Bundle.class),
+                any(),
+                any(),
+                any()))
         .thenReturn(report);
     EvaluateMeasure testEval = new EvaluateMeasure();
     testEval.setActionId("eval-measure-1");
