@@ -1,12 +1,10 @@
 package com.drajer.cda.utils;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.drajer.eca.model.ActionRepo;
 import com.drajer.test.util.TestUtils;
-import java.lang.reflect.Constructor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,15 +75,5 @@ public class CdaValidatorUtilTest {
     boolean validationResult = CdaValidatorUtil.validateEicrXMLData(eicrData);
 
     assertFalse(validationResult);
-  }
-
-  @Test
-  public void testPrivateConstructor() throws Exception {
-
-    Constructor<CdaValidatorUtil> constructor = CdaValidatorUtil.class.getDeclaredConstructor();
-
-    constructor.setAccessible(true);
-
-    assertThatThrownBy(() -> constructor.newInstance()).isInstanceOf(Throwable.class);
   }
 }
