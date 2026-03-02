@@ -1,0 +1,7 @@
+{
+  "fhirServerURL": "http://ecr.com/secure/fhir-r4/fhir",
+  "patientId": "e9bd7100-48af-4c69-c13235f72f74",
+  "encounterId": "1f43c338-0811-415a-3b5720e6a69a",
+  "validationMode": "true",
+  "throttleContext": "1"
+}

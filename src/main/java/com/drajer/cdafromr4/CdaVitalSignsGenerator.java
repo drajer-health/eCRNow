@@ -104,11 +104,7 @@ public class CdaVitalSignsGenerator {
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.VS_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
 
-        String val = CdaGeneratorConstants.UNKNOWN_VALUE;
-        if (obs.getValue() != null) {
-
-          val = CdaFhirUtilities.getStringForType(obs.getValue());
-        }
+        String val = getNarrativeTextValue(obs);
 
         bodyvals.put(CdaGeneratorConstants.VS_TABLE_COL_2_BODY_CONTENT, val);
 
@@ -443,5 +439,37 @@ public class CdaVitalSignsGenerator {
 
     logger.info("Total num of Vitals available for Patient after filtering {}", sr.size());
     return sr;
+  }
+
+  public static String getNarrativeTextValue(Observation obs) {
+
+    String value = CdaGeneratorConstants.UNKNOWN_VALUE;
+
+    if (obs == null) {
+      return value;
+    }
+
+    if (obs.hasValue()) {
+      return CdaFhirUtilities.getStringForType(obs.getValue());
+    }
+
+    if (obs.hasComponent()) {
+
+      StringBuilder componentValues = new StringBuilder();
+
+      for (ObservationComponentComponent oc : obs.getComponent()) {
+
+        if (oc.hasValue() && oc.getValue() instanceof Quantity) {
+
+          componentValues.append(CdaFhirUtilities.getStringForType(oc.getValue())).append(" ");
+        }
+      }
+
+      if (StringUtils.isNotBlank(componentValues.toString())) {
+        value = componentValues.toString().trim();
+      }
+    }
+
+    return value;
   }
 }

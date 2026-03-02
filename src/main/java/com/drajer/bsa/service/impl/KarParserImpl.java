@@ -85,6 +85,7 @@ import org.opencds.cqf.fhir.utility.search.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -169,7 +170,11 @@ public class KarParserImpl implements KarParser {
   // constructor
   @Autowired R4MeasureService measureService;
 
-  @Autowired R4CqlExecutionService executionService;
+  // @Autowired R4CqlExecutionService executionService;
+
+  @Autowired
+  @Qualifier("R4CqlExecutionEvaluator")
+  ObjectProvider<R4CqlExecutionService> expressionEvaluators;
 
   @Autowired R4LibraryEvaluationService libraryEvaluationService;
 
@@ -1024,7 +1029,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(exp);
-          bc.setExecutionService(executionService);
+          bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
           action.addCondition(bc);
         } else if (con.getExpression() != null
             && (fromCode(con.getExpression().getLanguage())
@@ -1037,7 +1042,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(con.getExpression());
-          bc.setExecutionService(executionService);
+          bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
           action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
@@ -1053,7 +1058,7 @@ public class KarParserImpl implements KarParser {
           bc.setVariables(planVariableExpressions);
         }
         bc.setLogicExpression(con.getExpression());
-        bc.setExecutionService(executionService);
+        bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");

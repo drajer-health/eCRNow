@@ -5,7 +5,6 @@ import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_NPI_URL;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.ActionRepo;
 import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
@@ -43,7 +42,7 @@ public class CdaHeaderGenerator {
   private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  private static String SW_APP_VERSION = "Version 4.0.0-preview";
+  private static final String SW_APP_VERSION = "4.0.0";
   private static String SW_APP_NAME = "ecrNowApp";
   private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
@@ -69,7 +68,11 @@ public class CdaHeaderGenerator {
   }
 
   public static String createCdaHeader(
-      R4FhirData data, LaunchDetails details, Eicr ecr, String version) {
+      R4FhirData data,
+      LaunchDetails details,
+      Eicr ecr,
+      Integer eicrDocumentVersion,
+      String version) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
@@ -123,24 +126,9 @@ public class CdaHeaderGenerator {
               details.getAssigningAuthorityId(),
               String.valueOf(details.getSetId())));
 
-      Integer vernum = 0;
-      if (version.contains("3.")) {
-
-      } else {
-        vernum = ActionRepo.getInstance().getEicrRRService().getMaxVersionId(ecr);
-      }
-
-      if (vernum == 0) {
-        eICRHeader.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(ecr.getDocVersion())));
-      } else {
-        // Setup version number for ecr.
-        ecr.setDocVersion(vernum + 1);
-        eICRHeader.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(ecr.getDocVersion())));
-      }
+      eICRHeader.append(
+          CdaGeneratorUtils.getXmlForValue(
+              CdaGeneratorConstants.VERSION_EL_NAME, String.valueOf(eicrDocumentVersion + 1)));
 
       Bundle bundle = data.getData();
       if (bundle != null) {
@@ -266,7 +254,7 @@ public class CdaHeaderGenerator {
     if (cc.getName() != null) {
       names.add(cc.getName());
     }
-    s.append(CdaFhirUtilities.getNameXml(names));
+    s.append(CdaFhirUtilities.getNameXml(names, true));
     s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
     s.append(
@@ -521,7 +509,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        sb.append(CdaFhirUtilities.getPractitionerXml(pr));
+        sb.append(CdaFhirUtilities.getPractitionerXml(pr, data.getOrganization()));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -530,7 +518,7 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundAuthor)) {
-      sb.append(CdaFhirUtilities.getPractitionerXml(null));
+      sb.append(CdaFhirUtilities.getPractitionerXml(null, null));
     }
 
     // add reprsented organization if it exists
@@ -674,7 +662,7 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-    sb.append(getXmlForRelevantPractitioner(practMap));
+    sb.append(getXmlForRelevantPractitioner(practMap, data.getOrganization()));
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
@@ -687,7 +675,7 @@ public class CdaHeaderGenerator {
 
     // Add all practitioners
 
-    sb.append(getXmlForAllRelevantPractitioners(practMap));
+    sb.append(getXmlForAllRelevantPractitioners(practMap, data.getOrganization()));
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     sb.append(
@@ -767,7 +755,7 @@ public class CdaHeaderGenerator {
   }
 
   public static String getXmlForRelevantPractitioner(
-      HashMap<V3ParticipationType, List<Practitioner>> practMap) {
+      HashMap<V3ParticipationType, List<Practitioner>> practMap, Organization org) {
 
     StringBuilder practXml = new StringBuilder();
 
@@ -794,7 +782,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        practXml.append(CdaFhirUtilities.getPractitionerXml(pr));
+        practXml.append(CdaFhirUtilities.getPractitionerXml(pr, org));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -803,14 +791,14 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundPrimaryPerformer)) {
-      practXml.append(CdaFhirUtilities.getPractitionerXml(null));
+      practXml.append(CdaFhirUtilities.getPractitionerXml(null, null));
     }
 
     return practXml.toString();
   }
 
   public static String getXmlForAllRelevantPractitioners(
-      HashMap<V3ParticipationType, List<Practitioner>> practs) {
+      HashMap<V3ParticipationType, List<Practitioner>> practs, Organization org) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -835,7 +823,7 @@ public class CdaHeaderGenerator {
                 CdaGeneratorUtils.getXmlForStartElement(
                     CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-            sb.append(CdaFhirUtilities.getPractitionerXml(p));
+            sb.append(CdaFhirUtilities.getPractitionerXml(p, org));
 
             sb.append(
                 CdaGeneratorUtils.getXmlForEndElement(
@@ -909,13 +897,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
 
-    String nameUse = CdaFhirUtilities.getCodeForNameUse(p.getName());
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElementWithAttribute(
-            CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
-    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName()));
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+    patientDetails.append(CdaFhirUtilities.getHumanNameXml(p.getName(), false, true));
 
     patientDetails.append(CdaFhirUtilities.getGenderXml(p.getGenderElement().getValue()));
 
@@ -1014,7 +996,7 @@ public class CdaHeaderGenerator {
         List<HumanName> names = new ArrayList<>();
         names.add(guardianContact.getName());
 
-        patientDetails.append(CdaFhirUtilities.getNameXml(names));
+        patientDetails.append(CdaFhirUtilities.getNameXml(names, true));
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));

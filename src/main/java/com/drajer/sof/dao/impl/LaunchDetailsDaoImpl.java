@@ -30,34 +30,73 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
     return getSession().get(LaunchDetails.class, id);
   }
 
+  //  public LaunchDetails getLaunchDetailsByPatientAndEncounter(
+  //      String patient, String encounter, String fhirServerUrl) {
+  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+  //    CriteriaBuilder cb = em.getCriteriaBuilder();
+  //    CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+  //    Root<LaunchDetails> root = cq.from(LaunchDetails.class);
+  //    Predicate criteria =
+  //        cb.and(
+  //            cb.equal(root.get("ehrServerURL"), fhirServerUrl),
+  //            cb.equal(root.get("launchPatientId"), patient),
+  //            cb.equal(root.get("encounterId"), encounter));
+  //    cq.where(criteria);
+  //
+  //    Query<LaunchDetails> q = getSession().createQuery(cq);
+  //
+  //    return q.uniqueResult();
+  //  }
+
   public LaunchDetails getLaunchDetailsByPatientAndEncounter(
       String patient, String encounter, String fhirServerUrl) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
-    Root<LaunchDetails> root = cq.from(LaunchDetails.class);
-    Predicate criteria =
-        cb.and(
-            cb.equal(root.get("ehrServerURL"), fhirServerUrl),
-            cb.equal(root.get("launchPatientId"), patient),
-            cb.equal(root.get("encounterId"), encounter));
-    cq.where(criteria);
 
-    Query<LaunchDetails> q = getSession().createQuery(cq);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
 
-    return q.uniqueResult();
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+      Root<LaunchDetails> root = cq.from(LaunchDetails.class);
+
+      Predicate criteria =
+          cb.and(
+              cb.equal(root.get("ehrServerURL"), fhirServerUrl),
+              cb.equal(root.get("launchPatientId"), patient),
+              cb.equal(root.get("encounterId"), encounter));
+
+      cq.where(criteria);
+
+      Query<LaunchDetails> q = getSession().createQuery(cq);
+
+      return q.uniqueResult();
+    }
   }
 
+  //  public LaunchDetails getLaunchDetailsByState(int state) {
+  //    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+  //    CriteriaBuilder cb = em.getCriteriaBuilder();
+  //    CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+  //    Root<LaunchDetails> root = cq.from(LaunchDetails.class);
+  //    cq.where(cb.equal(root.get("launchState"), state));
+  //
+  //    Query<LaunchDetails> q = getSession().createQuery(cq);
+  //
+  //    return q.uniqueResult();
+  //  }
+
   public LaunchDetails getLaunchDetailsByState(int state) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
-    Root<LaunchDetails> root = cq.from(LaunchDetails.class);
-    cq.where(cb.equal(root.get("launchState"), state));
 
-    Query<LaunchDetails> q = getSession().createQuery(cq);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
 
-    return q.uniqueResult();
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+      Root<LaunchDetails> root = cq.from(LaunchDetails.class);
+
+      cq.where(cb.equal(root.get("launchState"), state));
+
+      Query<LaunchDetails> q = getSession().createQuery(cq);
+
+      return q.uniqueResult();
+    }
   }
 
   public void delete(LaunchDetails launchDetails) {

@@ -69,6 +69,14 @@
                             <content ID="pregResult5">Immediate post-septic abortion</content>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <content ID="pregInfo6">Pregnancy Intention</content>
+                        </td>
+                        <td>
+                            <content ID="pregResult6">Wants to become pregnant (finding)</content>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </text>
@@ -206,6 +214,20 @@
                     <low value="20240105000000+0000"/>
                 </effectiveTime>
                 <value xsi:type="CD" code="17369002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Immediate post-septic abortion"></value>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="INT">
+                <templateId root="2.16.840.1.113883.10.20.22.4.281"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.281" extension="2018-04-01"/>
+                <id root="2.16.840.1.113883.3.8.60.2.1.50" extension="8896d4ef-e77f-45f4-a595-1a6ffffc9cd4"/>
+                <code code="86645-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnancy Intention"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20250317000000+0000"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="454411000124108" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Wants to become pregnant (finding)"></value>
             </observation>
         </entry>
     </section>

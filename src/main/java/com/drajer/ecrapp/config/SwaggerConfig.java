@@ -10,19 +10,19 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
-
   @Bean
   public OpenAPI customOpenAPI() {
 
+    final String securitySchemeName = "BearerAuth";
+
     return new OpenAPI()
-        .info(new Info().title("JavaInUse Authentication Service"))
-        .addSecurityItem(new SecurityRequirement().addList("JavaInUseSecurityScheme"))
+        .info(new Info().title("eCRNow API").version("1.0"))
+        .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
         .components(
             new Components()
                 .addSecuritySchemes(
-                    "JavaInUseSecurityScheme",
+                    securitySchemeName,
                     new SecurityScheme()
-                        .name("JavaInUseSecurityScheme")
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("bearer")
                         .bearerFormat("JWT")));

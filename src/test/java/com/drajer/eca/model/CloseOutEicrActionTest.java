@@ -237,4 +237,15 @@ public class CloseOutEicrActionTest {
     closeOutEicrAction.addRelatedAction(mockRelActn);
     closeOutEicrAction.setActionId("123");
   }
+
+  @Test
+  public void testPrintRunsWithoutError() {
+    try {
+      closeOutEicrAction.print();
+      // Assert true to indicate method ran successfully
+
+    } catch (Exception e) {
+      fail("Print method threw an exception: " + e.getMessage());
+    }
+  }
 }

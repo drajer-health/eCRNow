@@ -13,7 +13,6 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import com.drajer.sof.service.TriggerQueryDstu2Bundle;
 import com.drajer.sof.service.TriggerQueryService;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +42,6 @@ public class MatchTriggerActionTest {
 
   private ActionRepo mockActionRepo;
   private TriggerQueryService mockTrigQuerySrvc;
-
-  TriggerQueryDstu2Bundle generateDstu2Bundle;
 
   @Before
   public void setUp() {

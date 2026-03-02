@@ -63,4 +63,103 @@ public class NotificationContextControllerTest {
         notificationContextController.deleteNotificationContext(
             notificationContextData, httpServletRequest, httpServletResponse));
   }
+
+  @Test
+  public void deleteNotificationContext_notFound() throws IOException {
+
+    Mockito.lenient()
+        .doReturn(new ArrayList<>())
+        .when(notificationContextService)
+        .getNotificationContextData(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+
+    String response =
+        notificationContextController.deleteNotificationContext(
+            notificationContextData, httpServletRequest, httpServletResponse);
+
+    Mockito.verify(httpServletResponse)
+        .sendError(HttpServletResponse.SC_NOT_FOUND, "NotificationContext Not found");
+
+    assertEquals("NotificationContext Not found", response);
+  }
+
+  @Test
+  public void getNotificationContextData_empty() {
+
+    Mockito.when(
+            notificationContextService.getNotificationContextData(
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn(new ArrayList<>());
+
+    assertEquals(
+        204,
+        notificationContextController
+            .getNotificationContextData("url", "patient", "res")
+            .getStatusCodeValue());
+  }
+
+  @Test
+  public void getNotificationContextData_success() {
+
+    List<NotificationContext> list = new ArrayList<>();
+    list.add(notificationContext);
+
+    Mockito.when(
+            notificationContextService.getNotificationContextData(
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn(list);
+
+    assertEquals(
+        200,
+        notificationContextController
+            .getNotificationContextData("url", "patient", "res")
+            .getStatusCodeValue());
+  }
+
+  @Test
+  public void getAllNotificationContextData_empty() {
+
+    Mockito.when(
+            notificationContextService.getAllNotificationContextData(
+                Mockito.any(), Mockito.anyMap()))
+        .thenReturn(new ArrayList<>());
+
+    assertEquals(
+        204,
+        notificationContextController
+            .getAllNotificationContextData(new java.util.HashMap<>())
+            .getStatusCodeValue());
+  }
+
+  @Test
+  public void getNotificationContextForReprocessing_empty() {
+
+    Mockito.when(
+            notificationContextService.getNotificationContextForReprocessing(
+                Mockito.any(), Mockito.anyMap()))
+        .thenReturn(new ArrayList<>());
+
+    assertEquals(
+        204,
+        notificationContextController
+            .getNotificationContextForReprocessing(new java.util.HashMap<>())
+            .getStatusCodeValue());
+  }
+
+  @Test
+  public void getNotificationContextForReprocessing_success() {
+
+    List<NotificationContext> list = new ArrayList<>();
+    list.add(notificationContext);
+
+    Mockito.when(
+            notificationContextService.getNotificationContextForReprocessing(
+                Mockito.any(), Mockito.anyMap()))
+        .thenReturn(list);
+
+    assertEquals(
+        200,
+        notificationContextController
+            .getNotificationContextForReprocessing(new java.util.HashMap<>())
+            .getStatusCodeValue());
+  }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Supplier;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
@@ -28,7 +29,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
-  R4CqlExecutionService executionService;
+  private Supplier<R4CqlExecutionService> evaluatorFactory;
 
   @Override
   public Boolean evaluateExpression(
@@ -48,18 +49,19 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            executionService.evaluate(
-                null,
-                cond.getLogicExpression().getExpression(),
-                params,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+            newEvaluator()
+                .evaluate(
+                    null,
+                    cond.getLogicExpression().getExpression(),
+                    params,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
@@ -117,8 +119,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             Parameters variableResult =
                 (Parameters)
-                    executionService.evaluate(
-                        null, expr, null, null, null, null, null, null, null, null, null);
+                    newEvaluator()
+                        .evaluate(null, expr, null, null, null, null, null, null, null, null, null);
 
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
@@ -527,14 +529,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     return params;
   }
 
-  public R4CqlExecutionService getExecutionService() {
-    return executionService;
-  }
-
-  public void setExecutionService(R4CqlExecutionService executionService) {
-    this.executionService = executionService;
-  }
-
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> applyCodeFilter(
       DataRequirement dr, KarProcessingData kd, BsaAction action) {
 
@@ -557,18 +551,19 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            executionService.evaluate(
-                null,
-                cond.getLogicExpression().getExpression(),
-                params,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+            newEvaluator()
+                .evaluate(
+                    null,
+                    cond.getLogicExpression().getExpression(),
+                    params,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
@@ -594,5 +589,15 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
       return false;
     }
+  }
+
+  public void setExpressionEvaluatorFactory(Supplier<R4CqlExecutionService> evaluatorFactory) {
+    this.evaluatorFactory = evaluatorFactory;
+  }
+
+  R4CqlExecutionService newEvaluator() {
+    R4CqlExecutionService ev = evaluatorFactory.get();
+    logger.info("Evaluator instance: " + System.identityHashCode(ev));
+    return ev;
   }
 }

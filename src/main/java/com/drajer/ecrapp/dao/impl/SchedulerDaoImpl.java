@@ -24,55 +24,66 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
-    Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
 
-    String queryString = actionType + "_" + launchId + "_";
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
 
-    Predicate criteria =
-        cb.and(
-            cb.equal(root.get(TASK_NAME), "EICRTask"),
-            cb.like(root.get("task_instance"), queryString));
-    cq.where(criteria);
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
+      Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
 
-    Query<ScheduledTasks> q = getSession().createQuery(cq);
+      String queryString = actionType + "_" + launchId + "_";
 
-    return q.getResultList();
+      Predicate criteria =
+          cb.and(
+              cb.equal(root.get(TASK_NAME), "EICRTask"),
+              cb.like(root.get("task_instance"), queryString));
+
+      cq.where(criteria);
+
+      Query<ScheduledTasks> q = getSession().createQuery(cq);
+
+      return q.getResultList();
+    }
   }
 
   @Override
   public List<ScheduledTasks> getScheduledTasksBySearchQuery(String taskInstance) {
-    CriteriaBuilder cb = getSession().getCriteriaBuilder();
-    CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
-    Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
+      Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
 
-    cq.select(root).distinct(true);
+      cq.select(root).distinct(true);
 
-    if (StringUtils.isNotBlank(taskInstance)) {
-      // Match anywhere (equivalent to MatchMode.ANYWHERE)
-      String pattern = "%" + taskInstance.trim().toLowerCase() + "%";
-      Predicate predicate = cb.like(cb.lower(root.get("taskInstance")), pattern);
-      cq.where(predicate);
+      if (StringUtils.isNotBlank(taskInstance)) {
+        // Match anywhere (equivalent to MatchMode.ANYWHERE)
+        String pattern = "%" + taskInstance.trim().toLowerCase() + "%";
+        Predicate predicate = cb.like(cb.lower(root.get("taskInstance")), pattern);
+        cq.where(predicate);
+      }
+
+      return getSession().createQuery(cq).getResultList();
     }
-
-    return getSession().createQuery(cq).getResultList();
   }
 
   @Override
   public List<ScheduledTasks> getScheduledTasks() {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
 
-    Query<ScheduledTasks> q = getSession().createQuery(cq);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
 
-    List<ScheduledTasks> scheduledTasks = q.getResultList();
-    if (scheduledTasks != null && !scheduledTasks.isEmpty()) {
-      return scheduledTasks;
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
+
+      Query<ScheduledTasks> q = getSession().createQuery(cq);
+
+      List<ScheduledTasks> scheduledTasks = q.getResultList();
+
+      if (scheduledTasks != null && !scheduledTasks.isEmpty()) {
+        return scheduledTasks;
+      }
+
+      return Collections.emptyList();
     }
-    return Collections.EMPTY_LIST;
   }
 
   @Override

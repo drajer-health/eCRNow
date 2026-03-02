@@ -199,6 +199,7 @@ public class PhMessageDaoTest {
     /*Mockito.lenient().when(criteria.setProjection(any(ProjectionList.class))).thenReturn(criteria);
     Mockito.lenient().when(criteria.setResultTransformer(any())).thenReturn(criteria);
     Mockito.lenient().when(criteria.add(any())).thenReturn(criteria);
-    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);*/
+    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);
+    */
   }
 }

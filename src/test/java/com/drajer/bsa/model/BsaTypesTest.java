@@ -1,6 +1,6 @@
 package com.drajer.bsa.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

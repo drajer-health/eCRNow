@@ -1,0 +1,28 @@
+{
+  "resourceType": "MedicationDispense",
+  "id": "meddisp001",
+  "status": "completed",
+  "medicationReference": {
+    "reference": "Medication/med0316",
+    "display": "Amoxicillin 500mg Capsule"
+  },
+  "subject": {
+    "reference": "Patient/pat123",
+    "display": "John Doe"
+  },
+  "whenPrepared": "2025-09-06T11:00:00+00:00",
+  "whenHandedOver": "2025-09-06T12:00:00+00:00",
+  "performer": [
+    {
+      "actor": {
+        "reference": "Practitioner/pract456",
+        "display": "Dr. Jane Smith"
+      }
+    }
+  ],
+  "dosageInstruction": [
+    {
+      "text": "Take one capsule orally every 8 hours"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "resourceType": "MedicationAdministration",
+  "id": "medadmin001",
+  "status": "completed",
+  "medicationReference": {
+    "reference": "Medication/med0316",
+    "display": "Paracetamol 500mg Tablet"
+  },
+  "subject": {
+    "reference": "Patient/pat1"
+  },
+  "request": {
+    "reference": "MedicationRequest/medreq001"
+  },
+  "effectiveDateTime": "2025-09-05T10:30:00+00:00",
+  "performer": [
+    {
+      "actor": {
+        "reference": "Practitioner/pract1",
+        "display": "Dr. John Smith"
+      }
+    }
+  ]
+
+}

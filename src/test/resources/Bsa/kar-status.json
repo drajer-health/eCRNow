@@ -1,0 +1,15 @@
+[
+  {
+    "hsId": 30,
+    "karId": "Bundle/rctc-release-1.2.2.0-Bundle-rctc",
+    "karVersion": "",
+    "versionUniqueKarId": "Bundle/rctc-release-1.2.2.0-Bundle-rctc|",
+    "isActive": true,
+    "lastActivationDate": "2024-12-05T09:28:54.027+00:00",
+    "lastInActivationDate": "2024-12-05T09:28:50.407+00:00",
+    "subscriptionsEnabled": false,
+    "subscriptions": ["{","|","}"],
+    "covidOnly": false,
+    "outputFormat": "CDA_R11"
+  }
+]

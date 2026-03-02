@@ -57,15 +57,17 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
    */
   @Override
   public List<KarExecutionState> getAllKarExecutionStates() {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<KarExecutionState> cq = cb.createQuery(KarExecutionState.class);
-    Root<KarExecutionState> root = cq.from(KarExecutionState.class);
 
-    Query<KarExecutionState> q = getSession().createQuery(cq);
-    cq.orderBy(cb.desc(root.get("id")));
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<KarExecutionState> cq = cb.createQuery(KarExecutionState.class);
+      Root<KarExecutionState> root = cq.from(KarExecutionState.class);
 
-    return q.getResultList();
+      Query<KarExecutionState> q = getSession().createQuery(cq);
+      cq.orderBy(cb.desc(root.get("id")));
+
+      return q.getResultList();
+    }
   }
 
   /**

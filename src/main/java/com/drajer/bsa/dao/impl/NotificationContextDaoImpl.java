@@ -58,15 +58,17 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
    */
   @Override
   public NotificationContext getNotificationContextByUrl(String url) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
-    Root<NotificationContext> root = cq.from(NotificationContext.class);
-    cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
 
-    Query<NotificationContext> q = getSession().createQuery(cq);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
+      Root<NotificationContext> root = cq.from(NotificationContext.class);
+      cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
 
-    return q.uniqueResult();
+      Query<NotificationContext> q = getSession().createQuery(cq);
+
+      return q.uniqueResult();
+    }
   }
 
   /**
@@ -87,51 +89,55 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       String patientId,
       String notificationResourceId,
       String notificationResourceType) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
-    Root<NotificationContext> root = cq.from(NotificationContext.class);
 
-    Predicate criteria =
-        cb.and(
-            cb.equal(root.get("fhirServerBaseURL"), url),
-            cb.equal(root.get("patientId"), patientId),
-            cb.equal(root.get("notificationResourceId"), notificationResourceId),
-            cb.equal(root.get("notificationResourceType"), notificationResourceType));
-    cq.where(criteria);
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
+      Root<NotificationContext> root = cq.from(NotificationContext.class);
 
-    Query<NotificationContext> q = getSession().createQuery(cq);
+      Predicate criteria =
+          cb.and(
+              cb.equal(root.get("fhirServerBaseURL"), url),
+              cb.equal(root.get("patientId"), patientId),
+              cb.equal(root.get("notificationResourceId"), notificationResourceId),
+              cb.equal(root.get("notificationResourceType"), notificationResourceType));
+      cq.where(criteria);
 
-    return q.uniqueResult();
+      Query<NotificationContext> q = getSession().createQuery(cq);
+
+      return q.uniqueResult();
+    }
   }
 
   @Override
   public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
-    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-    List<Predicate> predicates = new ArrayList<>();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
-    Root<NotificationContext> root = cq.from(NotificationContext.class);
 
-    if (id != null) {
-      predicates.add(cb.equal(root.get("id"), id));
-    } else {
-      if (fhirServerBaseUrl != null)
-        predicates.add(cb.equal(root.get("fhirServerBaseURL"), fhirServerBaseUrl));
-      if (notificationResourceId != null)
-        predicates.add(cb.equal(root.get("notificationResourceId"), notificationResourceId));
-      if (patientId != null) predicates.add(cb.equal(root.get("patientId"), patientId));
+    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
+      List<Predicate> predicates = new ArrayList<>();
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
+      Root<NotificationContext> root = cq.from(NotificationContext.class);
+
+      if (id != null) {
+        predicates.add(cb.equal(root.get("id"), id));
+      } else {
+        if (fhirServerBaseUrl != null)
+          predicates.add(cb.equal(root.get("fhirServerBaseURL"), fhirServerBaseUrl));
+        if (notificationResourceId != null)
+          predicates.add(cb.equal(root.get("notificationResourceId"), notificationResourceId));
+        if (patientId != null) predicates.add(cb.equal(root.get("patientId"), patientId));
+      }
+      Predicate[] predArr = new Predicate[predicates.size()];
+      predArr = predicates.toArray(predArr);
+
+      Predicate criteria = cb.and(predArr);
+      cq.where(criteria);
+
+      Query<NotificationContext> q = getSession().createQuery(cq);
+
+      return q.getResultList();
     }
-    Predicate[] predArr = new Predicate[predicates.size()];
-    predArr = predicates.toArray(predArr);
-
-    Predicate criteria = cb.and(predArr);
-    cq.where(criteria);
-
-    Query<NotificationContext> q = getSession().createQuery(cq);
-
-    return q.getResultList();
   }
 
   @Override

@@ -49,6 +49,10 @@ import org.springframework.retry.support.RetryTemplate;
       "com.drajer.eca",
       "com.drajer.routing",
       "com.drajer.cda",
+      "com.drajer.cda.utils",
+      "com.drajer.cda.service",
+      "com.drajer.cda.ehr.service",
+      "com.drajer.cda.ehr.customizations",
       "com.drajer.bsa.utils",
       "com.drajer.bsa.kar.action",
       "com.drajer.bsa.kar.model",
@@ -145,6 +149,13 @@ public class SpringConfiguration {
 
   @Bean
   R4CqlExecutionService getExecutionService(
+      FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {
+    return new R4CqlExecutionService(ecrRepository, evaluationSettings);
+  }
+
+  @Bean(name = "R4CqlExecutionEvaluator")
+  @Scope("prototype")
+  R4CqlExecutionService getExecutionServiceExecutionService(
       FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {
     return new R4CqlExecutionService(ecrRepository, evaluationSettings);
   }
