@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
@@ -409,8 +410,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 || drcf.getPath().equals("medication"))
             && drcf.getValueSet() != null) {
 
-          Resource vsr =
-              kd.getKar().getDependentResource(ResourceType.ValueSet, drcf.getValueSet());
+          Resource vsr = getValueSet(kd, drcf.getValueSet());
 
           if (vsr != null) {
             logger.debug(" Found Value Set {} to compare codes.", vsr.getId());
@@ -599,5 +599,33 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     R4CqlExecutionService ev = evaluatorFactory.get();
     logger.info("Evaluator instance: " + System.identityHashCode(ev));
     return ev;
+  }
+
+  public Resource getValueSet(KarProcessingData kd, String url) {
+    if (StringUtils.isBlank(url)) {
+      return null;
+    }
+    Resource res = kd.getKar().getDependentResource(ResourceType.ValueSet, url);
+
+    if (res == null) {
+      res = kd.getKar().getDependentResource(ResourceType.ValueSet, normalizeCanonicalUrl(url));
+    }
+    return res;
+  }
+
+  public String normalizeCanonicalUrl(String url) {
+    try {
+      if (StringUtils.isBlank(url)) {
+        return null;
+      }
+
+      int pipeIndex = url.indexOf('|');
+      return (pipeIndex >= 0) ? url.substring(0, pipeIndex) : url;
+
+    } catch (Exception e) {
+      logger.warn("Failed to normalize canonical URL: {}", url, e);
+
+      return url;
+    }
   }
 }
