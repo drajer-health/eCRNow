@@ -3074,4 +3074,74 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertNotNull(actualXml);
   }
+
+  @Test
+  public void testGetHumanNameXmlXmlWithEmptyValue() {
+
+    List<HumanName> humanNames = new ArrayList<>();
+    HumanName humanName = new HumanName();
+    List<StringType> theGiven = new ArrayList<>();
+    theGiven.add(new StringType("john"));
+    theGiven.add(new StringType("mark"));
+
+    humanName.setUse(NameUse.OFFICIAL);
+    humanName.setFamily("parker");
+    humanName.setGiven(theGiven);
+
+    humanNames.add(humanName);
+
+    String expectedXml = "<name><given nullFlavor=\"NI\"/><family nullFlavor=\"NI\"/></name>";
+
+    String nameXml = CdaFhirUtilities.getHumanNameXml(null, false, true);
+    nameXml = nameXml.replace("\n", "");
+
+    assertEquals(expectedXml.trim(), nameXml.trim());
+  }
+
+  @Test
+  public void testGetHumanNameXml_withUse() {
+
+    List<HumanName> humanNames = new ArrayList<>();
+    HumanName humanName = new HumanName();
+    List<StringType> theGiven = new ArrayList<>();
+    theGiven.add(new StringType("john"));
+    theGiven.add(new StringType("mark"));
+
+    humanName.setUse(NameUse.OFFICIAL);
+    humanName.setFamily("parker");
+    humanName.setGiven(theGiven);
+
+    humanNames.add(humanName);
+
+    String expectedXml =
+        "<name use=\"L\"><given>john</given><given>mark</given><family>parker</family></name>";
+
+    String nameXml = CdaFhirUtilities.getHumanNameXml(humanNames, false, true);
+    nameXml = nameXml.replace("\n", "");
+
+    assertEquals(expectedXml.trim(), nameXml.trim());
+  }
+
+  @Test
+  public void testGetHumanNameXml_withoutUse() {
+
+    List<HumanName> humanNames = new ArrayList<>();
+    HumanName humanName = new HumanName();
+    List<StringType> theGiven = new ArrayList<>();
+    theGiven.add(new StringType("john"));
+    theGiven.add(new StringType("mark"));
+
+    humanName.setFamily("parker");
+    humanName.setGiven(theGiven);
+
+    humanNames.add(humanName);
+
+    String expectedXml =
+        "<name><given>john</given><given>mark</given><family>parker</family></name>";
+
+    String nameXml = CdaFhirUtilities.getHumanNameXml(humanNames, false, true);
+    nameXml = nameXml.replace("\n", "");
+
+    assertEquals(expectedXml.trim(), nameXml.trim());
+  }
 }
