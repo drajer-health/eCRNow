@@ -7,7 +7,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.12</version>
-		<relativePath />
+		<relativePath/>
 		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
@@ -109,7 +109,7 @@
 		<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
-			<version>11.6</version>
+			<version>16.2.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
