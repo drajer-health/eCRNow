@@ -25,7 +25,7 @@
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <skip-jacoco-check>true</skip-jacoco-check>
-        <cqf.fhir.version>3.14.0</cqf.fhir.version>
+        <cqf.fhir.version>3.28.1</cqf.fhir.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.reporting.outputDirectory}/jacoco-merged/jacoco.xml
