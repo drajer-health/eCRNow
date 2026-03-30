@@ -1213,7 +1213,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     String nameXml = CdaFhirUtilities.getNameXml(humanNames, false);
     nameXml = nameXml.replace("\n", "");
 
-    assertEquals(expectedXml.trim(), nameXml.trim());
+    assertXmlEquals(expectedXml.trim(), nameXml.trim());
   }
 
   @Test

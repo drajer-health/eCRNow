@@ -1,7 +1,22 @@
 This contains the current operational processes and future roadmap of the eCRNow App in terms of Releases and capabilities.
 
-**Current Baseline**
+**Operational Processes** 
 
+***Handling FHIR Server Outages** 
+
+The following is the recommended approach for all operational issues related to FHIR Server.
+
+If there are downtimes for the FHIR Server or issues happening at the FHIR Server, then the launchPatient calls should be stopped so that the eCRNow App will not process any new patients.
+To prevent the failures for the Patients already launched, the recommendation is to stop the eCRNow App until the FHIR server is operational.
+Restart the eCRNow App so that it can work all the queued up timers from the downtime. This can be verified by checking the scheduled_tasks table by verifying the execution_tiime is in the future instead of the past.
+Once the timers are confirmed to be in the future, then restart the launch Patients that may have been pending due to the downtimes.
+Incase the above procedure was not followed and the timers were removed because of the errors, the following can be done to redo the processing.
+
+Option 1:
+
+Call the reProcessPatient API with the same details as the original Patient Id and Encounter id and they will be reProcessed accordingly. This will redo the eICR generations and schedule timers as if the Patient / Encounter combination is being launched the first time. This is ideal for encounters that are still in-progress and have not been completed.
+Option 2:
+2. Call the reLaunchPatient API with the same details as the original Patient Id and Encounter Id and the data will be checked only once and an eICR will be created if necessary. No further timers are added. This is ideal in cases most of the encounters that are being relaunched are already completed/Finished.
 
 
 
