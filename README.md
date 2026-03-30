@@ -248,3 +248,16 @@ Organizations implementing in production settings should consider the following:
 2. Implement organization policies around database settings (ports), schemas, encryption.
 3. Implement performance improvements using [Off Hour Scheduling](https://github.com/drajer-health/eCRNow/blob/master/OffHourConfiguration.md) and [Custom Query Configuration](https://github.com/drajer-health/eCRNow/blob/master/CustomQueryConfiguration.md).
 
+# 6. Notification Setup:
+
+1. In the main "Code" page, click on the "Watch/Unwatch" button on the top right of the page select what activity you want to follow and receive email notifications, click "Custom" if you want to limit/filter. 
+
+<img width="2552" height="1242" alt="image" src="https://github.com/user-attachments/assets/e088f09f-648a-4c63-9056-53c16db46870" />
+
+2. Under the Custom option select "Releases" to receive email notifications as soon as a release is created for eCR Now App. 
+
+<img width="1988" height="1190" alt="image" src="https://github.com/user-attachments/assets/bd6c55df-8291-415c-99eb-c8f714d5919f" />
+
+
+
+
