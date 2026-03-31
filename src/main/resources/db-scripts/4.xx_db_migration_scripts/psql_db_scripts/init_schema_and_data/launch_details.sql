@@ -3,6 +3,14 @@
 -- Purpose: Create launch_details_v2 and migrate data from launch_details
 -- ==================================================================
 
+-- Create sequence for Hibernate ID generation
+CREATE SEQUENCE IF NOT EXISTS public.launch_details_v2_seq
+    START WITH 1
+    INCREMENT BY 50
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 DO
 $$
 DECLARE
@@ -40,7 +48,7 @@ BEGIN
 
             EXECUTE format($fmt$
                 CREATE TABLE %I (
-                    id SERIAL PRIMARY KEY,
+                    id INTEGER DEFAULT nextval('launch_details_v2_seq') PRIMARY KEY,
                     client_id VARCHAR(255),
                     client_secret VARCHAR(8000),
                     ehr_server_url VARCHAR(255),
@@ -118,7 +126,7 @@ BEGIN
 
         EXECUTE format($fmt$
             CREATE TABLE %I (
-                id SERIAL PRIMARY KEY,
+                id INTEGER DEFAULT nextval('launch_details_v2_seq') PRIMARY KEY,
                 client_id VARCHAR(255),
                 client_secret VARCHAR(8000),
                 ehr_server_url VARCHAR(255),
