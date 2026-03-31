@@ -88,7 +88,7 @@ BEGIN
 
 
 
-        EXECUTE format('CREATE INDEX IF NOT EXISTS idx_kar_id_v2 ON %I (kar_id);', new_table);
+
 
 
         RAISE NOTICE 'New table "%" created.', new_table;
