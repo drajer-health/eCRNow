@@ -4,6 +4,14 @@
 -- Note: Constraints handled separately
 -- ==================================================================
 
+-- Create sequence for Hibernate ID generation
+CREATE SEQUENCE IF NOT EXISTS public.eicr_v2_seq
+    START WITH 1
+    INCREMENT BY 50
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 DO
 $$
 DECLARE
@@ -36,7 +44,7 @@ BEGIN
 
             EXECUTE format($fmt$
                 CREATE TABLE %I (
-                    id SERIAL PRIMARY KEY,
+                    id INTEGER DEFAULT nextval('eicr_v2_seq') PRIMARY KEY,
                     x_req_id VARCHAR(8000),
                     x_correlation_id VARCHAR(8000),
                     eicr_doc_id VARCHAR(8000),
@@ -80,7 +88,7 @@ BEGIN
 
         EXECUTE format($fmt$
             CREATE TABLE %I (
-                id SERIAL PRIMARY KEY,
+                id INTEGER DEFAULT nextval('eicr_v2_seq') PRIMARY KEY,
                 x_req_id VARCHAR(8000),
                 x_correlation_id VARCHAR(8000),
                 eicr_doc_id VARCHAR(8000),

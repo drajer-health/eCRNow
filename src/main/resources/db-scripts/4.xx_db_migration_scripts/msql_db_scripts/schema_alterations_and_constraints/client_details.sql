@@ -11,7 +11,7 @@ BEGIN TRY
     IF NOT EXISTS (
         SELECT 1
         FROM sys.key_constraints kc
-        WHERE kc.[name] = 'uq_fhir_server_base_url_v2'
+        WHERE kc.[name] = 'uq_cb_fhir_server_base_url_v2'
           AND kc.[type] = 'UQ'
     )
     BEGIN

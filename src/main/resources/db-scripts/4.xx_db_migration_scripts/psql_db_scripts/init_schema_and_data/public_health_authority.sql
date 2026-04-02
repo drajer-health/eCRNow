@@ -4,6 +4,14 @@
 --          public_health_authority (if exists), with full validation.
 -- =====================================================================
 
+-- Create sequence for Hibernate ID generation
+CREATE SEQUENCE IF NOT EXISTS public.public_health_authority_v2_seq
+    START WITH 1
+    INCREMENT BY 50
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 DO
 $$
 DECLARE
@@ -43,7 +51,7 @@ BEGIN
 
             EXECUTE format($fmt$
                 CREATE TABLE %I (
-                    id SERIAL PRIMARY KEY,
+                    id INTEGER DEFAULT nextval('public_health_authority_v2_seq') PRIMARY KEY,
                     clientId VARCHAR(8000) NOT NULL,
                     clientSecret TEXT NULL,
                     username VARCHAR(8000) NULL,
@@ -84,7 +92,7 @@ BEGIN
 
         EXECUTE format($fmt$
             CREATE TABLE %I (
-                id SERIAL PRIMARY KEY,
+                id INTEGER DEFAULT nextval('public_health_authority_v2_seq') PRIMARY KEY,
                 clientId VARCHAR(8000) NOT NULL,
                 clientSecret TEXT NULL,
                 username VARCHAR(8000) NULL,
