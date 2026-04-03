@@ -27,6 +27,7 @@ import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
 import org.opencds.cqf.fhir.cr.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.fhir.cr.measure.common.MeasurePeriodValidator;
+import org.opencds.cqf.fhir.cr.measure.common.MeasureProcessorUtils;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.opencds.cqf.fhir.cr.measure.r4.R4RepositorySubjectProvider;
 import org.opencds.cqf.fhir.cr.spring.EvaluatorConfiguration;
@@ -136,8 +137,13 @@ public class SpringConfiguration {
   }
 
   @Bean
-  R4RepositorySubjectProvider getR4RepositorySubjectProvider() {
-    return new R4RepositorySubjectProvider();
+  R4RepositorySubjectProvider getR4RepositorySubjectProvider(MeasureEvaluationOptions measureEvaluationOptions) {
+    return new R4RepositorySubjectProvider(measureEvaluationOptions.getSubjectProviderOptions());
+  }
+
+  @Bean
+  MeasureProcessorUtils getMeasureProcessorUtils() {
+    return new MeasureProcessorUtils();
   }
 
   @Bean
