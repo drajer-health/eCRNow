@@ -4,7 +4,7 @@
 -- Date: 2026-04-03
 --
 -- =====================================================================
--- 📌 PURPOSE
+--  PURPOSE
 -- ---------------------------------------------------------------------
 -- This script synchronizes database sequences for all tables ending
 -- with '_v2' in the 'public' schema.
@@ -18,7 +18,7 @@
 --
 
 -- =====================================================================
--- 🧪 WHEN TO USE
+--  WHEN TO USE
 -- ---------------------------------------------------------------------
 -- Run this script:
 --   - After copying data to '_v2' tables
@@ -26,7 +26,7 @@
 --   - When facing duplicate key errors
 --
 -- =====================================================================
--- ⚙️ WHAT THIS SCRIPT DOES
+--  WHAT THIS SCRIPT DOES
 -- ---------------------------------------------------------------------
 -- 1. Scans all '_v2' tables in the public schema
 -- 2. Identifies corresponding sequences:
@@ -42,14 +42,14 @@
 --      - Tables without matching sequence
 --
 -- =====================================================================
--- 🚀 HOW TO RUN
+--  HOW TO RUN
 -- ---------------------------------------------------------------------
 -- 1. Connect to PostgreSQL (pgAdmin / DBeaver / psql)
 -- 2. Open a new query window
 -- 3. Execute this script
 --
 -- =====================================================================
--- 📊 EXPECTED OUTPUT
+--  EXPECTED OUTPUT
 -- ---------------------------------------------------------------------
 -- The script prints logs such as:
 --
@@ -62,7 +62,7 @@
 --   [SKIP] Already in sync
 --
 -- =====================================================================
--- ⚠️ SAFETY
+--  SAFETY
 -- ---------------------------------------------------------------------
 -- - Safe to run multiple times (idempotent)
 -- - No data is modified or deleted
@@ -70,7 +70,7 @@
 --
 
 -- =====================================================================
--- ✅ RESULT
+--  RESULT
 -- ---------------------------------------------------------------------
 -- - Sequences aligned with table data
 -- - No more duplicate key errors
