@@ -103,7 +103,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
         while (headers.hasMoreElements()) {
           Header h = (Header) headers.nextElement();
-          if (h.getName().contains("Message-ID")) {
+          if (h.getName().toLowerCase().contains("message-id")) {
             mId = h.getValue();
             logger.info("Message-ID: {}", mId);
           }
