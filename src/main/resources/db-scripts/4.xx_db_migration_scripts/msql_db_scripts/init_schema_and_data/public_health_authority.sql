@@ -168,18 +168,14 @@ BEGIN TRY
 
 
     ------------------------------------------------------------------
-    -- 7. Copy data with IDENTITY_INSERT
+    -- 7. Copy data (SEQUENCE-based table — no IDENTITY_INSERT needed)
     ------------------------------------------------------------------
     PRINT 'Migrating data...';
 
     SET @sql = N'
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + N' ON;
-
         INSERT INTO dbo.' + QUOTENAME(@new_table) + N' (' + @col_list + N')
         SELECT ' + @select_list + '
         FROM dbo.' + QUOTENAME(@old_table) + N';
-
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + N' OFF;
     ';
 
     EXEC sp_executesql @sql;

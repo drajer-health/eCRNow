@@ -159,13 +159,11 @@ BEGIN TRY
     PRINT 'Migrating data...';
 
     SET @sql = N'
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + ' ON;
 
         INSERT INTO dbo.' + QUOTENAME(@new_table) + ' (' + @col_list + ')
         SELECT ' + @select_list + '
         FROM dbo.' + QUOTENAME(@old_table) + ';
 
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + ' OFF;
     ';
     EXEC sp_executesql @sql;
 

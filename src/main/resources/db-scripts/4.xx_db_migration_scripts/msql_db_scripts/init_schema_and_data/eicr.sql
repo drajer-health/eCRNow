@@ -173,18 +173,14 @@ BEGIN TRY
 
 
     ------------------------------------------------------------------
-    -- 7. Copy data
+    -- 7. Copy data (SEQUENCE-based table — no IDENTITY_INSERT needed)
     ------------------------------------------------------------------
     PRINT 'Migrating data...';
 
-    SET @sql = '
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + ' ON;
-
+    SET @sql = N'
         INSERT INTO dbo.' + QUOTENAME(@new_table) + ' (' + @col_list + ')
         SELECT ' + @select_list + ' FROM dbo.' + QUOTENAME(@old_table) + '
         WHERE eicr_doc_id IS NOT NULL;
-
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + ' OFF;
     ';
 
     EXEC sp_executesql @sql;
