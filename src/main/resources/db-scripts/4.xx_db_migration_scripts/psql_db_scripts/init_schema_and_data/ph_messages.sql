@@ -79,9 +79,8 @@ BEGIN
                 );
             $fmt$, new_table);
 
-            -- Indexes
-            EXECUTE format('CREATE INDEX IF NOT EXISTS idx_not_res_id_v2 ON %I (notified_resource_id);', new_table);
-            EXECUTE format('CREATE INDEX IF NOT EXISTS idx_kar_id_v2 ON %I (kar_unique_id);', new_table);
+
+
 
             RAISE NOTICE 'Table "%" created successfully.', new_table;
 
@@ -141,8 +140,7 @@ BEGIN
         $fmt$, new_table);
 
         -- Indexes
-        EXECUTE format('CREATE INDEX IF NOT EXISTS idx_not_res_id_v2 ON %I (notified_resource_id);', new_table);
-        EXECUTE format('CREATE INDEX IF NOT EXISTS idx_kar_id_v2 ON %I (kar_unique_id);', new_table);
+
 
         RAISE NOTICE 'Table "%" created.', new_table;
 

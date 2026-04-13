@@ -3,6 +3,14 @@
 -- Purpose: Create client_details_v2 and migrate data from client_details
 -- ==================================================================
 
+-- Create sequence for Hibernate ID generation
+CREATE SEQUENCE IF NOT EXISTS public.client_details_v2_seq
+    START WITH 1
+    INCREMENT BY 50
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 DO
 $$
 DECLARE
@@ -35,7 +43,7 @@ BEGIN
 
             EXECUTE format($fmt$
                 CREATE TABLE %I (
-                    id SERIAL PRIMARY KEY,
+                    id INTEGER DEFAULT nextval('client_details_v2_seq') PRIMARY KEY,
                     is_provider_launch INT DEFAULT 0,
                     is_system_launch INT DEFAULT 1,
                     is_multi_tenant_system_launch INT DEFAULT 0,
@@ -97,7 +105,7 @@ BEGIN
 
         EXECUTE format($fmt$
             CREATE TABLE %I (
-                id SERIAL PRIMARY KEY,
+                id INTEGER DEFAULT nextval('client_details_v2_seq') PRIMARY KEY,
                 is_provider_launch INT DEFAULT 0,
                 is_system_launch INT DEFAULT 1,
                 is_multi_tenant_system_launch INT DEFAULT 0,

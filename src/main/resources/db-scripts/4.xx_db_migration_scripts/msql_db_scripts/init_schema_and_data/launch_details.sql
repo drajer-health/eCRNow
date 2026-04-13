@@ -4,6 +4,21 @@
 -- Note: Constraints handled separately
 -- ==================================================================
 
+-- Create sequence for Hibernate ID generation
+IF NOT EXISTS (
+    SELECT 1 FROM sys.sequences
+    WHERE name = 'launch_details_v2_SEQ' AND SCHEMA_ID = SCHEMA_ID('dbo')
+)
+BEGIN
+    CREATE SEQUENCE dbo.launch_details_v2_SEQ
+        AS INT
+        START WITH 1
+        INCREMENT BY 50
+        NO MINVALUE
+        NO MAXVALUE
+        NO CYCLE;
+END
+
 BEGIN TRY
     BEGIN TRANSACTION;
 
@@ -46,7 +61,7 @@ BEGIN TRY
 
         SET @sql = N'
             CREATE TABLE dbo.' + QUOTENAME(@new_table) + N' (
-                id INT IDENTITY(1,1) PRIMARY KEY,
+                id INT DEFAULT NEXT VALUE FOR dbo.launch_details_v2_SEQ PRIMARY KEY,
                 client_id VARCHAR(255) NULL,
                 client_secret VARCHAR(8000) NULL,
                 ehr_server_url VARCHAR(255) NULL,
@@ -188,19 +203,15 @@ BEGIN TRY
 
 
     ------------------------------------------------------------------
-    -- 7. Copy data
+    -- 7. Copy data (SEQUENCE-based table — no IDENTITY_INSERT needed)
     ------------------------------------------------------------------
     PRINT 'Migrating data...';
 
     SET @sql = N'
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + N' ON;
-
         INSERT INTO dbo.' + QUOTENAME(@new_table) + N'
         (' + @col_list + ')
         SELECT ' + @select_list + '
         FROM dbo.' + QUOTENAME(@old_table) + N';
-
-        SET IDENTITY_INSERT dbo.' + QUOTENAME(@new_table) + N' OFF;
     ';
 
     EXEC sp_executesql @sql;

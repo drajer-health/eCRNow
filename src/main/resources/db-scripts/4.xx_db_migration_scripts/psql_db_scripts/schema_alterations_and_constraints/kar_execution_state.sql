@@ -29,7 +29,7 @@ BEGIN
         ALTER TABLE public.kar_execution_state_v2
         ADD CONSTRAINT fk_kar_execstate_v2_notificationcontext
         FOREIGN KEY (nc_fk)
-        REFERENCES public.notification_context(id)
+        REFERENCES public.notification_context_v2(id)
         ON DELETE SET NULL
         ON UPDATE CASCADE;
 
