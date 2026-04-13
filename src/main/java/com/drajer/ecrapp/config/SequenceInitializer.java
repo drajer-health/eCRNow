@@ -2,6 +2,7 @@ package com.drajer.ecrapp.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -39,6 +40,12 @@ public class SequenceInitializer implements InitializingBean {
 
   private final SessionFactory sessionFactory;
 
+  private enum DatabaseType {
+    SQLSERVER,
+    POSTGRESQL,
+    UNKNOWN
+  }
+
   public SequenceInitializer(SessionFactory sessionFactory) {
     this.sessionFactory = sessionFactory;
   }
@@ -52,12 +59,18 @@ public class SequenceInitializer implements InitializingBean {
     int failCount = 0;
 
     try (Session session = sessionFactory.openSession()) {
+      DatabaseType databaseType = detectDatabaseType(session);
+      logger.info("SequenceInitializer: detected database type={}", databaseType);
+
+      if (databaseType == DatabaseType.UNKNOWN) {
+        logger.warn("SequenceInitializer: unsupported database type. Skipping sequence warmup.");
+        return;
+      }
+
       for (String seqName : SEQUENCES) {
         try {
-          Object value =
-              session
-                  .createNativeQuery("SELECT NEXT VALUE FOR dbo." + seqName, Object.class)
-                  .getSingleResult();
+          String query = buildNextValueSql(databaseType, seqName);
+          Object value = session.createNativeQuery(query, Object.class).getSingleResult();
           logger.info("  [OK] {} = {}", seqName, value);
           successCount++;
         } catch (Exception e) {
@@ -82,5 +95,34 @@ public class SequenceInitializer implements InitializingBean {
               + "Check that the sequences exist and INCREMENT BY is 50. ",
           failCount);
     }
+  }
+
+  private DatabaseType detectDatabaseType(Session session) {
+    try {
+      String productName =
+          session.doReturningWork(
+              connection ->
+                  connection.getMetaData().getDatabaseProductName().toLowerCase(Locale.ROOT));
+
+      if (productName.contains("postgresql")) {
+        return DatabaseType.POSTGRESQL;
+      }
+
+      if (productName.contains("sql server") || productName.contains("microsoft")) {
+        return DatabaseType.SQLSERVER;
+      }
+    } catch (Exception e) {
+      logger.warn("SequenceInitializer: unable to detect database type - {}", e.getMessage());
+    }
+
+    return DatabaseType.UNKNOWN;
+  }
+
+  private String buildNextValueSql(DatabaseType databaseType, String sequenceName) {
+    if (databaseType == DatabaseType.POSTGRESQL) {
+      return "SELECT nextval('public." + sequenceName.toLowerCase(Locale.ROOT) + "')";
+    }
+
+    return "SELECT NEXT VALUE FOR dbo." + sequenceName;
   }
 }
