@@ -1,0 +1,891 @@
+{
+	"info": {
+		"_postman_id": "7fede6b6-9b8e-4f0c-a0ea-2ec835142dc9",
+		"name": "eCRNow",
+		"description": "This collection contains the necessary APIs to configure eCRNow App. This is to be used by an implementer to configure **eCRNow** application without the User Interface. The following are the APIs to be used for configuring the eCRNow Application.\n\n1. Create HealthcareSetting (Present in eCRNowAPIs/HealthcareSetting APIs)\n    \n2. Update HealthcareSetting (Optional) - As needed (Present in eCRNowAPIs/HealthcareSetting APIs)\n    \n3. Add ERSD/KAR status for HealthcareSetting (Present in eCRNowAPIs/ERSD Knowledge Artifact APIs)\n    \n4. Create Public Health Authority (Present in eCRNowAPIs/Public Health Authority APIs)\n    \n5. Update Public Health Authority (Optional) - As needed (Present in eCRNowAPIs/ Public Health Authority APIs)\n    \n6. Launch Patient Instance (Present in Patient Launch APIs)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "EHR FHIR Service Connectivity Testing",
+			"item": [
+				{
+					"name": "Get EHR Access Token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "scope",
+									"value": "system/*.read",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_assertion_type",
+									"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "client_assertion",
+									"value": "<client assertion token>",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"fhir",
+								"epic",
+								"com"
+							],
+							"path": [
+								"interconnect-fhir-oauth",
+								"oauth2",
+								"token"
+							]
+						},
+						"description": "**Get EHR Access Token**\n\nThis API is used for **OAuth2 based on SMART on FHIR Backend Services authentication and authorization** verification. The access tokens are required to \naccess EHRs FHIR resources.\n\n#### **API Endpoint**:\n\n`POST /oauth2/token`\n\n#### **Request Headers**:\n\n| Key | Value |\n| --- | --- |\n| Content-Type | application/x-www-form-urlencoded |\n\n#### **Request Body (x-www-form-urlencoded)**:\n\n- **grant_type**:\n    \n    - **Description**: The type of OAuth flow being used. In this case, it should be `client_credentials`, which is typically used when the application is acting on its own behalf (i.e., without user interaction).\n        \n    - **Example**: `client_credentials`\n        \n- **scope**:\n    \n    - **Description**: The scope defines the level of access the application is requesting. The value `system/\\\\\\\\\\*.read` allows the application to read data from Epic’s systems.\n        \n    - **Example**: `system/\\\\\\\\\\*.read`\n        \n- **client_assertion_type**:\n    \n    - **Description**: The type of the client assertion being used. In this case, it should be `urn:ietf:params:oauth:client-assertion-type:jwt-bearer`, which tells the system that the application is sending a JWT as a client assertion.\n        \n    - **Example**: `urn:ietf:params:oauth:client-assertion-type:jwt-bearer`\n        \n- **client_assertion**:\n    \n    - **Description**: The **JWT** used as the client assertion. It is a security token that represents the client’s identity and is signed by the client’s private key.\n        \n    - **Example**: `eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiI2NjBmMTUwNy02MDM1LTRjZDAtYTNhNy0wZDYwMjRmMTdiNzUiLCJzdWIiOiI2NjBmMTUwNy02MDM1LTRjZDAtYTNhNy0wZDYwMjRmMTdiNzUiLCJpYXQiOjE3NDE2OTAyMTIsImV4cCI6MTc0MTY5MDUxMiwianRpA`\n        \n\n#### **Response**:\n\nThe response includes an **access_token** that should be used for subsequent API requests, as well as an **expires_in** time and other details.\n\nEndFragment"
+					},
+					"response": []
+				},
+				{
+					"name": "GET FHIR Resource",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "<epic acces token>",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/Patient/erXuFYUfucBZaryVksYEcMg3",
+							"protocol": "https",
+							"host": [
+								"fhir",
+								"epic",
+								"com"
+							],
+							"path": [
+								"interconnect-fhir-oauth",
+								"api",
+								"FHIR",
+								"R4",
+								"Patient",
+								"erXuFYUfucBZaryVksYEcMg3"
+							]
+						},
+						"description": "### **Test EHRs Patient API**\n\nThis API allows you to retrieve a **test patient’s FHIR resource** to validate the connection and ensure that your setup is working correctly with EHRs FHIR services. This is useful in development environments or when testing connections to the EHR.\n\n#### **API Endpoint**:\n\n`GET /api/patient/{id}`\n\n#### **Request Parameters**:\n\n- **id**: The unique identifier of the patient in the EHR system. This is typically a test or sample patient used to validate the setup.\n    \n\n#### **Response**:\n\nThe response will contain the patient’s FHIR data in the form of a **FHIR Patient Resource**, which includes attributes such as the patient’s name, gender, birth date, and other relevant demographic data."
+					},
+					"response": []
+				}
+			],
+			"description": "This folder includes APIs that can be used to verify if an EHR is configured properly without using the eCRNow Application. For e.g if you want to connect to Epic, you would have to register your application with Epic and use the clientId and other parameters to generate a token before accessing the FHIR APIs. The collection provides two APIs for testing SMART on FHIR Backend Services connectivity to an EHR using EPIC sandbox URL. Please refer to the EHR Sandbox documentation for authoritative information. These are just examples for implementers.\n\nThe expected order for invocation of these APIs are:\n\n1. GET EHR Access Token\n2. GET FHIR Resource",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "eCRNow APIs",
+			"item": [
+				{
+					"name": "Healthcare Setting APIs",
+					"item": [
+						{
+							"name": "Update HealthcareSetting",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"id\": 30,\r\n        \"clientId\": \"<epic or EHR client id\",\r\n        \"clientSecret\": null,\r\n        \"fhirServerBaseURL\": \"<EHR FHIR URL>\",\r\n        \"fhirVersion\": null,\r\n        \"tokenUrl\": \"<EHR token endpoint url>\",\r\n        \"scopes\": \"system/*.read\",\r\n        \"defaultProviderId\": \"veu-123\",\r\n        \"isDirect\": false,\r\n        \"isXdr\": false,\r\n        \"isRestAPI\": true,\r\n        \"fhirAPI\": false,\r\n        \"directHost\": null,\r\n        \"directUser\": \"\",\r\n        \"directPwd\": null,\r\n        \"smtpPort\": null,\r\n        \"smtpUrl\": null,\r\n        \"imapPort\": null,\r\n        \"imapUrl\": null,\r\n        \"popPort\": null,\r\n        \"popUrl\": null,\r\n        \"directRecipientAddress\": null,\r\n        \"directTlsVersion\": \"TLSv1.2\",\r\n        \"xdrRecipientAddress\": null,\r\n        \"restApiUrl\": \"localhost:8081/api/recieveEicr\",\r\n        \"createDocRefForResponse\": true,\r\n        \"docRefMimeType\": \"application/xml\",\r\n        \"handOffResponseToRestApi\": null,\r\n        \"assigningAuthorityId\": \"2.16.840.1.113883.1.1.1.1.1\",\r\n        \"encounterStartThreshold\": \"3\",\r\n        \"encounterEndThreshold\": \"30\",\r\n        \"karsActive\": null,\r\n        \"authType\": \"SofBackend\",\r\n        \"ehrAccessToken\": null,\r\n        \"ehrAccessTokenExpiryDuration\": 0,\r\n        \"ehrAccessTokenExpirationTime\": null,\r\n        \"requireAud\": false,\r\n        \"ehrSupportsSubscriptions\": false,\r\n        \"trustedThirdParty\": null,\r\n        \"phaUrl\": null,\r\n        \"orgName\": \"Vumc \",\r\n        \"orgIdSystem\": \"vumc.org\",\r\n        \"orgId\": \"1232\",\r\n        \"offHoursStart\": null,\r\n        \"offHoursStartMin\": null,\r\n        \"offHoursEnd\": null,\r\n        \"offHoursEndMin\": null,\r\n        \"offHoursTimezone\": null,\r\n        \"offhoursEnabled\": false,\r\n        \"username\": \"\",\r\n        \"password\": \"\",\r\n        \"backendAuthKeyAlias\": \"myalias\",\r\n        \"backendAuthAlg\": \"RS256\",\r\n        \"backendAuthKid\": null,\r\n        \"debugEnabled\": null,\r\n        \"directEndpointCertificateNameOrAlias\": null,\r\n        \"smtpAuthEnabled\": null,\r\n        \"smtpSslEnabled\": null,\r\n        \"lastUpdated\": \"2025-03-10T21:00:56.106+00:00\",\r\n        \"kars\": null\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/healthcareSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"healthcareSettings"
+									]
+								},
+								"description": "This endpoint allows you to update an existing **HealthcareSetting** identified by its unique ID. You can modify configurations such as the FHIR server URL and other relevant parameters"
+							},
+							"response": []
+						},
+						{
+							"name": "Create HealthcareSetting",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhQWxET1FtMkpNdncxVEdyNlNTTmZmdC03UkF3amxrR25IQ0I5V3NyRU5nIn0.eyJleHAiOjE3Mzg3NjE4NDksImlhdCI6MTczODc2MTU0OSwianRpIjoiNTYwZDEzMzUtYTYxYi00YjY5LThjNTUtOTZiZDM1ZGY2YTViIiwiaXNzIjoiaHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjkwMDAvcmVhbG1zL2Vjck5vdyIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJlMGIyNjI2NC1lMWRkLTQwMTYtOWMxZC00ZTk5YWJiOTZjYjQiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ1eXl5SGhQbWVFcEZKNGdMYTk2Z1BCRlBRb0FteXU3IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIvKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsImRlZmF1bHQtcm9sZXMtZWNybm93Il19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRIb3N0IjoiMTcyLjIyLjAuMSIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC11eXl5aGhwbWVlcGZqNGdsYTk2Z3BiZnBxb2FteXU3IiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4yMi4wLjEiLCJjbGllbnRfaWQiOiJ1eXl5SGhQbWVFcEZKNGdMYTk2Z1BCRlBRb0FteXU3In0.O5OWgQTqYEBM8oZvvxz5yWu2q-ie0cnpSccE3T_38I9i4lw7bwg5-61C9TT_SojQbDoeNooO9zyGKY3x23S0uJVIGdWPebacJ84OSQD6arwep8WbdD7cb1X-Z8OYkkxSHVhRu88sy7WQUBQYiKzw65e0-w4AGPbOtm5ZIJSOp5sY4QBWVHAIl8dB_JnXQu80rKF43Mbm4PgJk9yhjjmyM3-lM2hnCznWQxN9skr5RqmX66Tuy9fExrL_kuZRjvDJt4chWKS3jdn8ho_6ekqmdQlW8qB4yPB69M9bd8vOzh7DqMERD5Acdp8ZYaI36FxBChTqcDGoU00wWU5KNpptjQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n     \"authType\": \"SofBackend\",\r\n    \"clientId\": \"< epic OR EHR client id> \",\r\n    \"clientSecret\": null,\r\n    \"fhirServerBaseURL\": \"<EHR FHIR URL>\",\r\n    \"fhirVersion\": null,\r\n    \"tokenUrl\": \"<EHR token endpoint url>\",\r\n    \"scopes\": \"system/*.read\",\r\n    \"backendAuthKeyAlias\": \"\",\r\n    \"defaultProviderId\": \"veu-123\",\r\n    \"isDirect\": false,\r\n    \"isXdr\": false,\r\n    \"isRestAPI\": true,\r\n    \"fhirAPI\": false,\r\n    \"directHost\": null,\r\n    \"directUser\": null,\r\n    \"directPwd\": null,\r\n    \"smtpPort\": null,\r\n    \"smtpUrl\": null,\r\n    \"imapPort\": null,\r\n    \"imapUrl\": null,\r\n    \"popPort\": null,\r\n    \"popUrl\": null,\r\n    \"directRecipientAddress\": null,\r\n    \"directTlsVersion\": null,\r\n    \"xdrRecipientAddress\": null,\r\n    \"restApiUrl\": \"localhost:8081/api/recieveEicr\",\r\n    \"createDocRefForResponse\": true,\r\n    \"docRefMimeType\": \"application/xml\",\r\n    \"handOffResponseToRestApi\": null,\r\n    \"assigningAuthorityId\": \"2.16.840.1.113883.1.1.1.1.1\",\r\n    \"encounterStartThreshold\": \"3\",\r\n    \"encounterEndThreshold\": \"30\",\r\n    \"karsActive\": null,\r\n    \"ehrAccessToken\": null,\r\n    \"ehrAccessTokenExpiryDuration\": 0,\r\n    \"ehrAccessTokenExpirationTime\": null,\r\n    \"requireAud\": false,\r\n    \"ehrSupportsSubscriptions\": false,\r\n    \"trustedThirdParty\": null,\r\n    \"phaUrl\": null,\r\n    \"orgName\": \"Vumc \",\r\n    \"orgIdSystem\": \"vumc.org\",\r\n    \"orgId\": \"1232\",\r\n    \"offHoursStart\": null,\r\n    \"offHoursStartMin\": null,\r\n    \"offHoursEnd\": null,\r\n    \"offHoursEndMin\": null,\r\n    \"offHoursTimezone\": null,\r\n    \"offhoursEnabled\": true,\r\n    \"username\": null,\r\n    \"password\": null,\r\n \r\n    \"backendAuthAlg\": null,\r\n    \"backendAuthKid\": null,\r\n    \"debugEnabled\": true,\r\n    \"lastUpdated\": \"2025-02-11T19:50:22.584+00:00\",\r\n    \"kars\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/healthcareSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"healthcareSettings"
+									]
+								},
+								"description": "This endpoint is used to create a new **HealthcareSetting** in the eCRNow App.  \nA Healthcare Setting represents a hospital or a practice with which eCRNow App has to be integrated. A Healthcare Setting has to be created for each unique FHIR Server URL. In the case of multi-tenants you can use a single Healthcare setting as long as the EHR manages the routing across the different tenants using parameters that are passed to the requests dynamically."
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve Knowledge Artifacts by HealthcareSetting",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/api/karStatusByHsId?hsId=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"karStatusByHsId"
+									],
+									"query": [
+										{
+											"key": "hsId",
+											"value": "1"
+										}
+									]
+								},
+								"description": "This retrieves all the Knowledge Artifacts loaded by the eCRNow for each Healthcare Setting."
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve all HealthcareSettings",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhQWxET1FtMkpNdncxVEdyNlNTTmZmdC03UkF3amxrR25IQ0I5V3NyRU5nIn0.eyJleHAiOjE3NDE1OTA4NDEsImlhdCI6MTc0MTU5MDU0MSwianRpIjoiYWFhMjg0MzEtZGRkMS00MjI5LTkzOWQtZjYxODJhMWMwOGRiIiwiaXNzIjoiaHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjkwMDAvcmVhbG1zL2Vjck5vdyIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJhNDZjNmEzZi05MWRhLTQyNGEtYjJkYi0yYjMyYmExOWY1ZWUiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ1eXl5SGhQbWVFcEZKNGdMYTk2Z1BCRlBRb0FteXU3IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIvKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsImRlZmF1bHQtcm9sZXMtZWNybm93Il19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRIb3N0IjoiMTcyLjE5LjAuMSIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC11eXl5aGhwbWVlcGZqNGdsYTk2Z3BiZnBxb2FteXU3IiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4xOS4wLjEiLCJjbGllbnRfaWQiOiJ1eXl5SGhQbWVFcEZKNGdMYTk2Z1BCRlBRb0FteXU3In0.hb4vr1fo-8nM1xfpbSW9sTmwSQVwB5uZj2O-Vuyp8_aDzOCO8ToBMP877zCCFK95iGY8ZIFizoU7oEE1tcTGvdEOWv-nKo9I-aMk_YeH_Lq9lEyZAg-BQTlvKEKRAS3RtPPsavGJWOQmK4bM5_yKljUppLQNYADdMNu3iOdSJ808_IY92meLFdsuqqEMARx6LYZTKVUdw0E2MqE-KtwbSxiiAcvLxIVRIbgss-cNEUIegm36PVIBYvZJsz7V7ct9Ng0YT0DunK7kzTm8v3iEvHy5NV5BbWN6n6qGLIuDelSAwQsma8OazOI_Dozs0LPxom3FYyT96L4HBkNeSERPXQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/healthcareSettings/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"healthcareSettings",
+										""
+									]
+								},
+								"description": "Retrieves the details of a all HealthcareSettings present in the eCRNow App."
+							},
+							"response": []
+						}
+					],
+					"description": "This folder contains all the API requests related to **HealthcareSettings**, which are essential for configuring clinical sites in the **eCR Now App**. The APIs allow for CRUD operations (Create, Read, Update, Delete) to manage HealthcareSettings, which include the FHIR Server and relevant parameters needed for generating eICRs",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Patient Launch APIs",
+					"item": [
+						{
+							"name": "Launch Patient Instance ",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Request-ID",
+										"value": "32",
+										"type": "text"
+									},
+									{
+										"key": "correlationId",
+										"value": "635476",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fhirServerURL\": \"<fhirServerBaseURL>\",\r\n   \"patientId\":\"erXuFYUfucBZaryVksYEcMg3\",\r\n    \"encounterId\":\"eoK8nLRcEypNjtns4dgnF3Q3\",\r\n    \"validationMode\": \"true\",\r\n    \"throttleContext\": \"1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/launchPatient",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"launchPatient"
+									]
+								},
+								"description": "This API is used to start the public health reporting workflow for a specific **Patient** instance within the eCRNow App. \nThe API at a minimum takes a \n\n1. FHIR Server URL that is mapped to a HealthcareSetting.\n2. FHIR Patient ID (In the EHRs FHIR Server)\n3. FHIR Encounter ID (In the EHRs FHIR Server)\n\nHTTP Headers that are required:\nContent-Type: Application/fhir+json\nRequest-ID: Arbitrary string to correlate requests across applications."
+							},
+							"response": []
+						}
+					],
+					"description": "This folder contains the collection of APIs related to **launching patient instances** for processing within the app for **public health reporting**. The API is triggered by notifications from Electronic Health Record (EHR) systems, enabling the launch of patient data for processing and generating public health reports, such as eICRs",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "keyCloak",
+					"item": [
+						{
+							"name": "Generate access token",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "client_id",
+										"value": "test-hc1",
+										"disabled": true
+									},
+									{
+										"key": "client_assertion_type",
+										"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+										"disabled": true
+									},
+									{
+										"key": "grant_type",
+										"value": "client_credentials",
+										"disabled": true
+									},
+									{
+										"key": "client_assertion",
+										"value": "eyJhdWQiOiJodHRwczovLzMuMjE4LjI0Ni4yNTI6ODQ0OC9hdXRoL3JlYWxtcy9maGlyL3Byb3RvY29sL29wZW5pZC1jb25uZWN0L3Rva2VuIiwianRpIjoiYjlmNmQ5NGEtZDE2Mi00MmRjLWEwOWYtOTY3YWU1YTc3NTQwIiwic3ViIjoiZWNyLWp3dC1jbGllbnQiLCJpc3MiOiJlY3Itand0LWNsaWVudCIsImlhdCI6MTY2MTE3OTk0NSwiZXhwIjoxNjYxMTgxNzQ1fQ.hAO4gast_Ix0d4qwQa2WJgDPwH1YcnPL139_A3qw3PnddchGwNiwt4pvIPYe0otDSOGbGKeiJazANS6A0FM9mIOQC9rOnKVADPSydUAHV",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_assertion",
+											"value": "eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJodHRwczovLzMuMjE4LjI0Ni4yNTI6ODQ0My9yZWFsbXMvZmhpcm9uZWNyL3Byb3RvY29sL29wZW5pZC1jb25uZWN0L3Rva2VuIiwianRpIjoiMzJjYWU5OWYtZWIwMS00ZmMwLTk3OTctMzgyMTRjZWJmODMzIiwic3ViIjoiZWNyLWp3dC1jbGllbnQiLCJpc3MiOiJlY3Itand0LWNsaWVudCIsImlhdCI6MTcyNTk4MTA5NywiZXhwIjoxNzI1OTgyODk3fQ.Pwyxk7uiHc5Ffpgy1ROnn3aS9WYKrynTXOdWvShTHPAgnvbLEyO3z_f2glE14_j_hd5uz-nA5yZ1A2bhKGRfVGeIhdpI_nrKACAHaM_oapJjsRXDh02Publ8T2ZyB9bt4OD0UGpPOb3GMkYSNW4-jg8fqdzH3lfB0lun8ppeMMlYvbc_sq7Sk6c5zvoCSH-dq-0IVoW3N7awqIPzOoeuIqJr7qUClIEIin8jEqUPpm-t0zmcAvQjL2EMGedEMTFOaM2LLR9vUFU17tSwcmOdJKHvIHWVvDaOmvWR1GpOISGuooeChDhMN2F87Go6YYe-eYQzSHcM1qtKNFSPw2RmmW047M8hjK-jWfb7ZoZHY5TBmiFpcciCz7TvcmboKmVXiG005UNciBEqQbP-a1BhdoGt2y_j5i2ahKemffPLZeWcujUY5NQr4BL2Bp7n8wbRsWk3l9XJvK4tqSrXQFP3srdE5vKLA4wBERwTkSDtmLi5WtzPIb2OBMi8OrHEj4NC_x7GO9WmfKBfWHc0kwNlEL1y_IsXenOdMaAGCctqbV_g4SlNU2LixegXEuPcA-dZoCMLpLkgkIOLDzojbsJtSbyvoCFzHj4bQXywkbJmGTzsTd8WuaLGKnzcdbNAzGgViXO1OlT_5UZTyKqKIhF2mBkXeAT-nj7TCOgEYIHrTSc",
+											"type": "default",
+											"disabled": true
+										},
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "default"
+										},
+										{
+											"key": "client_assertion_type",
+											"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+											"type": "default",
+											"disabled": true
+										},
+										{
+											"key": "client_id",
+											"value": "uyyyHhPmeEpFJ4gLa96gPBFPQoAmyu7",
+											"type": "default"
+										},
+										{
+											"key": "client_secret",
+											"value": "Q6spWh8UYwWNmDbr96I1J8mc9msqtOOg",
+											"type": "text"
+										},
+										{
+											"key": "username",
+											"value": "drajer",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "Xyram@123",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "grant_type",
+											"value": "password",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "audience",
+											"value": "account",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "refresh_token",
+											"value": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI1MmQwYjE4MC0yNTQ5LTRiMjgtOTFiOS1mZmQ3MjdkNjQwOGUifQ.eyJleHAiOjE3NDAzMTczMDcsImlhdCI6MTc0MDMxNTUwNywianRpIjoiZjZlMzJlZjctNDRjZS00Nzk0LTk0ZTMtNTZlZDU5MDFjZGIzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDkwL3JlYWxtcy9lY3JOb3ciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjgwOTAvcmVhbG1zL2Vjck5vdyIsInN1YiI6IjFhOWEyZTdjLWIzYWEtNGViOS1iNGI5LTU4YjQ5YWJjNzRhZCIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJ1eXl5SGhQbWVFcEZKNGdMYTk2Z1BCRlBRb0FteXU3Iiwic2lkIjoiZTcxZTI4YTEtNzVjOC00NWE3LTkwMjQtNGRhNjNkZGZiMWU4Iiwic2NvcGUiOiJiYXNpYyBzZXJ2aWNlX2FjY291bnQgZW1haWwgcm9sZXMgd2ViLW9yaWdpbnMgYWNyIHByb2ZpbGUifQ.S71xW9z-nkEAklpX90vnXNzHQSlUJSkaYZMuICIgKPbnybrvOUxgTMk0RtaDDcf7BHrm-JsTpdf3jueCerRXPQ",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/auth/generate-token",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"auth",
+										"generate-token"
+									]
+								},
+								"description": "This API retrieves an access token from Keycloak using the **Resource Owner Password Credentials (ROPC) flow**. It is used to authenticate a user by providing their username and password directly, and Keycloak returns an access token for further API requests"
+							},
+							"response": []
+						},
+						{
+							"name": "validate Token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "<client id>",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "<client secret>",
+											"type": "text"
+										},
+										{
+											"key": "token",
+											"value": "<keycloak access>",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://host.docker.internal:9000/realms/ecrNow/protocol/openid-connect/token/introspect",
+									"protocol": "http",
+									"host": [
+										"host",
+										"docker",
+										"internal"
+									],
+									"port": "9000",
+									"path": [
+										"realms",
+										"ecrNow",
+										"protocol",
+										"openid-connect",
+										"token",
+										"introspect"
+									]
+								},
+								"description": "This API validates an existing token by calling the **Keycloak introspection endpoint**, verifying the token's authenticity and retrieving metadata associated with it"
+							},
+							"response": []
+						}
+					],
+					"description": "This folder contains a collection of APIs related to **Keycloak token management**. Keycloak is used to authenticate and authorize users. The following APIs are included for obtaining and validating tokens to verify the installation of Key Cloak and its configuration.\n\n1. **Get Token (Client Credentials Flow)**: This API retrieves an access token from Keycloak using the **Resource Owner Password Credentials (ROPC) flow**. It is used to authenticate a user by providing their username and password directly, and Keycloak returns an access token for further API requests  \n      \n    \n2. **Validate Token (Introspection)**: This API validates an existing token by calling the **Keycloak introspection endpoint**, verifying the token's authenticity and retrieving metadata associated with it.",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "ERSD Knowledge Artifact APIs",
+					"item": [
+						{
+							"name": "Add ERSD/KAR Status for HealthcareSetting",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"hsId\": 30,\r\n    \"karId\": \"Bundle/rctc-release-1.2.2.0-Bundle-rctc\",\r\n    \"karVersion\": \"\",\r\n    \"versionUniqueKarId\": \"Bundle/rctc-release-1.2.2.0-Bundle-rctc|\",\r\n    \"isActive\": true,\r\n    \"lastActivationDate\": \"2024-12-05T09:28:54.027+00:00\",\r\n    \"lastInActivationDate\": \"2024-12-05T09:28:50.407+00:00\",\r\n    \"subscriptionsEnabled\": false,\r\n    \"subscriptions\": [\r\n        \"{\",\r\n        \"|\",\r\n        \"}\"\r\n    ],\r\n    \"covidOnly\": false,\r\n    \"outputFormat\": \"CDA_R11\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/addKARStatus/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"addKARStatus",
+										""
+									]
+								},
+								"description": "This API adds a **KARStatus** object for a specific HealthcareSetting. The KARStatus contains details about whether the ERSD/KnowledgeArtifact is active, inactive for a given HealthcareSetting and its EHR. In addition, the KARStatus also specifies the type of output (CDR/FHIR) to be generated by the eCRNow App which will be submitted to the Public Health Agency."
+							},
+							"response": []
+						},
+						{
+							"name": "Get all KAR Repositories",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI1RHg5c2o0YTBvbmlzSXYtQzhUWllFcGRNVkEwTU5PTmhwU3AxcGo5YndnIn0.eyJleHAiOjE3NDEwMzQwNzEsImlhdCI6MTc0MTAzMzc3MSwianRpIjoiMGY0NDYzNTItMzMyNS00YmEwLWE1ZjUtMjVlNGY4M2E2NDhkIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDkwL3JlYWxtcy9lY3JOb3ciLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNzg3NGU1ZDgtMzJjZS00ZGZlLTg1ZGMtNmRkZDQ1ZjMyNDVkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidXl5eUhoUG1lRXBGSjRnTGE5NmdQQkZQUW9BbXl1NyIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLWVjcm5vdyJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xNy4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtdXl5eWhocG1lZXBmajRnbGE5NmdwYmZwcW9hbXl1NyIsImNsaWVudEFkZHJlc3MiOiIxNzIuMTcuMC4xIiwiY2xpZW50X2lkIjoidXl5eUhoUG1lRXBGSjRnTGE5NmdQQkZQUW9BbXl1NyJ9.DW5iIuOJixAZ0W6WNwbyDr-QBkXTrYPUnPMjwL4-ETzLo153jF0AU4ZE7ziSzmQspkzH12V_-L6fnvK0Qk2o73kbJ3syrTdH2mbM1fujcO0xAdw23klMiGBqVXw1i47MmZCTnr5GqRzKk40aRKiHGCNIGckBznVZ-tJD6cDSHcb0K4LAjDV4tREGhLUl7LhXQ8EOEaAeEogWVGTUxRkFykz7DbguZ6318VMqW2ajOQSMFgF-jX6qtZ07d-6rWGc9v_r8kSYE7iPHVY0C_hlf8JkpGFbvb0RtMo6OLlMOdgWwNZpP6M6y_maM3PGH7yh0Nhj5Jtyn_dCjEuoSOIG_0Q",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/api/kars/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"kars",
+										""
+									]
+								},
+								"description": "This API retrieves all Knowledge Artifact Repositories (KAR). A repository will be created for each program such as Electronic Case Reporting, RESPNet, Cancer Reporting etc."
+							},
+							"response": []
+						},
+						{
+							"name": "Get all KAR Statuses by healthcare setting id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI1RHg5c2o0YTBvbmlzSXYtQzhUWllFcGRNVkEwTU5PTmhwU3AxcGo5YndnIn0.eyJleHAiOjE3NDEwMzQwNzEsImlhdCI6MTc0MTAzMzc3MSwianRpIjoiMGY0NDYzNTItMzMyNS00YmEwLWE1ZjUtMjVlNGY4M2E2NDhkIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDkwL3JlYWxtcy9lY3JOb3ciLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNzg3NGU1ZDgtMzJjZS00ZGZlLTg1ZGMtNmRkZDQ1ZjMyNDVkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidXl5eUhoUG1lRXBGSjRnTGE5NmdQQkZQUW9BbXl1NyIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLWVjcm5vdyJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xNy4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtdXl5eWhocG1lZXBmajRnbGE5NmdwYmZwcW9hbXl1NyIsImNsaWVudEFkZHJlc3MiOiIxNzIuMTcuMC4xIiwiY2xpZW50X2lkIjoidXl5eUhoUG1lRXBGSjRnTGE5NmdQQkZQUW9BbXl1NyJ9.DW5iIuOJixAZ0W6WNwbyDr-QBkXTrYPUnPMjwL4-ETzLo153jF0AU4ZE7ziSzmQspkzH12V_-L6fnvK0Qk2o73kbJ3syrTdH2mbM1fujcO0xAdw23klMiGBqVXw1i47MmZCTnr5GqRzKk40aRKiHGCNIGckBznVZ-tJD6cDSHcb0K4LAjDV4tREGhLUl7LhXQ8EOEaAeEogWVGTUxRkFykz7DbguZ6318VMqW2ajOQSMFgF-jX6qtZ07d-6rWGc9v_r8kSYE7iPHVY0C_hlf8JkpGFbvb0RtMo6OLlMOdgWwNZpP6M6y_maM3PGH7yh0Nhj5Jtyn_dCjEuoSOIG_0Q",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/api/kars?hsId=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"kars"
+									],
+									"query": [
+										{
+											"key": "hsId",
+											"value": "1"
+										}
+									]
+								},
+								"description": "This API retrieves the status of Knowledge Artifact Repositories (KAR) for a specific healthcare setting. It is used to check the current status of a KAR, such as whether it is active, inactive, and he type of output to be generated."
+							},
+							"response": []
+						}
+					],
+					"description": "This folder contains APIs for managing ERSD files/Knowledge Artifact Repositories (KARs) used by the eCRNow or Healthcare Data Exchange App (HDEA) or Backend Services App (BSA). Knowledge Artifacts contain business rules for the various programs for reporting. ERSDs/Knowledge Artifacts need to be enabled for each HealthcareSetting individually so that they can be used to process launcPatient APIs. If the ERSDs/Knoweldge Artifacts are not enabled for the HealthcareSettings then they would not be applied even if a notification for a Patient is received via the API.",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Public Health Authority APIs",
+					"item": [
+						{
+							"name": "Create PublicHealthAuthority",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"authType\": \"SofBackend\",\r\n  \"clientId\": \"<client id>\",\r\n  \"clientSecret\": \"<client secret>\",\r\n  \"fhirServerBaseURL\": \"<fhirServerBaseURL>\",\r\n  \"tokenUrl\": \"<token endpoint url>\",\r\n  \"scopes\": \"system/*.read\",\r\n  \"backendAuthKeyAlias\": \"myalias\",\r\n  \"backendAuthAlg\": \"RS256\",\r\n  \"backendAuthKid\": null,\r\n  \"lastUpdated\": \"2025-03-12T10:59:21.494Z\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/publicHealthAuthority",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"publicHealthAuthority"
+									]
+								},
+								"description": "This endpoint is used to configure the eCRNow App to connect to the PublicHealthAuthority. The parameter details are obtained by registering the eCRNow App with the KeyCloak/Authorization Server of the PHA."
+							},
+							"response": []
+						},
+						{
+							"name": "Update PublicHealthAuthority Copy",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\":2, \r\n  \"authType\": \"SofBackend\",\r\n  \"clientId\": \"<client id>\",\r\n  \"clientSecret\": \"<client secret>\",\r\n  \"fhirServerBaseURL\": \"<fhirServerBaseURL>\",\r\n  \"tokenUrl\": \"<token endpoint url>\",\r\n  \"scopes\": \"system/*.read\",\r\n  \"backendAuthKeyAlias\": \"myalias\",\r\n  \"backendAuthAlg\": \"RS256\",\r\n  \"backendAuthKid\": null,\r\n  \"lastUpdated\": \"2025-03-12T10:59:21.494Z\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/publicHealthAuthority",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"publicHealthAuthority"
+									]
+								},
+								"description": "This endpoint is used to update the configuration settings used by the eCRNow App to connect to the PHA."
+							},
+							"response": []
+						},
+						{
+							"name": "Get  PublicHealthAuthority By Url",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/publicHealthAuthority?url=<fhir-server-url>",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"publicHealthAuthority"
+									],
+									"query": [
+										{
+											"key": "url",
+											"value": "<fhir-server-url>"
+										}
+									]
+								},
+								"description": "This API retrieves the all the configured PublicHealthAuthority endpoints known to the eCRNow App"
+							},
+							"response": []
+						}
+					],
+					"description": "This folder contains API endpoints to manage Public Health Authority (PHA) details, including creating, retrieving, updating, the PHA's FHIR Server details. \n\nThe connectivity between the eCRNow App and the PHA uses SMART on FHIR Backend Services authorization. This is based on OAuth2 Client_credentials workflow using JWT tokens. In order to create a JWT token the eCRNow app uses PKI (X509) certificates. \n\nThe configuration is performed as follows: \n\nThe POST API to Create a Public Health Authority is performed. \n\n1. A signing certificate is procured with a minimum of 2048 bits.\n2. The public key of the certificate is converted to a JWKS file and is hosted for the public to access for authentication and authorization.\n3. The private key is conveted to a JKS store (for java 8 systems) or a PKCS12 store (for java 17 systems).\n4. The JKS or the PKCS12 store (file) is provided to the eCRNow app as part of the application.properties. \n5. The password for the certificate store is also provided to the eCRNow app as part of the application properties. \n\nThe instructions below provide more details on creating the certificates and providing information to the eCRNow App.\n\nGenerating and Converting Certificates with OpenSSL and Keytool\n1. Generate RSA 4096-bit Private Key\nUse OpenSSL to generate a 4096-bit RSA private key:\nopenssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:4096\n\n2. Generate the Public Key\nExtract the public key from the private key:\nopenssl rsa -in private_key.pem -pubout -out public_key.pem\n\n3. Generate a Self-Signed Certificate\nCreate a self-signed certificate valid for 1 year (365 days):\nopenssl req -new -x509 -key private_key.pem -out certificate.pem -days 36500\n \nConvert Certificate to Different Formats\n5. Convert PEM to PKCS#12 (.p12)\nConvert the private key and certificate to a PKCS#12 file:\nopenssl pkcs12 -export -out certificate.p12 -inkey private_key.pem -in certificate.pem -name \"myalias\"\n\nYou will be asked to set a password for the .p12 file.\n6. Convert PKCS#12 (.p12) to Java KeyStore (JKS)\nUse the Java Keytool utility to convert .p12 to .jks:\nkeytool -importkeystore -srckeystore certificate.p12 -srcstoretype PKCS12 -srcstorepass Pass@123 -destkeystore mykeystore.jks -deststorepass changeit -destkeypass changeit -alias myalias\n\nParameters:\n●\t-srckeystore: The path to the .p12 file (e.g., certificate.p12).\n●\t-srcstoretype: Specifies the type of the source keystore, which is PKCS12 in this case.\n●\t-srcstorepass: The password for the source .p12 file (in this example, Pass@123).\n●\t-destkeystore: The path where the .jks file will be saved (e.g., mykeystore.jks).\n●\t-deststorepass: The password for the destination .jks keystore (in this example, changeit).\n●\t-destkeypass: The password for the key entry in the JKS keystore (in this example, changeit).\n●\t-alias: The alias for the key entry in the keystore (e.g., myalias).\n●\t\n\n \nKeyStore Configuration for JWKs in ECRNow:\nTo configure the JWKS (JSON Web Key Set) with RSA keys stored in a Java KeyStore (.jks), you need to specify the file path to the keystore and the password to access it. This configuration is done in the application.properties or application.yml file.\nConfiguration Example:\nIn your application.properties or application.yml, specify the following properties:\n\n# Location of the KeyStore file  (For JAVA 8 it is a JKS file, for JAVA 17 it is a PKCS12 file)\njwks.keystore.location=pathtofile/ecrnow.jks \n# Password for accessing the KeyStore\njwks.keystore.password=password\n\n\nSummary\n●\tPEM Files: Private key (private_key.pem), Public key (public_key.pem), Certificate (certificate.pem).\n●\tPKCS#12 File: .p12 format containing the private key and certificate used by eCRNow App running on Java 17.\n●\tJava KeyStore (JKS): .jks file used by eCRNow App running on JAVA 8.\n\n\n\n\n\n",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"description": "The following is a list of all the eCRNow APIs present.\n\n1. Healthcare Setting APIs\n2. KARS APIs\n3. Key Cloak APIs\n4. Launch Patient APIs\n\nThe expected order of invocation of the APIs for configuration are in the following order:\n\n1. Create HealthcareSetting\n2. Optional - Update HealthcareSetting as needed if something needs to be changed.\n3. Add ERSD/KAR Status for Healthcare Setting\n4. Launch Patient API\n\nThe expected APIs to be invoked multiple times during operations for each Patient are as follows:\n\n1. Launch Patient API",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhQWxET1FtMkpNdncxVEdyNlNTTmZmdC03UkF3amxrR25IQ0I5V3NyRU5nIn0.eyJleHAiOjE3Mzg3NjE4NDksImlhdCI6MTczODc2MTU0OSwianRpIjoiNTYwZDEzMzUtYTYxYi00YjY5LThjNTUtOTZiZDM1ZGY2YTViIiwiaXNzIjoiaHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjkwMDAvcmVhbG1zL2Vjck5vdyIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJlMGIyNjI2NC1lMWRkLTQwMTYtOWMxZC00ZTk5YWJiOTZjYjQiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ1eXl5SGhQbWVFcEZKNGdMYTk2Z1BCRlBRb0FteXU3IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIvKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsImRlZmF1bHQtcm9sZXMtZWNybm93Il19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRIb3N0IjoiMTcyLjIyLjAuMSIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC11eXl5aGhwbWVlcGZqNGdsYTk2Z3BiZnBxb2FteXU3IiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4yMi4wLjEiLCJjbGllbnRfaWQiOiJ1eXl5SGhQbWVFcEZKNGdMYTk2Z1BCRlBRb0FteXU3In0.O5OWgQTqYEBM8oZvvxz5yWu2q-ie0cnpSccE3T_38I9i4lw7bwg5-61C9TT_SojQbDoeNooO9zyGKY3x23S0uJVIGdWPebacJ84OSQD6arwep8WbdD7cb1X-Z8OYkkxSHVhRu88sy7WQUBQYiKzw65e0-w4AGPbOtm5ZIJSOp5sY4QBWVHAIl8dB_JnXQu80rKF43Mbm4PgJk9yhjjmyM3-lM2hnCznWQxN9skr5RqmX66Tuy9fExrL_kuZRjvDJt4chWKS3jdn8ho_6ekqmdQlW8qB4yPB69M9bd8vOzh7DqMERD5Acdp8ZYaI36FxBChTqcDGoU00wWU5KNpptjQ",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
