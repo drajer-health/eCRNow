@@ -146,6 +146,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               Type value = variableResult.getParameter(PARAM).getValue();
               paramComponent.setName("%" + exp.getName());
               paramComponent.setValue(value);
+                logger.error(
 
               logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
             }
