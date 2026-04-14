@@ -71,7 +71,7 @@ public class SequenceInitializer implements InitializingBean {
         try {
           String query = buildNextValueSql(databaseType, seqName);
           Object value = session.createNativeQuery(query, Object.class).getSingleResult();
-          logger.info("  [OK] {} = {}", seqName, value);
+          logger.debug("  [OK] {} = {}", seqName, value);
           successCount++;
         } catch (Exception e) {
           failCount++;

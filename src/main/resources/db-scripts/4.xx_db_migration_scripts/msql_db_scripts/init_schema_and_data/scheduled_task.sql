@@ -50,7 +50,7 @@ BEGIN TRY
                 task_name VARCHAR(255) NOT NULL,
                 task_data VARBINARY(MAX) NULL,
                 execution_time DATETIME2(6) NULL,
-                picked INT DEFAULT 0,
+                picked BIT NOT NULL DEFAULT 0,
                 picked_by VARCHAR(255) NULL,
                 last_success DATETIME2(6) NULL,
                 last_failure DATETIME2(6) NULL,
