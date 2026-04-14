@@ -1,0 +1,10 @@
+{
+    "resourceType": "Observation",
+    "id": "obs-mixcase",
+    "status": "final",
+    "code": { "coding": [{ "system": "http://loinc.org", "code": "14461-8", "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture" }] },
+    "valueString": "Not Detected",
+    
+    "subject": { "reference": "Patient/edge-mixcase" },
+    "effectiveDateTime": "2026-03-01T10:00:00-05:00"
+}

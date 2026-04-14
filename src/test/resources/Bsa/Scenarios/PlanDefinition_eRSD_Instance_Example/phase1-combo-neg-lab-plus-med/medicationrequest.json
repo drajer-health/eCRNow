@@ -1,0 +1,15 @@
+{
+    "resourceType": "MedicationRequest",
+    "id": "medrq-combo",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+        "coding": [{
+            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+            "code": "82122",
+            "display": "Doxycycline"
+        }]
+    },
+    "subject": { "reference": "Patient/combo-neg-med" },
+    "authoredOn": "2026-03-01T09:00:00-05:00"
+}

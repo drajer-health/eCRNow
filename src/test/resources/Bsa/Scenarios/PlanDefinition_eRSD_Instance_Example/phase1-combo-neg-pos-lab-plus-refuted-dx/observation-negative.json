@@ -1,0 +1,9 @@
+{
+    "resourceType": "Observation",
+    "id": "obs-combo-mixed-neg",
+    "status": "final",
+    "code": { "coding": [{ "system": "http://loinc.org", "code": "14461-8", "display": "Chlamydia trachomatis [Presence] in Blood" }] },
+    "valueCodeableConcept": { "coding": [{ "system": "http://snomed.info/sct", "code": "260385009", "display": "Negative" }] },
+    "subject": { "reference": "Patient/combo-mixed-ref" },
+    "effectiveDateTime": "2026-03-01T09:00:00-05:00"
+}

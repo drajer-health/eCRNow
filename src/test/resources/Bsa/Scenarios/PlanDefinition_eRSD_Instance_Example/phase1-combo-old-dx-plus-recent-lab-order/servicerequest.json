@@ -1,0 +1,15 @@
+{
+    "resourceType": "ServiceRequest",
+    "id": "sr-combo-recent",
+    "status": "active",
+    "intent": "order",
+    "code": {
+        "coding": [{
+            "system": "http://loinc.org",
+            "code": "14461-8",
+            "display": "Chlamydia trachomatis [Presence] in Blood"
+        }]
+    },
+    "subject": { "reference": "Patient/combo-old-order" },
+    "authoredOn": "2026-03-01T08:30:00-05:00"
+}

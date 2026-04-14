@@ -1,0 +1,28 @@
+{
+    "resourceType": "Observation",
+    "id": "obs-gonorrhea-negative",
+    "status": "final",
+    "code": {
+        "coding": [{
+            "system": "http://loinc.org",
+            "code": "698-1",
+            "display": "Neisseria gonorrhoeae [Presence] in Specimen by Organism specific culture"
+        }]
+    },
+    "valueCodeableConcept": {
+        "coding": [{
+            "system": "http://snomed.info/sct",
+            "code": "260385009",
+            "display": "Negative (qualifier value)"
+        }]
+    },
+    "interpretation": [{
+        "coding": [{
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+            "code": "NEG",
+            "display": "Negative"
+        }]
+    }],
+    "subject": { "reference": "Patient/phase1-neg-exempt" },
+    "effectiveDateTime": "2026-03-01T10:00:00-05:00"
+}

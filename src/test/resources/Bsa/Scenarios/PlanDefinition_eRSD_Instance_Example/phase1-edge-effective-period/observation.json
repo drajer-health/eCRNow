@@ -1,0 +1,10 @@
+{
+    "resourceType": "Observation",
+    "id": "obs-eff-period",
+    "status": "final",
+    "code": { "coding": [{ "system": "http://loinc.org", "code": "14461-8", "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture" }] },
+    "valueCodeableConcept": { "coding": [{ "system": "http://snomed.info/sct", "code": "10828004", "display": "Positive (qualifier value)" }] },
+    "interpretation": [{ "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation", "code": "POS", "display": "Positive" }] }],
+    "subject": { "reference": "Patient/edge-eff-period" },
+    "effectivePeriod": { "start": "2026-02-25T08:00:00-05:00", "end": "2026-02-25T09:00:00-05:00" }
+}
