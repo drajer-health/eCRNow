@@ -36,13 +36,16 @@ import org.springframework.test.context.TestPropertySource;
  */
 @RunWith(Parameterized.class)
 @TestPropertySource(
-    properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefilters"})
+    properties = {
+      "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefilters",
+      "cql.enabled=false"
+    })
 public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);
 
   private static final String PLAN_DEF_FOLDER = "PlanDefinition_eRSD_Instance_Example";
   private static final String PLAN_DEF_URL =
-      "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example";
+      "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification";
 
   public Phase1TriggeringOptimizationTest(TestCaseInfo testCaseInfo) {
     super(testCaseInfo);

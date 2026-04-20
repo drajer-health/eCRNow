@@ -6,8 +6,8 @@
     "medicationCodeableConcept": {
         "coding": [{
             "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-            "code": "82122",
-            "display": "Doxycycline"
+            "code": "152970",
+            "display": "ritonavir 100 MG Oral Capsule [Norvir]"
         }]
     },
     "subject": { "reference": "Patient/combo-neg-med" },

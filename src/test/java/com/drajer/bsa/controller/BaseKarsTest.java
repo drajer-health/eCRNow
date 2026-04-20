@@ -10,9 +10,13 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.util.BundleUtil;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.action.EvaluateMeasureStatus;
 import com.drajer.bsa.kar.action.SubmitReportStatus;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
@@ -79,6 +83,10 @@ public class BaseKarsTest extends BaseIntegrationTest {
   protected ApplicationUtils ap;
 
   @Autowired HealthcareSettingsDao hsDao;
+
+  @Autowired KarDao karDao;
+
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   @Autowired ApplicationContext applicationContext;
 
@@ -312,6 +320,20 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
     String patientId = resourceMap.get("Patient").get(0).getIdElement().getIdPart();
 
+    // Fallback stubs so any resource-type search the KAR issues returns an empty Bundle
+    // rather than 404. Specific stubs below register at the default priority (5) and take
+    // precedence; this catchall runs when no scenario resource of that type exists.
+    String emptyBundle =
+        fhirContext.newJsonParser().encodeResourceToString(new Bundle().setType(Bundle.BundleType.SEARCHSET));
+    wireMockServer.stubFor(
+        get(urlMatching("/fhir/[^/?]+\\?.*"))
+            .atPriority(10)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")
+                    .withBody(emptyBundle)));
+
     for (Map.Entry<String, List<IBaseResource>> entry : resourceMap.entrySet()) {
       // Mock a search for all resources of a given type.
       String mockQueryString =
@@ -378,12 +400,45 @@ public class BaseKarsTest extends BaseIntegrationTest {
     }
 
     HealthcareSetting existing = hsDao.getHealthcareSettingByUrl(hcs.getFhirServerBaseURL());
-    if (existing != null) {
+    if (existing == null) {
+      hsDao.saveOrUpdate(hcs);
+    } else {
       logger.debug("Found existing healthcare settings");
+      hcs = existing;
+    }
+
+    activateLoadedKarsFor(hcs);
+  }
+
+  // The KarParser loads KARs into the in-memory KnowledgeArtifactRepositorySystem at startup,
+  // but nothing persists a KnowledgeArtifactStatus linking them to the HealthcareSetting. Without
+  // that row the notification pipeline iterates an empty set and skips KAR processing entirely,
+  // which is why every REPORTED scenario in this suite has historically failed.
+  private void activateLoadedKarsFor(HealthcareSetting hs) {
+    if (knowledgeArtifactRepositorySystem == null
+        || knowledgeArtifactRepositorySystem.getArtifacts() == null
+        || knowledgeArtifactRepositorySystem.getArtifacts().isEmpty()) {
+      logger.warn("No KARs loaded in the repository system — nothing to activate for hs {}", hs.getId());
       return;
     }
 
-    hsDao.saveOrUpdate(hcs);
+    for (KnowledgeArtifact kar : knowledgeArtifactRepositorySystem.getArtifacts().values()) {
+      KnowledgeArtifactStatus existingStatus =
+          karDao.getKarStausByKarIdAndKarVersion(kar.getKarId(), kar.getKarVersion(), hs.getId());
+      if (existingStatus != null) {
+        continue;
+      }
+
+      KnowledgeArtifactStatus status = new KnowledgeArtifactStatus();
+      status.setHsId(hs.getId());
+      status.setKarId(kar.getKarId());
+      status.setKarVersion(kar.getKarVersion());
+      status.setVersionUniqueKarId(kar.getVersionUniqueId());
+      status.setIsActive(Boolean.TRUE);
+      status.setCovidOnly(Boolean.FALSE);
+      karDao.saveOrUpdateKARStatus(status);
+      logger.info("Activated KAR {} for HealthcareSetting {}", kar.getVersionUniqueId(), hs.getId());
+    }
   }
 
   private void mockAccessToken() {

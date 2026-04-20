@@ -55,16 +55,26 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
 
-    Parameters result =
-        (Parameters)
-            newEvaluator()
-                .evaluate(
-                    null, logicExpression, params, null, null, null, null, null, null, null, null);
+    Parameters result;
+    try {
+      result =
+          (Parameters)
+              newEvaluator()
+                  .evaluate(
+                      null, logicExpression, params, null, null, null, null, null, null, null, null);
+    } catch (Exception e) {
+      logger.error(" FHIR Path Expression Evaluator threw for expression: {}", logicExpression, e);
+      return false;
+    }
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
       logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+          " Null Value returned from FHIR Path Expression Evaluator for expression (no 'return' parameter). Expression: {}. Result Parameters: {}",
+          cond.getLogicExpression().getExpression(),
+          result.getParameter().stream()
+              .map(p -> p.getName() + "=" + p.getValue())
+              .reduce("", (a, b) -> a + "; " + b));
       return false;
     } else {
       if (!(ppc.getValue() instanceof BooleanType)) {
