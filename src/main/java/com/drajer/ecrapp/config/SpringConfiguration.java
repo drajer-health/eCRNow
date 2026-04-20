@@ -23,12 +23,11 @@ import org.opencds.cqf.fhir.cql.cql2elm.content.RepositoryFhirLibrarySourceProvi
 import org.opencds.cqf.fhir.cql.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.fhir.cql.engine.retrieve.RetrieveSettings;
 import org.opencds.cqf.fhir.cql.engine.terminology.TerminologySettings;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
+import org.opencds.cqf.fhir.cr.cql.CqlProcessor;
 import org.opencds.cqf.fhir.cr.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.fhir.cr.measure.common.MeasurePeriodValidator;
-import org.opencds.cqf.fhir.cr.measure.common.MeasureProcessorUtils;
-import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.cr.measure.common.MeasureProcessorTimeUtils;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
 import org.opencds.cqf.fhir.cr.measure.r4.R4RepositorySubjectProvider;
 import org.opencds.cqf.fhir.cr.spring.EvaluatorConfiguration;
 import org.opencds.cqf.fhir.utility.adapter.r4.AdapterFactory;
@@ -143,35 +142,10 @@ public class SpringConfiguration {
     return new R4RepositorySubjectProvider(measureEvaluationOptions.getSubjectProviderOptions());
   }
 
-  @Bean
-  MeasureProcessorUtils getMeasureProcessorUtils() {
-    return new MeasureProcessorUtils();
-  }
-
-  @Bean
-  R4MeasureService getMeasureService(
-      FederatedRepository ecrRepository, MeasureEvaluationOptions measureEvaluationOptions) {
-    return new R4MeasureService(
-        ecrRepository, measureEvaluationOptions, new MeasurePeriodValidator());
-  }
-
-  @Bean
-  R4CqlExecutionService getExecutionService(
-      FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {
-    return new R4CqlExecutionService(ecrRepository, evaluationSettings);
-  }
-
   @Bean(name = "R4CqlExecutionEvaluator")
   @Scope("prototype")
-  R4CqlExecutionService getExecutionServiceExecutionService(
-      FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {
-    return new R4CqlExecutionService(ecrRepository, evaluationSettings);
-  }
-
-  @Bean
-  R4LibraryEvaluationService getLibraryEvaluationService(
-      FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {
-    return new R4LibraryEvaluationService(ecrRepository, evaluationSettings);
+  CqlProcessor getExecutionServiceExecutionService(FederatedRepository ecrRepository) {
+    return new CqlProcessor(ecrRepository);
   }
 
   @Bean

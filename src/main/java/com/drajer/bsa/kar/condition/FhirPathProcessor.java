@@ -15,11 +15,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.javatuples.Pair;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
+import org.opencds.cqf.fhir.cr.cql.CqlProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
-  private Supplier<R4CqlExecutionService> evaluatorFactory;
+  private Supplier<CqlProcessor> evaluatorFactory;
 
   @Override
   public Boolean evaluateExpression(
@@ -61,7 +62,17 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           (Parameters)
               newEvaluator()
                   .evaluate(
-                      null, logicExpression, params, null, null, null, null, null, null, null, null);
+                      null,
+                      logicExpression,
+                      params,
+                      null,
+                      false,
+                      null,
+                      null,
+                      null,
+                      (IBaseResource) null,
+                      (IBaseResource) null,
+                      (IBaseResource) null);
     } catch (Exception e) {
       logger.error(" FHIR Path Expression Evaluator threw for expression: {}", logicExpression, e);
       return false;
@@ -128,7 +139,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             Parameters variableResult =
                 (Parameters)
                     newEvaluator()
-                        .evaluate(null, expr, null, null, null, null, null, null, null, null, null);
+                        .evaluate(null, expr, null, null, false, null, null, null, (IBaseResource) null, (IBaseResource) null, (IBaseResource) null);
 
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
@@ -576,13 +587,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                     cond.getLogicExpression().getExpression(),
                     params,
                     null,
+                    false,
                     null,
                     null,
                     null,
-                    null,
-                    null,
-                    null,
-                    null);
+                    (IBaseResource) null,
+                    (IBaseResource) null,
+                    (IBaseResource) null);
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
@@ -610,12 +621,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     }
   }
 
-  public void setExpressionEvaluatorFactory(Supplier<R4CqlExecutionService> evaluatorFactory) {
+  public void setExpressionEvaluatorFactory(Supplier<CqlProcessor> evaluatorFactory) {
     this.evaluatorFactory = evaluatorFactory;
   }
 
-  R4CqlExecutionService newEvaluator() {
-    R4CqlExecutionService ev = evaluatorFactory.get();
+  CqlProcessor newEvaluator() {
+    CqlProcessor ev = evaluatorFactory.get();
     logger.info("Evaluator instance: " + System.identityHashCode(ev));
     return ev;
   }

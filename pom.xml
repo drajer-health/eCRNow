@@ -25,7 +25,7 @@
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <skip-jacoco-check>true</skip-jacoco-check>
-        <cqf.fhir.version>3.28.1</cqf.fhir.version>
+        <cqf.fhir.version>4.5.1</cqf.fhir.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.reporting.outputDirectory}/jacoco-merged/jacoco.xml
@@ -109,13 +109,6 @@
             <version>${cqf.fhir.version}</version>
             <type>pom</type>
             <scope>import</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opencds.cqf.fhir</groupId>
-            <artifactId>cqf-fhir-jackson</artifactId>
-            <version>${cqf.fhir.version}</version>
-            <type>pom</type>
         </dependency>
 
         <dependency>

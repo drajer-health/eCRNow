@@ -9,9 +9,9 @@ import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.fhir.api.Repository;
+import ca.uhn.fhir.repository.IRepository;
 
-public class EcrRepository implements Repository {
+public class EcrRepository implements IRepository {
   private FhirContext ctx;
 
   public EcrRepository(FhirContext ctx) {
