@@ -52,6 +52,9 @@ public class DirectTransportImpl implements DataTransportInterface {
   @Value("${mail.read.retries}")
   private Integer imapReadRetryLimit;
 
+    @Value("${mail.imap.batch.size:500}")
+    private int imapBatchSize;
+
   public class DirectMimeMessage extends MimeMessage {
 
     Session sessions;
@@ -81,22 +84,25 @@ public class DirectTransportImpl implements DataTransportInterface {
   @Override
   public void sendEicrDataUsingDirect(KarProcessingData data) {
 
-    logger.info(" **** START Executing Direct Transmission **** ");
+    HealthcareSetting hs = data.getHealthcareSetting();
+    String correlationId = data.getxCorrelationId();
+
+    logger.info(
+        "**** START Direct Transmission: user={}, correlationId={}, to={} ****",
+        hs.getDirectUser(),
+        correlationId,
+        hs.getDirectRecipientAddress());
 
     String payload = data.getSubmittedCdaData();
-
     InputStream is = IOUtils.toInputStream(payload, StandardCharsets.UTF_8);
 
-    HealthcareSetting hs = data.getHealthcareSetting();
-
     try {
-
-      logger.info(
-          " Sending Mail from {} to {}", hs.getDirectUser(), hs.getDirectRecipientAddress());
-
       if (!StringUtils.isEmpty(hs.getSmtpUrl())) {
-
-        logger.info("Using SMTP URL {} to send the data", hs.getSmtpUrl());
+        logger.info(
+            "sendEicrDataUsingDirect: using SMTP URL, user={}, correlationId={}, smtpUrl={}",
+            hs.getDirectUser(),
+            correlationId,
+            hs.getSmtpUrl());
 
         sendMail(
             hs.getSmtpUrl(),
@@ -106,14 +112,15 @@ public class DirectTransportImpl implements DataTransportInterface {
             hs.getDirectRecipientAddress(),
             is,
             CDA_FILE_NAME,
-            data.getxCorrelationId(),
+            correlationId,
             hs.getDirectTlsVersion());
 
-        logger.info(" Finished sending the message using Direct ");
-
       } else if (!StringUtils.isEmpty(hs.getDirectHost())) {
-
-        logger.info("Using Direct Host to send:::::{}", hs.getDirectHost());
+        logger.info(
+            "sendEicrDataUsingDirect: using Direct host, user={}, correlationId={}, host={}",
+            hs.getDirectUser(),
+            correlationId,
+            hs.getDirectHost());
 
         sendMail(
             hs.getDirectHost(),
@@ -123,20 +130,33 @@ public class DirectTransportImpl implements DataTransportInterface {
             hs.getDirectRecipientAddress(),
             is,
             CDA_FILE_NAME,
-            data.getxCorrelationId(),
+            correlationId,
             hs.getDirectTlsVersion());
       } else {
-
-        String msg = " Cannot send Direct message since both Direct Host and SMTP Urls are empty ";
+        String msg =
+            "sendEicrDataUsingDirect: cannot send — both Direct Host and SMTP URL are empty,"
+                + " user="
+                + hs.getDirectUser()
+                + ", correlationId="
+                + correlationId;
         logger.error(msg);
         throw new RuntimeException(msg);
       }
 
+      logger.info(
+          "**** END Direct Transmission: user={}, correlationId={} ****",
+          hs.getDirectUser(),
+          correlationId);
+
+    } catch (RuntimeException re) {
+      throw re;
     } catch (Exception e) {
-
-      String msg = "Unable to send Direct Message due to a connection exception";
+      String msg =
+          "sendEicrDataUsingDirect: unable to send Direct message, user="
+              + hs.getDirectUser()
+              + ", correlationId="
+              + correlationId;
       logger.error(msg, e);
-
       throw new RuntimeException(msg);
     }
   }
@@ -153,63 +173,62 @@ public class DirectTransportImpl implements DataTransportInterface {
       String directTlsVersion)
       throws Exception {
 
+    logger.info(
+        "sendMail: start — user={}, correlationId={}, to={}, host={}, port={}",
+        username,
+        correlationId,
+        recipientAddr,
+        host,
+        port);
+
     Properties props = new Properties();
-
-    // Setup the property to authenticate.
     props.put("mail.smtp.auth", "true");
-
-    // Trust all certificates
     props.setProperty("mail.smtp.ssl.trust", "*");
-
-    // Enable SSL Connections from the client.
     props.setProperty("mail.smtp.ssl.enable", "true");
-
-    // Set TLS protocols
     if (!StringUtils.isEmpty(directTlsVersion)) {
       props.setProperty("mail.smtp.ssl.protocols", directTlsVersion);
     }
 
     Session session = Session.getInstance(props, null);
-
-    logger.info(" Retrieve Session instance for sending Direct mail ");
-
     DirectMimeMessage message = new DirectMimeMessage(session, correlationId, host);
-
-    logger.info("Setting From Address {}", username);
     message.setFrom(new InternetAddress(username));
 
     String toAddr = StringUtils.deleteWhitespace(recipientAddr);
-
     message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddr));
-
-    logger.info("Finished setting recipients {}", toAddr);
-
     message.setSubject("eICR Report ");
     message.setText(CDA_FILE_NAME);
 
-    logger.info("Creating Message Body Part ");
     BodyPart mimeBodyPart = new MimeBodyPart();
     Multipart multipart = new MimeMultipart();
     DataSource source = new ByteArrayDataSource(is, "application/xml; charset=UTF-8");
     mimeBodyPart.setDataHandler(new DataHandler(source));
-
     mimeBodyPart.setFileName(filename + ".xml");
     multipart.addBodyPart(mimeBodyPart);
-
-    // Send the complete message parts
     message.setContent(multipart);
 
-    logger.info(" Completed constructing the Message ");
+    logger.info(
+        "sendMail: message constructed, user={}, correlationId={}, to={} — connecting to host",
+        username,
+        correlationId,
+        toAddr);
+
     Transport transport = session.getTransport("smtp");
     transport.connect(host, Integer.parseInt(port), username, password);
 
-    logger.info(" Connection successful to the direct host {}", host);
-    transport.sendMessage(message, message.getAllRecipients());
+    logger.info(
+        "sendMail: connected to host={}, user={}, correlationId={} — sending message",
+        host,
+        username,
+        correlationId);
 
-    logger.info("Finished sending Direct message successfully, closing connection ");
+    transport.sendMessage(message, message.getAllRecipients());
     transport.close();
 
-    logger.info(" Finished sending Direct Message ");
+    logger.info(
+        "sendMail: message sent and connection closed — user={}, correlationId={}, to={}",
+        username,
+        correlationId,
+        toAddr);
   }
 
   /**
@@ -222,45 +241,56 @@ public class DirectTransportImpl implements DataTransportInterface {
   @Override
   public void receiveRrDataUsingDirect(KarProcessingData data) {
 
-    logger.info(" Start receiving process from Direct HISP ");
-
     HealthcareSetting hs = data.getHealthcareSetting();
+    String correlationId = data.getxCorrelationId();
 
-    logger.info(" Receiving Mail from Inbox {}", hs.getDirectUser());
+    logger.info(
+        "receiveRrDataUsingDirect: start — user={}, correlationId={}",
+        hs.getDirectUser(),
+        correlationId);
 
     if (!StringUtils.isEmpty(hs.getImapUrl())) {
-
-      logger.info("Using Imap URL {} to receive the data", hs.getImapUrl());
+      logger.info(
+          "receiveRrDataUsingDirect: using IMAP URL, user={}, correlationId={}, imapUrl={}",
+          hs.getDirectUser(),
+          correlationId,
+          hs.getImapUrl());
 
       readMailUsingImap(
           hs.getImapUrl(),
           hs.getDirectUser(),
           hs.getDirectPwd(),
           hs.getImapPort(),
-          data.getxCorrelationId(),
+          correlationId,
           hs.getDirectTlsVersion());
 
-      logger.info(" Finished receiving the message using Direct ");
-
     } else if (!StringUtils.isEmpty(hs.getDirectHost())) {
-
-      logger.info("Using Imap URL {} to receive the data", hs.getDirectHost());
+      logger.info(
+          "receiveRrDataUsingDirect: using Direct host, user={}, correlationId={}, host={}",
+          hs.getDirectUser(),
+          correlationId,
+          hs.getDirectHost());
 
       readMailUsingImap(
           hs.getDirectHost(),
           hs.getDirectUser(),
           hs.getDirectPwd(),
           hs.getImapPort(),
-          data.getxCorrelationId(),
+          correlationId,
           hs.getDirectTlsVersion());
 
     } else {
-
       logger.error(
-          " Cannot receive Direct message since both Direct Host and IMAP Urls are empty ");
+          "receiveRrDataUsingDirect: cannot receive — both Direct Host and IMAP URL are empty,"
+              + " user={}, correlationId={}",
+          hs.getDirectUser(),
+          correlationId);
     }
 
-    logger.info(" Finish receiving process from Direct HISP ");
+    logger.info(
+        "receiveRrDataUsingDirect: end — user={}, correlationId={}",
+        hs.getDirectUser(),
+        correlationId);
   }
 
   /**
@@ -314,18 +344,34 @@ public class DirectTransportImpl implements DataTransportInterface {
         readMail(host, username, password, port, correlationId, directTlsVersion);
         success = true;
       } catch (FolderClosedException fce) {
-        logger.warn("FolderClosedException occurred. Retrying {}/{}", attempt, imapReadRetryLimit);
+        logger.warn(
+            "readMailUsingImap: FolderClosedException — user={}, correlationId={}, attempt {}/{}",
+            username,
+            correlationId,
+            attempt,
+            imapReadRetryLimit);
         try {
           Thread.sleep(2000);
         } catch (InterruptedException ignored) {
+          Thread.currentThread().interrupt();
         }
       } catch (Exception e) {
-        logger.error("Error reading mail on attempt {}", attempt, e);
+        logger.error(
+            "readMailUsingImap: error on attempt {}/{} — user={}, correlationId={}",
+            attempt,
+            imapReadRetryLimit,
+            username,
+            correlationId,
+            e);
       }
     }
 
     if (!success) {
-      logger.error("Failed to read mail after {} attempts", imapReadRetryLimit);
+      logger.error(
+          "readMailUsingImap: failed after {} attempt(s) — user={}, correlationId={}",
+          imapReadRetryLimit,
+          username,
+          correlationId);
     }
   }
 
@@ -338,11 +384,18 @@ public class DirectTransportImpl implements DataTransportInterface {
       String directTlsVersion)
       throws Exception {
 
+    logger.info(
+        "readMail: start — user={}, correlationId={}, host={}, port={}",
+        username,
+        correlationId,
+        host,
+        port);
+
     Properties props = new Properties();
     props.put("mail.imap.auth", "true");
     props.put("mail.imap.ssl.enable", "true");
     props.setProperty("mail.imap.ssl.trust", "*");
-    props.put("mail.imap.connectionpoolsize", "1"); // limit parallelism
+    props.put("mail.imap.connectionpoolsize", "1");
     if (!StringUtils.isEmpty(directTlsVersion)) {
       props.put("mail.imap.ssl.protocols", directTlsVersion);
     }
@@ -351,37 +404,118 @@ public class DirectTransportImpl implements DataTransportInterface {
     Store store = session.getStore(IMAP);
     store.connect(host, Integer.parseInt(port), username, password);
 
+    logger.info(
+        "readMail: connected to IMAP store — user={}, correlationId={}", username, correlationId);
+
     Folder inbox = store.getFolder(INBOX);
     inbox.open(Folder.READ_WRITE);
 
     try {
-      processMessages(inbox);
-      deleteReadMessages(inbox); // delete read emails after processing
+      processMessages(inbox, username, correlationId);
+      deleteReadMessages(inbox, username, correlationId);
     } finally {
-      inbox.close(true); // commit deletions
+      inbox.close(true);
       store.close();
+      logger.info("readMail: inbox closed — user={}, correlationId={}", username, correlationId);
     }
   }
 
-  private void processMessages(Folder inbox) throws Exception {
+  private void processMessages(Folder inbox, String username, String correlationId)
+      throws Exception {
+
+    int total = inbox.getMessageCount();
+    int batchCount = (total == 0) ? 0 : (int) Math.ceil((double) total /imapBatchSize );
+
+    logger.info(
+        "processMessages: user={}, correlationId={}, totalMessages={}, batchSize={}, totalBatches={}",
+        username,
+        correlationId,
+        total, imapBatchSize,
+        batchCount);
+
+    if (total == 0) {
+      logger.info(
+          "processMessages: no messages in inbox — user={}, correlationId={}",
+          username,
+          correlationId);
+      return;
+    }
+
     Flags seen = new Flags(Flags.Flag.SEEN);
     FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-    Message[] messages = inbox.search(unseenFlagTerm);
 
-    for (Message message : messages) {
-      logger.info("Found unread email: {}", getMessageId(message));
+    for (int batch = 1; batch <= batchCount; batch++) {
+      int start = (batch - 1) * imapBatchSize + 1;
+      int end = Math.min(batch * imapBatchSize, total);
 
+      logger.info(
+          "processMessages: batch {} of {} — user={}, correlationId={}, fetchingMessages={}-{} of {}",
+          batch,
+          batchCount,
+          username,
+          correlationId,
+          start,
+          end,
+          total);
+
+      Message[] batchMessages = inbox.getMessages(start, end);
+      Message[] unread = inbox.search(unseenFlagTerm, batchMessages);
+
+      logger.info(
+          "processMessages: batch {} of {} — user={}, correlationId={}, unreadInBatch={} of {} fetched",
+          batch,
+          batchCount,
+          username,
+          correlationId,
+          unread.length,
+          batchMessages.length);
+
+      for (int i = 0; i < unread.length; i++) {
+        Message message = unread[i];
+        String msgId = getMessageId(message);
+
+        logger.info(
+            "processMessages: batch {} of {}, message {} of {} — user={}, correlationId={}, messageId={}",
+            batch,
+            batchCount,
+            (i + 1),
+            unread.length,
+            username,
+            correlationId,
+            msgId);
+
+        processSingleMessage(message, username, correlationId, msgId);
+      }
+    }
+
+    logger.info(
+        "processMessages: completed all {} batch(es) — user={}, correlationId={}",
+        batchCount,
+        username,
+        correlationId);
+  }
+
+  private void processSingleMessage(
+      Message message, String username, String correlationId, String msgId) {
+
+    try {
       Address[] froms = message.getFrom();
       String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
 
       if (message.getContent() instanceof Multipart) {
-
         Multipart multipart = (Multipart) message.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {
           BodyPart bodyPart = multipart.getBodyPart(i);
           if (bodyPart.getFileName() != null
               && bodyPart.getFileName().toLowerCase().contains(".xml")) {
-            logger.debug("Found XML Attachment");
+
+            logger.info(
+                "processSingleMessage: XML attachment found — user={}, correlationId={}, messageId={}, sender={}",
+                username,
+                correlationId,
+                msgId,
+                senderAddress);
+
             try (InputStream stream = bodyPart.getInputStream()) {
               ReportabilityResponse data = new ReportabilityResponse();
               data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
@@ -392,38 +526,71 @@ public class DirectTransportImpl implements DataTransportInterface {
               String filename = logDirectory + "_" + UUID.randomUUID() + ".xml";
               BsaServiceUtils.saveDataToFile(data.getRrXml(), filename);
 
-              rrReceiver.handleReportabilityResponse(data, getMessageId(message));
+              logger.info(
+                  "processSingleMessage: invoking RR handler — user={}, correlationId={}, messageId={}",
+                  username,
+                  correlationId,
+                  msgId);
+
+              rrReceiver.handleReportabilityResponse(data, msgId);
             }
             message.setFlag(Flags.Flag.SEEN, true);
-            logger.info(
-                " Need to determine what to do with the response received from :  {}",
-                senderAddress);
+
           } else {
             message.setFlag(Flags.Flag.SEEN, true);
-            logger.info("Not an XML attachment, ignoring the multipart file");
+            logger.info(
+                "processSingleMessage: non-XML attachment, marking seen — user={}, correlationId={}, messageId={}",
+                username,
+                correlationId,
+                msgId);
           }
         }
       } else {
-        logger.info("Not a multipart email, ignoring");
+        logger.info(
+            "processSingleMessage: not a multipart message, ignoring — user={}, correlationId={}, messageId={}",
+            username,
+            correlationId,
+            msgId);
       }
+    } catch (Exception e) {
+      logger.error(
+          "processSingleMessage: error processing message — user={}, correlationId={}, messageId={}",
+          username,
+          correlationId,
+          msgId,
+          e);
     }
   }
 
-  private void deleteReadMessages(Folder inbox) {
+  private void deleteReadMessages(Folder inbox, String username, String correlationId) {
     try {
-      Flags seen = new Flags(Flags.Flag.SEEN);
       if (inbox != null && inbox.isOpen()) {
-
+        Flags seen = new Flags(Flags.Flag.SEEN);
         FlagTerm seenFlagTerm = new FlagTerm(seen, true);
         Message[] messages = inbox.search(seenFlagTerm);
 
+        logger.info(
+            "deleteReadMessages: found {} read message(s) to delete — user={}, correlationId={}",
+            messages.length,
+            username,
+            correlationId);
+
         for (Message message : messages) {
-          logger.info("Deleting message with id {}", getMessageId(message));
+          String msgId = getMessageId(message);
+          logger.info(
+              "deleteReadMessages: deleting — user={}, correlationId={}, messageId={}",
+              username,
+              correlationId,
+              msgId);
           message.setFlag(Flags.Flag.DELETED, true);
         }
       }
     } catch (Exception e) {
-      logger.error("Error deleting read messages", e);
+      logger.error(
+          "deleteReadMessages: error deleting read messages — user={}, correlationId={}",
+          username,
+          correlationId,
+          e);
     }
   }
 }
