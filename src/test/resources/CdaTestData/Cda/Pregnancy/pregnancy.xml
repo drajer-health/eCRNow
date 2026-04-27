@@ -122,6 +122,8 @@
                     <low value="20231227000000+0000"/>
                 </effectiveTime>
                 <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+                <methodCode code="16310003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Ultrasonography (procedure)"><translation code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Pregnancy (finding)"/>
+                </methodCode>
                 <author>
                     <time nullFlavor="NI"/>
                     <assignedAuthor>
@@ -148,7 +150,7 @@
                 <effectiveTime>
                     <low value="20231227000000+0000"/>
                 </effectiveTime>
-                <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+                <value xsi:type="TS" value="20231028000000+0000"/>
             </observation>
         </entry>
         <entry>
@@ -163,6 +165,8 @@
                     <low value="20231227000000+0000"/>
                 </effectiveTime>
                 <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+                <methodCode code="16310003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Ultrasonography (procedure)"><translation code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Pregnancy (finding)"/>
+                </methodCode>
                 <author>
                     <time nullFlavor="NI"/>
                     <assignedAuthor>
@@ -189,7 +193,7 @@
                 <effectiveTime>
                     <low value="20231227000000+0000"/>
                 </effectiveTime>
-                <value xsi:type="CD" code="LA15173-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnant"></value>
+                <value xsi:type="TS" value="20231028000000+0000"/>
             </observation>
         </entry>
         <entry>

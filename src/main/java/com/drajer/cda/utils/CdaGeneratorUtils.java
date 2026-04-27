@@ -2389,6 +2389,22 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getNFXMLForValue(String type, String nf) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + type
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + nf
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
   public static String getNFXMLForValueWithText(String nf, String text) {
     String s =
         CdaGeneratorConstants.START_XMLTAG

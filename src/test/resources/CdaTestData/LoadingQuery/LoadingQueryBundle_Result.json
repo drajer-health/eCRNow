@@ -271,7 +271,8 @@
         "reference": "Organization/25799ec0-0ca8-4dfb-bbef-1be58b5cb46b"
       }
     }
-  }, {
+  },
+    {
     "resource": {
       "resourceType": "Observation",
       "id": "3407eeea-cff5-4211-8cb3-858982f34886",
@@ -313,6 +314,64 @@
       } ]
     }
   },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3407eeea-cff5-4211-8cb3-858982f34887",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [ {
+          "system": "https://fhir.athena.io/sid/ah-observation",
+          "value": "a-xxxx.resultamb-711592"
+        } ],
+        "status": "final",
+        "category": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+            "code": "laboratory",
+            "display": "Laboratory"
+          } ]
+        } ],
+        "code": {
+          "system": "http://loinc.org",
+          "code": "91081-0",
+          "display": "Candida sp DNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/66ba27b6-fe87-4c43-8e46-dc485d7ab023"
+        },
+        "effectiveDateTime": "2025-10-07T00:00:00+00:00",
+        "valueString": "positive",
+        "interpretation" : [
+          {
+            "coding" : [
+              {
+                "system" : "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code" : "N",
+                "display" : "Normal"
+              }
+            ],
+            "text" : "Normal"
+          }
+        ],
+        "referenceRange": [ {
+          "text": "0.1-1",
+            "low" : {
+              "value" : 0.1,
+              "unit" : "mg/dL",
+              "system" : "http://unitsofmeasure.org",
+              "code" : "mg/dL"
+            },
+            "high" : {
+              "value" : 1,
+              "unit" : "mg/dL",
+              "system" : "http://unitsofmeasure.org",
+              "code" : "mg/dL"
+            }
+        }]
+      }
+    },
     {
     "resource": {
       "resourceType": "DiagnosticReport",

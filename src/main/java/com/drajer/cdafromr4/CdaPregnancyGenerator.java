@@ -442,7 +442,7 @@ public class CdaPregnancyGenerator {
           rowNum++;
           table.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-          sb.append(generateLmpEntryFromComponent(id, obs.getEffective(), obs.getValue()));
+          sb.append(generateLmpEntryFromComponent(id, obs.getEffective(), comp.getValue()));
         }
       }
     }
@@ -497,8 +497,9 @@ public class CdaPregnancyGenerator {
             CdaGeneratorConstants.EFF_TIME_EL_NAME, start, end, false));
 
     String valXml = "";
-    valXml = CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true);
-
+    if (val instanceof DateTimeType) {
+      valXml = CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true);
+    }
     if (!valXml.isEmpty()) {
       sb.append(valXml);
     } else {
@@ -831,15 +832,15 @@ public class CdaPregnancyGenerator {
 
       String methodCodeXml =
           CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-              cds,
+              ms,
               CdaGeneratorConstants.METHOD_CODE_EL_NAME,
-              true,
+              false,
               CdaGeneratorConstants.FHIR_SNOMED_URL,
               false,
               "");
 
       if (!methodCodeXml.isEmpty()) {
-        sb.append(codeXml);
+        sb.append(methodCodeXml);
       }
     }
 

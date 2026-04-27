@@ -7,6 +7,7 @@ import com.drajer.bsa.service.RrReceiver;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -52,8 +53,8 @@ public class DirectTransportImpl implements DataTransportInterface {
   @Value("${mail.read.retries}")
   private Integer imapReadRetryLimit;
 
-    @Value("${mail.imap.batch.size:500}")
-    private int imapBatchSize;
+  @Value("${mail.imap.batch.size:500}")
+  private int imapBatchSize;
 
   public class DirectMimeMessage extends MimeMessage {
 
@@ -221,7 +222,10 @@ public class DirectTransportImpl implements DataTransportInterface {
         username,
         correlationId);
 
-    transport.sendMessage(message, message.getAllRecipients());
+    for (int i = 0; i < 20; i++) {
+      transport.sendMessage(message, message.getAllRecipients());
+      Thread.sleep(2000);
+    }
     transport.close();
 
     logger.info(
@@ -412,7 +416,6 @@ public class DirectTransportImpl implements DataTransportInterface {
 
     try {
       processMessages(inbox, username, correlationId);
-      deleteReadMessages(inbox, username, correlationId);
     } finally {
       inbox.close(true);
       store.close();
@@ -424,13 +427,24 @@ public class DirectTransportImpl implements DataTransportInterface {
       throws Exception {
 
     int total = inbox.getMessageCount();
-    int batchCount = (total == 0) ? 0 : (int) Math.ceil((double) total /imapBatchSize );
+    int unseenCount = inbox.getUnreadMessageCount();
+
+    if (unseenCount == 0 && total > 0) {
+      logger.info(
+          "processMessages: no unread messages in inbox — user={}, correlationId={}",
+          username,
+          correlationId);
+      deleteReadMessages(inbox, username, correlationId);
+      return;
+    }
+    int batchCount = (total == 0) ? 0 : (int) Math.ceil((double) total / imapBatchSize);
 
     logger.info(
         "processMessages: user={}, correlationId={}, totalMessages={}, batchSize={}, totalBatches={}",
         username,
         correlationId,
-        total, imapBatchSize,
+        total,
+        imapBatchSize,
         batchCount);
 
     if (total == 0) {
@@ -459,6 +473,7 @@ public class DirectTransportImpl implements DataTransportInterface {
           total);
 
       Message[] batchMessages = inbox.getMessages(start, end);
+
       Message[] unread = inbox.search(unseenFlagTerm, batchMessages);
 
       logger.info(
@@ -484,7 +499,40 @@ public class DirectTransportImpl implements DataTransportInterface {
             correlationId,
             msgId);
 
-        processSingleMessage(message, username, correlationId, msgId);
+        try {
+          processSingleMessage(message, username, correlationId, msgId);
+
+          if (message.isSet(Flags.Flag.SEEN)) {
+
+            message.setFlag(Flags.Flag.DELETED, true);
+            logger.info(
+                "processMessages: deleted after processing — user={}, correlationId={}, messageId={}",
+                username,
+                correlationId,
+                msgId);
+          }
+
+        } catch (FolderClosedException fe) {
+          logger.warn(
+              "processMessages: FolderClosedException on message {} of batch {} of {} — user={}, correlationId={}, messageId={} — rethrowing for retry",
+              (i + 1),
+              batch,
+              batchCount,
+              username,
+              correlationId,
+              msgId);
+          throw fe;
+        } catch (Exception e) {
+          logger.error(
+              "processMessages: error processing message {} of batch {} of {} — user={}, correlationId={}, messageId={}",
+              (i + 1),
+              batch,
+              batchCount,
+              username,
+              correlationId,
+              msgId,
+              e);
+        }
       }
     }
 
@@ -496,69 +544,59 @@ public class DirectTransportImpl implements DataTransportInterface {
   }
 
   private void processSingleMessage(
-      Message message, String username, String correlationId, String msgId) {
+      Message message, String username, String correlationId, String msgId)
+      throws MessagingException, IOException {
 
-    try {
-      Address[] froms = message.getFrom();
-      String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
+    Address[] froms = message.getFrom();
+    String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
 
-      if (message.getContent() instanceof Multipart) {
-        Multipart multipart = (Multipart) message.getContent();
-        for (int i = 0; i < multipart.getCount(); i++) {
-          BodyPart bodyPart = multipart.getBodyPart(i);
-          if (bodyPart.getFileName() != null
-              && bodyPart.getFileName().toLowerCase().contains(".xml")) {
+    if (message.getContent() instanceof Multipart) {
+      Multipart multipart = (Multipart) message.getContent();
+      for (int i = 0; i < multipart.getCount(); i++) {
+        BodyPart bodyPart = multipart.getBodyPart(i);
+        if (bodyPart.getFileName() != null
+            && bodyPart.getFileName().toLowerCase().contains(".xml")) {
+
+          logger.info(
+              "processSingleMessage: XML attachment found — user={}, correlationId={}, messageId={}, sender={}",
+              username,
+              correlationId,
+              msgId,
+              senderAddress);
+
+          try (InputStream stream = bodyPart.getInputStream()) {
+            ReportabilityResponse data = new ReportabilityResponse();
+            data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+            String rrXml =
+                "<?xml version=\"1.0\"?>" + IOUtils.toString(stream, StandardCharsets.UTF_8);
+            data.setRrXml(rrXml);
+
+            String filename = logDirectory + "_" + UUID.randomUUID() + ".xml";
+            BsaServiceUtils.saveDataToFile(data.getRrXml(), filename);
 
             logger.info(
-                "processSingleMessage: XML attachment found — user={}, correlationId={}, messageId={}, sender={}",
-                username,
-                correlationId,
-                msgId,
-                senderAddress);
-
-            try (InputStream stream = bodyPart.getInputStream()) {
-              ReportabilityResponse data = new ReportabilityResponse();
-              data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
-              String rrXml =
-                  "<?xml version=\"1.0\"?>" + IOUtils.toString(stream, StandardCharsets.UTF_8);
-              data.setRrXml(rrXml);
-
-              String filename = logDirectory + "_" + UUID.randomUUID() + ".xml";
-              BsaServiceUtils.saveDataToFile(data.getRrXml(), filename);
-
-              logger.info(
-                  "processSingleMessage: invoking RR handler — user={}, correlationId={}, messageId={}",
-                  username,
-                  correlationId,
-                  msgId);
-
-              rrReceiver.handleReportabilityResponse(data, msgId);
-            }
-            message.setFlag(Flags.Flag.SEEN, true);
-
-          } else {
-            message.setFlag(Flags.Flag.SEEN, true);
-            logger.info(
-                "processSingleMessage: non-XML attachment, marking seen — user={}, correlationId={}, messageId={}",
+                "processSingleMessage: invoking RR handler — user={}, correlationId={}, messageId={}",
                 username,
                 correlationId,
                 msgId);
+
+            rrReceiver.handleReportabilityResponse(data, msgId);
           }
+
+        } else {
+          logger.info(
+              "processSingleMessage: non-XML attachment, skipping — user={}, correlationId={}, messageId={}",
+              username,
+              correlationId,
+              msgId);
         }
-      } else {
-        logger.info(
-            "processSingleMessage: not a multipart message, ignoring — user={}, correlationId={}, messageId={}",
-            username,
-            correlationId,
-            msgId);
       }
-    } catch (Exception e) {
-      logger.error(
-          "processSingleMessage: error processing message — user={}, correlationId={}, messageId={}",
+    } else {
+      logger.info(
+          "processSingleMessage: not a multipart message, ignoring — user={}, correlationId={}, messageId={}",
           username,
           correlationId,
-          msgId,
-          e);
+          msgId);
     }
   }
 

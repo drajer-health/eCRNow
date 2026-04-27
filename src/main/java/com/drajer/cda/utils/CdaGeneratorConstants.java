@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorConstants {
 
+  public static final String REFERENCE_RANGE_EL_NAME = "referenceRange";
+  public static final String OBSERVATION_RANGE_EL_NAME = "observationRange";
+  public static final String VITAL_SIGNS_ORG_CODE_LOINC_NAME =
+      "Vital signs, weight, height, head circumference, oximetry, BMI, and BSA panel";
+
   private CdaGeneratorConstants() {
     // not called
   }
@@ -982,6 +987,7 @@ public class CdaGeneratorConstants {
   // Data Types
   public static final String CD_TYPE = "CD";
   public static final String PQ_TYPE = "PQ";
+  public static final String IVL_PQ_TYPE = "IVL_PQ";
   public static final String CO_TYPE = "CO";
   public static final String PIVL_TS_TYPE = "PIVL_TS";
   public static final String IVL_TS_TYPE = "IVL_TS";
