@@ -222,10 +222,8 @@ public class DirectTransportImpl implements DataTransportInterface {
         username,
         correlationId);
 
-    for (int i = 0; i < 20; i++) {
-      transport.sendMessage(message, message.getAllRecipients());
-      Thread.sleep(2000);
-    }
+    transport.sendMessage(message, message.getAllRecipients());
+
     transport.close();
 
     logger.info(
