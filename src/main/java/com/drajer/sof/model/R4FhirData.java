@@ -345,6 +345,10 @@ public class R4FhirData extends FhirData {
     this.medicationStatements = medicationStatements;
   }
 
+  public void addMedicationStatements(List<MedicationStatement> medicationStatements) {
+    this.medicationStatements.addAll(medicationStatements);
+  }
+
   public List<MedicationDispense> getMedicationDispenses() {
     return medicationDispenses;
   }
@@ -361,6 +365,10 @@ public class R4FhirData extends FhirData {
     this.medicationRequests = medicationRequests;
   }
 
+  public void addMedicationRequests(List<MedicationRequest> medicationRequests) {
+    this.medicationRequests.addAll(medicationRequests);
+  }
+
   public List<MedicationAdministration> getMedicationAdministrations() {
     return medicationAdministrations;
   }
@@ -368,6 +376,11 @@ public class R4FhirData extends FhirData {
   public void setMedicationAdministrations(
       List<MedicationAdministration> medicationAdministrations) {
     this.medicationAdministrations = medicationAdministrations;
+  }
+
+  public void addMedicationAdministrations(
+      List<MedicationAdministration> medicationAdministrations) {
+    this.medicationAdministrations.addAll(medicationAdministrations);
   }
 
   public List<Medication> getMedicationList() {

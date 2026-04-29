@@ -365,7 +365,134 @@
 				"display": "Cerner Test, Physician - Hospitalist Cerner"
 			  }
 			}
-		  }
+		  },
+
+      {
+        "resource": {
+
+          "resourceType": "MedicationRequest",
+          "id": "bae70c74-139e-40f7-8169-8d60d968261a",
+          "meta": {
+            "versionId": "1"
+          },
+          "status": "on-hold",
+          "intent": "order",
+          "medicationReference": {
+            "reference": "Medication/53fd0328-da2c-4797-a5d7-294fd6673976"
+          },
+          "subject": {
+            "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+          },
+
+          "authoredOn": "2024-12-27T00:00:00+00:00",
+          "requester": {
+            "reference": "Practitioner/7302c54c-4143-4852-93e4-4576ea1a7bd4"
+          },
+          "dosageInstruction": [ {
+            "text": "Take 1 tablet by mouth every 6 hours as needed for pain",
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 6,
+                "periodUnit": "h"
+              }
+            },
+            "route": {
+              "coding": [ {
+                "system": "http://terminology.hl7.org/CodeSystem/route-codes",
+                "code": "oral",
+                "display": "Oral route"
+              } ],
+              "text": "Take 1 tablet by mouth every 6 hours as needed for pain"
+            },
+            "doseAndRate": [ {
+              "doseQuantity": {
+                "value": 1,
+                "unit": "tablet",
+                "system": "http://unitsofmeasure.org",
+                "code": "{tbl}"
+              }
+            } ]
+          } ]
+        }
+
+      }
+      , {
+        "resource": {
+
+          "resourceType": "MedicationRequest",
+          "id": "bae70c74-139e-40f7-8169-8d60d968261a",
+          "meta": {
+            "versionId": "1"
+          },
+          "status": "active",
+          "intent": "order",
+          "medicationReference": {
+            "reference": "Medication/53fd0328-da2c-4797-a5d7-294fd6673976"
+          },
+          "subject": {
+            "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+          },
+
+          "authoredOn": "2024-12-27T00:00:00+00:00",
+          "requester": {
+            "reference": "Practitioner/7302c54c-4143-4852-93e4-4576ea1a7bd4"
+          },
+          "dosageInstruction": [ {
+            "text": "Take 2 tablet by mouth every 6 hours as needed for pain",
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 6,
+                "periodUnit": "h"
+              }
+            },
+            "route": {
+              "coding": [ {
+                "system": "http://terminology.hl7.org/CodeSystem/route-codes",
+                "code": "oral",
+                "display": "Oral route"
+              } ],
+              "text": "Take 1 tablet by mouth every 6 hours as needed for pain"
+            },
+            "doseAndRate": [ {
+              "doseQuantity": {
+                "value": 1,
+                "unit": "tablet",
+                "system": "http://unitsofmeasure.org",
+                "code": "{tbl}"
+              }
+            } ]
+          } ]
+        }
+
+      },{
+        "resource": {
+          "resourceType": "Medication",
+          "id": "53fd0328-da2c-4797-a5d7-294fd6673976",
+          "meta": {
+            "versionId": "1"
+          },
+          "code": {
+            "coding": [ {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1600776",
+              "display": "8 HR Carbidopa 36.25 MG / L-DOPA 145 MG Extended Release Oral Capsule [Rytary]"
+            } ]
+          },
+          "form": {
+            "coding": [ {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm",
+              "code": "TAB",
+              "display": "Tablet"
+            } ]
+          },
+          "batch": {
+            "lotNumber": "12345",
+            "expirationDate": "2025-01-01T00:00:00+00:00"
+          }
+        }
+      }
 		
 	]
 }
