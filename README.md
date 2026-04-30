@@ -235,6 +235,7 @@ The following documents can be used to configure the app based on the specific v
 
 For  database changes (including new tables, schema updates, and migration execution details), use the following documentation:
 
+* [**Database Migration Guide v4.xx (Production)**](documents/Database_Migration_Guide_v4.xx.md) — Full production migration guide covering pre-migration checklist, phase-by-phase script execution, validation, rollback, and best practices.
 * [Client Database Upgrade Instructions v4.xx](documents/Client_Database_Upgrade_Instructions_v4.xx.docx)
 
 Database migration scripts are organized by database engine under:
