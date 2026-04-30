@@ -475,8 +475,7 @@ PHASE 3 — Sequence Sync (PostgreSQL ONLY):
 
 ---
 
-> **Support Reference:** For script-level questions, refer to `documents/Database Script Execution Guide.docx` in the repository, or the
-> [GitHub release branch](https://github.com/drajer-health/eCRNow/blob/release/ecrnow-v4.x.x/documents/Database%20Script%20Execution%20Guide.docx).  
+> **Support Reference:** For script-level questions, refer to `documents/Database Script Execution Guide.docx` in the repository, or the **[eCRNow README](../README.md)** for general migration guidance.
 > For application configuration after migration, see [Section 4.3 of the README](../README.md#43-ecrnow-app-configuration-steps).  
 > For full application setup, build instructions, and deployment details, refer to the **[eCRNow README](../README.md)**.
 
