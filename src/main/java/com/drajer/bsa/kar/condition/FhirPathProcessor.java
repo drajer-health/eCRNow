@@ -143,11 +143,22 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             } else {
 
               // TODO: Fix how this should be treated in the case the getParameter(PARAM) is null
-              Type value = variableResult.getParameter(PARAM).getValue();
-              paramComponent.setName("%" + exp.getName());
-              paramComponent.setValue(value);
 
-              logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+              if (variableResult.getParameter(PARAM) == null) {
+                logger.error(
+                    " No parameter returned from FHIR Path Expression Evaluator for variable {} in expression {}, so value is set to null",
+                    exp.getName(),
+                    exp.getExpression());
+                paramComponent.setName("%" + exp.getName());
+                paramComponent.setValue((Type) null);
+                params.addParameter(paramComponent);
+              } else {
+                Type value = variableResult.getParameter(PARAM).getValue();
+                paramComponent.setName("%" + exp.getName());
+                paramComponent.setValue(value);
+
+                logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+              }
             }
 
             params.addParameter(paramComponent);
@@ -407,7 +418,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         if ((drcf.getPath().toLowerCase().contains("code")
                 || drcf.getPath().contains("reasonCode")
                 || drcf.getPath().contains("value")
-                || drcf.getPath().equals("medication"))
+                || drcf.getPath().equals("medication")
+                || drcf.getPath().equals("vaccineCode"))
             && drcf.getValueSet() != null) {
 
           Resource vsr = getValueSet(kd, drcf.getValueSet());

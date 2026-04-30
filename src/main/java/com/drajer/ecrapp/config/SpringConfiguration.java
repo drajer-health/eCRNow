@@ -27,6 +27,7 @@ import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
 import org.opencds.cqf.fhir.cr.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.fhir.cr.measure.common.MeasurePeriodValidator;
+import org.opencds.cqf.fhir.cr.measure.common.MeasureProcessorUtils;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.opencds.cqf.fhir.cr.measure.r4.R4RepositorySubjectProvider;
 import org.opencds.cqf.fhir.cr.spring.EvaluatorConfiguration;
@@ -34,6 +35,8 @@ import org.opencds.cqf.fhir.utility.adapter.r4.AdapterFactory;
 import org.opencds.cqf.fhir.utility.repository.FederatedRepository;
 import org.opencds.cqf.fhir.utility.repository.InMemoryFhirRepository;
 import org.opencds.cqf.fhir.utility.repository.RestRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -67,6 +70,8 @@ import org.springframework.retry.support.RetryTemplate;
 @Configuration
 @EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class SpringConfiguration {
+
+  private static final Logger logger = LoggerFactory.getLogger(SpringConfiguration.class);
 
   @Value("${disable.hostname.verifier}")
   private boolean disableHostnameVerifier;
@@ -136,8 +141,14 @@ public class SpringConfiguration {
   }
 
   @Bean
-  R4RepositorySubjectProvider getR4RepositorySubjectProvider() {
-    return new R4RepositorySubjectProvider();
+  R4RepositorySubjectProvider getR4RepositorySubjectProvider(
+      MeasureEvaluationOptions measureEvaluationOptions) {
+    return new R4RepositorySubjectProvider(measureEvaluationOptions.getSubjectProviderOptions());
+  }
+
+  @Bean
+  MeasureProcessorUtils getMeasureProcessorUtils() {
+    return new MeasureProcessorUtils();
   }
 
   @Bean
@@ -197,13 +208,18 @@ public class SpringConfiguration {
   @Value("${ersd.file.location:default.json}")
   String ersdFileLocation;
 
-  private Bundle readErsdBundleFromFile() throws FileNotFoundException {
-
-    Bundle bundle = null;
-    InputStream in = new FileInputStream(new File(ersdFileLocation));
-
-    bundle = getEsrdJsonParser().parseResource(Bundle.class, in);
-
+  private Bundle readErsdBundleFromFile() {
+    Bundle bundle = new Bundle();
+    try {
+      InputStream in = new FileInputStream(new File(ersdFileLocation));
+      bundle = getEsrdJsonParser().parseResource(Bundle.class, in);
+      logger.info("Successfully loaded eRSD bundle from: {}", ersdFileLocation);
+    } catch (FileNotFoundException e) {
+      logger.error(
+          "eRSD file not found at location: {}. Returning empty bundle.", ersdFileLocation, e);
+    } catch (Exception e) {
+      logger.error("Failed to parse eRSD bundle from file: {}", ersdFileLocation, e);
+    }
     return bundle;
   }
 

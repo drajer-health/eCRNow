@@ -29,6 +29,14 @@
                             <content ID="potObsDate2">20110304083000+1100</content>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <content ID="potObsContent3">8 HR Carbidopa 36.25 MG / L-DOPA 145 MG Extended Release Oral Capsule [Rytary]</content>
+                        </td>
+                        <td>
+                            <content ID="potObsDate3">20241227000000+0000</content>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </text>
@@ -57,6 +65,29 @@
                 <statusCode code="active"/>
                 <effectiveTime value="20110304083000+1100"/>
             </observation>
+        </entry>
+        <entry>
+            <substanceAdministration classCode="SBADM" moodCode="INT">
+                <templateId root="2.16.840.1.113883.10.20.22.4.42"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.42" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="bae70c74-139e-40f7-8169-8d60d968261a"/>
+                <statusCode code="active"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20241227000000+0000"/>
+                </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period value="2" unit="h"/>
+                </effectiveTime>
+                <doseQuantity value="1" unit="{tbl}"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="1600776" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="8 HR Carbidopa 36.25 MG / L-DOPA 145 MG Extended Release Oral Capsule [Rytary]"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
         </entry>
     </section>
 </component>

@@ -161,7 +161,8 @@ public class CdaResultGenerator {
               rowNum,
               obsWithComponents.getPerformer(),
               data,
-              version));
+              version,
+              obsWithComponents.getReferenceRange()));
 
       i++;
     }
@@ -212,7 +213,8 @@ public class CdaResultGenerator {
             rowNum,
             obs.getPerformer(),
             data,
-            version));
+            version,
+            obs.getReferenceRange()));
 
     if (obs.hasSpecimen()) {
       Specimen spec = data.getSpecimenById(obs.getSpecimen().getReferenceElement().getIdPart());
@@ -600,7 +602,8 @@ public class CdaResultGenerator {
               rowNum,
               obs.getPerformer(),
               data,
-              version));
+              version,
+              obs.getReferenceRange()));
 
       i++;
     }
@@ -953,7 +956,8 @@ public class CdaResultGenerator {
                   null,
                   obs.getPerformer(),
                   data,
-                  version);
+                  version,
+                  obs.getReferenceRange());
 
           if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
 
@@ -989,7 +993,8 @@ public class CdaResultGenerator {
                 rep.getCode(),
                 obs.getPerformer(),
                 data,
-                version));
+                version,
+                obs.getReferenceRange()));
       }
     }
 
@@ -1008,7 +1013,8 @@ public class CdaResultGenerator {
       int rowNum,
       List<Reference> performerRefs,
       R4FhirData data,
-      String version) {
+      String version,
+      List<Observation.ObservationReferenceRangeComponent> referenceRange) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -1092,6 +1098,11 @@ public class CdaResultGenerator {
     // Add performer
     lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerRefs, data));
 
+    // Add reference range if available
+    if (referenceRange != null && !referenceRange.isEmpty()) {
+      lrEntry.append(getReferenceRangeXml(interpretation, referenceRange));
+    }
+
     // End Tag for Entry Relationship
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -1130,7 +1141,8 @@ public class CdaResultGenerator {
       CodeableConcept altCode,
       List<Reference> performerRefs,
       R4FhirData data,
-      String version) {
+      String version,
+      List<Observation.ObservationReferenceRangeComponent> referenceRange) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -1230,6 +1242,11 @@ public class CdaResultGenerator {
     // Add performer
 
     lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerRefs, data));
+
+    // Add reference range if available
+    if (referenceRange != null && !referenceRange.isEmpty()) {
+      lrEntry.append(getReferenceRangeXml(interpretation, referenceRange));
+    }
 
     // End Tag for Entry Relationship
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -1502,5 +1519,135 @@ public class CdaResultGenerator {
     }
 
     return value;
+  }
+
+  private static String getReferenceRangeXml(
+      List<CodeableConcept> interpretations,
+      List<Observation.ObservationReferenceRangeComponent> referenceRange) {
+
+    // Early return for null or empty reference ranges
+    if (referenceRange == null || referenceRange.isEmpty()) {
+      return "";
+    }
+
+    StringBuilder sb = new StringBuilder(500);
+
+    // Get the most appropriate reference range component
+    Observation.ObservationReferenceRangeComponent refRangeComp = getReferenceRange(referenceRange);
+    if (refRangeComp == null) {
+      refRangeComp = referenceRange.get(0);
+    }
+
+    // Build reference range structure
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REFERENCE_RANGE_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.OBSERVATION_RANGE_EL_NAME));
+
+    // Add text element (always included, defaults to "Unknown")
+    appendTextIfPresent(sb, refRangeComp);
+
+    // Add interval value with low/high bounds
+    appendIntervalValue(sb, refRangeComp);
+
+    // Add interpretation codes
+    appendInterpretationCodes(sb, interpretations);
+
+    // Close elements
+    sb.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBSERVATION_RANGE_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REFERENCE_RANGE_EL_NAME));
+
+    return sb.toString();
+  }
+
+  /**
+   * Appends text element - uses reference range text if available, otherwise defaults to "Unknown"
+   */
+  private static void appendTextIfPresent(
+      StringBuilder sb, Observation.ObservationReferenceRangeComponent refRangeComp) {
+    String refText;
+
+    if (refRangeComp.hasText() && StringUtils.isNotBlank(refRangeComp.getText())) {
+      refText = StringEscapeUtils.escapeXml11(refRangeComp.getText());
+    } else {
+      refText = CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.TEXT_EL_NAME, refText));
+  }
+
+  /** Appends the interval value element with low and high bounds */
+  private static void appendIntervalValue(
+      StringBuilder sb, Observation.ObservationReferenceRangeComponent refRangeComp) {
+    if (!refRangeComp.hasLow() && !refRangeComp.hasHigh()) {
+      sb.append(
+          CdaGeneratorUtils.getNFXMLForValue(
+              CdaGeneratorConstants.IVL_PQ_TYPE, CdaGeneratorConstants.NF_NI));
+      return;
+    }
+
+    // Start IVL_PQ value element
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.VAL_EL_NAME)
+        .append(CdaGeneratorConstants.SPACE)
+        .append(CdaGeneratorConstants.XSI_TYPE)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.IVL_PQ_TYPE)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append(CdaGeneratorConstants.NEW_LINE);
+
+    // Append low and high bounds
+    if (refRangeComp.hasLow()) {
+      appendQuantityBound(sb, refRangeComp.getLow(), CdaGeneratorConstants.TIME_LOW_EL_NAME);
+    }
+
+    if (refRangeComp.hasHigh()) {
+      appendQuantityBound(sb, refRangeComp.getHigh(), CdaGeneratorConstants.TIME_HIGH_EL_NAME);
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME));
+  }
+
+  /** Appends a quantity bound (low or high) with null flavor handling */
+  private static void appendQuantityBound(StringBuilder sb, Quantity quantity, String elementName) {
+    if (quantity == null) {
+      return;
+    }
+
+    if (quantity.hasValue()) {
+      String unit = quantity.hasUnit() ? quantity.getUnit() : "1";
+      sb.append(
+          CdaGeneratorUtils.getXmlForQuantityWithUnits(
+              elementName, quantity.getValue().toString(), unit));
+    } else {
+      // Add null flavor for missing value
+      logger.warn("Quantity value is missing for reference range element: {}", elementName);
+      sb.append(CdaGeneratorConstants.START_XMLTAG)
+          .append(elementName)
+          .append(CdaGeneratorConstants.SPACE)
+          .append(CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL)
+          .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+          .append(CdaGeneratorConstants.NF_NI)
+          .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+          .append(CdaGeneratorConstants.END_XMLTAG_NEWLN);
+    }
+  }
+
+  /** Appends interpretation codes if present */
+  private static void appendInterpretationCodes(
+      StringBuilder sb, List<CodeableConcept> interpretations) {
+    if (interpretations == null || interpretations.isEmpty()) {
+      return;
+    }
+
+    String interpretXml =
+        CdaFhirUtilities.getCodeableConceptXml(
+            interpretations, CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, false);
+
+    if (StringUtils.isNotEmpty(interpretXml)) {
+      sb.append(interpretXml);
+    }
   }
 }

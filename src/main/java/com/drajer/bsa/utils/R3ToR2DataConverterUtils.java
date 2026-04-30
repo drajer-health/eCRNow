@@ -316,7 +316,7 @@ public class R3ToR2DataConverterUtils {
             immList.add((Immunization) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setImmunizations(immList);
+          r4FhirData.addImmunizations(immList);
         }
       } else if (type.contentEquals(ResourceType.Procedure.toString())) {
 
@@ -340,7 +340,7 @@ public class R3ToR2DataConverterUtils {
             medReqList.add((MedicationRequest) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setMedicationRequests(medReqList);
+          r4FhirData.addMedicationRequests(medReqList);
         }
       } else if (type.contentEquals(ResourceType.MedicationAdministration.toString())) {
 
@@ -352,7 +352,7 @@ public class R3ToR2DataConverterUtils {
             medAdmList.add((MedicationAdministration) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setMedicationAdministrations(medAdmList);
+          r4FhirData.addMedicationAdministrations(medAdmList);
         }
       } else if (type.contentEquals(ResourceType.MedicationStatement.toString())) {
 
@@ -364,7 +364,7 @@ public class R3ToR2DataConverterUtils {
             medStatementList.add((MedicationStatement) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setMedicationStatements(medStatementList);
+          r4FhirData.addMedicationStatements(medStatementList);
         }
       } else if (type.contentEquals(ResourceType.Medication.toString())) {
 

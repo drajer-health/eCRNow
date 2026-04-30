@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.10</version>
+        <version>3.5.14</version>
         <relativePath />
         <!-- lookup parent from repository -->
     </parent>
@@ -19,19 +19,36 @@
 
     <properties>
         <java.version>17</java.version>
-        <fhir.version>8.4.0</fhir.version>
+        <fhir.version>8.8.1</fhir.version>
         <fhirpath.version>5.4.0</fhirpath.version>
         <logback-contrib.version>0.1.5</logback-contrib.version>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <skip-jacoco-check>true</skip-jacoco-check>
-        <cqf.fhir.version>3.14.0</cqf.fhir.version>
+        <cqf.fhir.version>3.28.1</cqf.fhir.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.reporting.outputDirectory}/jacoco-merged/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <skip-jacoco-check>true</skip-jacoco-check>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <!-- Default argLine (overridden by java17-profile when running via Maven profile) -->
+        <argLine>
+            --add-opens=java.base/java.util=ALL-UNNAMED
+            --add-opens=java.base/java.util.regex=ALL-UNNAMED
+            --add-opens=java.base/java.io=ALL-UNNAMED
+            --add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+            --add-opens=java.base/java.lang=ALL-UNNAMED
+            --add-opens=java.base/java.time=ALL-UNNAMED
+            --add-opens=java.base/java.time.format=ALL-UNNAMED
+            --add-opens=java.base/java.text=ALL-UNNAMED
+            --add-opens=java.base/java.math=ALL-UNNAMED
+            --add-opens=java.base/java.util.stream=ALL-UNNAMED
+            --add-exports=java.xml/jdk.xml.internal=ALL-UNNAMED
+            --add-opens=java.xml/javax.xml.validation=ALL-UNNAMED
+            --add-opens=java.xml/javax.xml.transform=ALL-UNNAMED
+            --add-opens=java.xml/javax.xml.parsers=ALL-UNNAMED
+        </argLine>
     </properties>
 
 
@@ -65,6 +82,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>33.3.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>org.hl7.fhir.utilities</artifactId>
+                <version>6.9.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -268,18 +290,18 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.19.2</version>
+            <version>2.21.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.19.2</version>
+            <version>2.21</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.19.2</version>
+            <version>2.21.1</version>
         </dependency>
 
         <dependency>
@@ -383,6 +405,24 @@
             <version>3.3.3</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.37.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fhir</groupId>
+            <artifactId>ucum</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.26.1</version>
+        </dependency>
         <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -417,7 +457,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.19.2</version>
+            <version>2.21.2</version>
         </dependency>
 
 
@@ -453,6 +493,8 @@
 
     </dependencies>
 
+
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
@@ -464,6 +506,9 @@
                     <execution>
                         <goals>
                             <goal>check</goal>
+
+
+
                         </goals>
                     </execution>
                 </executions>

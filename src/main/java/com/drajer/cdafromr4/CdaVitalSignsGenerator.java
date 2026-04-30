@@ -174,14 +174,14 @@ public class CdaVitalSignsGenerator {
             CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE,
             CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
             CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
-            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC));
+            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_NAME));
     vsEntry.append(
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.TRANSLATION_EL_NAME,
             CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC,
             CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
             CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC));
+            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC_NAME));
     vsEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
 
     vsEntry.append(
@@ -266,7 +266,7 @@ public class CdaVitalSignsGenerator {
               details,
               obs.getCode(),
               obs.getValue(),
-              obs.getId(),
+              obs.getIdElement().getIdPart(),
               obs.getEffective(),
               obs.getInterpretation(),
               contentRef,

@@ -65,7 +65,7 @@
             <organizer classCode="CLUSTER" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.22.4.26"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.26" extension="2015-08-01"/>
-                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="74728-7"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="74728-7"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Vital Signs"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Vital signs, weight, height, head circumference, oximetry, BMI, and BSA panel"/>
             </code>
                 <statusCode code="completed"/>
                 <effectiveTime value="20120917"/>
@@ -106,7 +106,7 @@
             <organizer classCode="CLUSTER" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.22.4.26"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.26" extension="2015-08-01"/>
-                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="74728-7"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="74728-7"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Vital Signs"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Vital signs, weight, height, head circumference, oximetry, BMI, and BSA panel"/>
             </code>
                 <statusCode code="completed"/>
                 <effectiveTime value="20120917"/>
@@ -147,7 +147,7 @@
             <organizer classCode="CLUSTER" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.22.4.26"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.26" extension="2015-08-01"/>
-                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="74728-7"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="74728-7"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Vital Signs"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Vital signs, weight, height, head circumference, oximetry, BMI, and BSA panel"/>
             </code>
                 <statusCode code="completed"/>
                 <effectiveTime value="19990702000000+0000"/>
@@ -155,7 +155,7 @@
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.27"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.27" extension="2014-06-09"/>
-                        <id root="2.16.840.1.113883.1.1.1.1" extension="http://ecr.drajer.com/open/fhir-r4/fhir/Observation/2b677410-9ef3-44cb-89cd-67790a44d65c/_history/1"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="2b677410-9ef3-44cb-89cd-67790a44d65c"/>
                         <code code="39156-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Body mass index (BMI) [Ratio]"><originalText>
                             <reference value="#vitalSign3"/>
                         </originalText>
@@ -171,7 +171,7 @@
             <organizer classCode="CLUSTER" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.22.4.26"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.26" extension="2015-08-01"/>
-                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="74728-7"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="74728-7"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="46680005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Vital Signs"><translation code="74728-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Vital signs, weight, height, head circumference, oximetry, BMI, and BSA panel"/>
             </code>
                 <statusCode code="completed"/>
                 <effectiveTime value="19990702000000+0000"/>
@@ -179,7 +179,7 @@
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.27"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.27" extension="2014-06-09"/>
-                        <id root="2.16.840.1.113883.1.1.1.1" extension="http://ecr.drajer.com/open/fhir-r4/fhir/Observation/45f919b6-2215-43c6-a423-d915a2bc7a40/_history/1"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="45f919b6-2215-43c6-a423-d915a2bc7a40"/>
                         <code code="8302-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Body height"><originalText>
                             <reference value="#vitalSign4"/>
                         </originalText>

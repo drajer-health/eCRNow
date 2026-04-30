@@ -1263,6 +1263,13 @@
                     </originalText>
                     </value>
                         <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+                        <referenceRange>
+                            <observationRange>
+                                <text>Not Detected</text>
+                                <value xsi:type="IVL_PQ" nullFlavor="NI"/>
+                                <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+                            </observationRange>
+                        </referenceRange>
                     </observation>
                 </component>
             </organizer>

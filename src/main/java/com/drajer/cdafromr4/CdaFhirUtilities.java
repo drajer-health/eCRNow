@@ -3745,7 +3745,7 @@ public class CdaFhirUtilities {
     return new Pair<>(false, xml);
   }
 
-  private static Pair<String, String> findMatchingCode(
+  public static Pair<String, String> findMatchingCode(
       MatchedTriggerCodes mtc, CodeableConcept code, List<String> paths) {
 
     for (String s : paths) {
