@@ -6,6 +6,7 @@ import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.junit.Test;
@@ -31,26 +32,38 @@ public class cdaVitalSignGeneratorTest extends BaseGeneratorTest {
 
     List<Bundle.BundleEntryComponent> entries = b.getEntry();
     Bundle bundle = new Bundle();
-    Set<Resource> resourceSet = new HashSet<>(); // Initialize HashSet outside the loop
+    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+
+    Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
+
+    for (Bundle.BundleEntryComponent ent : entries) {
+      Resource resource = ent.getResource();
+      ResourceType resourceType = resource.getResourceType();
+
+      resourcesByType.computeIfAbsent(resourceType, k -> new LinkedHashSet<>()).add(resource);
+    }
 
     Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
     for (Bundle.BundleEntryComponent ent : entries) {
 
-      resourceSet.add(ent.getResource());
       ResourceType resourceType = ent.getResource().getResourceType();
-      R3ToR2DataConverterUtils.addResourcesToR4FhirData(
-          "1",
-          bundle,
-          data,
-          launchDetails,
-          resourceSet,
-          resourceType.toString(),
-          uniqueResourceIdsByType);
-      resourceSet.clear();
+
+      resourceSet.addAll(resourcesByType.getOrDefault(resourceType, Collections.EMPTY_SET));
+
+      if (!resourceSet.isEmpty()) {
+        R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+            "1",
+            bundle,
+            data,
+            launchDetails,
+            resourceSet,
+            resourceType.toString(),
+            uniqueResourceIdsByType);
+        resourceSet.clear();
+        resourcesByType.remove(resourceType);
+      }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
-    data.setData(bundle);
+    data.getVitalObs().sort(Comparator.comparing(Observation::getId));
 
     String expectedXml = TestUtils.getFileContentAsString(VITAL_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);

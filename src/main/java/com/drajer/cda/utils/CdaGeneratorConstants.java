@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorConstants {
 
+  public static final String REFERENCE_RANGE_EL_NAME = "referenceRange";
+  public static final String OBSERVATION_RANGE_EL_NAME = "observationRange";
+  public static final String VITAL_SIGNS_ORG_CODE_LOINC_NAME =
+      "Vital signs, weight, height, head circumference, oximetry, BMI, and BSA panel";
+
   private CdaGeneratorConstants() {
     // not called
   }
@@ -671,6 +676,7 @@ public class CdaGeneratorConstants {
   public static final String PREGNANCY_INTENTION_CODE_DISPLAY = "Pregnancy Intention";
   public static final String PREGNANCY_INTENTION_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.281";
   public static final String PREGNANCY_INTENTION_TEMPLATE_ID_EXT = "2018-04-01";
+  public static final String PREGNANCY_INTENTION_ROOT_ID = "2.16.840.1.113883.3.8.60.2.1.50";
   public static final String PP_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.285";
   public static final String PP_TEMPLATE_ID_EXT = "2018-04-01";
   public static final String PP_CODE = "249197004";
@@ -697,6 +703,10 @@ public class CdaGeneratorConstants {
   public static final String MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.15.2.3.36";
   public static final String MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID_EXT_31 = "2019-04-01";
+
+  public static final String IMMUNIZATION_ACTIVITY_TRIGGER_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.15.2.3.38";
+  public static final String IMMUNIZATION_TRIGGER_TEMPLATE_ID_EXT_31 = "2019-04-01";
   // Payer Related Information.
   public static final String PAYERS_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.18";
   public static final String PAYERS_SEC_TEMPLATE_ID_EXT = "2015-08-01";
@@ -981,6 +991,7 @@ public class CdaGeneratorConstants {
   // Data Types
   public static final String CD_TYPE = "CD";
   public static final String PQ_TYPE = "PQ";
+  public static final String IVL_PQ_TYPE = "IVL_PQ";
   public static final String CO_TYPE = "CO";
   public static final String PIVL_TS_TYPE = "PIVL_TS";
   public static final String IVL_TS_TYPE = "IVL_TS";
@@ -1127,6 +1138,8 @@ public class CdaGeneratorConstants {
 
   public static final String ASSIGNED = "ASSIGNED";
 
+  public static final String HISTORY_OF_OCCUPATION_INDUSTRY = "History of Occupation Industry";
+
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();
@@ -1244,9 +1257,7 @@ public class CdaGeneratorConstants {
     if (valueSetToCodes != null && valueSetToCodes.containsKey(valueset)) {
 
       String found =
-          valueSetToCodes
-              .get(valueset)
-              .stream()
+          valueSetToCodes.get(valueset).stream()
               .filter(value -> code.contentEquals(value))
               .findAny()
               .orElse(null);

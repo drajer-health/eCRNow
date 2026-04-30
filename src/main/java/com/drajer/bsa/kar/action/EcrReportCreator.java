@@ -98,10 +98,8 @@ public class EcrReportCreator extends ReportCreator {
   public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
   public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
-  public static final String MESSAGE_HEADER_PROFILE =
-      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-messageheader";
-  public static final String MESSAGE_TYPE_URL =
-      "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-message-types-codesystem";
+  public static final String MESSAGE_HEADER_PROFILE = "";
+  public static final String MESSAGE_TYPE_URL = "";
   public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-triggerdefinition-namedevents";
 
@@ -326,6 +324,10 @@ public class EcrReportCreator extends ReportCreator {
     // logger.info("Ehr Query Service :{}", ehrService);
 
     Eicr ecr = new Eicr();
+    Integer submittedVersionNumber = 0;
+    if (kd.getPhm() != null) {
+      submittedVersionNumber = kd.getPhm().getSubmittedVersionNumber();
+    }
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
 
@@ -341,7 +343,11 @@ public class EcrReportCreator extends ReportCreator {
 
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            data.getValue0(), data.getValue1(), ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            data.getValue0(),
+            data.getValue1(),
+            ecr,
+            submittedVersionNumber,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
     returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
@@ -369,6 +375,11 @@ public class EcrReportCreator extends ReportCreator {
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
 
+    Integer submittedVersionNumber = 0;
+    if (kd.getPhm() != null) {
+      submittedVersionNumber = kd.getPhm().getSubmittedVersionNumber();
+    }
+
     // Save data to File for debugging.
     String outputFileName =
         KarProcessingData.LOADING_QUERY_FILE_NAME
@@ -381,7 +392,11 @@ public class EcrReportCreator extends ReportCreator {
 
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            data.getValue0(), data.getValue1(), ecr, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
+            data.getValue0(),
+            data.getValue1(),
+            ecr,
+            submittedVersionNumber,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
 
@@ -937,8 +952,7 @@ public class EcrReportCreator extends ReportCreator {
     val.setStatus(NarrativeStatus.ADDITIONAL);
 
     String resultString =
-        resTobeAdded
-            .stream()
+        resTobeAdded.stream()
             .map(dres -> (DomainResource) (dres))
             .collect(Collectors.toList())
             .stream()

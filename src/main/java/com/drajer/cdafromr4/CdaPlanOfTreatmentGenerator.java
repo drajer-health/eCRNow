@@ -37,7 +37,14 @@ public class CdaPlanOfTreatmentGenerator {
 
     List<Medication> medList = data.getMedicationList();
     List<MedicationRequest> medReqs = new ArrayList<>();
-    medReqs = CdaMedicationGenerator.getValidMedicationRequests(data, medList);
+    // Only on-hold MedicationRequests (intent=order|plan) belong in Plan of Treatment per eCR
+    // guidance.
+    // active/completed go to the Medications Section; cancelled/stopped/etc. are ignored.\
+    if (version.contentEquals(CdaGeneratorConstants.CDA_EICR_VERSION_R31)) {
+      medReqs = CdaMedicationGenerator.getValidMedicationRequestsForPlanOfTreatment(data, medList);
+    } else {
+      medReqs = CdaMedicationGenerator.getValidMedicationRequests(data, medList);
+    }
 
     // List<ServiceRequest> sr = getValidServiceRequests(data);
     List<ServiceRequest> obsReqs = new ArrayList<>();

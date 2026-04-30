@@ -1,16 +1,16 @@
 package com.drajer.bsa.model;
 
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "kar_execution_state")
+@Table(name = "kar_execution_state_v2")
 @DynamicUpdate
 public class KarExecutionState {
 
@@ -49,7 +49,7 @@ public class KarExecutionState {
   @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the key to retrieve the notification context for executing the Kar */
-  @Column(name = "nc_id", nullable = false, columnDefinition = "uuid")
+  @Column(name = "nc_id", nullable = false)
   private UUID ncId;
 
   /** The attribute links back to the Notification Context */
@@ -61,21 +61,21 @@ public class KarExecutionState {
    * The attribute represents the key to retrieve the health care setting information for executing
    * the Kar
    */
-  @Column(name = "hs_fhir_server_url", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "hs_fhir_server_url", nullable = false, length = 8000)
   private String hsFhirServerUrl;
 
   /**
    * The attribute represents the key to retrieve the Knowledge Artifact information for executing
    * the Kar
    */
-  @Column(name = "kar_unique_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_unique_id", nullable = false, length = 8000)
   private String karUniqueId;
 
   /**
    * The attribute represents the state of the execution for the various actions that have been
    * completed during a single execution either due to a timer or due to a notification.
    */
-  @Column(name = "action_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "action_status", nullable = true, length = 8000)
   private String actionStatus;
 
   /**

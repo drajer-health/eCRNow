@@ -36,36 +36,36 @@ The HL7 CDA Generator module is a very simple set of transforms to create a eICR
 The routing module is used to submit/transmit the eICR created to the public health agencies. Currently the Direct Transport is integrated into the app. Future versions will add other modes of submission which may include IHE XDR, HL7 FHIR among others.
 
 ## 2.6 Properties
-| Properties                                           | Description                                                                                                                                                                                                                                                                                   |
-|------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ecr.fhir.pagecount.enabled                           | Setting this property to `true` will add `_count` parameter to supported FHIR resource calls. Default value is `true`.                                                                                                                                                                        
-| ecr.fhir.pagecount.value                             | This property is used only if `ecr.fhir.pagecount.enabled` is set to `true`. This property defines the number of items retreived per paging call. Default value is `500`.                                                                                                                     
+| Properties                                           | Description                                                                                                                                                                                                                                                                                  |
+|------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ecr.fhir.pagecount.enabled                           | Setting this property to `true` will add `_count` parameter to supported FHIR resource calls. Default value is `true`.                                                                                                                                                                       
+| ecr.fhir.pagecount.value                             | This property is used only if `ecr.fhir.pagecount.enabled` is set to `true`. This property defines the number of items retreived per paging call. Default value is `500`.                                                                                                                    
 | ecr.fhir.pagecount.resources                         | This property is used only if `ecr.fhir.pagecount.enabled` is set to `true`. List of resources for which `_count` parameter should be added. Resources should be sepearted by pipe character.
-| ecr.fhir.query-by-period.enabled                     | Setting this property to `true` will add either `date` or `_lastUpdated` parameter to supported FHIR resource calls. Encounter start date will be used for the query. Default value is `true`. `Example: date=ge2014-09-24, _lastUpdated=ge2014-09-24T00:00:00.000Z`                          
-| ecr.fhir.query-by-period.uselastquerytime            | This property is used only if `ecr.fhir.query-by-period.enabled` is `true`.  This will use the last match trigger query date time instead of encounter start date durig the TrigggerQuery.                                                                                                      
+| ecr.fhir.query-by-period.enabled                     | Setting this property to `true` will add either `date` or `_lastUpdated` parameter to supported FHIR resource calls. Encounter start date will be used for the query. Default value is `true`. `Example: date=ge2014-09-24, _lastUpdated=ge2014-09-24T00:00:00.000Z`                         
+| ecr.fhir.query-by-period.uselastquerytime            | This property is used only if `ecr.fhir.query-by-period.enabled` is `true`.  This will use the last match trigger query date time instead of encounter start date durig the TrigggerQuery.                                                                                                     
 | ecr.fhir.query-by-period.date.resources              | This property is used only if `ecr.fhir.query-by-period.enabled` is `true`. List of resources for which `date` parameter should be added. Resources should be sepearted by pipe character.
 | ecr.fhir.query-by-period.lastupdated.resources       | This property is used only if `ecr.fhir.query-by-period.enabled` is `true`. List of resources for which `_lastUpdated` parameter should be added. Resources should be sepearted by pipe character.
-| ecr.fhir.query-by-encounter.enabled                  | Setting this property to `true` will add `encounter` parameter to supported FHIR resources. Default value is `true`.                                                                                                                                                                          
+| ecr.fhir.query-by-encounter.enabled                  | Setting this property to `true` will add `encounter` parameter to supported FHIR resources. Default value is `true`.                                                                                                                                                                         
 | ecr.fhir.query-by-encounter.resources                | This property is used only if `ecr.fhir.query-by-encounter.enabled` is `true`. List of resources for which `encounter` parameter should be added. Resources should be sepearted by pipe character.
-| ecr.fhir.skip.resources                              | Skips the FHIR calls for resources mentioned. Resources should be seperated by pipe character.                                                                                                                                                                                                    
-| ecr.fhir.skip.triggerquery.resources                 | Skips the FHIR calls for resources during Trigger query. Resources should be seperated by pipe character                                                                                                                                                                                          
-| ecr.rr.processorphanrr                               | Setting this property to `true`, will enable processing of RRs to EHR which doesn't find match row in eicr table for eicr_doc_id. Default value is `false`.                                                                                                                                   
-| ecr.fhir.retry.enabled                               | Setting this property to `true` will allow FHIR calls to retry on failures. Default value is `true`.                                                                                                                                                                                          
-| ecrfhirretrytemplate.maxRetries                      | Used when `ecr.fhir.retry.enabled` is `true`. Number of times to retry. Default value is `3`.                                                                                                                                                                                                 
-| ecrfhirretrytemplate.retryWaitTimeInMillis           | Used when `ecr.fhir.retry.enabled` is `true`. Time interval between retries in millseconds. Default value is `1000` millsec.                                                                                                                                                                  
-| ecrfhirretrytemplate.retryStatusCodes                | Used when `ecr.fhir.retry.enabled` is `true`. Httpstatus codes for which to retry, onlyfailure with these codes will be retried.Default values is `408, 429, 502, 503, 504, 500`.                                                                                                             
+| ecr.fhir.skip.resources                              | Skips the FHIR calls for resources mentioned. Resources should be seperated by pipe character.                                                                                                                                                                                                   
+| ecr.fhir.skip.triggerquery.resources                 | Skips the FHIR calls for resources during Trigger query. Resources should be seperated by pipe character                                                                                                                                                                                         
+| ecr.rr.processorphanrr                               | Setting this property to `true`, will enable processing of RRs to EHR which doesn't find match row in eicr table for eicr_doc_id. Default value is `false`.                                                                                                                                  
+| ecr.fhir.retry.enabled                               | Setting this property to `true` will allow FHIR calls to retry on failures. Default value is `true`.                                                                                                                                                                                         
+| ecrfhirretrytemplate.maxRetries                      | Used when `ecr.fhir.retry.enabled` is `true`. Number of times to retry. Default value is `3`.                                                                                                                                                                                                
+| ecrfhirretrytemplate.retryWaitTimeInMillis           | Used when `ecr.fhir.retry.enabled` is `true`. Time interval between retries in millseconds. Default value is `1000` millsec.                                                                                                                                                                 
+| ecrfhirretrytemplate.retryStatusCodes                | Used when `ecr.fhir.retry.enabled` is `true`. Httpstatus codes for which to retry, onlyfailure with these codes will be retried.Default values is `408, 429, 502, 503, 504, 500`.                                                                                                            
 | ecrfhirretrytemplate.httpMethodTypeMap.              | Above retry properties can be set at different Httpmethod level. `Example: ecrfhirretrytemplate.httpMethodTypeMap.GET.maxRetries=3 ecrfhirretrytemplate.httpMethodTypeMap.GET.retryWaitTimeInMillis=1000 ecrfhirretrytemplate.httpMethodTypeMap.GET.retryStatusCodes=408, 429, 502, 503, 504, 500`
 | longencounter.enableSuspend                          | Setting this property to `true` will suspend the long running encounter. Default value is false
 | longencounter.suspendThreshold                       | Used when `longencounter.enableSuspend` is `true`. Threshold day to suspend long running encounter. Default value is `45` days
-| validate.eicr.cdar11                                 | Allows the validation of a eICR based on CDA Release 1.1 for ECR when set to true.  
-| validate.eicr.cdar31                                 | Allows the validation of a eICR based on CDA Release 3.1 for ECR when set to true.  
-| validate.eicr.fhir=false                             | Allows the validation of a eICR based on ECR FHIR IG when set to true.  <br/>                                                                                                 |
+| validate.eicr.cdar11                                 | Allows the validation of a eICR based on CDA Release 1.1 for ECR when set to true. 
+| validate.eicr.cdar31                                 | Allows the validation of a eICR based on CDA Release 3.1 for ECR when set to true. 
+| validate.eicr.fhir=false                             | Allows the validation of a eICR based on ECR FHIR IG when set to true.  <br/>                                                                                                |
 | jdbc.url                                             | JDBC URL to connect to the PostgreSQL database. Adjust host, port, and database name as needed. |
 | logging.file.name                                    | Path to the log file where application debugging and runtime logs will be stored. |
 | ersd.file.location                                   | Specifies the file path for the ERSD (Electronic Reporting and Surveillance Distribution) JSON used by the systemLaunch API in Release 2.0. For Release 3.x, this should be set to an invalid path (e.g., `//dummy.json`) as the configuration is not required. |
 | authorization.service.impl.class                     | Implementation class used to obtain tokens for HTTP headers when invoking EHR RESTful endpoints. |
 | jwks.keystore.location                               | Path to the **Java KeyStore (JKS)** file that contains the private/public keys used for Backend Services Authorization. Example: `//users//nbashyam//ecrnow//ecrfhir-client//ecr-on-fhir.jks` |
-| jwks.keystore.password                               | Password to access the keystore file. Example: `Password123@`                                                                                                                                   
+| jwks.keystore.password                               | Password to access the keystore file. Example: `Password123@`                                                                                                                                  
 | db-scheduler.enabled=true                            | Enables/disables the DB-based scheduler. |
 | db-scheduler.heartbeat-interval=1m                   | Interval at which scheduler heartbeats are sent. |
 | db-scheduler.polling-interval=10s                    | How often the scheduler polls for new tasks. |
@@ -98,6 +98,8 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | rest.template.connection.timeout=10000               | REST template connection timeout in milliseconds. |
 | rest.template.read.timeout=10000                     | REST template read timeout in milliseconds. |
 | mail.read.retries=3                                  | Maximum retry attempts for failed mail read operations. |
+| rr_check_time=300                                    | Used for  set  reportable Response  Check  time |
+| mail.imap.batch.size=500                             | Batch size for processing mail messages. |
 ---
 # 3. eCRNow-UI Project and its relationship to eCRNow:
 The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.
@@ -108,12 +110,11 @@ The eCRNow-UI project and application is used to configure the eCRNow App. Altho
 ## 4.1 Pre-Requisites: ##
 The following technologies should have been installed on your machine where you will build, test and deploy your applications.
 
-* Java 8 is supported by all eCRNow App releases.
-* Java 17 is supported by eCRNow App Release 3.1.5 or later releases. 
+* Java 17 or higher
 * Pick a specific release from the master branch and install the JDK that you would like to use.
 * PostgresSQL Database 10.x or higher.
 * NodeJS 12.4.1 or above
-* Maven 3.3.x or higher.
+* Maven 3.6.x or higher.
 * git tool.
 
 ## 4.2 Steps to Build and Run the App: ##
@@ -161,29 +162,17 @@ Change the logfile location to reflect where you want to log the data.
 
 4. Build the App by running the following maven command.
 ```
-mvn clean install -Djava.version=<JAVA VERSION>
-```
-
-For Java 8
-
-```
-mvn clean install -Djava.version=1.8
-```
-
-For Java 17
-
-```
-mvn clean install -Djava.version=17
+mvn clean install
 ```
 
 5. Run the App using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -jar ./target/ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -jar ./target/ecr-now.war```
 
 The security.key is something that you can configure in the environment or your container approach and is used for encrypting sensitive information such as clientids, client secrets and direct transport account information in the database.
 
 NOTE: If you are using Windows system to run the application, then use the command formatted like below.
-```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" "-Djava.version=<JAVA VERSION>" -jar .\target\ecr-now.war```
+```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" -jar .\target\ecr-now.war```
  
 # 6.  Running the Application with SSL.
 
@@ -194,19 +183,19 @@ Keystore File: You will need a valid keystore file (.p12 or .jks) for SSL encryp
 
 #### 6.1  Running the Application with a .p12 Keystore (Self-Signed) using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.p12 -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=PKCS12 -jar .\target\ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123  -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.p12 -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=PKCS12 -jar .\target\ecr-now.war```
 
 
 #### 6.2  Running the Application with a .jks Keystore (Self-Signed) using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -Djava.version=<JAVA VERSION> -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.jks -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=jks -jar .\target\ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123  -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=ecrnow -Dserver.ssl.key-password=Password123@ -Dserver.ssl.key-store=c://ecr-now/ecrnow.jks -Dserver.ssl.key-store-password=Password123@ -Dserver.ssl.key-store-type=jks -jar .\target\ecr-now.war```
 
 
 ### Properties  Explanation
 
 | **Property Name**             | **Description**                                                                                   | **Default Value** | **Example Value**                                  |
 |-------------------------------|---------------------------------------------------------------------------------------------------|-------------------|----------------------------------------------------|
-| `java.version`                 | Specifies the Java version required to run the application.                                      | `1.8`             | `17`                                               |
+| `java.version`                 | Specifies the Java version required to run the application.                                      | `17`             | `17`                                               |
 | `security.key`                 | Encryption key used to protect sensitive data like client IDs, client secrets, and transport info. | `test123`         | `mySecureKey!`                                     |
 | `server.ssl.enabled`           | Enables or disables SSL for secure communication.                                                 | `false`           | `true`                                             |
 | `server.ssl.key-alias`         | Alias for the key inside the keystore.                                                            | `ecrnow`          | `mykey`                                            |
@@ -241,6 +230,24 @@ The following documents can be used to configure the app based on the specific v
 * [eCRNow App version 2.X Configuration Guide](https://github.com/drajer-health/eCRNow/blob/master/documents/eCR%20Now%20App%20Configuration%20Guide_v2.docx)
 
 * [eCRNow App version 3.X Configuration Guide](https://github.com/drajer-health/eCRNow/blob/master/documents/eCR%20Now%20App%20Configuration%20Guide_Release3.0.docx)
+
+## 4.4 Database Upgrade Details and Documentation
+
+For  database changes (including new tables, schema updates, and migration execution details), use the following documentation:
+
+* [Client Database Upgrade Instructions v4.xx](documents/Client_Database_Upgrade_Instructions_v4.xx.docx)
+
+Database migration scripts are organized by database engine under:
+
+* PostgreSQL init/migration scripts: [src/main/resources/db-scripts/4.xx_db_migration_scripts/psql_db_scripts/init_schema_and_data](src/main/resources/db-scripts/4.xx_db_migration_scripts/psql_db_scripts/init_schema_and_data)
+* PostgreSQL constraints/indexes scripts: [src/main/resources/db-scripts/4.xx_db_migration_scripts/psql_db_scripts/schema_alterations_and_constraints](src/main/resources/db-scripts/4.xx_db_migration_scripts/psql_db_scripts/schema_alterations_and_constraints)
+* SQL Server init/migration scripts: [src/main/resources/db-scripts/4.xx_db_migration_scripts/msql_db_scripts/init_schema_and_data](src/main/resources/db-scripts/4.xx_db_migration_scripts/msql_db_scripts/init_schema_and_data)
+* SQL Server constraints/indexes scripts: [src/main/resources/db-scripts/4.xx_db_migration_scripts/msql_db_scripts/schema_alterations_and_constraints](src/main/resources/db-scripts/4.xx_db_migration_scripts/msql_db_scripts/schema_alterations_and_constraints)
+
+Run order for database upgrade:
+
+1. Execute scripts from init_schema_and_data.
+2. Execute scripts from schema_alterations_and_constraints.
 
 # 5. Production Deployment Considerations:
 Organizations implementing in production settings should consider the following:

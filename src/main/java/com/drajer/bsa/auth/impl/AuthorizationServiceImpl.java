@@ -3,9 +3,12 @@ package com.drajer.bsa.auth.impl;
 import com.drajer.bsa.auth.AuthorizationService;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.FhirServerDetails;
+import com.drajer.ecrapp.util.CommonUtils;
+import com.drajer.sof.model.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -52,7 +55,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
       if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))
           || fsd.getAuthType()
-              .equals(BsaTypes.getString(BsaTypes.AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH))) {
+              .equals(BsaTypes.getString(BsaTypes.AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH))
+          || fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SOF_SYSTEM))) {
 
         logger.info(
             " System Launch/Multi-tenant System Launch authorization is configured for EHR {}",
@@ -73,20 +77,20 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         // Setup the OAuth Type flow.
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
-        map.add("scope", fsd.getScopes());
+        if (StringUtils.isNotBlank(fsd.getScopes())) {
+          map.add("scope", fsd.getScopes());
+        }
 
         if (Boolean.TRUE.equals(fsd.getRequireAud())) {
           map.add("aud", fsd.getFhirServerBaseURL());
         }
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+        ResponseEntity<?> response =
+            resTemplate.exchange(fsd.getTokenUrl(), HttpMethod.POST, entity, Response.class);
+        Objects.requireNonNull(response.getBody());
+        tokenResponse = new JSONObject(CommonUtils.writeValueAsString(response.getBody()));
 
-        ResponseEntity<String> response =
-            resTemplate.exchange(fsd.getTokenUrl(), HttpMethod.POST, entity, String.class);
-
-        String body = Objects.requireNonNull(response.getBody());
-
-        tokenResponse = new JSONObject(body);
         logger.debug(
             "Received AccessToken: {}", StringEscapeUtils.escapeJson(tokenResponse.toString()));
 

@@ -5,7 +5,6 @@ import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_NPI_URL;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.ActionRepo;
 import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
@@ -43,7 +42,7 @@ public class CdaHeaderGenerator {
   private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  private static String SW_APP_VERSION = "Version 3.1.14";
+  private static final String SW_APP_VERSION = "4.0.2";
   private static String SW_APP_NAME = "ecrNowApp";
   private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
@@ -69,7 +68,11 @@ public class CdaHeaderGenerator {
   }
 
   public static String createCdaHeader(
-      R4FhirData data, LaunchDetails details, Eicr ecr, String version) {
+      R4FhirData data,
+      LaunchDetails details,
+      Eicr ecr,
+      Integer eicrDocumentVersion,
+      String version) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
@@ -123,24 +126,9 @@ public class CdaHeaderGenerator {
               details.getAssigningAuthorityId(),
               String.valueOf(details.getSetId())));
 
-      Integer vernum = 0;
-      if (version.contains("3.")) {
-
-      } else {
-        vernum = ActionRepo.getInstance().getEicrRRService().getMaxVersionId(ecr);
-      }
-
-      if (vernum == 0) {
-        eICRHeader.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(ecr.getDocVersion())));
-      } else {
-        // Setup version number for ecr.
-        ecr.setDocVersion(vernum + 1);
-        eICRHeader.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(ecr.getDocVersion())));
-      }
+      eICRHeader.append(
+          CdaGeneratorUtils.getXmlForValue(
+              CdaGeneratorConstants.VERSION_EL_NAME, String.valueOf(eicrDocumentVersion + 1)));
 
       Bundle bundle = data.getData();
       if (bundle != null) {
@@ -909,13 +897,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
 
-    String nameUse = CdaFhirUtilities.getCodeForNameUse(p.getName());
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElementWithAttribute(
-            CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
-    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName(), true));
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+    patientDetails.append(CdaFhirUtilities.getHumanNameXml(p.getName(), false, true));
 
     patientDetails.append(CdaFhirUtilities.getGenderXml(p.getGenderElement().getValue()));
 

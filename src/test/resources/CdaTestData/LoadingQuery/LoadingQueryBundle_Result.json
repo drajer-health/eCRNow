@@ -271,7 +271,8 @@
         "reference": "Organization/25799ec0-0ca8-4dfb-bbef-1be58b5cb46b"
       }
     }
-  }, {
+  },
+    {
     "resource": {
       "resourceType": "Observation",
       "id": "3407eeea-cff5-4211-8cb3-858982f34886",
@@ -291,7 +292,9 @@
         } ]
       } ],
       "code": {
-        "text": "candida albicans"
+        "system": "http://loinc.org",
+        "code": "91081-0",
+        "display": "Candida sp DNA [Presence] in Specimen by NAA with probe detection"
       },
       "subject": {
         "reference": "Patient/66ba27b6-fe87-4c43-8e46-dc485d7ab023"
@@ -305,9 +308,70 @@
           "display": "Abnormal"
         } ],
         "text": "abnormal"
+      } ],
+      "referenceRange": [ {
+        "text": "1.005-1.015"
       } ]
     }
   },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3407eeea-cff5-4211-8cb3-858982f34887",
+        "meta": {
+          "versionId": "1"
+        },
+        "identifier": [ {
+          "system": "https://fhir.athena.io/sid/ah-observation",
+          "value": "a-xxxx.resultamb-711592"
+        } ],
+        "status": "final",
+        "category": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+            "code": "laboratory",
+            "display": "Laboratory"
+          } ]
+        } ],
+        "code": {
+          "system": "http://loinc.org",
+          "code": "91081-0",
+          "display": "Candida sp DNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/66ba27b6-fe87-4c43-8e46-dc485d7ab023"
+        },
+        "effectiveDateTime": "2025-10-07T00:00:00+00:00",
+        "valueString": "positive",
+        "interpretation" : [
+          {
+            "coding" : [
+              {
+                "system" : "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code" : "N",
+                "display" : "Normal"
+              }
+            ],
+            "text" : "Normal"
+          }
+        ],
+        "referenceRange": [ {
+          "text": "0.1-1",
+            "low" : {
+              "value" : 0.1,
+              "unit" : "mg/dL",
+              "system" : "http://unitsofmeasure.org",
+              "code" : "mg/dL"
+            },
+            "high" : {
+              "value" : 1,
+              "unit" : "mg/dL",
+              "system" : "http://unitsofmeasure.org",
+              "code" : "mg/dL"
+            }
+        }]
+      }
+    },
     {
     "resource": {
       "resourceType": "DiagnosticReport",
@@ -589,6 +653,7 @@
         }
       }
     }
+
   ,{
       "resource": {
         "resourceType": "DiagnosticReport",
@@ -673,5 +738,211 @@
        ]
       }
     }
+    ,{"resource": {
+      "resourceType" : "Observation",
+      "id" : "observation-gestational-age-at-delivery-babyg-quinn-prem-w",
+      "status" : "final",
+      "code" : {
+        "coding" : [
+          {
+            "system" : "http://loinc.org",
+            "code" : "11884-4",
+            "display" : "Gestational age Estimated"
+          }
+        ]
+      },
+      "subject" : {
+         "reference" : "Patient/66ba27b6-fe87-4c43-8e46-dc485d7ab023",
+      "display" : "BabyG Quinn"
+    },
+      "effectiveDateTime" : "2019-12-02",
+      "valueQuantity" : {
+        "value" : 33.71,
+        "system" : "http://unitsofmeasure.org",
+        "code" : "wk"
+      }
+    }},
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "05da9140-7ab6-491c-bc4a-3b2fb177ee4f",
+        "meta": {
+          "versionId": "3"
+        },
+        "status": "final",
+        "category": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+            "code": "laboratory",
+            "display": "Laboratory"
+          } ]
+        } ],
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "16177-8",
+            "display": "Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid"
+          } ],
+          "text": "Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2024-01-07T00:00:00+00:00",
+        "performer": [ {
+          "reference": "Practitioner/b2360d5d-dc3c-4d07-aef6-43f16d5886e3"
+        } ],
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "260373001",
+            "display": "Detected (qualifier value)"
+          } ],
+          "text": "Detected"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "abd14f55-4648-4e91-bfad-9b1844707748",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "6349-5"
+            }
+          ],
+          "text": "CULCHLAM"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2025-04-16T00:00:00+00:00",
+        "issued": "2025-04-16T00:00:00.000+00:00",
+        "performer": [
+          {
+            "reference": "Practitioner/d7134a56-18a5-41a6-82f9-393a77865da2"
+          }
+        ],
+        "dataAbsentReason": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+              "code": "as-text",
+              "display": "As Text"
+            }
+          ],
+          "text": "Chlamydia trachomatis organism detected"
+        },
+        "specimen": {
+          "reference": "Specimen/9dfcd135-5521-4707-a694-209662388240"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "9dfcd135-5521-4707-a694-209662388240",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "available",
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0071",
+            "code": "1234",
+            "display": "Blood"
+          } ],
+          "text": "Blood specimen"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+          "display": "Alice C Newman"
+        },
+        "collection": {
+          "collectedDateTime": "2022-09-27T00:00:00+00:00"
+        },
+        "container": [ {
+          "type": {
+            "text": "Serum Separator Tube"
+          }
+        } ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-see-note-example",
+        "status": "final",
+
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "713-8",
+            "display": "Eosinophils/100 leukocytes in Blood by Automated count"
+          } ],
+          "text": "Eosinophils"
+        },
+
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "effectiveDateTime": "2026-01-05T10:00:00-08:00",
+
+        "valueString": "See Note:",
+
+        "note": [
+          {
+            "text": "Adenovirus PCR — Not detected"
+          },
+          {
+            "text": "Coronavirus 229E — Not detected"
+          },
+          {
+            "text": "Influenza A — Not detected"
+          },
+          {
+            "text": "Influenza B — Not detected"
+          }
+        ]
+      }
+
+    }
+
   ]
 }

@@ -10,10 +10,12 @@ import com.drajer.test.util.WireMockHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.TimeZone;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +28,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,13 +42,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = SpringConfiguration.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-@Transactional
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
@@ -62,7 +63,6 @@ public abstract class BaseIntegrationTest {
   protected Transaction tx = null;
   protected HttpHeaders headers = new HttpHeaders();
 
-  protected static final TestRestTemplate restTemplate = new TestRestTemplate();
   protected static final ObjectMapper mapper = new ObjectMapper();
 
   protected static final String URL = "http://localhost:";
@@ -71,9 +71,17 @@ public abstract class BaseIntegrationTest {
   protected static final int wireMockHttpPort = 9011;
   protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
+  protected TestRestTemplate restTemplate;
+  @Autowired private RestTemplateBuilder restTemplateBuilder;
 
   @Before
   public void setUp() throws Throwable {
+    restTemplate =
+        new TestRestTemplate(
+            restTemplateBuilder
+                .setConnectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
+                .setReadTimeout(Duration.ofSeconds(600)) // Set read timeout
+            );
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();
     wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
@@ -88,20 +96,24 @@ public abstract class BaseIntegrationTest {
     }
   }
 
-  protected String getSystemLaunchPayload(String systemLaunchFile) {
+  protected String getSystemLaunchPayload(String systemLaunchFile) throws IOException {
 
-    String systemLaunchPayload = TestUtils.getFileContentAsString(systemLaunchFile);
+    try {
+      String systemLaunchPayload = TestUtils.getFileContentAsString(systemLaunchFile);
 
-    // Hardcode FHIR URL to match clientDetail to avoid mistakes in test data file.
-    String fhirUrl =
-        clientDetails != null
-            ? clientDetails.getFhirServerBaseURL()
-            : URL + wireMockHttpPort + fhirBaseUrl;
-    JSONObject jsonObject = new JSONObject(systemLaunchPayload);
-    jsonObject.put("fhirServerURL", fhirUrl);
-    systemLaunchPayload = jsonObject.toString();
+      // Hardcode FHIR URL to match clientDetail to avoid mistakes in test data file.
+      String fhirUrl =
+          clientDetails != null
+              ? clientDetails.getFhirServerBaseURL()
+              : URL + wireMockHttpPort + fhirBaseUrl;
+      JSONObject jsonObject = new JSONObject(systemLaunchPayload);
+      jsonObject.put("fhirServerURL", fhirUrl);
+      systemLaunchPayload = jsonObject.toString();
 
-    return systemLaunchPayload;
+      return systemLaunchPayload;
+    } catch (JSONException e) {
+      throw new IOException(e);
+    }
   }
 
   protected String getSystemLaunch3Payload(String systemLaunchFile) {
@@ -109,7 +121,7 @@ public abstract class BaseIntegrationTest {
     return TestUtils.getFileContentAsString(systemLaunchFile);
   }
 
-  protected void createClientDetails(String clientDetailsFile) throws IOException {
+  protected void createClientDetails(String clientDetailsFile) throws IOException, JSONException {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
 
@@ -162,5 +174,9 @@ public abstract class BaseIntegrationTest {
                     .withStatus(200)
                     .withBody(restResponse)
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
+  }
+
+  protected Session getSession() {
+    return sessionFactory.getCurrentSession();
   }
 }

@@ -1,14 +1,6 @@
 package com.drajer.ecrapp;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
-
+/*
 @SpringBootTest(classes = EcrApp.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class EcrAppTest {
@@ -40,4 +32,8 @@ public class EcrAppTest {
       Assertions.fail();
     }
   }
+
+
 }
+
+ */

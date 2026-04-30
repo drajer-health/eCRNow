@@ -1,0 +1,7 @@
+[ {
+  "fhirServerURL" : "https://fhir-ehr.xyramsoft.com/fhir",
+  "patientId" : "19c51ae1-bc95-4936-9a0e-4d44ba085b7d",
+  "encounterId" : "e1c321d3-e396-4d6f-bfcf-e181f800924a",
+  "validationMode" : "true",
+  "throttleContext" : "1"
+} ]

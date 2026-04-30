@@ -13,6 +13,7 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
 import com.microsoft.sqlserver.jdbc.StringUtils;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStream;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -129,6 +129,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       "http://terminology.hl7.org/CodeSystem/condition-clinical";
   private static final String CONDITION_VERIFICATION_STATUS_SYSTEM_URL =
       "http://terminology.hl7.org/CodeSystem/condition-ver-status";
+
   /**
    * The attribute stores the custom queries for each KAR.
    *

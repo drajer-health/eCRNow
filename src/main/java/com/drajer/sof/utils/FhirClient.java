@@ -10,24 +10,29 @@ import ca.uhn.fhir.rest.api.RequestFormatParamStyleEnum;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.IHttpClient;
-import ca.uhn.fhir.rest.gclient.ICreate;
-import ca.uhn.fhir.rest.gclient.IDelete;
-import ca.uhn.fhir.rest.gclient.IFetchConformanceUntyped;
-import ca.uhn.fhir.rest.gclient.IGetPage;
-import ca.uhn.fhir.rest.gclient.IHistory;
-import ca.uhn.fhir.rest.gclient.IMeta;
-import ca.uhn.fhir.rest.gclient.IOperation;
-import ca.uhn.fhir.rest.gclient.IPatch;
-import ca.uhn.fhir.rest.gclient.IRead;
-import ca.uhn.fhir.rest.gclient.ITransaction;
-import ca.uhn.fhir.rest.gclient.IUntypedQuery;
-import ca.uhn.fhir.rest.gclient.IUpdate;
-import ca.uhn.fhir.rest.gclient.IValidate;
+import ca.uhn.fhir.rest.gclient.*;
 import com.drajer.eca.model.EventTypes;
 import javax.annotation.Nonnull;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
+/**
+ * Wrapper class for HAPI FHIR IGenericClient that adds custom HTTP header interceptors and request
+ * tracking capabilities.
+ *
+ * <p>This class implements deprecated methods from IGenericClient interface because we must
+ * implement ALL interface methods. The warnings are documented with @Deprecated annotations to
+ * guide callers toward modern alternatives.
+ *
+ * <p><b>Why we implement deprecated methods:</b> - This is a wrapper/proxy pattern - we must
+ * implement the entire interface - We delegate to the underlying client which still supports these
+ * methods - Callers can use either old or new API through this wrapper - Migration to new API can
+ * happen incrementally at the call sites
+ *
+ * @see IGenericClient
+ * @see FhirHttpHeaderInterceptor
+ */
+@SuppressWarnings("deprecation")
 public class FhirClient implements IGenericClient {
   protected IGenericClient client;
   protected FhirHttpHeaderInterceptor interceptor;
@@ -65,7 +70,7 @@ public class FhirClient implements IGenericClient {
   @Override
   public IFetchConformanceUntyped fetchConformance() {
     this.interceptor.reset();
-    return this.client.fetchConformance();
+    return this.client.capabilities();
   }
 
   @Override
@@ -116,6 +121,7 @@ public class FhirClient implements IGenericClient {
     return this.client.read(aClass, s);
   }
 
+  @Deprecated(since = "HAPI FHIR 8.0", forRemoval = true)
   @Override
   public <T extends IBaseResource> T read(Class<T> aClass, UriDt uriDt) {
     this.interceptor.reset();
@@ -251,5 +257,17 @@ public class FhirClient implements IGenericClient {
   public <T extends IBaseResource> T vread(Class<T> theType, String theId, String theVersionId) {
     this.interceptor.reset();
     return this.client.vread(theType, theId, theVersionId);
+  }
+
+  /**
+   * Execute a raw HTTP request against the FHIR server. This method allows for custom HTTP
+   * operations not covered by standard FHIR operations.
+   *
+   * @return IRawHttp builder for constructing raw HTTP requests
+   */
+  @Override
+  public IRawHttp rawHttpRequest() {
+    this.interceptor.reset();
+    return this.client.rawHttpRequest();
   }
 }

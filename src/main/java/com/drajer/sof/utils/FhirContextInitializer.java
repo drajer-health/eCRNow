@@ -120,18 +120,13 @@ public class FhirContextInitializer {
    * @return The appropriate FhirContext to use for the server
    */
   public FhirContext getFhirContext(String fhirVersion) {
-    switch (fhirVersion) {
-      case DSTU2:
-        return FhirContext.forCached(FhirVersionEnum.DSTU2);
-      case DSTU2_1:
-        return FhirContext.forCached(FhirVersionEnum.DSTU2_1);
-      case DSTU3:
-        return FhirContext.forCached(FhirVersionEnum.DSTU3);
-      case R4:
-        return FhirContext.forCached(FhirVersionEnum.R4);
-      default:
-        return FhirContext.forCached(FhirVersionEnum.DSTU2);
-    }
+    return switch (fhirVersion) {
+      case DSTU2 -> FhirContext.forCached(FhirVersionEnum.DSTU2);
+      case DSTU2_1 -> FhirContext.forCached(FhirVersionEnum.DSTU2_1);
+      case DSTU3 -> FhirContext.forCached(FhirVersionEnum.DSTU3);
+      case R4 -> FhirContext.forCached(FhirVersionEnum.R4);
+      default -> FhirContext.forCached(FhirVersionEnum.DSTU2);
+    };
   }
 
   /**
@@ -243,14 +238,13 @@ public class FhirContextInitializer {
       String resourceId) {
     IBaseResource resource = null;
 
-    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+    if (checkSkipResource(resourceName, (FhirClient) genericClient)) {
       return resource;
     }
 
     try {
       logger.info("Getting {} data by ID {}", resourceName, resourceId);
-      resource =
-          (IBaseResource) genericClient.read().resource(resourceName).withId(resourceId).execute();
+      resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
     } catch (ForbiddenOperationException scopeException) {
       logger.info(
           "Failed getting {} resource by Id: {}\n{}\nCurrent scope: {}",
@@ -279,7 +273,7 @@ public class FhirContextInitializer {
       FhirContext context,
       String resourceName) {
     IBaseBundle bundleResponse = null;
-    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+    if (checkSkipResource(resourceName, (FhirClient) genericClient)) {
       return bundleResponse;
     }
     String url =
@@ -301,7 +295,7 @@ public class FhirContextInitializer {
       String resourceName,
       String category) {
     IBaseBundle bundleResponse = null;
-    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+    if (checkSkipResource(resourceName, (FhirClient) genericClient)) {
       return bundleResponse;
     }
     String url =
@@ -326,7 +320,7 @@ public class FhirContextInitializer {
       String code,
       String system) {
     IBaseBundle bundleResponse = null;
-    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+    if (checkSkipResource(resourceName, (FhirClient) genericClient)) {
       return bundleResponse;
     }
     String url =

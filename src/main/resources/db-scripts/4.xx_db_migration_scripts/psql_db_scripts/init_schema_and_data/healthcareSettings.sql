@@ -1,0 +1,281 @@
+-- Create sequence for Hibernate ID generation
+CREATE SEQUENCE IF NOT EXISTS public.healthcare_setting_v2_seq
+    START WITH 1
+    INCREMENT BY 50
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+DO
+$$
+DECLARE
+    old_table TEXT := 'healthcare_setting';
+    new_table TEXT := 'healthcare_setting_v2';
+    row_count_old BIGINT := 0;
+    row_count_new_before BIGINT := 0;
+    row_count_new_after BIGINT := 0;
+    missing_cols INT := 0;
+    missing_in_new TEXT := '';
+    col_list TEXT := '';
+    select_list TEXT := '';
+    col RECORD;
+BEGIN
+    ------------------------------------------------------------------
+    -- 0. If old table does NOT exist → create new table (if needed) and EXIT
+    ------------------------------------------------------------------
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = old_table
+    ) THEN
+
+        RAISE NOTICE 'Old table "%" does not exist. Creating "%" (if required) and skipping migration.',
+            old_table, new_table;
+
+        -- Create new table if not exists
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = 'public' AND table_name = new_table
+        ) THEN
+            RAISE NOTICE 'Creating new table "%"...', new_table;
+
+            EXECUTE format($fmt$
+                CREATE TABLE %I (
+                    id INTEGER DEFAULT nextval('healthcare_setting_v2_seq') PRIMARY KEY,
+                    clientId VARCHAR(8000) NOT NULL,
+                    clientSecret VARCHAR(8000),
+                    fhir_server_base_url VARCHAR(8000) NOT NULL,
+                    fhir_version VARCHAR(255),
+                    token_url VARCHAR(8000),
+                    scopes TEXT NOT NULL,
+                    default_provider_id VARCHAR(8000),
+                    is_direct INTEGER NOT NULL DEFAULT 0,
+                    is_xdr INTEGER NOT NULL DEFAULT 0,
+                    is_restapi INTEGER NOT NULL DEFAULT 0,
+                    is_fhir INTEGER NOT NULL DEFAULT 0,
+                    direct_host VARCHAR(8000),
+                    direct_user VARCHAR(255),
+                    direct_pwd VARCHAR(255),
+                    smtp_port VARCHAR(255),
+                    smtp_url VARCHAR(255),
+                    imap_port VARCHAR(255),
+                    imap_url VARCHAR(255),
+                    pop_port VARCHAR(255),
+                    pop_url VARCHAR(255),
+                    direct_recipient_address VARCHAR(255),
+                    smtp_tls_version VARCHAR(255),
+                    xdr_recipient_address VARCHAR(255),
+                    rest_api_url VARCHAR(255),
+                    create_doc_ref_response INTEGER DEFAULT 0,
+                    doc_ref_mime_type VARCHAR(255),
+                    response_rest_api_url VARCHAR(255),
+                    aa_id VARCHAR(255),
+                    encounter_start_time VARCHAR(255),
+                    encounter_end_time VARCHAR(255),
+                    kars_active TEXT,
+                    auth_type VARCHAR(8000) NOT NULL,
+                    ehr_access_token TEXT,
+                    ehr_access_token_expiry_duration INTEGER,
+                    token_expiry_date TIMESTAMP,
+                    require_aud INTEGER NOT NULL DEFAULT 0,
+                    ehr_supports_subscriptions INTEGER DEFAULT 0,
+                    trusted_third_party VARCHAR(8000),
+                    pha_url VARCHAR(8000),
+                    org_name VARCHAR(8000),
+                    org_id_system VARCHAR(8000),
+                    org_id VARCHAR(8000),
+                    off_hours_start INTEGER,
+                    off_hours_start_min INTEGER,
+                    off_hours_end INTEGER,
+                    off_hours_end_min INTEGER,
+                    off_hours_timezone VARCHAR(8000),
+                    off_hours_enabled INTEGER DEFAULT 1,
+                    username VARCHAR(8000),
+                    password VARCHAR(8000),
+                    backend_auth_key_alias VARCHAR(8000),
+                    backend_auth_alg VARCHAR(8000),
+                    backend_auth_kid VARCHAR(8000),
+                    debug_enabled INTEGER DEFAULT 1,
+                    direct_endpoint_cert_alias VARCHAR(8000),
+                    smtp_auth_enabled INTEGER DEFAULT 0,
+                    smtp_ssl_enabled INTEGER DEFAULT 0,
+                    last_updated_ts TIMESTAMP NOT NULL DEFAULT now()
+                );
+            $fmt$, new_table);
+
+            RAISE NOTICE 'Table "%" created successfully.', new_table;
+        ELSE
+            RAISE NOTICE 'Table "%" already exists. Nothing to create.', new_table;
+        END IF;
+
+        RETURN;
+    END IF;
+
+    ------------------------------------------------------------------
+    -- 1. Old table exists → ensure new table exists
+    ------------------------------------------------------------------
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = new_table
+    ) THEN
+        RAISE NOTICE 'Creating new table "%"...', new_table;
+
+        EXECUTE format($fmt$
+            CREATE TABLE %I (
+                id INTEGER DEFAULT nextval('healthcare_setting_v2_seq') PRIMARY KEY,
+                clientId VARCHAR(8000) NOT NULL,
+                clientSecret VARCHAR(8000),
+                fhir_server_base_url VARCHAR(8000) NOT NULL,
+                fhir_version VARCHAR(255),
+                token_url VARCHAR(8000),
+                scopes TEXT NOT NULL,
+                default_provider_id VARCHAR(8000),
+                is_direct INTEGER NOT NULL DEFAULT 0,
+                is_xdr INTEGER NOT NULL DEFAULT 0,
+                is_restapi INTEGER NOT NULL DEFAULT 0,
+                is_fhir INTEGER NOT NULL DEFAULT 0,
+                direct_host VARCHAR(8000),
+                direct_user VARCHAR(255),
+                direct_pwd VARCHAR(255),
+                smtp_port VARCHAR(255),
+                smtp_url VARCHAR(255),
+                imap_port VARCHAR(255),
+                imap_url VARCHAR(255),
+                pop_port VARCHAR(255),
+                pop_url VARCHAR(255),
+                direct_recipient_address VARCHAR(255),
+                smtp_tls_version VARCHAR(255),
+                xdr_recipient_address VARCHAR(255),
+                rest_api_url VARCHAR(255),
+                create_doc_ref_response INTEGER DEFAULT 0,
+                doc_ref_mime_type VARCHAR(255),
+                response_rest_api_url VARCHAR(255),
+                aa_id VARCHAR(255),
+                encounter_start_time VARCHAR(255),
+                encounter_end_time VARCHAR(255),
+                kars_active TEXT,
+                auth_type VARCHAR(8000) NOT NULL,
+                ehr_access_token TEXT,
+                ehr_access_token_expiry_duration INTEGER,
+                token_expiry_date TIMESTAMP,
+                require_aud INTEGER NOT NULL DEFAULT 0,
+                ehr_supports_subscriptions INTEGER DEFAULT 0,
+                trusted_third_party VARCHAR(8000),
+                pha_url VARCHAR(8000),
+                org_name VARCHAR(8000),
+                org_id_system VARCHAR(8000),
+                org_id VARCHAR(8000),
+                off_hours_start INTEGER,
+                off_hours_start_min INTEGER,
+                off_hours_end INTEGER,
+                off_hours_end_min INTEGER,
+                off_hours_timezone VARCHAR(8000),
+                off_hours_enabled INTEGER DEFAULT 1,
+                username VARCHAR(8000),
+                password VARCHAR(8000),
+                backend_auth_key_alias VARCHAR(8000),
+                backend_auth_alg VARCHAR(8000),
+                backend_auth_kid VARCHAR(8000),
+                debug_enabled INTEGER DEFAULT 1,
+                direct_endpoint_cert_alias VARCHAR(8000),
+                smtp_auth_enabled INTEGER DEFAULT 0,
+                smtp_ssl_enabled INTEGER DEFAULT 0,
+                last_updated_ts TIMESTAMP NOT NULL DEFAULT now()
+            );
+        $fmt$, new_table);
+
+        RAISE NOTICE 'Table "%" created.', new_table;
+    ELSE
+        RAISE NOTICE 'Table "%" already exists. Proceeding with migration...', new_table;
+    END IF;
+
+    ------------------------------------------------------------------
+    -- 2. Verify column compatibility
+    ------------------------------------------------------------------
+    SELECT COUNT(*) INTO missing_cols
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = old_table
+    ) diff;
+
+    SELECT COALESCE(string_agg(column_name, ', '), 'None')
+    INTO missing_in_new
+    FROM (
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = new_table
+        EXCEPT
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = old_table
+    ) diff;
+
+    IF missing_cols > 0 THEN
+        RAISE EXCEPTION 'Column mismatch: % missing in "%": %',
+            missing_cols, old_table, missing_in_new;
+    ELSE
+        RAISE NOTICE 'Column compatibility OK.';
+    END IF;
+
+    ------------------------------------------------------------------
+    -- 3. Count rows in old table
+    ------------------------------------------------------------------
+    EXECUTE format('SELECT COUNT(*) FROM %I', old_table)
+    INTO row_count_old;
+
+    IF row_count_old = 0 THEN
+        RAISE NOTICE 'No data in "%". Skipping migration.', old_table;
+        RETURN;
+    END IF;
+
+    RAISE NOTICE 'Migrating % rows...', row_count_old;
+
+    ------------------------------------------------------------------
+    -- 4. Build the column list for migration
+    ------------------------------------------------------------------
+    FOR col IN
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = old_table
+        ORDER BY ordinal_position
+    LOOP
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_name = new_table
+              AND column_name = col.column_name
+        ) THEN
+            col_list := col_list || format('%I, ', col.column_name);
+            select_list := select_list || format('%I, ', col.column_name);
+        END IF;
+    END LOOP;
+
+    col_list := regexp_replace(col_list, ',\s*$', '');
+    select_list := regexp_replace(select_list, ',\s*$', '');
+
+    ------------------------------------------------------------------
+    -- 5. Insert data
+    ------------------------------------------------------------------
+    EXECUTE format('SELECT COUNT(*) FROM %I', new_table)
+    INTO row_count_new_before;
+
+    EXECUTE format(
+        'INSERT INTO %I (%s) SELECT %s FROM %I;',
+        new_table, col_list, select_list, old_table
+    );
+
+    EXECUTE format('SELECT COUNT(*) FROM %I', new_table)
+    INTO row_count_new_after;
+
+    RAISE NOTICE 'Data migrated: % new rows inserted.',
+        (row_count_new_after - row_count_new_before);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error: %', SQLERRM;
+        RAISE;
+END;
+$$;

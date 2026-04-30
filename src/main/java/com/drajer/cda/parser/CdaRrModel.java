@@ -1,12 +1,13 @@
 package com.drajer.cda.parser;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 public class CdaRrModel {
-  private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
+  @JsonIgnore private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
 
   public static final String UNKONWN_RESPONSE_TYPE = "Unknown";
 

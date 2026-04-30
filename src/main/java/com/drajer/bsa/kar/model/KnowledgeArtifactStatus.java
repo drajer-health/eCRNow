@@ -2,13 +2,13 @@ package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.ecrapp.config.SetOfStringsConverter;
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
+import org.hibernate.Length;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +22,9 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(
-    name = "hs_kar_status",
-    indexes = {@Index(name = "idx_hs_id", columnList = "hs_id")})
+    name = "hs_kar_status_v2",
+    indexes = {@Index(name = "idx_hs_id_v2", columnList = "hs_id")})
 @DynamicUpdate
-@TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)
 public class KnowledgeArtifactStatus {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactStatus.class);
@@ -54,14 +53,14 @@ public class KnowledgeArtifactStatus {
    * The Version of the Knowledge Artifact as defined by the Public Health Agency or Research
    * Organization.
    */
-  @Column(name = "kar_version", columnDefinition = "TEXT", nullable = false)
+  @Column(name = "kar_version", length = 8000, nullable = false)
   String karVersion;
 
   /**
    * The version unique id of the Knowledge Artifact as defined by the Public Health Agency or
    * Research Organization. This is a concatenation of Id and version.
    */
-  @Column(name = "map_versionid_karid", columnDefinition = "TEXT", nullable = false)
+  @Column(name = "map_versionid_karid", length = 8000, nullable = false)
   String versionUniqueKarId;
 
   /**
@@ -70,7 +69,7 @@ public class KnowledgeArtifactStatus {
    * Knowledge Artifact should not be processed.
    */
   @Column(name = "is_activated", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   Boolean isActive;
 
   /** The last time the Knowledge Artifact became active. */
@@ -87,19 +86,19 @@ public class KnowledgeArtifactStatus {
    * KnowledgeArtifact becomes inactive, the subscriptions should be removed.
    */
   @Column(name = "is_subscriptions_enabled", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   Boolean subscriptionsEnabled;
 
   /**
    * The list of subscriptions that have been enabled by the KnowledgeArtifact for the specific
    * HealthcareSetting.
    */
-  @Column(name = "subscriptions", columnDefinition = "TEXT")
-  @Type(type = "SetOfStringsUserType")
+  @Convert(converter = SetOfStringsConverter.class)
+  @Column(name = "subscriptions", length = Length.LONG32)
   Set<String> subscriptions;
 
   @Column(name = "is_only_covid", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   Boolean covidOnly;
 
   /**
@@ -108,7 +107,7 @@ public class KnowledgeArtifactStatus {
    * produced for the KAR.
    */
   @Enumerated(EnumType.STRING)
-  @Column(name = "output_format", columnDefinition = "TEXT")
+  @Column(name = "output_format", length = 8000)
   OutputContentType outputFormat;
 
   public KnowledgeArtifactStatus() {

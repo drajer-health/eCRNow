@@ -24,13 +24,13 @@ import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
-import io.micrometer.core.instrument.util.StringUtils;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,7 +52,9 @@ public class SubmitReport extends BsaAction {
 
   private String submissionEndpoint;
 
-  private static final int RR_CHECK_TIME = 60;
+  @Value("${rr_check_time}")
+  private int rrCheckTime;
+
   private static final String RR_CHECK_TIME_UNITS = "s";
 
   private static final FhirContext context = FhirContext.forR4();
@@ -189,7 +192,7 @@ public class SubmitReport extends BsaAction {
         Duration d = new Duration();
         d.setCode(RR_CHECK_TIME_UNITS);
         d.setUnit(RR_CHECK_TIME_UNITS);
-        d.setValue(RR_CHECK_TIME);
+        d.setValue(rrCheckTime);
         Instant t = ApplicationUtils.convertDurationToInstant(d);
 
         scheduler.scheduleJob(
@@ -255,8 +258,17 @@ public class SubmitReport extends BsaAction {
     } else {
       logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
 
-      if (data.getHealthcareSetting().getTrustedThirdParty() != null
-          && !data.getHealthcareSetting().getTrustedThirdParty().isEmpty()) {
+      if (data.getHealthcareSetting() != null
+          && StringUtils.isNotBlank(data.getHealthcareSetting().getPhaUrl())) {
+        logger.info(
+            "Sending to trusted thrid party {}",
+            StringEscapeUtils.escapeJava(data.getHealthcareSetting().getTrustedThirdParty()));
+        submitResources(
+            resourcesToSubmit, data, ehrService, data.getHealthcareSetting().getPhaUrl());
+      }
+
+      if (data.getHealthcareSetting() != null
+          && StringUtils.isNotBlank(data.getHealthcareSetting().getTrustedThirdParty())) {
         logger.info(
             "Sending to trusted thrid party {}",
             StringEscapeUtils.escapeJava(data.getHealthcareSetting().getTrustedThirdParty()));

@@ -1,0 +1,100 @@
+{
+  "resourceType": "Bundle",
+  "id": "f001",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "https://example.com/base/DiagnosticReport/f001",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "f001",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"> ... </div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.bmc.nl/zorgportal/identifiers/reports",
+            "value": "nr1239044"
+          }
+        ],
+        "status": "final",
+        "category": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "252275004",
+              "display": "Haematology test"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "58410-2",
+              "display": "CBC panel - Blood by Automated count"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/f001",
+          "display": "P. van den Heuvel"
+        },
+        "issued": "2013-05-15T19:32:52+01:00",
+        "performer": {
+          "reference": "Organization/f001",
+          "display": "Burgers University Medical Centre"
+        },
+        "result": [
+          { "reference": "Observation/f001" },
+          { "reference": "Observation/f002" },
+          { "reference": "Observation/f003" },
+          { "reference": "Observation/f004" },
+          { "reference": "Observation/f005" }
+        ],
+        "conclusion": "Core lab"
+      }
+    },
+    {
+      "fullUrl": "https://example.com/base/ProcedureRequest/req",
+      "resource": {
+        "resourceType": "ProcedureRequest",
+        "id": "req",
+        "identifier": [
+          {
+            "system": "http://www.bmc.nl/zorgportal/identifiers/labresults",
+            "value": "L2381"
+          }
+        ],
+        "status": "requested",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "58410-2",
+              "display": "CBC panel - Blood by Automated count"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/f001",
+          "display": "P. van den Heuvel"
+        },
+        "encounter": {
+          "reference": "Encounter/f001"
+        },
+        "orderer": {
+          "reference": "Practitioner/f001",
+          "display": "E.van den Broek"
+        },
+        "notes": [
+          {
+            "text": "patient almost fainted during procedure"
+          }
+        ]
+      }
+    }
+  ]
+}

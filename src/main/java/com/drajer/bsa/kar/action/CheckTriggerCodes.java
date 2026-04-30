@@ -8,10 +8,7 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
@@ -52,7 +49,7 @@ public class CheckTriggerCodes extends BsaAction {
 
       if (queries != null && !queries.isEmpty()) {
 
-        logger.info(" Data Requirements Exist wiht Queries, so executing queries to load data ");
+        logger.info(" Data Requirements Exist with Queries, so executing queries to load data ");
         // Try to execute the queries.
         queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
 
@@ -72,6 +69,7 @@ public class CheckTriggerCodes extends BsaAction {
 
       HashMap<String, Set<Resource>> idres = new HashMap<>();
       Parameters params = new Parameters();
+
       CheckTriggerCodeStatusList ctcsl = new CheckTriggerCodeStatusList();
 
       // Apply filters for data and then send the collections to the Condition Evaluator.
@@ -101,13 +99,17 @@ public class CheckTriggerCodes extends BsaAction {
             ctcsl.addCheckTriggerCodeStatus(matchInfo.getValue0());
 
           } else {
+
             logger.info(" No Match found for Code Filter {}", dr.getType());
           }
 
         } else {
-          logger.error(" Not processing Data Requirement which is not a code filter ");
+          Set<Resource> resources = getResourcesFromInput(dr, params);
+          if (resources == null || resources.isEmpty()) {
+            resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+          }
+          allResources.addAll(resources);
         }
-
         // Add params
         BsaServiceUtils.convertDataToParameters(
             dr.getId(),
@@ -116,7 +118,6 @@ public class CheckTriggerCodes extends BsaAction {
             allResources,
             params);
       }
-
       data.addParameters(actionId, params);
       actStatus.setMatchedResources(idres);
       data.addActionStatus(getActionId(), actStatus);

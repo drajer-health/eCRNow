@@ -444,7 +444,7 @@
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.216"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.216" extension="2020-09-01"/>
-                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="86188-0"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Occupation Industry"/>
                         <statusCode code="completed"/>
                         <value xsi:type="CD" nullFlavor="NI"/>
                     </observation>
@@ -501,7 +501,7 @@
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.216"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.216" extension="2020-09-01"/>
-                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="86188-0"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Occupation Industry"/>
                         <statusCode code="completed"/>
                         <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
                     </observation>
@@ -536,7 +536,7 @@
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.216"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.216" extension="2020-09-01"/>
-                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="86188-0"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="86188-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Occupation Industry"/>
                         <statusCode code="completed"/>
                         <value xsi:type="CD" code="25-3099.02.046026" codeSystem="2.16.840.1.114222.4.5.327" codeSystemName="PHOccupationalDataForHealthODH" displayName="Writing Tutor [Tutors]"></value>
                     </observation>

@@ -4,9 +4,9 @@ import com.drajer.bsa.dao.PhMessageDao;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.service.PhMessageService;
 import com.drajer.sof.model.PublicHealthMessageData;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

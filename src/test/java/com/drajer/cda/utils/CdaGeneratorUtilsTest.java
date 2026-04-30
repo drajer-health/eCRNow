@@ -19,12 +19,9 @@ import java.util.TimeZone;
 import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CdaGeneratorUtilsTest {
 
   public static final Logger logger = LoggerFactory.getLogger(CdaGeneratorUtilsTest.class);

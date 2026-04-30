@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CloseOutEicrActionTest {
 
   private static final Logger logger = LoggerFactory.getLogger(CloseOutEicrActionTest.class);
@@ -234,5 +236,16 @@ public class CloseOutEicrActionTest {
     // SetUp CreateEicrAction
     closeOutEicrAction.addRelatedAction(mockRelActn);
     closeOutEicrAction.setActionId("123");
+  }
+
+  @Test
+  public void testPrintRunsWithoutError() {
+    try {
+      closeOutEicrAction.print();
+      // Assert true to indicate method ran successfully
+
+    } catch (Exception e) {
+      fail("Print method threw an exception: " + e.getMessage());
+    }
   }
 }

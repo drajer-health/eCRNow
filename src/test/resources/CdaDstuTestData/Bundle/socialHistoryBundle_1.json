@@ -1,0 +1,69 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-snomed-1",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "77386006",
+              "display": "Pregnant"
+            }
+          ],
+          "text": "Pregnancy status"
+        },
+        "subject": {
+          "reference": "Patient/123"
+        },
+        "effectiveDateTime": "2025-07-25T10:00:00Z",
+        "issued": "2025-07-27T12:00:00Z",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "77386006",
+              "display": "Pregnant"
+            }
+          ],
+          "text": "Pregnant"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-loinc-1",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11341-5",
+              "display": "History of occupation"
+            }
+          ],
+          "text": "Occupation history - LOINC"
+        },
+        "subject": {
+          "reference": "Patient/123"
+        },
+        "issued": "2025-07-27T12:00:00Z",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11341-5",
+              "display": "History of occupation"
+            }
+          ],
+          "text": "History of occupation"
+        }
+      }
+    }
+  ]
+}

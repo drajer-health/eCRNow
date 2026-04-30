@@ -57,6 +57,7 @@ public class BaseGeneratorTest {
   public static final Logger logger = LoggerFactory.getLogger(BaseGeneratorTest.class);
   public static final FhirContext fhirContext = FhirContext.forR4();
   public static final String EXCEPTION_READING_FILE = "Exception Reading File";
+  public Integer eicrDocVersion = 0;
 
   public static final String LAUNCH_DETAILS_FILENAME =
       "CdaTestData/LaunchDetails/LaunchDetails.json";

@@ -1,54 +1,94 @@
 package com.drajer.bsa.kar.condition;
 
-import com.drajer.bsa.kar.action.SubmitReport;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+
+import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
-import com.drajer.ecrapp.config.SpringConfiguration;
-import java.io.File;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.Expression;
+import com.drajer.test.util.TestUtils;
+import org.hl7.fhir.r4.model.*;
+import org.junit.Before;
 import org.junit.Test;
-import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
 
-@ContextConfiguration(classes = SpringConfiguration.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CqlProcessorTest {
+  @Mock private EhrQueryService ehrQueryService;
+  @Mock private BsaCondition bsaCondition;
+  @Mock private BsaCqlCondition bsaCqlCondition;
+  @Mock private BsaAction bsaAction;
+  @Mock private KarProcessingData karProcessingData;
 
-  // Autowired to pass to FhirPathProcessors.
-  @Autowired LibraryProcessor libraryProcessor;
+  @Mock private R4LibraryEvaluationService libraryExecutionService;
 
-  private CqlProcessor processor = new CqlProcessor();
-  private File karBundleFile =
-      new File(
-          "src/test/resources/Bsa/Scenarios/kars/bloodpressure/ChronicDSControllingBloodPressure-bundle.json");
+  @InjectMocks private CqlProcessor cqlProcessor;
+
+  @Mock private Expression expression;
+
+  static final String ENCOUNTER_BUNDLE_JSON = "R4/Encounter/EncounterBundle_97953900.json";
+
+  @Before
+  public void setUp() {
+    Mockito.lenient().when(bsaCqlCondition.getLogicExpression()).thenReturn(expression);
+    Mockito.lenient().when(expression.getExpression()).thenReturn("mockExpression");
+    Mockito.lenient().when(bsaCqlCondition.getPatientId()).thenReturn("patient123");
+  }
 
   @Test
-  public void testEvaluateExpression() throws Exception {
-    BsaAction action = new SubmitReport();
-    BsaCqlCondition bsaCondition = new BsaCqlCondition();
+  public void testEvaluateExpression_notImplemented() {
+    Parameters parameters = new Parameters();
+    Boolean result = cqlProcessor.evaluateExpression(bsaCqlCondition, parameters, ehrQueryService);
+    assertFalse(result);
+  }
 
-    CanonicalType libraryCanonical =
-        new CanonicalType("http://hl7.org/fhir/us/chronic-ds/Library/ControllingBloodPressureFHIR");
-    bsaCondition.setUrl(libraryCanonical.getValue());
+  @Test
+  public void testEvaluateExpression_success() {
+    Bundle bundle = TestUtils.loadBundleFromFile(ENCOUNTER_BUNDLE_JSON);
+    Mockito.lenient().when(karProcessingData.getNotificationBundle()).thenReturn(bundle);
+    Mockito.lenient().when(karProcessingData.getInputResourcesAsBundle()).thenReturn(bundle);
 
-    // Set location of eRSD bundle for loading terminology and library logic
-    Endpoint libraryAndTerminologyEndpoint =
-        new Endpoint()
-            .setAddress(karBundleFile.getAbsolutePath())
-            .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-    bsaCondition.setLibraryEndpoint(libraryAndTerminologyEndpoint);
-    bsaCondition.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
-    Expression expression = new Expression();
-    expression.setLanguage("text/cql");
-    expression.setExpression("Numerator");
-    bsaCondition.setLogicExpression(expression);
-    action.addCondition(bsaCondition);
-    bsaCondition.setConditionProcessor(processor);
-    bsaCondition.setLogicExpression(new Expression());
-    KarProcessingData kd = new KarProcessingData();
-    // processor.evaluateExpression(bsaCondition, action, kd);
+    Endpoint endpoint = new Endpoint();
+    endpoint.setAddress("http://mock-endpoint");
+
+    Mockito.lenient().when(bsaCqlCondition.getLibraryEndpoint()).thenReturn(endpoint);
+    Mockito.lenient().when(bsaCqlCondition.getTerminologyEndpoint()).thenReturn(endpoint);
+    Mockito.lenient().when(bsaCqlCondition.getDataEndpoint()).thenReturn(endpoint);
+
+    Parameters resultParams = new Parameters();
+    resultParams.addParameter().setName("mockExpression").setValue(new BooleanType(true));
+
+    Mockito.lenient()
+        .when(
+            libraryExecutionService.evaluate(
+                Mockito.any(IdType.class),
+                Mockito.anyString(),
+                Mockito.anyList(),
+                Mockito.any(Parameters.class),
+                Mockito.any(Bundle.class),
+                Mockito.isNull(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any()))
+        .thenReturn(resultParams);
+
+    Boolean result =
+        cqlProcessor.evaluateExpression(
+            bsaCqlCondition, bsaAction, karProcessingData, ehrQueryService);
+
+    assertTrue(result);
+
+    Mockito.verify(bsaCqlCondition).getLibraryEndpoint();
+    Mockito.verify(bsaCqlCondition).getTerminologyEndpoint();
+    Mockito.verify(bsaCqlCondition).getDataEndpoint();
+    Mockito.verify(bsaCqlCondition, times(2)).getLogicExpression();
+    Mockito.verify(expression, times(2)).getExpression();
   }
 }

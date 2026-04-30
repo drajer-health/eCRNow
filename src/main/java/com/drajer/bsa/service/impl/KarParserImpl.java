@@ -35,10 +35,12 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.SubscriptionUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.sof.utils.FhirContextInitializer;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,7 +49,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -61,6 +62,7 @@ import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -68,15 +70,18 @@ import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionCompone
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
-import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
-import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.utility.repository.InMemoryFhirRepository;
+import org.opencds.cqf.fhir.utility.search.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -125,10 +130,10 @@ public class KarParserImpl implements KarParser {
   Boolean ignoreTimers;
 
   @Value("${measure-reporting-period.start}")
-  String measurePeriodStart;
+  ZonedDateTime measurePeriodStart;
 
   @Value("${measure-reporting-period.end}")
-  String measurePeriodEnd;
+  ZonedDateTime measurePeriodEnd;
 
   @Value("${cql.enabled:false}")
   boolean cqlEnabled;
@@ -161,16 +166,17 @@ public class KarParserImpl implements KarParser {
 
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
-  // Autowired to pass to action processors.
-  @Autowired R4MeasureProcessor measureProcessor;
+  // TODO: instantiate meassureService, executionService and libraryEvaluationService in class
+  // constructor
+  @Autowired R4MeasureService measureService;
 
-  // Autowired to pass to CqlProcessors.
+  // @Autowired R4CqlExecutionService executionService;
+
   @Autowired
-  @Qualifier("myExpressionEvaluator")
-  ObjectProvider<ExpressionEvaluator> expressionEvaluators;
+  @Qualifier("R4CqlExecutionEvaluator")
+  ObjectProvider<R4CqlExecutionService> expressionEvaluators;
 
-  // Autowired to pass to FhirPathProcessors.
-  @Autowired LibraryProcessor libraryProcessor;
+  @Autowired R4LibraryEvaluationService libraryEvaluationService;
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
@@ -194,6 +200,8 @@ public class KarParserImpl implements KarParser {
   @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
 
   @Autowired TimeZoneDao timezoneDao;
+
+  @Autowired InMemoryFhirRepository repository;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -221,12 +229,16 @@ public class KarParserImpl implements KarParser {
 
   private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
   private static final String LOCAL_HOST_REPO_NAME = "local-repo";
-  private static final String PH_QUERY_EXTENSION_URL =
+  private static final String ECR_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
+  private static final String PH_QUERY_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String MEDMORPH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
-  private static final String PH_RELATED_DATA_EXTENSION_URL =
+  private static final String ECR_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
+  private static final String PH_RELATED_DATA_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
   private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
 
@@ -412,7 +424,7 @@ public class KarParserImpl implements KarParser {
       KnowledgeArtifact art = new KnowledgeArtifact();
 
       // Setup the Id.
-      art.setKarId(karBundle.getId());
+      art.setKarId(karBundle.getIdPart());
 
       // Setup Version.
       if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
@@ -482,6 +494,8 @@ public class KarParserImpl implements KarParser {
           logger.info(" Adding resource to dependencies");
           art.addDependentResource(comp.getResource());
         }
+
+        addKarResourceToFhirRepository(comp.getResource());
       }
 
       /**
@@ -497,6 +511,50 @@ public class KarParserImpl implements KarParser {
       logger.error(
           " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
           kar);
+    }
+  }
+
+  /**
+   * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing. Resources
+   * are only inserted if they are not already present.
+   *
+   * @param resource the resource to store.
+   */
+  private void addKarResourceToFhirRepository(Resource resource) {
+    Bundle bundle;
+    if (resource instanceof Library library) {
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              library.getClass(),
+              Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
+    } else if (resource instanceof PlanDefinition planDef) {
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              planDef.getClass(),
+              Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
+    } else if (resource instanceof Measure measure) {
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              measure.getClass(),
+              Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
+    } else if (resource instanceof ValueSet valueSet) {
+      bundle =
+          this.repository.search(
+              Bundle.class,
+              valueSet.getClass(),
+              Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
+    } else {
+      logger.info("Unexpected Resource Type - attempting to retrieve by ID");
+      bundle =
+          this.repository.search(
+              Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
+    }
+
+    if (!bundle.hasEntry()) {
+      this.repository.create(resource);
     }
   }
 
@@ -700,7 +758,11 @@ public class KarParserImpl implements KarParser {
         action.addInputResourceType(dr.getId(), rt);
 
         // Get Query Extensions to identify default queries.
-        Extension queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+        Extension queryExt = dr.getExtensionByUrl(ECR_QUERY_EXTENSION_URL);
+
+        if (queryExt == null) {
+          queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+        }
 
         if (queryExt == null) {
           queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
@@ -720,7 +782,11 @@ public class KarParserImpl implements KarParser {
         }
 
         // Get Related Data Ids to reuse data already accessed.
-        Extension relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+        Extension relatedDataExt = dr.getExtensionByUrl(ECR_RELATED_DATA_EXTENSION_URL);
+
+        if (relatedDataExt == null) {
+          relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+        }
 
         if (relatedDataExt == null) {
           relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
@@ -835,8 +901,8 @@ public class KarParserImpl implements KarParser {
             em.setPeriodEnd(measurePeriodEnd);
           }
 
-          // setup the Measure Processor
-          em.setMeasureProcessor(measureProcessor);
+          // setup the Measure service
+          em.setMeasureService(measureService);
         }
       }
     }
@@ -912,7 +978,7 @@ public class KarParserImpl implements KarParser {
         // Necessary for Cql Evaluation because of CodeSystem Retrieve
         bc.setDataEndpoint(karEndpoint);
         bc.setLogicExpression(con.getExpression());
-        bc.setLibraryProcessor(libraryProcessor);
+        bc.setLibraryEvaluationService(libraryEvaluationService);
         bc.setNormalReportingDuration(null);
         action.addCondition(bc);
       } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
@@ -951,7 +1017,7 @@ public class KarParserImpl implements KarParser {
           // Necessary for Cql Evaluation because of CodeSystem Retrieve
           bc.setDataEndpoint(karEndpoint);
           bc.setLogicExpression(exp);
-          bc.setLibraryProcessor(libraryProcessor);
+          bc.setLibraryEvaluationService(libraryEvaluationService);
           action.addCondition(bc);
         } else if (exp != null
             && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
@@ -976,7 +1042,6 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(con.getExpression());
-
           bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
           action.addCondition(bc);
         } else {

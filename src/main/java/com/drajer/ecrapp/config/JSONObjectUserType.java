@@ -6,9 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.usertype.UserType;
 
-public class JSONObjectUserType implements UserType {
+public class JSONObjectUserType {
 
   /**
    * Return the SQL type codes for the columns mapped by this type. The codes are defined on
@@ -17,7 +16,6 @@ public class JSONObjectUserType implements UserType {
    * @return int[] the typecodes
    * @see java.sql.Types
    */
-  @Override
   public int[] sqlTypes() {
     return new int[] {Types.JAVA_OBJECT};
   }
@@ -27,7 +25,6 @@ public class JSONObjectUserType implements UserType {
    *
    * @return Class
    */
-  @Override
   public Class<String> returnedClass() {
     return String.class;
   }
@@ -40,7 +37,6 @@ public class JSONObjectUserType implements UserType {
    * @param y
    * @return boolean
    */
-  @Override
   public boolean equals(Object x, Object y) {
 
     if (x == null) {
@@ -51,7 +47,6 @@ public class JSONObjectUserType implements UserType {
   }
 
   /** Get a hashcode for the instance, consistent with persistence "equality" */
-  @Override
   public int hashCode(Object x) {
 
     return x.hashCode();
@@ -68,7 +63,6 @@ public class JSONObjectUserType implements UserType {
    * @throws org.hibernate.HibernateException
    * @throws java.sql.SQLException
    */
-  @Override
   public Object nullSafeGet(
       ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
       throws SQLException {
@@ -90,7 +84,6 @@ public class JSONObjectUserType implements UserType {
    * @throws org.hibernate.HibernateException
    * @throws java.sql.SQLException
    */
-  @Override
   public void nullSafeSet(
       PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
       throws SQLException {
@@ -109,7 +102,6 @@ public class JSONObjectUserType implements UserType {
    * @param value the object to be cloned, which may be null
    * @return Object a copy
    */
-  @Override
   public Object deepCopy(Object value) {
 
     return value;
@@ -120,7 +112,6 @@ public class JSONObjectUserType implements UserType {
    *
    * @return boolean
    */
-  @Override
   public boolean isMutable() {
     return true;
   }
@@ -134,7 +125,6 @@ public class JSONObjectUserType implements UserType {
    * @return a cachable representation of the object
    * @throws org.hibernate.HibernateException
    */
-  @Override
   public Serializable disassemble(Object value) {
     return (String) this.deepCopy(value);
   }
@@ -148,7 +138,6 @@ public class JSONObjectUserType implements UserType {
    * @return a reconstructed object from the cachable representation
    * @throws org.hibernate.HibernateException
    */
-  @Override
   public Object assemble(Serializable cached, Object owner) {
     return this.deepCopy(cached);
   }
@@ -164,7 +153,6 @@ public class JSONObjectUserType implements UserType {
    * @param target the value in the managed entity
    * @return the value to be merged
    */
-  @Override
   public Object replace(Object original, Object target, Object owner) {
     return original;
   }

@@ -2389,6 +2389,22 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getNFXMLForValue(String type, String nf) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + type
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + nf
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
   public static String getNFXMLForValueWithText(String nf, String text) {
     String s =
         CdaGeneratorConstants.START_XMLTAG
@@ -2559,21 +2575,32 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForTableBodyContent(String name, String val) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.TABLE_BODY_CONTENT_SUB_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.TABLE_BODY_CONTENT_ID_EL_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + name
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + StringEscapeUtils.escapeXml10(val)
-        + CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.FORWARD_SLASH
-        + CdaGeneratorConstants.TABLE_BODY_CONTENT_SUB_EL_NAME
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.TABLE_BODY_CONTENT_SUB_EL_NAME)
+        .append(CdaGeneratorConstants.SPACE)
+        .append(CdaGeneratorConstants.TABLE_BODY_CONTENT_ID_EL_NAME)
+        .append(CdaGeneratorConstants.EQUAL)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(name)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET);
+
+    if (val != null && val.contains("<table")) {
+      sb.append(val); // raw HTML
+    } else {
+      sb.append(StringEscapeUtils.escapeXml10(val));
+    }
+
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.FORWARD_SLASH)
+        .append(CdaGeneratorConstants.TABLE_BODY_CONTENT_SUB_EL_NAME)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append("\n");
+
+    return sb.toString();
   }
 
   public static String addTableRow(Map<String, String> vals, int rowNum) {

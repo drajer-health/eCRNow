@@ -1,0 +1,2892 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:cda="urn:hl7-org:v3" xmlns:sdtc="urn:hl7-org:sdtc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <realmCode code="US"/>
+
+    <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+
+    <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+
+    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.1.1"/>
+
+    <templateId extension="2016-12-01" root="2.16.840.1.113883.10.20.15.2"/>
+
+    <id root="f9ae48fb-5444-414f-a57e-5fef71bbf1b2"/>
+
+    <code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
+
+    <title>Initial Public Health Case Report</title>
+
+    <effectiveTime value="20260215013337+0530"/>
+
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+
+    <languageCode code="en-US"/>
+
+    <setId extension="92023793-1d04-453e-af78-bab72199ef9a|1b374f22-0cd9-4959-88c2-b77f1ba768fe" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+    <versionNumber value="1"/>
+
+    <recordTarget>
+
+        <patientRole>
+
+            <id extension="12345" root="1.2.36.146.595.217.0.1"/>
+
+            <addr use="HP">
+
+                <streetAddressLine>534 Erewhon St</streetAddressLine>
+
+                <city>PleasantVille</city>
+
+                <county>Rainbow</county>
+
+                <state>Vic</state>
+
+                <postalCode>3999</postalCode>
+
+                <country nullFlavor="NI"/>
+
+            </addr>
+
+            <telecom use="WP" value="tel:(035)555-6473"/>
+
+            <telecom use="MC" value="tel:(033)410-5613"/>
+
+            <telecom use="WP" value="tel:(035)555-8834"/>
+
+            <patient>
+
+                <name use="L">
+
+                    <given qualifier="PR">Peter</given>
+
+                    <given qualifier="PR">James</given>
+
+                    <family>Chalmers</family>
+
+                </name>
+
+                <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7AdministrativeGenderCode" displayName="male"/>
+
+                <birthTime value="19741225"/>
+
+                <sdtc:deceasedInd value="false"/>
+
+                <raceCode nullFlavor="NI"/>
+
+                <ethnicGroupCode nullFlavor="NI"/>
+
+                <guardian>
+
+                    <code nullFlavor="OTH">
+                        <translation code="N" codeSystem="2.16.840.1.113883.18.58" codeSystemName="v2-0131"/>
+
+                    </code>
+
+                    <addr use="HP">
+
+                        <streetAddressLine>534 Erewhon St</streetAddressLine>
+
+                        <city>PleasantVille</city>
+
+                        <county>Rainbow</county>
+
+                        <state>Vic</state>
+
+                        <postalCode>3999</postalCode>
+
+                        <country nullFlavor="NI"/>
+
+                    </addr>
+
+                    <telecom value="tel:+3(323)799-8327"/>
+
+                    <guardianPerson>
+
+                        <name>
+
+                            <given>Bénédicte</given>
+
+                            <family>du Marché</family>
+
+                        </name>
+
+                    </guardianPerson>
+
+                </guardian>
+
+                <languageCommunication>
+
+                    <languageCode nullFlavor="NI"/>
+
+                </languageCommunication>
+
+            </patient>
+
+        </patientRole>
+
+    </recordTarget>
+
+    <author>
+
+        <time value="20200512134056+0000"/>
+
+        <assignedAuthor>
+
+            <id root="2.16.840.1.113883.4.6"/>
+
+            <addr>
+
+                <streetAddressLine nullFlavor="NI"/>
+
+                <city nullFlavor="NI"/>
+
+                <state nullFlavor="NI"/>
+
+                <postalCode nullFlavor="NI"/>
+
+                <country nullFlavor="NI"/>
+
+            </addr>
+
+            <telecom nullFlavor="NI"/>
+
+            <assignedPerson>
+
+                <name>
+
+                    <given nullFlavor="NI"/>
+
+                    <family nullFlavor="NI"/>
+
+                </name>
+
+            </assignedPerson>
+
+            <representedOrganization>
+
+                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                <name>Model Hospital</name>
+
+                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                <addr>
+
+                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                    <city>Kansas City</city>
+
+                    <state>MO</state>
+
+                    <postalCode>64117</postalCode>
+
+                    <country>US</country>
+
+                </addr>
+
+            </representedOrganization>
+
+        </assignedAuthor>
+
+    </author>
+
+    <author>
+
+        <time value="20260215014726+0530"/>
+
+        <assignedAuthor>
+
+            <id root="5f0ee59b-755b-4280-94f1-d1b270acb961"/>
+
+            <addr>
+
+                <streetAddressLine nullFlavor="NI"/>
+
+                <city nullFlavor="NI"/>
+
+                <state nullFlavor="NI"/>
+
+                <postalCode nullFlavor="NI"/>
+
+                <country nullFlavor="NI"/>
+
+            </addr>
+
+            <telecom nullFlavor="NI"/>
+
+            <assignedAuthoringDevice>
+
+                <manufacturerModelName>ecrNowApp</manufacturerModelName>
+
+                <softwareName>4.0.0</softwareName>
+
+            </assignedAuthoringDevice>
+
+        </assignedAuthor>
+
+    </author>
+
+    <custodian>
+
+        <assignedCustodian>
+
+            <representedCustodianOrganization>
+
+                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                <name>Model Hospital</name>
+
+                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                <addr>
+
+                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                    <city>Kansas City</city>
+
+                    <state>MO</state>
+
+                    <postalCode>64117</postalCode>
+
+                    <country>US</country>
+
+                </addr>
+
+            </representedCustodianOrganization>
+
+        </assignedCustodian>
+
+    </custodian>
+
+    <participant typeCode="IND">
+
+        <associatedEntity classCode="NOK">
+
+            <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+            <addr use="HP">
+
+                <streetAddressLine>534 Erewhon St</streetAddressLine>
+
+                <city>PleasantVille</city>
+
+                <county>Rainbow</county>
+
+                <state>Vic</state>
+
+                <postalCode>3999</postalCode>
+
+                <country nullFlavor="NI"/>
+
+            </addr>
+
+            <telecom value="tel:+3(323)799-8327"/>
+
+            <associatedPerson>
+
+                <name>
+
+                    <given>Bénédicte</given>
+
+                    <family>du Marché</family>
+
+                </name>
+
+            </associatedPerson>
+
+        </associatedEntity>
+
+    </participant>
+
+    <componentOf>
+
+        <encompassingEncounter>
+
+            <id extension="97953900" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+            <id extension="98314717" root="2.16.840.1.113883.4.4"/>
+
+            <code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"/>
+
+            <effectiveTime>
+
+                <low value="20200512134056+0000"/>
+
+                <high nullFlavor="NI"/>
+
+            </effectiveTime>
+
+            <responsibleParty>
+
+                <assignedEntity>
+
+                    <id root="2.16.840.1.113883.4.6"/>
+
+                    <addr>
+
+                        <streetAddressLine nullFlavor="NI"/>
+
+                        <city nullFlavor="NI"/>
+
+                        <state nullFlavor="NI"/>
+
+                        <postalCode nullFlavor="NI"/>
+
+                        <country nullFlavor="NI"/>
+
+                    </addr>
+
+                    <telecom nullFlavor="NI"/>
+
+                    <assignedPerson>
+
+                        <name>
+
+                            <given nullFlavor="NI"/>
+
+                            <family nullFlavor="NI"/>
+
+                        </name>
+
+                    </assignedPerson>
+
+                    <representedOrganization>
+
+                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                        <name>Model Hospital</name>
+
+                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                        <addr>
+
+                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                            <city>Kansas City</city>
+
+                            <state>MO</state>
+
+                            <postalCode>64117</postalCode>
+
+                            <country>US</country>
+
+                        </addr>
+
+                    </representedOrganization>
+
+                </assignedEntity>
+
+            </responsibleParty>
+
+            <location>
+
+                <healthCareFacility>
+
+                    <id extension="8614f9d9-af54-47b2-8da4-7bea05f8d032" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                    <code code="HOSP" codeSystem="2.16.840.1.113883.5.111" codeSystemName="v3-RoleCode" displayName="Hospital"/>
+
+                    <location>
+
+                        <name>PCP9114</name>
+
+                        <addr>
+
+                            <streetAddressLine>["[\"[\\\"[\\\\\\\"[\\\\\\\\\\\\\\\"[\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"5400 N Oak Trfy\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"]\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                            <city>New York City</city>
+
+                            <state>US</state>
+
+                            <postalCode>10001</postalCode>
+
+                            <country>US</country>
+
+                        </addr>
+
+                    </location>
+
+                    <serviceProviderOrganization>
+
+                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                        <name>Model Hospital</name>
+
+                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                        <addr>
+
+                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                            <city>Kansas City</city>
+
+                            <state>MO</state>
+
+                            <postalCode>64117</postalCode>
+
+                            <country>US</country>
+
+                        </addr>
+
+                    </serviceProviderOrganization>
+
+                </healthCareFacility>
+
+            </location>
+
+        </encompassingEncounter>
+
+    </componentOf>
+
+    <component>
+
+        <structuredBody>
+
+            <component>
+
+                <section nullFlavor="NI">
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.5.1"/>
+
+                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.2.5.1"/>
+
+                    <code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="PROBLEM LIST"/>
+
+                    <title>PROBLEMS - DIAGNOSES</title>
+
+                    <text>No Problem Information</text>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section>
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.22.1"/>
+
+                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.2.22.1"/>
+
+                    <code code="46240-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Encounters"/>
+
+                    <title>ENCOUNTERS</title>
+
+                    <text>
+
+                        <table border="1" width="100%">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Encounter Code</th>
+
+                                    <th>Date of Encounter</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="encounter1">inpatient encounter</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="encounterDate1">20200512134056+0000</content>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </text>
+
+                    <entry typeCode="DRIV">
+
+                        <encounter classCode="ENC" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.49"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.49"/>
+
+                            <id extension="97953900" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <id extension="98314717" root="2.16.840.1.113883.4.4"/>
+
+                            <code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter">
+                                <originalText>
+
+                                    <reference value="#encounter1"/>
+
+                                </originalText>
+
+                            </code>
+
+                            <effectiveTime>
+
+                                <low value="20200512134056+0000"/>
+
+                                <high nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <sdtc:dischargeDispositionCode nullFlavor="NI"/>
+
+                        </encounter>
+
+                    </entry>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section>
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+
+                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.2.3.1"/>
+
+                    <code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+
+                    <title>RESULTS</title>
+
+                    <text>
+
+                        <table border="1" width="100%">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Lab Test Name</th>
+
+                                    <th>Lab Test Result Value</th>
+
+                                    <th>Lab Test Result Date</th>
+
+                                    <th>Lab Test Interpretation</th>
+
+                                    <th>Lab Test Reference Range</th>
+
+                                    <th>Lab Test Specimen Collection Date</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="labTestName1">White Cell Count</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValue1">4.6|http://unitsofmeasure.org|10*9/L</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValueDate1">20240105000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestInterpretation1">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestReferenceRange1">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestSpecimenCollectionDate1">Unknown</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="labTestName2">Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValue2">Balamuthia mandrillaris</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValueDate2">20240105000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestInterpretation2">Normal</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestReferenceRange2">Low: 95.0|http://unitsofmeasure.org|mmol/L | High: 105.0|http://unitsofmeasure.org|mmol/L</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestSpecimenCollectionDate2">20220927000000+0000</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="labTestName3">SARS coronavirus 2 Ag [Presence] in Respiratory specimen by</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValue3">22.0|http://unitsofmeasure.org|mg</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValueDate3">20240409000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestInterpretation3">Abnormal</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestReferenceRange3">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestSpecimenCollectionDate3">Unknown</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="labTestName4">Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValue4">postive</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValueDate4">20240105000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestInterpretation4">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestReferenceRange4">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestSpecimenCollectionDate4">Unknown</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="labTestName5">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValue5">postive</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValueDate5">20240105000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestInterpretation5">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestReferenceRange5">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestSpecimenCollectionDate5">20220927000000+0000</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="labTestName6">Eosinophils</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValue6">20.0|http://unitsofmeasure.org|%</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValueDate6">20240105000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestInterpretation6">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestReferenceRange6">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestSpecimenCollectionDate6">Unknown</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="labTestName7">Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValue7">Balamuthia mandrillaris</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestResultValueDate7">20240105000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestInterpretation7">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestReferenceRange7">Unknown</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="labTestSpecimenCollectionDate7">Unknown</content>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </text>
+
+                    <entry typeCode="DRIV">
+
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <id root="a1d8846c-328e-4851-8345-3dfe53218a40"/>
+
+                            <code code="6690-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukocytes [#/volume] in Blood by Automated count"/>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime>
+
+                                <low value="20240105000000+0000"/>
+
+                                <high value="20240105000000+0000"/>
+
+                            </effectiveTime>
+
+                            <component>
+
+                                <observation classCode="OBS" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <id extension="d0aafda7-1eba-41be-8a0c-bdc9cfe9127a" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                    <code code="6690-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukocytes [#/volume] in Blood by Automated count">
+                                        <originalText>
+
+                                            <reference value="#labTestName1"/>
+
+                                        </originalText>
+
+                                    </code>
+
+                                    <statusCode code="completed"/>
+
+                                    <effectiveTime value="20240105000000+0000"/>
+
+                                    <value unit="10*9/L" value="4.6" xsi:type="PQ"/>
+
+                                </observation>
+
+                            </component>
+
+                        </organizer>
+
+                    </entry>
+
+                    <entry typeCode="DRIV">
+
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <id root="c40b73d1-53ae-4040-982a-46ea5333027e"/>
+
+                            <code code="41432-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"/>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime>
+
+                                <low nullFlavor="NI"/>
+
+                                <high nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <author>
+
+                                <time value="20200512134056+0000"/>
+
+                                <assignedAuthor>
+
+                                    <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                    <addr>
+
+                                        <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                        <city>New York City</city>
+
+                                        <county>Manhattan</county>
+
+                                        <state>NY</state>
+
+                                        <postalCode>10001</postalCode>
+
+                                        <country>US</country>
+
+                                    </addr>
+
+                                    <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                    <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                    <assignedPerson>
+
+                                        <name>
+
+                                            <given>Arthur</given>
+
+                                            <given>James</given>
+
+                                            <family>Smith</family>
+
+                                        </name>
+
+                                    </assignedPerson>
+
+                                    <representedOrganization>
+
+                                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                        <name>Model Hospital</name>
+
+                                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                        <addr>
+
+                                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                            <city>Kansas City</city>
+
+                                            <state>MO</state>
+
+                                            <postalCode>64117</postalCode>
+
+                                            <country>US</country>
+
+                                        </addr>
+
+                                    </representedOrganization>
+
+                                </assignedAuthor>
+
+                            </author>
+
+                            <component>
+
+                                <observation classCode="OBS" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <id extension="46e1fea4-ce38-4b0d-9514-f8518cf370b9" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                    <code code="41432-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection">
+                                        <originalText>
+
+                                            <reference value="#labTestName2"/>
+
+                                        </originalText>
+
+                                    </code>
+
+                                    <statusCode code="completed"/>
+
+                                    <effectiveTime value="20240105000000+0000"/>
+
+                                    <value code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris" xsi:type="CD">
+                                        <originalText>
+
+                                            <reference value="#labTestResultValue2"/>
+
+                                        </originalText>
+
+                                    </value>
+
+                                    <interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Normal"/>
+
+                                    <author>
+
+                                        <time value="20200512134056+0000"/>
+
+                                        <assignedAuthor>
+
+                                            <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                            <addr>
+
+                                                <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                <city>New York City</city>
+
+                                                <county>Manhattan</county>
+
+                                                <state>NY</state>
+
+                                                <postalCode>10001</postalCode>
+
+                                                <country>US</country>
+
+                                            </addr>
+
+                                            <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                            <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                            <assignedPerson>
+
+                                                <name>
+
+                                                    <given>Arthur</given>
+
+                                                    <given>James</given>
+
+                                                    <family>Smith</family>
+
+                                                </name>
+
+                                            </assignedPerson>
+
+                                            <representedOrganization>
+
+                                                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                                <name>Model Hospital</name>
+
+                                                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                                <addr>
+
+                                                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                    <city>Kansas City</city>
+
+                                                    <state>MO</state>
+
+                                                    <postalCode>64117</postalCode>
+
+                                                    <country>US</country>
+
+                                                </addr>
+
+                                            </representedOrganization>
+
+                                        </assignedAuthor>
+
+                                    </author>
+
+                                </observation>
+
+                            </component>
+
+                            <component>
+
+                                <procedure classCode="PROC" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.415"/>
+
+                                    <templateId extension="2018-09-01" root="2.16.840.1.113883.10.20.22.4.415"/>
+
+                                    <code code="17636008" codeSystem="2.16.840.1.113883.6.96"/>
+
+                                    <effectiveTime value="20220927000000+0000"/>
+
+                                    <participant typeCode="PRD">
+
+                                        <templateId root="2.16.840.1.113883.10.20.22.4.410"/>
+
+                                        <templateId extension="2018-09-01" root="2.16.840.1.113883.10.20.22.4.410"/>
+
+                                        <participantRole classCode="SPEC">
+
+                                            <id extension="1dfb1908-9d08-47c4-81f9-efc05af77082" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                            <playingEntity>
+
+                                                <code nullFlavor="NI"/>
+
+                                            </playingEntity>
+
+                                        </participantRole>
+
+                                    </participant>
+
+                                </procedure>
+
+                            </component>
+
+                        </organizer>
+
+                    </entry>
+
+                    <entry typeCode="DRIV">
+
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <id root="4d3e2632-1c09-4a23-bce9-b5fb98bf4c84"/>
+
+                            <code code="94558-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SARS coronavirus 2 Ag [Presence] in Respiratory specimen by"/>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime>
+
+                                <low nullFlavor="NI"/>
+
+                                <high nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <author>
+
+                                <time value="20200512134056+0000"/>
+
+                                <assignedAuthor>
+
+                                    <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                    <addr>
+
+                                        <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                        <city>New York City</city>
+
+                                        <county>Manhattan</county>
+
+                                        <state>NY</state>
+
+                                        <postalCode>10001</postalCode>
+
+                                        <country>US</country>
+
+                                    </addr>
+
+                                    <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                    <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                    <assignedPerson>
+
+                                        <name>
+
+                                            <given>Arthur</given>
+
+                                            <given>James</given>
+
+                                            <family>Smith</family>
+
+                                        </name>
+
+                                    </assignedPerson>
+
+                                    <representedOrganization>
+
+                                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                        <name>Model Hospital</name>
+
+                                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                        <addr>
+
+                                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                            <city>Kansas City</city>
+
+                                            <state>MO</state>
+
+                                            <postalCode>64117</postalCode>
+
+                                            <country>US</country>
+
+                                        </addr>
+
+                                    </representedOrganization>
+
+                                </assignedAuthor>
+
+                            </author>
+
+                            <component>
+
+                                <observation classCode="OBS" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <id extension="b9e0a76e-9b16-4f8e-8607-0ba69f8421eb" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                    <code code="94558-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SARS coronavirus 2 Ag [Presence] in Respiratory specimen by">
+                                        <originalText>
+
+                                            <reference value="#labTestName3"/>
+
+                                        </originalText>
+
+                                    </code>
+
+                                    <statusCode code="completed"/>
+
+                                    <effectiveTime value="20240409000000+0000"/>
+
+                                    <value unit="mg" value="22.0" xsi:type="PQ"/>
+
+                                    <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"/>
+
+                                    <author>
+
+                                        <time value="20200512134056+0000"/>
+
+                                        <assignedAuthor>
+
+                                            <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                            <addr>
+
+                                                <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                <city>New York City</city>
+
+                                                <county>Manhattan</county>
+
+                                                <state>NY</state>
+
+                                                <postalCode>10001</postalCode>
+
+                                                <country>US</country>
+
+                                            </addr>
+
+                                            <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                            <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                            <assignedPerson>
+
+                                                <name>
+
+                                                    <given>Arthur</given>
+
+                                                    <given>James</given>
+
+                                                    <family>Smith</family>
+
+                                                </name>
+
+                                            </assignedPerson>
+
+                                            <representedOrganization>
+
+                                                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                                <name>Model Hospital</name>
+
+                                                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                                <addr>
+
+                                                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                    <city>Kansas City</city>
+
+                                                    <state>MO</state>
+
+                                                    <postalCode>64117</postalCode>
+
+                                                    <country>US</country>
+
+                                                </addr>
+
+                                            </representedOrganization>
+
+                                        </assignedAuthor>
+
+                                    </author>
+
+                                </observation>
+
+                            </component>
+
+                        </organizer>
+
+                    </entry>
+
+                    <entry typeCode="DRIV">
+
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <id root="4ae11fb2-eaab-4a41-9ef2-ab7255f782a7"/>
+
+                            <code code="87758-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"/>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime>
+
+                                <low nullFlavor="NI"/>
+
+                                <high nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <author>
+
+                                <time value="20200512134056+0000"/>
+
+                                <assignedAuthor>
+
+                                    <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                    <addr>
+
+                                        <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                        <city>New York City</city>
+
+                                        <county>Manhattan</county>
+
+                                        <state>NY</state>
+
+                                        <postalCode>10001</postalCode>
+
+                                        <country>US</country>
+
+                                    </addr>
+
+                                    <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                    <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                    <assignedPerson>
+
+                                        <name>
+
+                                            <given>Arthur</given>
+
+                                            <given>James</given>
+
+                                            <family>Smith</family>
+
+                                        </name>
+
+                                    </assignedPerson>
+
+                                    <representedOrganization>
+
+                                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                        <name>Model Hospital</name>
+
+                                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                        <addr>
+
+                                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                            <city>Kansas City</city>
+
+                                            <state>MO</state>
+
+                                            <postalCode>64117</postalCode>
+
+                                            <country>US</country>
+
+                                        </addr>
+
+                                    </representedOrganization>
+
+                                </assignedAuthor>
+
+                            </author>
+
+                            <component>
+
+                                <observation classCode="OBS" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <id extension="535e7bf4-2ff6-40b4-89d3-dfff0ffdd622" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                    <code code="87758-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection">
+                                        <originalText>
+
+                                            <reference value="#labTestName4"/>
+
+                                        </originalText>
+
+                                    </code>
+
+                                    <statusCode code="completed"/>
+
+                                    <effectiveTime value="20240105000000+0000"/>
+
+                                    <value xsi:type="ST">postive</value>
+
+                                    <author>
+
+                                        <time value="20200512134056+0000"/>
+
+                                        <assignedAuthor>
+
+                                            <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                            <addr>
+
+                                                <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                <city>New York City</city>
+
+                                                <county>Manhattan</county>
+
+                                                <state>NY</state>
+
+                                                <postalCode>10001</postalCode>
+
+                                                <country>US</country>
+
+                                            </addr>
+
+                                            <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                            <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                            <assignedPerson>
+
+                                                <name>
+
+                                                    <given>Arthur</given>
+
+                                                    <given>James</given>
+
+                                                    <family>Smith</family>
+
+                                                </name>
+
+                                            </assignedPerson>
+
+                                            <representedOrganization>
+
+                                                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                                <name>Model Hospital</name>
+
+                                                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                                <addr>
+
+                                                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                    <city>Kansas City</city>
+
+                                                    <state>MO</state>
+
+                                                    <postalCode>64117</postalCode>
+
+                                                    <country>US</country>
+
+                                                </addr>
+
+                                            </representedOrganization>
+
+                                        </assignedAuthor>
+
+                                    </author>
+
+                                </observation>
+
+                            </component>
+
+                        </organizer>
+
+                    </entry>
+
+                    <entry typeCode="DRIV">
+
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <id root="e1d087ab-682e-4c40-bfd2-593a5236238b"/>
+
+                            <code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"/>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime>
+
+                                <low nullFlavor="NI"/>
+
+                                <high nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <author>
+
+                                <time value="20200512134056+0000"/>
+
+                                <assignedAuthor>
+
+                                    <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                    <addr>
+
+                                        <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                        <city>New York City</city>
+
+                                        <county>Manhattan</county>
+
+                                        <state>NY</state>
+
+                                        <postalCode>10001</postalCode>
+
+                                        <country>US</country>
+
+                                    </addr>
+
+                                    <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                    <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                    <assignedPerson>
+
+                                        <name>
+
+                                            <given>Arthur</given>
+
+                                            <given>James</given>
+
+                                            <family>Smith</family>
+
+                                        </name>
+
+                                    </assignedPerson>
+
+                                    <representedOrganization>
+
+                                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                        <name>Model Hospital</name>
+
+                                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                        <addr>
+
+                                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                            <city>Kansas City</city>
+
+                                            <state>MO</state>
+
+                                            <postalCode>64117</postalCode>
+
+                                            <country>US</country>
+
+                                        </addr>
+
+                                    </representedOrganization>
+
+                                </assignedAuthor>
+
+                            </author>
+
+                            <component>
+
+                                <observation classCode="OBS" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <id extension="f7e55c9f-0612-42e3-8e52-67f4f3a25712" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                    <code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen">
+                                        <originalText>
+
+                                            <reference value="#labTestName5"/>
+
+                                        </originalText>
+
+                                    </code>
+
+                                    <statusCode code="completed"/>
+
+                                    <effectiveTime value="20240105000000+0000"/>
+
+                                    <value xsi:type="ST">postive</value>
+
+                                    <author>
+
+                                        <time value="20200512134056+0000"/>
+
+                                        <assignedAuthor>
+
+                                            <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                            <addr>
+
+                                                <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                <city>New York City</city>
+
+                                                <county>Manhattan</county>
+
+                                                <state>NY</state>
+
+                                                <postalCode>10001</postalCode>
+
+                                                <country>US</country>
+
+                                            </addr>
+
+                                            <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                            <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                            <assignedPerson>
+
+                                                <name>
+
+                                                    <given>Arthur</given>
+
+                                                    <given>James</given>
+
+                                                    <family>Smith</family>
+
+                                                </name>
+
+                                            </assignedPerson>
+
+                                            <representedOrganization>
+
+                                                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                                <name>Model Hospital</name>
+
+                                                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                                <addr>
+
+                                                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                    <city>Kansas City</city>
+
+                                                    <state>MO</state>
+
+                                                    <postalCode>64117</postalCode>
+
+                                                    <country>US</country>
+
+                                                </addr>
+
+                                            </representedOrganization>
+
+                                        </assignedAuthor>
+
+                                    </author>
+
+                                </observation>
+
+                            </component>
+
+                            <component>
+
+                                <procedure classCode="PROC" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.415"/>
+
+                                    <templateId extension="2018-09-01" root="2.16.840.1.113883.10.20.22.4.415"/>
+
+                                    <code code="17636008" codeSystem="2.16.840.1.113883.6.96"/>
+
+                                    <effectiveTime value="20220927000000+0000"/>
+
+                                    <participant typeCode="PRD">
+
+                                        <templateId root="2.16.840.1.113883.10.20.22.4.410"/>
+
+                                        <templateId extension="2018-09-01" root="2.16.840.1.113883.10.20.22.4.410"/>
+
+                                        <participantRole classCode="SPEC">
+
+                                            <id extension="1dfb1908-9d08-47c4-81f9-efc05af77082" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                            <playingEntity>
+
+                                                <code nullFlavor="NI"/>
+
+                                            </playingEntity>
+
+                                        </participantRole>
+
+                                    </participant>
+
+                                </procedure>
+
+                            </component>
+
+                        </organizer>
+
+                    </entry>
+
+                    <entry typeCode="DRIV">
+
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <id root="53f8365e-eb75-4c7e-b071-78251cd2263b"/>
+
+                            <code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count"/>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime>
+
+                                <low nullFlavor="NI"/>
+
+                                <high nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <author>
+
+                                <time value="20200512134056+0000"/>
+
+                                <assignedAuthor>
+
+                                    <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                    <addr>
+
+                                        <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                        <city>New York City</city>
+
+                                        <county>Manhattan</county>
+
+                                        <state>NY</state>
+
+                                        <postalCode>10001</postalCode>
+
+                                        <country>US</country>
+
+                                    </addr>
+
+                                    <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                    <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                    <assignedPerson>
+
+                                        <name>
+
+                                            <given>Arthur</given>
+
+                                            <given>James</given>
+
+                                            <family>Smith</family>
+
+                                        </name>
+
+                                    </assignedPerson>
+
+                                    <representedOrganization>
+
+                                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                        <name>Model Hospital</name>
+
+                                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                        <addr>
+
+                                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                            <city>Kansas City</city>
+
+                                            <state>MO</state>
+
+                                            <postalCode>64117</postalCode>
+
+                                            <country>US</country>
+
+                                        </addr>
+
+                                    </representedOrganization>
+
+                                </assignedAuthor>
+
+                            </author>
+
+                            <component>
+
+                                <observation classCode="OBS" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <id extension="3eb6aaa3-af28-4d33-842e-5ac496ea82b8" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                    <code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count">
+                                        <originalText>
+
+                                            <reference value="#labTestName6"/>
+
+                                        </originalText>
+
+                                    </code>
+
+                                    <statusCode code="completed"/>
+
+                                    <effectiveTime value="20240105000000+0000"/>
+
+                                    <value unit="%" value="20.0" xsi:type="PQ"/>
+
+                                    <author>
+
+                                        <time value="20200512134056+0000"/>
+
+                                        <assignedAuthor>
+
+                                            <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                            <addr>
+
+                                                <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                <city>New York City</city>
+
+                                                <county>Manhattan</county>
+
+                                                <state>NY</state>
+
+                                                <postalCode>10001</postalCode>
+
+                                                <country>US</country>
+
+                                            </addr>
+
+                                            <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                            <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                            <assignedPerson>
+
+                                                <name>
+
+                                                    <given>Arthur</given>
+
+                                                    <given>James</given>
+
+                                                    <family>Smith</family>
+
+                                                </name>
+
+                                            </assignedPerson>
+
+                                            <representedOrganization>
+
+                                                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                                <name>Model Hospital</name>
+
+                                                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                                <addr>
+
+                                                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                    <city>Kansas City</city>
+
+                                                    <state>MO</state>
+
+                                                    <postalCode>64117</postalCode>
+
+                                                    <country>US</country>
+
+                                                </addr>
+
+                                            </representedOrganization>
+
+                                        </assignedAuthor>
+
+                                    </author>
+
+                                </observation>
+
+                            </component>
+
+                        </organizer>
+
+                    </entry>
+
+                    <entry typeCode="DRIV">
+
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.1"/>
+
+                            <id root="48fda7cc-2f91-47b3-89fc-251706c1d92e"/>
+
+                            <code nullFlavor="OTH">
+
+                                <originalText>
+                                    Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</originalText>
+
+                            </code>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime>
+
+                                <low nullFlavor="NI"/>
+
+                                <high nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <author>
+
+                                <time value="20200512134056+0000"/>
+
+                                <assignedAuthor>
+
+                                    <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                    <addr>
+
+                                        <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                        <city>New York City</city>
+
+                                        <county>Manhattan</county>
+
+                                        <state>NY</state>
+
+                                        <postalCode>10001</postalCode>
+
+                                        <country>US</country>
+
+                                    </addr>
+
+                                    <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                    <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                    <assignedPerson>
+
+                                        <name>
+
+                                            <given>Arthur</given>
+
+                                            <given>James</given>
+
+                                            <family>Smith</family>
+
+                                        </name>
+
+                                    </assignedPerson>
+
+                                    <representedOrganization>
+
+                                        <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                        <name>Model Hospital</name>
+
+                                        <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                        <addr>
+
+                                            <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                            <city>Kansas City</city>
+
+                                            <state>MO</state>
+
+                                            <postalCode>64117</postalCode>
+
+                                            <country>US</country>
+
+                                        </addr>
+
+                                    </representedOrganization>
+
+                                </assignedAuthor>
+
+                            </author>
+
+                            <component>
+
+                                <observation classCode="OBS" moodCode="EVN">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.2"/>
+
+                                    <id extension="36aa8224-2021-4ed2-8f2f-1f7227c57230" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                                    <code nullFlavor="OTH">
+
+                                        <originalText>
+                                            Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection</originalText>
+
+                                    </code>
+
+                                    <statusCode code="completed"/>
+
+                                    <effectiveTime value="20240105000000+0000"/>
+
+                                    <value code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris" xsi:type="CD">
+                                        <originalText>
+
+                                            <reference value="#labTestResultValue7"/>
+
+                                        </originalText>
+
+                                    </value>
+
+                                    <author>
+
+                                        <time value="20200512134056+0000"/>
+
+                                        <assignedAuthor>
+
+                                            <id extension="9999993519" root="2.16.840.1.113883.4.6"/>
+
+                                            <addr>
+
+                                                <streetAddressLine>["[\"[\\\"[\\\\\\\"5400 N Oak Trfy\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                <city>New York City</city>
+
+                                                <county>Manhattan</county>
+
+                                                <state>NY</state>
+
+                                                <postalCode>10001</postalCode>
+
+                                                <country>US</country>
+
+                                            </addr>
+
+                                            <telecom use="MC" value="tel:(816)673-2878"/>
+
+                                            <telecom value="mailto:arthur.james73@gmail.com"/>
+
+                                            <assignedPerson>
+
+                                                <name>
+
+                                                    <given>Arthur</given>
+
+                                                    <given>James</given>
+
+                                                    <family>Smith</family>
+
+                                                </name>
+
+                                            </assignedPerson>
+
+                                            <representedOrganization>
+
+                                                <id extension="1254562390" root="2.16.840.1.113883.4.6"/>
+
+                                                <name>Model Hospital</name>
+
+                                                <telecom use="WP" value="tel:(555)555-0013"/>
+
+                                                <addr>
+
+                                                    <streetAddressLine>["[\"[\\\"[\\\\\\\"6276 Rockriver Drive\\\\\\\"]\\\"]\"]"]</streetAddressLine>
+
+                                                    <city>Kansas City</city>
+
+                                                    <state>MO</state>
+
+                                                    <postalCode>64117</postalCode>
+
+                                                    <country>US</country>
+
+                                                </addr>
+
+                                            </representedOrganization>
+
+                                        </assignedAuthor>
+
+                                    </author>
+
+                                </observation>
+
+                            </component>
+
+                        </organizer>
+
+                    </entry>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section>
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.38"/>
+
+                    <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.2.38"/>
+
+                    <code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>
+
+                    <title>Medications Administered</title>
+
+                    <text>
+
+                        <table border="1" width="100%">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Medication Name</th>
+
+                                    <th>Medication Start Date</th>
+
+                                    <th>Medication Dosage &amp; Period</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="medication1">Cisplatin 50 MG Injection</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="medicationDate1">20231227000000+0000</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="medicationDosagePeriod1">1|http://unitsofmeasure.org|mL|Unknown</content>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </text>
+
+                    <entry typeCode="DRIV">
+
+                        <substanceAdministration classCode="SBADM" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+
+                            <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.4.16"/>
+
+                            <id extension="ef5acb44-0146-427f-a399-f5b1427789da" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime xsi:type="IVL_TS">
+                                <low value="20231227000000+0000"/>
+
+                            </effectiveTime>
+
+                            <effectiveTime institutionSpecified="true" operator="A" xsi:type="PIVL_TS">
+
+                                <period nullFlavor="NI"/>
+
+                            </effectiveTime>
+
+                            <routeCode code="C38276" codeSystem="2.16.840.1.113883.3.26.1.1" codeSystemName="ncimeta.nci.nih.gov" displayName="INTRAVENOUS"/>
+
+                            <doseQuantity unit="mL" value="1"/>
+
+                            <consumable>
+
+                                <manufacturedProduct classCode="MANU">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+
+                                    <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.4.23"/>
+
+                                    <id root="9a6df237-3d21-4b34-951f-e3b896ad4bfb"/>
+
+                                    <manufacturedMaterial>
+
+                                        <code code="1736854" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="Cisplatin 50 MG Injection"/>
+
+                                    </manufacturedMaterial>
+
+                                </manufacturedProduct>
+
+                            </consumable>
+
+                        </substanceAdministration>
+
+                    </entry>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section nullFlavor="NI">
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>
+
+                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.2.2.1"/>
+
+                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>
+
+                    <title>IMMUNIZATIONS</title>
+
+                    <text>No ImmunizationInformation</text>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section>
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+
+                    <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.2.17"/>
+
+                    <code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+
+                    <title>SOCIAL HISTORY</title>
+
+                    <text>
+
+                        <table border="1" width="100%">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Social History Observation</th>
+
+                                    <th>Social History Observation Result</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="socContent0">Occupation History</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="socObservationResult0">Employed</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="socContent1">Travel History</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="socObservationResult1">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="socContent2">Travel History</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="socObservationResult2">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="socContent3">Travel History</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="socObservationResult3">Travel History Component 1 : Location |  Value : Travelled abroad</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="socContent4">Travel History</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="socObservationResult4">Travel Component 1 : Location |  Value : Travel Location: China</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="socContent5">Travel History</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="socObservationResult5">Travel Component 1 : Location |  Value : Travel to China in last 14 days</content>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="socContent6">Travel History</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="socObservationResult6">Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</content>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </text>
+
+                    <entry>
+
+                        <observation classCode="OBS" moodCode="EVN">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.38"/>
+
+                            <templateId extension="2015-08-01" root="2.16.840.1.113883.10.20.22.4.38"/>
+
+                            <id extension="d0eb62ca-9c18-4752-ae04-9adb8ab4df8b" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail">
+                                <translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>
+
+                                <translation code="74165-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of employment status NIOSH">
+                                    <translation code="224362002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment status"/>
+
+                                </translation>
+
+                            </code>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime nullFlavor="NI"/>
+
+                            <value code="Employed" codeSystem="2.16.840.1.113883.5.1063" codeSystemName="v3-ObservationValue" displayName="Employed" xsi:type="CD"/>
+
+                        </observation>
+
+                    </entry>
+
+                    <entry>
+
+                        <act classCode="ACT" moodCode="EVN">
+
+                            <templateId extension="2016-12-01" root="2.16.840.1.113883.10.20.15.2.3.1"/>
+
+                            <id extension="6deef845-e6fb-4db1-8de9-d53aaa15e4cd" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+
+                            <text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime nullFlavor="NI"/>
+
+                            <participant typeCode="LOC">
+
+                                <participantRole classCode="TERR">
+
+                                    <code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
+
+                                </participantRole>
+
+                            </participant>
+
+                        </act>
+
+                    </entry>
+
+                    <entry>
+
+                        <act classCode="ACT" moodCode="EVN">
+
+                            <templateId extension="2016-12-01" root="2.16.840.1.113883.10.20.15.2.3.1"/>
+
+                            <id extension="c9fae72d-f781-4089-9534-77045256146d" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+
+                            <text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime value="20241201000000+0000"/>
+
+                            <participant typeCode="LOC">
+
+                                <participantRole classCode="TERR">
+
+                                    <code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
+
+                                </participantRole>
+
+                            </participant>
+
+                        </act>
+
+                    </entry>
+
+                    <entry>
+
+                        <act classCode="ACT" moodCode="EVN">
+
+                            <templateId extension="2016-12-01" root="2.16.840.1.113883.10.20.15.2.3.1"/>
+
+                            <id extension="810c0924-8e86-402b-93a2-3fea05944dd3" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+
+                            <text>Travel History Component 1 : Location |  Value : Travelled abroad</text>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime nullFlavor="NI"/>
+
+                            <participant typeCode="LOC">
+
+                                <participantRole classCode="TERR">
+
+                                    <code nullFlavor="OTH">
+
+                                        <originalText>
+                                            Travelled abroad</originalText>
+
+                                    </code>
+
+                                </participantRole>
+
+                            </participant>
+
+                        </act>
+
+                    </entry>
+
+                    <entry>
+
+                        <act classCode="ACT" moodCode="EVN">
+
+                            <templateId extension="2016-12-01" root="2.16.840.1.113883.10.20.15.2.3.1"/>
+
+                            <id extension="645317d0-b90d-4026-ac26-3d28cb53c658" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+
+                            <text>Travel Component 1 : Location |  Value : Travel Location: China</text>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime nullFlavor="NI"/>
+
+                            <participant typeCode="LOC">
+
+                                <participantRole classCode="TERR">
+
+                                    <code nullFlavor="OTH">
+
+                                        <originalText>
+                                            Travel Location: China</originalText>
+
+                                    </code>
+
+                                </participantRole>
+
+                            </participant>
+
+                        </act>
+
+                    </entry>
+
+                    <entry>
+
+                        <act classCode="ACT" moodCode="EVN">
+
+                            <templateId extension="2016-12-01" root="2.16.840.1.113883.10.20.15.2.3.1"/>
+
+                            <id extension="4e0cb073-7206-4004-a4e7-e0fce0695939" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+
+                            <text>Travel Component 1 : Location |  Value : Travel to China in last 14 days</text>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime nullFlavor="NI"/>
+
+                            <participant typeCode="LOC">
+
+                                <participantRole classCode="TERR">
+
+                                    <code nullFlavor="OTH">
+
+                                        <originalText>
+                                            Travel to China in last 14 days</originalText>
+
+                                    </code>
+
+                                </participantRole>
+
+                            </participant>
+
+                        </act>
+
+                    </entry>
+
+                    <entry>
+
+                        <act classCode="ACT" moodCode="EVN">
+
+                            <templateId extension="2016-12-01" root="2.16.840.1.113883.10.20.15.2.3.1"/>
+
+                            <id extension="f1da4975-a496-467f-b57f-2cd8458d0838" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+
+                            <text>Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</text>
+
+                            <statusCode code="completed"/>
+
+                            <effectiveTime nullFlavor="NI"/>
+
+                            <participant typeCode="LOC">
+
+                                <participantRole classCode="TERR">
+
+                                    <code nullFlavor="OTH">
+
+                                        <originalText>
+                                            1170 N Rancho Robles Rd ,Oracle</originalText>
+
+                                    </code>
+
+                                    <addr>
+
+                                        <country>US</country>
+
+                                        <city>Oracle</city>
+
+                                        <state>AZ</state>
+
+                                    </addr>
+
+                                </participantRole>
+
+                            </participant>
+
+                        </act>
+
+                    </entry>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section>
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+
+                    <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.2.10"/>
+
+                    <code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+
+                    <title>Plan of Treatment</title>
+
+                    <text>
+
+                        <table border="1" width="100%">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Planned Observation</th>
+
+                                    <th>Planned Observation Date</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="potObsContent1">Cisplatin 50 MG Injection</content>
+
+                                    </td>
+
+                                    <td>
+
+                                        <content ID="potObsDate1">20231227000000+0000</content>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </text>
+
+                    <entry>
+
+                        <substanceAdministration classCode="SBADM" moodCode="INT">
+
+                            <templateId root="2.16.840.1.113883.10.20.22.4.42"/>
+
+                            <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.4.42"/>
+
+                            <id extension="ef5acb44-0146-427f-a399-f5b1427789da" root="2.16.840.1.113762.1.4.1146.627.1.1.1.1.1"/>
+
+                            <statusCode code="active"/>
+
+                            <effectiveTime xsi:type="IVL_TS">
+                                <low value="20231227000000+0000"/>
+
+                            </effectiveTime>
+
+                            <doseQuantity unit="mL" value="1"/>
+
+                            <consumable>
+
+                                <manufacturedProduct classCode="MANU">
+
+                                    <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+
+                                    <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.4.23"/>
+
+                                    <id root="b23e6637-d353-4cb8-9bc0-8ba99bb52834"/>
+
+                                    <manufacturedMaterial>
+
+                                        <code code="1736854" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="Cisplatin 50 MG Injection"/>
+
+                                    </manufacturedMaterial>
+
+                                </manufacturedProduct>
+
+                            </consumable>
+
+                        </substanceAdministration>
+
+                    </entry>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section nullFlavor="NI">
+
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.4"/>
+
+                    <code code="10164-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Present Illness"/>
+
+                    <title>History of Present Illness</title>
+
+                    <text>No History of Present Illness Information</text>
+
+                </section>
+
+            </component>
+
+            <component>
+
+                <section>
+
+                    <templateId root="2.16.840.1.113883.10.20.22.2.12"/>
+
+                    <code code="29299-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Reason For Visit"/>
+
+                    <title>Reason For Visit</title>
+
+                    <text>
+
+                        <table border="1" width="100%">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>text</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+
+                                        <content ID="text1">Shortness of Breath, Cough, Rule out COVID-19</content>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </text>
+
+                </section>
+
+            </component>
+
+        </structuredBody>
+
+    </component>
+
+</ClinicalDocument>

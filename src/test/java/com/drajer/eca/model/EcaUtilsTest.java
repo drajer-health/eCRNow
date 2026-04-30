@@ -12,7 +12,6 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
-import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.ValueSetSingleton;
@@ -37,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -44,10 +44,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({
   ValueSetSingleton.class,
   ApplicationUtils.class,
-  Dstu2CdaEicrGenerator.class,
   ActionRepo.class,
   CdaEicrGeneratorFromR4.class
 })
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class EcaUtilsTest {
 
   private LaunchDetails mockDetails;
@@ -178,27 +178,6 @@ public class EcaUtilsTest {
   }
 
   @Test
-  public void testCreateEicr_Dstu2() {
-
-    // SetUp
-    when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
-    when(mockActionRepo.getEicrRRService()).thenReturn(mockRRSrvc);
-    when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
-    when(mockQuerySrvc.getData(eq(mockDetails), eq(null), eq(null))).thenReturn(mockDstu2Data);
-
-    PowerMockito.mockStatic(Dstu2CdaEicrGenerator.class);
-    when(Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(
-            any(Dstu2FhirData.class), eq(mockDetails), any(Eicr.class), any(String.class)))
-        .thenReturn("This is DSTU2 EICR data");
-
-    // Test
-    Eicr eicr = EcaUtils.createEicr(mockDetails);
-
-    // Validate
-    assertEquals("This is DSTU2 EICR data", eicr.getEicrData());
-  }
-
-  @Test
   public void testCreateEicr_R4() {
 
     // SetUp
@@ -209,7 +188,11 @@ public class EcaUtilsTest {
 
     PowerMockito.mockStatic(CdaEicrGeneratorFromR4.class);
     when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            any(R4FhirData.class), eq(mockDetails), any(Eicr.class), any(String.class)))
+            any(R4FhirData.class),
+            eq(mockDetails),
+            any(Eicr.class),
+            any(Integer.class),
+            any(String.class)))
         .thenReturn("This is R4 EICR data");
 
     // Test

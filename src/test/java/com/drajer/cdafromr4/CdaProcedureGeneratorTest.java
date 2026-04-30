@@ -1,13 +1,12 @@
 package com.drajer.cdafromr4;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -86,6 +85,32 @@ public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaProcedureGenerator.generateProcedureSection(r4FhirData, launchDetails, "");
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateProcedureSection_withInvalidCode() {
+
+    String expectedXml = TestUtils.getFileContentAsString(EMPTY_PROCEDURE_CDA_FILE);
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    Procedure procedure = new Procedure();
+
+    CodeableConcept codeableConcept =
+        new CodeableConcept()
+            .addCoding(
+                new Coding()
+                    .setSystem(CdaGeneratorConstants.FHIR_RXNORM_URL)
+                    .setCode("123456")
+                    .setDisplay("Test Procedure"));
+    procedure.setCode(codeableConcept);
+
+    R4FhirData r4Data = new R4FhirData();
+    r4Data.setProcedureList(Collections.singletonList(procedure));
+
+    String actualXml = CdaProcedureGenerator.generateProcedureSection(r4Data, launchDetails, "");
 
     assertXmlEquals(expectedXml, actualXml);
   }

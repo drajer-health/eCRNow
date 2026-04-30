@@ -2,10 +2,12 @@ package com.drajer.bsa.auth.impl;
 
 import com.drajer.bsa.auth.AuthorizationService;
 import com.drajer.bsa.model.FhirServerDetails;
-import com.drajer.sof.model.Response;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.transaction.Transactional;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +23,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import javax.transaction.Transactional;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -70,9 +72,12 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    * @return the token response from the auth server
    * @throws KeyStoreException in case of invalid public/private keys
    */
-  public JSONObject connectToServer(String url, FhirServerDetails fsd) throws KeyStoreException {
+  public JSONObject connectToServer(String url, FhirServerDetails fsd)
+      throws KeyStoreException, JsonProcessingException {
     RestTemplate resTemplate = new RestTemplate();
     String tokenEndpoint;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     tokenEndpoint = fsd.getTokenUrl();
     if (tokenEndpoint == null || tokenEndpoint.isEmpty()) {
@@ -84,9 +89,12 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("scope", scopes);
+    if (StringUtils.isNotBlank(scopes)) {
+      map.add("scope", scopes);
+    }
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
@@ -101,12 +109,17 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
     logger.info(" Request {}", request);
 
-    ResponseEntity<?> response = resTemplate.postForEntity(tokenEndpoint, request, Response.class);
+    ResponseEntity<String> response =
+        resTemplate.postForEntity(tokenEndpoint, request, String.class);
     logger.info(" Response Body = ", response.getBody());
-    return new JSONObject(Objects.requireNonNull(response.getBody()));
+    String responseObj = (String) Objects.requireNonNull(response.getBody());
+
+    return new JSONObject(responseObj);
   }
 
-  /** @param fsd The processing context which contains information such as patient, encounter */
+  /**
+   * @param fsd The processing context which contains information such as patient, encounter
+   */
   @Override
   public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
     String baseUrl = fsd.getFhirServerBaseURL();

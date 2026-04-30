@@ -4,7 +4,7 @@ import com.drajer.bsa.kar.model.BsaCondition;
 import java.util.List;
 import java.util.function.Supplier;
 import org.hl7.fhir.r4.model.Expression;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 
 /**
  * This class is used to identify Conditions of type FHIRPath.
@@ -38,11 +38,11 @@ public class BsaFhirPathCondition extends BsaCondition {
     this.variableExpression = variableExpression;
   }
 
-  public ExpressionEvaluator getExpressionEvaluator() {
+  public R4CqlExecutionService getExpressionEvaluator() {
     return ((FhirPathProcessor) this.getConditionProcessor()).newEvaluator();
   }
 
-  public void setExpressionEvaluator(Supplier<ExpressionEvaluator> factory) {
+  public void setExpressionEvaluator(Supplier<R4CqlExecutionService> factory) {
     ((FhirPathProcessor) this.getConditionProcessor()).setExpressionEvaluatorFactory(factory);
   }
 }

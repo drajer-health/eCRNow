@@ -3152,6 +3152,45 @@
         "onsetDateTime": "2024-01-02T00:00:00+00:00",
         "recordedDate": "2024-01-02T00:00:00+00:00"
       }
+    },{
+      "resource": {
+        "resourceType": "Observation",
+        "id": "8896d4ef-e77f-45f4-a595-1a6ffffc9cd4",
+        "meta": {
+          "versionId": "1"
+        },
+        "status": "final",
+        "category": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+            "code": "social-history",
+            "display": "Social History"
+          } ],
+          "text": "Social History"
+        } ],
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "86645-9"
+          } ],
+          "text": "Pregnancy intention in the next year - Reported"
+        },
+        "subject": {
+          "reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74"
+        },
+        "encounter": {
+          "reference": "Encounter/1f43c338-0811-415a-b96b-3b5720e6a69a"
+        },
+        "effectiveDateTime": "2025-03-17T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "454411000124108",
+            "display": "Wants to become pregnant (finding)"
+          } ],
+          "text": "Wants to become pregnant (finding)"
+        }
+      }
     }
   ]
 }

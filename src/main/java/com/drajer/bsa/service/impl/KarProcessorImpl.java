@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Resource;
@@ -176,6 +177,7 @@ public class KarProcessorImpl implements KarProcessor {
     logger.info(" Scheduled Job invoked via scheduler, Job Id : {}", data.getJobId());
 
     NotificationContext nc = null;
+    PublicHealthMessage publicHealthMessage = null;
     try {
 
       KarProcessingData kd = new KarProcessingData();
@@ -300,6 +302,10 @@ public class KarProcessorImpl implements KarProcessor {
 
                 } catch (Exception e) {
 
+                  if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
+                    publicHealthMessage = createPublicHealthMessage(kd, kd.getSubmittedCdaData());
+                  }
+
                   logger.error("Exception encountered during processing of the scheduled job ");
                   throw e;
                 }
@@ -354,6 +360,12 @@ public class KarProcessorImpl implements KarProcessor {
             inst.getData().getKarExecutionStateId(),
             inst.getData().getxRequestId());
 
+        if (publicHealthMessage != null
+            && !StringUtils.isBlank(publicHealthMessage.getSubmittedCdaData())) {
+          publicHealthMessage.setSubmissionMessageStatus("FAILED");
+          phDao.saveOrUpdate(publicHealthMessage);
+        }
+
         if (nc != null) {
           logger.error(" Updating Notification Context {} Status to FAILED ", nc.getId());
           nc.setNotificationProcessingStatus(NotificationProcessingStatusType.FAILED.toString());
@@ -379,9 +391,40 @@ public class KarProcessorImpl implements KarProcessor {
     searchParams.put(
         PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
     searchParams.put(PublicHealthMessagesDaoImpl.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
+    searchParams.put(PublicHealthMessagesDaoImpl.SUBMISSION_MESSAGE_STATUS, "FAILED");
     List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);
 
     if (messages != null && !messages.isEmpty()) return messages.get(0);
     else return null;
+  }
+
+  private PublicHealthMessage createPublicHealthMessage(KarProcessingData kd, String cdaOutput) {
+    PublicHealthMessage msg = new PublicHealthMessage();
+
+    msg.setFhirServerBaseUrl(kd.getNotificationContext().getFhirServerBaseUrl());
+    msg.setPatientId(kd.getNotificationContext().getPatientId());
+    msg.setNotifiedResourceId(kd.getNotificationContext().getNotificationResourceId());
+    msg.setNotifiedResourceType(kd.getNotificationContext().getNotificationResourceType());
+    msg.setNotificationId(kd.getNotificationContext().getId().toString());
+    msg.setxCorrelationId(kd.getxCorrelationId());
+    msg.setxRequestId(kd.getxRequestId());
+
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
+      msg.setEncounterId(msg.getNotifiedResourceId());
+    } else {
+      msg.setEncounterId("Unknown");
+    }
+
+    msg.setSubmittedCdaData(cdaOutput);
+    msg.setSubmissionMessageStatus("FAILED");
+
+    if (kd.getPhm() != null) {
+      msg.setSubmittedVersionNumber(kd.getPhm().getSubmittedVersionNumber());
+    } else {
+      msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
+    }
+    return msg;
   }
 }

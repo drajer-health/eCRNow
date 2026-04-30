@@ -20,7 +20,7 @@ public class HibernateConfiguration {
 
   @Autowired private Environment environment;
 
-  @Bean
+  @Bean(name = "entityManagerFactory")
   public LocalSessionFactoryBean sessionFactory() {
     LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
     sessionFactory.setDataSource(dataSource());
@@ -71,7 +71,6 @@ public class HibernateConfiguration {
   }
 
   @Bean
-  @Autowired
   public HibernateTransactionManager transactionManager(SessionFactory s) {
     HibernateTransactionManager txManager = new HibernateTransactionManager();
     txManager.setSessionFactory(s);

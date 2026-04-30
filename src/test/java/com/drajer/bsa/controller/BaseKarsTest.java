@@ -26,6 +26,8 @@ import com.drajer.test.util.WireMockHelper;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -37,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
@@ -125,24 +125,17 @@ public class BaseKarsTest extends BaseIntegrationTest {
         this.stubHelper.mockReceiveEicr(bundle);
       }
 
-      Boolean reportBundleGenerated = false;
-      List<KarProcessingData> dataList = null;
-      try {
-        PatientLaunchContext launchContext = null;
-        dataList =
-            notificationReceiver.processNotification(
-                bundle,
-                mock(HttpServletRequest.class),
-                mock(HttpServletResponse.class),
-                launchContext);
-      } catch (Exception e) {
-        reportBundleGenerated = false;
-      }
+      PatientLaunchContext launchContext = null;
+      List<KarProcessingData> dataList =
+          notificationReceiver.processNotification(
+              bundle,
+              mock(HttpServletRequest.class),
+              mock(HttpServletResponse.class),
+              launchContext);
 
-      reportBundleGenerated =
+      Boolean reportBundleGenerated =
           this.reportBundleGenerated(
               dataList, this.testCaseInfo.getName(), this.testCaseInfo.getPlanDefUrl());
-
       if (!reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == REPORTED) {
         throw new RuntimeException(
             String.format(
@@ -344,8 +337,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
     // Filter subdirectories for now..
     List<File> files =
-        Arrays.asList(scenario.listFiles())
-            .stream()
+        Arrays.asList(scenario.listFiles()).stream()
             .filter(x -> x.isFile())
             .collect(Collectors.toList());
 
@@ -456,11 +448,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected void validatePopulation(MeasureReport report, String population, int count) {
     Optional<MeasureReportGroupPopulationComponent> pgc =
-        report
-            .getGroup()
-            .get(0)
-            .getPopulation()
-            .stream()
+        report.getGroup().get(0).getPopulation().stream()
             .filter(x -> x.getCode().getCodingFirstRep().getCode().equals(population))
             .findFirst();
     if (!pgc.isPresent()) {

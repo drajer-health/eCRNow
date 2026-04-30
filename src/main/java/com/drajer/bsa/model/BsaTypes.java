@@ -14,6 +14,7 @@ public final class BsaTypes {
     SOF_PROVIDER,
     USER_NAME_PWD,
     SOF_BACKEND,
+    SOF_SYSTEM,
     UNKNOWN
   }
 
@@ -144,7 +145,7 @@ public final class BsaTypes {
     else if (t == MessageType.HEP_C_REPORT_MESSAGE) return "hepc-report-message";
     else if (t == MessageType.HEALTHCARE_SURVEY_REPORT_MESSAGE)
       return "healthcare-survey-report-message";
-    else if (t == MessageType.RESPNET_CASE_REPORT_MESSAGE) return "respnet-case-report-message";
+    else if (t == MessageType.RESPNET_CASE_REPORT_MESSAGE) return "respnet-case-report";
     else if (t == MessageType.CDA_EICR_MESSAGE) return "CdaEicrMessage";
     else if (t == MessageType.EICR_CASE_REPORT_MESSAGE) return "eicr-case-report-message";
     else if (t == MessageType.CDA_REPORTABILITY_RESPONSE_MESSAGE)
@@ -247,6 +248,7 @@ public final class BsaTypes {
     else if (t == AuthenticationType.USER_NAME_PWD) return "UserNamePwd";
     else if (t == AuthenticationType.SOF_BACKEND) return "SofBackend";
     else if (t == AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH) return "MultiTenantSystemLaunch";
+    else if (t == AuthenticationType.SOF_SYSTEM) return "SofSystem";
     else return UNKNOWN;
   }
 
@@ -256,7 +258,7 @@ public final class BsaTypes {
     else if (s.contentEquals("SofProvider")) return AuthenticationType.SOF_PROVIDER;
     else if (s.contentEquals("UserNamePwd")) return AuthenticationType.USER_NAME_PWD;
     else if (s.contentEquals("SofBackend")) return AuthenticationType.SOF_BACKEND;
-    else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_BACKEND;
+    else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_SYSTEM;
     else if (s.contentEquals("MultiTenantSystemLaunch"))
       return AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH;
     else return AuthenticationType.UNKNOWN;

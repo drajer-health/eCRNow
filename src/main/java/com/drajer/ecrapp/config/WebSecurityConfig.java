@@ -1,7 +1,8 @@
 package com.drajer.ecrapp.config;
 
+import jakarta.servlet.Filter;
 import java.util.Arrays;
-import javax.servlet.Filter;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +11,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 @Configuration
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
   private final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
@@ -29,28 +31,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Value("${token.validator.class}")
   private String tokenFilterClassName;
 
-  @Value("${security.whitelist-endpoints}")
-  private String[] whitelistEndpoints;
-
-  @Override
-  public void configure(WebSecurity web) throws Exception {
-
-    if (whitelistEndpoints != null && whitelistEndpoints.length > 0) {
-
-      web.ignoring().antMatchers(whitelistEndpoints);
-    } else {
-      web.ignoring()
-          .antMatchers(
-              "/meta/**",
-              "/actuator/**",
-              "/swagger-ui/**",
-              "/v3/api-docs/**",
-              "/api/receiveEicr",
-              "/api/auth/generate-token",
-              "/api/auth/generateAuthToken",
-              "/api/auth/refresh-token");
-    }
-  }
+  private static final String[] AUTH_WHITELIST = {
+    "/v2/api-docs",
+    "/v3/api-docs",
+    "/v3/api-docs/**",
+    "/swagger-resources",
+    "/swagger-resources/**",
+    "/configuration/ui",
+    "/configuration/security",
+    "/swagger-ui/**",
+    "/webjars/**",
+    "/swagger-ui.html",
+    "/meta/**",
+    "/actuator/**",
+    "/api/auth/refresh-token",
+    "/api/receiveEicr",
+    "/api/auth/generate-token",
+    "/api/auth/generateAuthToken"
+  };
 
   @Bean
   public CorsFilter corsFilter() {
@@ -64,8 +62,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     return new CorsFilter(source);
   }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("*")); // Allow all origins
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    // config.setAllowCredentials(true); // Optional: Enable if credentials are needed
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+
+    return source;
+  }
+
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return (web) -> web.ignoring().requestMatchers(AUTH_WHITELIST);
+  }
+
+  @Bean
+  protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
     logger.info("*******************************************************************");
     logger.info("Security Configuration {}", tokenFilterClassName);
     logger.info("*******************************************************************");
@@ -76,17 +93,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
       Filter customFilter =
           (Filter) context.getAutowireCapableBeanFactory().autowire(classInstance, 1, true);
-      http.cors()
-          .and()
-          .csrf()
-          .disable()
-          .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
-          .authorizeRequests()
-          .antMatchers("/api/**")
-          .authenticated();
+
+      http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+          .csrf(csrf -> csrf.disable())
+          .authorizeHttpRequests(
+              (authorize) ->
+                  authorize
+                      .requestMatchers(AUTH_WHITELIST)
+                      .permitAll()
+                      .anyRequest()
+                      .authenticated())
+          .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class);
+
     } else {
       logger.info("Token Filter class Name is empty");
-      http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
+      http.csrf(csrf -> csrf.disable()).authorizeRequests().anyRequest().permitAll();
     }
+
+    return http.build();
   }
 }

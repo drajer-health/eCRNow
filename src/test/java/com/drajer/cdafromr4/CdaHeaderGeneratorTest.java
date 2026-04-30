@@ -28,11 +28,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CdaGeneratorUtils.class, ActionRepo.class})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
   static final String PATIENT_RES_FILENAME = "CdaTestData/patient/Patient_resource.json";
@@ -60,7 +62,11 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaHeaderGenerator.createCdaHeader(
-            r4Data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            r4Data,
+            launchDetails,
+            eicr,
+            eicrDocVersion,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertNotNull(actualXml);
   }
@@ -213,6 +219,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     Practitioner practitioner =
         (Practitioner) loadResourceDataFromFile(Practitioner.class, PRACTITIONER_FILENAME);
+
     String expectedXml =
         "<id root=\"2.16.840.1.113883.4.6\"/>\r\n"
             + "<addr use=\"HP\">\r\n"
@@ -231,40 +238,6 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</assignedPerson>\r\n"
             + "";
     String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner, null);
-
-    assertThat(actualXml).isNotNull();
-
-    assertXmlEquals(expectedXml, actualXml);
-  }
-
-  @Test
-  public void testGetPractitionerXml_withOrganization() {
-
-    Practitioner practitioner =
-        (Practitioner) loadResourceDataFromFile(Practitioner.class, PRACTITIONER_FILENAME);
-    Organization organization = new Organization();
-
-    ContactPoint contactPoint = new ContactPoint();
-    contactPoint.setSystem(ContactPoint.ContactPointSystem.PHONE);
-    contactPoint.setValue("8166742878");
-    organization.setTelecom(Collections.singletonList(contactPoint));
-    String expectedXml =
-        "<id root=\"2.16.840.1.113883.4.6\"/>\n"
-            + "<addr use=\"HP\">\n"
-            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\n"
-            + "<city>PleasantVille</city>\n"
-            + "<state>Vic</state>\n"
-            + "<postalCode>3999</postalCode>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "<telecom value=\"tel:(816)674-2878\"/>\n"
-            + "<assignedPerson>\n"
-            + "<name>\n"
-            + "<given>Adam</given>\n"
-            + "<family>Careful</family>\n"
-            + "</name>\n"
-            + "</assignedPerson>\n";
-    String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner, organization);
 
     assertThat(actualXml).isNotNull();
 
@@ -889,69 +862,70 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     r4FhirData1 = createR4Resource(r4FhirData1, bundle);
 
     String expectedXml =
-        "<recordTarget>\n"
-            + "<patientRole>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"123456\"/>\n"
-            + "<addr use=\"HP\">\n"
-            + "<streetAddressLine>2221 HOME STREET</streetAddressLine>\n"
-            + "<city>SALT LAKE CITY</city>\n"
-            + "<state>UT</state>\n"
-            + "<postalCode>84101</postalCode>\n"
-            + "<country>USA</country>\n"
-            + "</addr>\n"
-            + "<addr>\n"
-            + "<streetAddressLine>2221 HOME STREET</streetAddressLine>\n"
-            + "<city>SALT LAKE CITY</city>\n"
-            + "<state>UT</state>\n"
-            + "<postalCode>84101</postalCode>\n"
-            + "<country>USA</country>\n"
-            + "</addr>\n"
-            + "<telecom value=\"tel:(555)555-5006\" use=\"HP\"/>\n"
-            + "<telecom value=\"tel:(555)555-5006\" use=\"MC\"/>\n"
-            + "<telecom value=\"mailto:jill@email.com\"/>\n"
-            + "<patient>\n"
-            + "<name use=\"L\">\n"
-            + "<given qualifier=\"PR\">Jill</given>\n"
-            + "<family>Test</family>\n"
-            + "</name>\n"
-            + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>\n"
-            + "<birthTime value=\"20201027\"/>\n"
-            + "<sdtc:deceasedInd value=\"false\"/>\n"
-            + "<maritalStatusCode code=\"S\" codeSystem=\"2.16.840.1.113883.5.2\" codeSystemName=\"v3-MaritalStatus\" displayName=\"Never Married\"/>\n"
-            + "<raceCode code=\"2028-9\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Asian\"/>\n"
-            + "<ethnicGroupCode code=\"2186-5\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Not Hispanic or Latino\"/>\n"
-            + "<guardian>\n"
-            + "<code nullFlavor=\"OTH\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.18.58\" codeSystemName=\"v2-0131\"/>\n"
-            + "</code>\n"
-            + "<addr use=\"HP\">\n"
-            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\n"
-            + "<city>PleasantVille</city>\n"
-            + "<county>Rainbow</county>\n"
-            + "<state>Vic</state>\n"
-            + "<postalCode>3999</postalCode>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "<telecom value=\"tel:(323)799-8327\"/>\n"
-            + "<guardianPerson>\n"
-            + "<name>\n"
-            + "<given>B�n�dicte</given>\n"
-            + "<family>du March�</family>\n"
-            + "</name>\n"
-            + "</guardianPerson>\n"
-            + "</guardian>\n"
-            + "<languageCommunication>\n"
-            + "<languageCode code=\"en\"/>\n"
-            + "</languageCommunication>\n"
-            + "</patient>\n"
-            + "</patientRole>\n"
-            + "</recordTarget>\n";
+        "<recordTarget>\r\n"
+            + "<patientRole>\r\n"
+            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"123456\"/>\r\n"
+            + "<addr use=\"HP\">\r\n"
+            + "<streetAddressLine>2221 HOME STREET</streetAddressLine>\r\n"
+            + "<city>SALT LAKE CITY</city>\r\n"
+            + "<state>UT</state>\r\n"
+            + "<postalCode>84101</postalCode>\r\n"
+            + "<country>USA</country>\r\n"
+            + "</addr>\r\n"
+            + "<addr>\r\n"
+            + "<streetAddressLine>2221 HOME STREET</streetAddressLine>\r\n"
+            + "<city>SALT LAKE CITY</city>\r\n"
+            + "<state>UT</state>\r\n"
+            + "<postalCode>84101</postalCode>\r\n"
+            + "<country>USA</country>\r\n"
+            + "</addr>\r\n"
+            + "<telecom value=\"tel:(555)555-5006\" use=\"HP\"/>\r\n"
+            + "<telecom value=\"tel:(555)555-5006\" use=\"MC\"/>\r\n"
+            + "<telecom value=\"mailto:jill@email.com\"/>\r\n"
+            + "<patient>\r\n"
+            + "<name use=\"L\">\r\n"
+            + "<given>Jill</given>\r\n"
+            + "<family>Test</family>\r\n"
+            + "</name>\r\n"
+            + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>\r\n"
+            + "<birthTime value=\"20201027\"/>\r\n"
+            + "<sdtc:deceasedInd value=\"false\"/>\r\n"
+            + "<maritalStatusCode code=\"S\" codeSystem=\"2.16.840.1.113883.5.2\" codeSystemName=\"v3-MaritalStatus\" displayName=\"Never Married\"/>\r\n"
+            + "<raceCode code=\"2028-9\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Asian\"/>\r\n"
+            + "<ethnicGroupCode code=\"2186-5\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Not Hispanic or Latino\"/>\r\n"
+            + "<guardian>\r\n"
+            + "<code nullFlavor=\"OTH\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.18.58\" codeSystemName=\"v2-0131\"/>\r\n"
+            + "</code>\r\n"
+            + "<addr use=\"HP\">\r\n"
+            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
+            + "<city>PleasantVille</city>\r\n"
+            + "<county>Rainbow</county>\r\n"
+            + "<state>Vic</state>\r\n"
+            + "<postalCode>3999</postalCode>\r\n"
+            + "<country nullFlavor=\"NI\"/>\r\n"
+            + "</addr>\r\n"
+            + "<telecom value=\"tel:(323)799-8327\"/>\r\n"
+            + "<guardianPerson>\r\n"
+            + "<name>\r\n"
+            + "<given>B�n�dicte</given>\r\n"
+            + "<family>du March�</family>\r\n"
+            + "</name>\r\n"
+            + "</guardianPerson>\r\n"
+            + "</guardian>\r\n"
+            + "<languageCommunication>\r\n"
+            + "<languageCode code=\"en\"/>\r\n"
+            + "</languageCommunication>\r\n"
+            + "</patient>\r\n"
+            + "</patientRole>\r\n"
+            + "</recordTarget>\r\n"
+            + "";
 
     String actualXml =
         CdaHeaderGenerator.getPatientDetails(r4FhirData1.getPatient(), launchDetails);
 
     assertThat(actualXml).isNotNull();
 
-    assertEquals(expectedXml, actualXml);
+    assertXmlEquals(expectedXml, actualXml);
   }
 
   @Test

@@ -84,6 +84,7 @@ public interface NotificationContextDao {
 
   public List<NotificationContext> getNotificationContextForReprocessing(
       UUID id, Map<String, String> searchParams);
+
   /**
    * Method to delete the NotificationContext
    *

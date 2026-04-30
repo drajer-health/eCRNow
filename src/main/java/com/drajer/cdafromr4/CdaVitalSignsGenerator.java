@@ -104,11 +104,7 @@ public class CdaVitalSignsGenerator {
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.VS_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
 
-        String val = CdaGeneratorConstants.UNKNOWN_VALUE;
-        if (obs.getValue() != null) {
-
-          val = CdaFhirUtilities.getStringForType(obs.getValue());
-        }
+        String val = getNarrativeTextValue(obs);
 
         bodyvals.put(CdaGeneratorConstants.VS_TABLE_COL_2_BODY_CONTENT, val);
 
@@ -178,14 +174,14 @@ public class CdaVitalSignsGenerator {
             CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE,
             CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
             CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
-            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC));
+            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_NAME));
     vsEntry.append(
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.TRANSLATION_EL_NAME,
             CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC,
             CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
             CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC));
+            CdaGeneratorConstants.VITAL_SIGNS_ORG_CODE_LOINC_NAME));
     vsEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
 
     vsEntry.append(
@@ -270,7 +266,7 @@ public class CdaVitalSignsGenerator {
               details,
               obs.getCode(),
               obs.getValue(),
-              obs.getId(),
+              obs.getIdElement().getIdPart(),
               obs.getEffective(),
               obs.getInterpretation(),
               contentRef,
@@ -443,5 +439,37 @@ public class CdaVitalSignsGenerator {
 
     logger.info("Total num of Vitals available for Patient after filtering {}", sr.size());
     return sr;
+  }
+
+  public static String getNarrativeTextValue(Observation obs) {
+
+    String value = CdaGeneratorConstants.UNKNOWN_VALUE;
+
+    if (obs == null) {
+      return value;
+    }
+
+    if (obs.hasValue()) {
+      return CdaFhirUtilities.getStringForType(obs.getValue());
+    }
+
+    if (obs.hasComponent()) {
+
+      StringBuilder componentValues = new StringBuilder();
+
+      for (ObservationComponentComponent oc : obs.getComponent()) {
+
+        if (oc.hasValue() && oc.getValue() instanceof Quantity) {
+
+          componentValues.append(CdaFhirUtilities.getStringForType(oc.getValue())).append(" ");
+        }
+      }
+
+      if (StringUtils.isNotBlank(componentValues.toString())) {
+        value = componentValues.toString().trim();
+      }
+    }
+
+    return value;
   }
 }

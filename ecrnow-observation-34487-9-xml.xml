@@ -1,0 +1,75 @@
+<Observation xmlns="http://hl7.org/fhir">
+    <id value="fAyq.xmMDlUXsRUC1lxRrlCeb5y1abc2O9xVot6ChL.E4" />
+    <basedOn>
+        <reference value="ServiceRequest/eXeNML8gsb8UQ2pfDb7qW4Q7gVbiwasE1OMnBrJ.0oQw3" />
+        <display value="COVID/Influenza A &amp; B/RSV NAAT (PCR)" />
+    </basedOn>
+    <status value="final" />
+    <category>
+        <coding>
+            <system value="http://terminology.hl7.org/CodeSystem/observation-category" />
+            <code value="laboratory" />
+            <display value="Laboratory" />
+        </coding>
+        <text value="Laboratory" />
+    </category>
+    <category>
+        <coding>
+            <system value="urn:oid:1.2.840.114350.1.13.247.2.7.10.798268.30" />
+            <code value="Microbiology" />
+            <display value="Microbiology" />
+        </coding>
+        <text value="Microbiology" />
+    </category>
+    <code>
+        <coding>
+            <system value="http://loinc.org" />
+            <code value="34487-9" />
+            <display value="Influenza virus A RNA [Presence] in Specimen by NAA with probe detection" />
+        </coding>
+        <coding>
+            <system value="urn:oid:1.2.840.114350.1.13.247.2.7.5.737384.300" />
+            <code value="INFA2" />
+        </coding>
+        <coding>
+            <system value="urn:oid:1.2.840.114350.1.13.247.2.7.2.768282" />
+            <code value="7317" />
+            <display value="Influenza A NAAT (PCR)" />
+        </coding>
+        <text value="Influenza A NAAT (PCR)" />
+    </code>
+    <subject>
+        <reference value="Patient/5de650ba-fa11-488b-ab4b-7ac33e4143fb" />
+        <display value="FAKE PATIENT" />
+    </subject>
+    <encounter>
+        <reference value="Encounter/7228a510-f7a7-44cd-acdb-cbe02ecfd603" />
+        <identifier>
+            <use value="usual" />
+            <system value="urn:oid:1.2.840.114350.1.13.247.2.7.3.698084.8" />
+            <value value="5216958551" />
+        </identifier>
+        <display value="Hospital Encounter" />
+    </encounter>
+    <effectiveDateTime value="2025-12-01T20:22:00Z" />
+    <issued value="2025-12-01T22:59:55Z" />
+    <valueString value="POSITIVE" />
+    <interpretation>
+        <coding>
+            <system value="http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation" />
+            <code value="A" />
+            <display value="Abnormal" />
+        </coding>
+        <text value="Abnormal" />
+    </interpretation>
+    <note>
+        <text value="Test method: Nucleic Acid Amplification" />
+    </note>
+    <specimen>
+        <reference value="Specimen/e7qr753.X4IbKfdIIMZDAcMKmpipFqr-3b9bqQBVPSfw3" />
+        <display value="Specimen H2201010674_11851312" />
+    </specimen>
+    <referenceRange>
+        <text value="Negative" />
+    </referenceRange>
+</Observation>

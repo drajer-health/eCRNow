@@ -1,0 +1,628 @@
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:cda="urn:hl7-org:v3" xmlns:sdtc="urn:hl7-org:sdtc" xmlns:voc="http://www.lantanagroup.com/voc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ../../schema/infrastructure/cda/CDA_SDTC.xsd">
+    <realmCode code="US"/>
+    <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.1.2"/>
+    <id root="172b5e81-bd1e-4d14-8b59-28eb8c8131a4"/>
+    <code code="88085-6" codeSystem="2.16.840.1.113883.6.1" displayName="Reportability response report Document Public health"/>
+    <title>Reportability Response</title>
+    <effectiveTime value="20240628164118+0000"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25" displayName="Normal"/>
+    <languageCode code="en-US"/>
+    <recordTarget>
+        <patientRole>
+            <id extension="123453" root="2.16.840.1.113883.19.5"/>
+            <id extension="444-22-2222" root="2.16.840.1.113883.4.1"/>
+            <addr use="H">
+                <streetAddressLine>2222 Home Street</streetAddressLine>
+                <county>COOK</county>
+                <city>SOUTH HOLLAND</city>
+                <state>IL</state>
+                <postalCode>60473</postalCode>
+                <country>USA</country>
+                <useablePeriod xsi:type="IVL_TS">
+                    <low value="20230509"/>
+                    <high nullFlavor="UNK"/>
+                </useablePeriod>
+            </addr>
+            <telecom use="HP" value="tel:+1-555-555-2003"/>
+            <telecom use="WP" value="tel:+1-555-555-2004"/>
+            <patient>
+                <id root="2.16.840.1.113883.19.5" extension="123453"/>
+                <name use="L">
+                    <given>Eve</given>
+                    <given qualifier="IN">H</given>
+                    <family>Everywoman</family>
+                </name>
+                <name use="A">
+                    <given>Ruth</given>
+                    <given qualifier="IN">L</given>
+                    <family>Everywoman</family>
+                </name>
+                <administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1"/>
+                <birthTime value="19741124"/>
+                <sdtc:deceasedInd value="false"/>
+                <raceCode code="2106-3" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="White"/>
+                <ethnicGroupCode code="2186-5" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="Not Hispanic or Latino"/>
+                <guardian>
+                    <addr use="H">
+                        <streetAddressLine>4444 Home Street</streetAddressLine>
+                        <city>Chicago</city>
+                        <state>IL</state>
+                        <postalCode>60638</postalCode>
+                        <country>US</country>
+                    </addr>
+                    <telecom use="HP" value="tel:+1-555-555-2006"/>
+                    <telecom value="mailto:mail@guardian.com"/>
+                    <guardianPerson>
+                        <name use="L">
+                            <given>Martha</given>
+                            <given qualifier="IN">L</given>
+                            <family>Mum</family>
+                        </name>
+                    </guardianPerson>
+                </guardian>
+                <languageCommunication>
+                    <languageCode code="en"/>
+                    <modeCode code="ESP" codeSystem="2.16.840.1.113883.5.60" codeSystemName="LanguageAbilityMode" displayName="Expressed spoken"/>
+                    <proficiencyLevelCode code="G" codeSystem="2.16.840.1.113883.5.61" codeSystemName="LanguageAbilityProficiency" displayName="Good"/>
+                    <preferenceInd value="true"/>
+                </languageCommunication>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    <author>
+        <time value="20240628164118+0000"/>
+        <assignedAuthor>
+            <id root="2.16.840.1.114222.4.1.217446"/>
+            <addr>
+                <streetAddressLine>8515 Georgia Avenue, Suite 700</streetAddressLine>
+                <city>Silver Spring</city>
+                <state>MD</state>
+                <postalCode>20910</postalCode>
+                <country>US</country>
+            </addr>
+            <telecom use="WP" value="tel:+1(844)836-8377"/>
+            <assignedAuthoringDevice>
+                <manufacturerModelName displayName="APHL"/>
+                <softwareName displayName="AIMS"/>
+            </assignedAuthoringDevice>
+        </assignedAuthor>
+    </author>
+    <custodian>
+        <assignedCustodian>
+            <representedCustodianOrganization>
+                <id root="2.16.840.1.114222.4.1.217446"/>
+                <name>APHL | Association of Public Health Laboratories.</name>
+                <telecom use="WP" value="tel:+1(844)836-8377"/>
+                <addr>
+                    <streetAddressLine>8515 Georgia Avenue, Suite 700</streetAddressLine>
+                    <city>Silver Spring</city>
+                    <state>MD</state>
+                    <postalCode>20910</postalCode>
+                    <country>US</country>
+                </addr>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <informationRecipient typeCode="PRCP">
+        <intendedRecipient>
+            <id extension="6666666666666" root="2.16.840.1.113883.4.6"/>
+            <addr>
+                <streetAddressLine>1002 Healthcare Drive</streetAddressLine>
+                <city>CHICAGO</city>
+                <state>IL</state>
+                <postalCode>60612</postalCode>
+                <country>USA</country>
+            </addr>
+            <telecom use="WP" value="tel:+1(555)555-1003"/>
+            <telecom use="WP" value="fax:+1(555)555-1234"/>
+            <telecom use="WP" value="mailto:mail@provider_domain.com"/>
+            <informationRecipient>
+                <name>
+                    <given>Henry</given>
+                    <family>Seven</family>
+                    <suffix qualifier="AC">M.D.</suffix>
+                </name>
+            </informationRecipient>
+            <receivedOrganization>
+                <name>Community Health and Hospitals</name>
+                <addr>
+                    <streetAddressLine>1002 Healthcare Drive</streetAddressLine>
+                    <city>CHICAGO</city>
+                    <state>IL</state>
+                    <postalCode>60612</postalCode>
+                    <country>USA</country>
+                </addr>
+            </receivedOrganization>
+        </intendedRecipient>
+    </informationRecipient>
+    <componentOf>
+        <encompassingEncounter>
+            <id extension="9937012" root="2.16.840.1.113883.19"/>
+            <code code="AMB" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7 ActEncounterCode" displayName="Ambulatory"/>
+            <effectiveTime>
+                <low value="20201107084421-0500"/>
+                <high value="20201108112103-0500"/>
+            </effectiveTime>
+            <responsibleParty>
+                <assignedEntity>
+                    <id extension="6666666666666" root="2.16.840.1.113883.4.6"/>
+                    <addr>
+                        <streetAddressLine>1002 Healthcare Drive</streetAddressLine>
+                        <city>CHICAGO</city>
+                        <state>IL</state>
+                        <postalCode>60612</postalCode>
+                        <country>USA</country>
+                    </addr>
+                    <telecom use="WP" value="tel:+1(555)555-1003"/>
+                    <telecom use="WP" value="fax:+1(555)555-1234"/>
+                    <telecom use="WP" value="mailto:mail@provider_domain.com"/>
+                    <assignedPerson>
+                        <name>
+                            <given>Henry</given>
+                            <family>Seven</family>
+                            <suffix qualifier="AC">M.D.</suffix>
+                        </name>
+                    </assignedPerson>
+                    <representedOrganization>
+                        <name>Community Health and Hospitals</name>
+                        <addr>
+                            <streetAddressLine>1002 Healthcare Drive</streetAddressLine>
+                            <city>CHICAGO</city>
+                            <state>IL</state>
+                            <postalCode>60612</postalCode>
+                            <country>USA</country>
+                        </addr>
+                    </representedOrganization>
+                </assignedEntity>
+            </responsibleParty>
+            <location>
+                <healthCareFacility>
+                    <id extension="77777777777" root="2.16.840.1.113883.4.6"/>
+                    <code code="OF" codeSystem="2.16.840.1.113883.5.111" displayName="Outpatient facility"/>
+                    <location>
+                        <addr>
+                            <streetAddressLine>1002 Healthcare Drive</streetAddressLine>
+                            <city>CHICAGO</city>
+                            <state>IL</state>
+                            <postalCode>60612</postalCode>
+                            <country>USA</country>
+                        </addr>
+                    </location>
+                    <serviceProviderOrganization>
+                        <name>Good Health Hospital</name>
+                        <telecom use="WP" value="tel: 1+(555)-555-1212"/>
+                        <telecom use="WP" value="fax: 1+(555)-555-3333"/>
+                        <addr>
+                            <streetAddressLine>1002 Healthcare Drive</streetAddressLine>
+                            <city>CHICAGO</city>
+                            <state>IL</state>
+                            <postalCode>60612</postalCode>
+                            <country>USA</country>
+                        </addr>
+                    </serviceProviderOrganization>
+                </healthCareFacility>
+            </location>
+        </encompassingEncounter>
+    </componentOf>
+    <component>
+        <structuredBody>
+            <component>
+                <section>
+                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.2.1"/>
+                    <code code="88084-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                    <title>.</title>
+                    <text>
+                        <br/>
+                        <content styleCode="Bold">Subject:</content>
+                        <paragraph>Public Health Reporting Communication: one or more conditions are reportable, or may be reportable, to public health. </paragraph>
+                    </text>
+                    <entry typeCode="DRIV">
+                        <act classCode="ACT" moodCode="INT">
+                            <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.4.20"/>
+                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.7"/>
+                            <id root="7d4c429d-a202-403f-a57e-69ad0b281109"/>
+                            <code code="131195008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Subject of information"/>
+                            <text>Public Health Reporting Communication: one or more conditions are reportable, or may be reportable, to public health.</text>
+                            <statusCode code="completed"/>
+                        </act>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <section>
+                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.2.3"/>
+                    <code code="88082-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial case report processing information Document"/>
+                    <text>
+                        <content styleCode="Bold">eICR Information:</content>
+                        <paragraph>An initial report for a possible reportable condition was received on 20240628164113 with the file name 2.16.840.1.113883.9.9.9.9.9&amp;db734647-fc99-424c-a864-7e3cda82e704. The eICR was processed with the warning of: outdated eRSD (RCTC) version</paragraph>
+                    </text>
+                    <entry>
+                        <act classCode="ACT" moodCode="EVN">
+                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.9"/>
+                            <id root="6bff7990-f218-4f9d-a5aa-eb7afa6e9a3c"/>
+                            <code code="RR5" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Received eICR Information"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240628164118+0000"/>
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOCCLIN" moodCode="EVN">
+                                    <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.4.115"/>
+                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.10"/>
+                                    <id extension="db734647-fc99-424c-a864-7e3cda82e704" root="2.16.840.1.113883.9.9.9.9.9"/>
+                                    <code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Public Health Case Report (eICR)"/>
+                                    <setId extension="31" root="2.16.840.1.113883.3.117.1.1.5.2.1.1.1"/>
+                                    <versionNumber value="2"/>
+                                </externalDocument>
+                            </reference>
+                        </act>
+                    </entry>
+                    <entry>
+                        <act classCode="ACT" moodCode="EVN">
+                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.29"/>
+                            <id root="39d966b9-8a3a-4024-93d8-138e97d5898a"/>
+                            <code code="RRVS20" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="eICR was processed - with a warning"/>
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.21"/>
+                                    <id root="e39d6ae2-8c6e-4638-9b33-412996586f42"/>
+                                    <code code="RR6" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="eICR processing status reason"/>
+                                    <value code="RRVS29" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="The eICR was processed with the warning of: outdated eRSD (RCTC) version." xsi:type="CD"/>
+                                    <entryRelationship typeCode="RSON">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.32"/>
+                                            <id root="80f7b4ff-4d96-46ef-ae8f-af1f9c1f206c"/>
+                                            <code code="RRVS31" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Outdated eRSD (RCTC) Version Detail"/>
+                                            <value xsi:type="ST">2020-11-13</value>
+                                        </observation>
+                                    </entryRelationship>
+                                    <entryRelationship typeCode="RSON">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.32"/>
+                                            <id root="80f7b4ff-4d96-46ef-ae8f-af1f9c1f206c"/>
+                                            <code code="RRVS33" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Expected eRSD (RCTC) Version Detail"/>
+                                            <value xsi:type="ST">The expected eRSD (RCTC) version is any of the following: 2024-04-05,1.2.3.0,3.x.x </value>
+                                        </observation>
+                                    </entryRelationship>
+                                </observation>
+                            </entryRelationship>
+                            <entryRelationship typeCode="SPRT">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.33"/>
+                                    <id root="80f7b4ff-4d96-46ef-ae8f-af1f9c1f206e"/>
+                                    <code code="RR10" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="eICR Validation Output"/>
+                                    <value mediaType="text/xml" xsi:type="ED">
+                                        <Report xmlns="urn:aims-org:val"> </Report>
+                                    </value>
+                                </observation>
+                            </entryRelationship>
+                        </act>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <section>
+                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.2.2"/>
+                    <code code="55112-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                    <title>.</title>
+                    <text>
+                        <content styleCode="Bold">Summary:</content>
+                        <paragraph>Your organization electronically submitted an initial case report to determine if reporting to public health is needed for a patient.</paragraph>
+                        <paragraph>"Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" is reportable to "Illinois Department of Public Health". The initial case report was sent to "Illinois Department of Public Health". Additional information may be required for this report.<br/>
+                        </paragraph>
+                        <paragraph>"Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" is reportable to "Chicago Department of Public Health". The initial case report was sent to "Chicago Department of Public Health". Additional information may be required for this report.<br/>
+                        </paragraph>
+                        <paragraph>The eICR was processed with the warning of: outdated eRSD (RCTC) version.<br/>
+                        </paragraph>
+                        <paragraph>
+                            <content styleCode="Bold">"Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" for "Illinois Department of Public Health" </content>
+                        </paragraph>
+                        <paragraph>Reporting is required immediately.  Reporting to this Public Health Agency is based on "Patient home address"<br/>
+                        </paragraph>
+                        <paragraph>
+                            <content>&gt; CDC COVID-19 webpage (<linkHtml href="https://www.cdc.gov/coronavirus/2019-ncov/index.html">Information only</linkHtml>)<br/>
+                                <br/>
+                            </content>
+                            <content>&gt; Illinois Department of Public Health Contact Information IDPH CD Section at 217-782-2016.  If it's after business hours, please contact 1-800-782-7860.<br/>
+                                <br/>
+                            </content>
+                            <content/>
+                        </paragraph>
+                        <paragraph>
+                            <content styleCode="Bold">"Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" for "Chicago Department of Public Health" </content>
+                        </paragraph>
+                        <paragraph>Reporting is required immediately.  Reporting to this Public Health Agency is based on "Provider facility address"<br/>
+                        </paragraph>
+                        <paragraph>
+                            <content>&gt; CDC COVID-19 webpage (<linkHtml href="https://www.cdc.gov/coronavirus/2019-ncov/index.html">Information only</linkHtml>)<br/>
+                                <br/>
+                            </content>
+                            <content>&gt; To report an illness, please call  312-743-9000 during business hours. For an after hours consultation with a Medical Director, call 311 within city limits or 312-744-5000 outside of Chicago to reach the physician on-call.<br/>
+                                <br/>
+                            </content>
+                        </paragraph>
+                    </text>
+                    <entry typeCode="DRIV">
+                        <act classCode="ACT" moodCode="INT">
+                            <templateId extension="2014-06-09" root="2.16.840.1.113883.10.20.22.4.20"/>
+                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.8"/>
+                            <id root="9dfd6622-9b94-4bb8-85a9-76316ca3d09c"/>
+                            <code code="304561000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Informing health care professional (procedure)"/>
+                            <text>Your organization electronically submitted an initial case report to determine if reporting to public health is needed for a patient. The eICR was processed with the warning of: outdated eRSD (RCTC) version.</text>
+                            <statusCode code="completed"/>
+                        </act>
+                    </entry>
+                    <entry typeCode="DRIV">
+                        <observation classCode="OBS" moodCode="EVN">
+                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.30"/>
+                            <code code="RR9" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Reportability response priority"/>
+                            <value code="RRVS15" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Information Only" xsi:type="CD"/>
+                        </observation>
+                    </entry>
+                    <entry typeCode="DRIV">
+                        <organizer classCode="CLUSTER" moodCode="EVN">
+                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.34"/>
+                            <code code="RR11" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Reportability Response Coded Information"/>
+                            <statusCode code="completed"/>
+                            <component>
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.12"/>
+                                    <id root="16382074-b293-446c-a127-c1b2f3e3ea70"/>
+                                    <code code="64572001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED" displayName="Condition">
+                                        <translation code="75323-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Condition"/>
+                                    </code>
+                                    <value code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" xsi:type="CD"/>
+                                    <entryRelationship typeCode="COMP">
+                                        <organizer classCode="CLUSTER" moodCode="EVN">
+                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.13"/>
+                                            <id root="bea22145-4ae9-473f-98a3-52369eb06086"/>
+                                            <code code="RRVS5" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="Location Relevance" displayName="Patient home address"/>
+                                            <statusCode code="completed"/>
+                                            <participant typeCode="LOC">
+                                                <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.4.3"/>
+                                                <participantRole>
+                                                    <id extension="il" root="2.16.840.1.113883.4.6"/>
+                                                    <code code="RR12" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Rules Authoring Agency"/>
+                                                    <addr use="WP">
+                                                        <streetAddressLine/>
+                                                        <city/>
+                                                        <state/>
+                                                        <postalCode nullFlavor="NI"/>
+                                                    </addr>
+                                                    <telecom nullFlavor="NI"/>
+                                                    <playingEntity>
+                                                        <name>Illinois Department of Public Health</name>
+                                                    </playingEntity>
+                                                </participantRole>
+                                            </participant>
+                                            <participant typeCode="LOC">
+                                                <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.4.1"/>
+                                                <participantRole>
+                                                    <id extension="il" root="2.16.840.1.113883.4.6"/>
+                                                    <code code="RR7" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Routing Entity"/>
+                                                    <addr use="WP">
+                                                        <streetAddressLine/>
+                                                        <city/>
+                                                        <state/>
+                                                        <postalCode nullFlavor="NI"/>
+                                                    </addr>
+                                                    <playingEntity>
+                                                        <name>Illinois Department of Public Health</name>
+                                                    </playingEntity>
+                                                </participantRole>
+                                            </participant>
+                                            <component typeCode="COMP">
+                                                <observation classCode="OBS" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.19"/>
+                                                    <id root="dbc94cf9-f793-42a7-85b4-4b421c85c1da"/>
+                                                    <code code="RR1" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Determination of reportability"/>
+                                                    <value code="RRVS1" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Reportable" xsi:type="CD"/>
+                                                    <entryRelationship typeCode="RSON">
+                                                        <observation classCode="OBS" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.27"/>
+                                                            <id root="327a7b1f-65c3-4ecc-97bf-d5bd7feeaeba"/>
+                                                            <code code="RR3" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Determination of reportability rule"/>
+                                                            <value xsi:type="ST">Detection of SARS-CoV-2 nucleic acid in a clinical or post-mortem specimen by any method</value>
+                                                        </observation>
+                                                    </entryRelationship>
+                                                </observation>
+                                            </component>
+                                            <component typeCode="COMP">
+                                                <act classCode="ACT" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.20"/>
+                                                    <id root="50d777f7-a259-4aef-bed5-d9f6852447cc"/>
+                                                    <code code="RRVS13" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Outbreak- or Cluster related"/>
+                                                    <priorityCode code="RRVS15" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Information only"/>
+                                                    <reference typeCode="REFR">
+                                                        <externalDocument classCode="DOC" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.17"/>
+                                                            <code nullFlavor="OTH">
+                                                                <originalText>CDC COVID-19 webpage</originalText>
+                                                            </code>
+                                                            <text mediaType="text/html">
+                                                                <reference value="https://www.cdc.gov/coronavirus/2019-ncov/index.html"/>
+                                                            </text>
+                                                        </externalDocument>
+                                                    </reference>
+                                                </act>
+                                            </component>
+                                            <component typeCode="COMP">
+                                                <act classCode="ACT" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.20"/>
+                                                    <id root="094c9191-f037-466b-9725-538d1fc15e9e"/>
+                                                    <code code="RRVS12" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="PHA Contact Information"/>
+                                                    <priorityCode code="RRVS15" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Information only"/>
+                                                    <reference typeCode="REFR">
+                                                        <externalDocument classCode="DOC" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.17"/>
+                                                            <code nullFlavor="OTH">
+                                                                <originalText>Illinois Department of Public Health Contact Information IDPH CD Section at 217-782-2016.  If it's after business hours, please contact 1-800-782-7860.</originalText>
+                                                            </code>
+                                                        </externalDocument>
+                                                    </reference>
+                                                </act>
+                                            </component>
+                                            <component typeCode="COMP">
+                                                <act classCode="ACT" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.20"/>
+                                                    <id root="6a9957ff-b1b0-4ad2-85be-0f429ca6d73a"/>
+                                                    <code code="" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName=""/>
+                                                    <priorityCode code="RRVS15" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Information only"/>
+                                                    <reference typeCode="REFR">
+                                                        <externalDocument classCode="DOC" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.17"/>
+                                                            <code nullFlavor="OTH">
+                                                                <originalText/>
+                                                            </code>
+                                                        </externalDocument>
+                                                    </reference>
+                                                </act>
+                                            </component>
+                                            <component typeCode="COMP">
+                                                <observation classCode="OBS" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.14"/>
+                                                    <id root="27437cd6-156f-4769-8495-f05fc9f2a852"/>
+                                                    <code code="RR4" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Timeframe to report (urgency)"/>
+                                                    <value unit="min" value="0" xsi:type="PQ">
+                                                        <translation code="88694003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Immediate (qualifier value)"/>
+                                                    </value>
+                                                </observation>
+                                            </component>
+                                        </organizer>
+                                    </entryRelationship>
+                                </observation>
+                            </component>
+                            <component>
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.12"/>
+                                    <id root="5c49c4a7-8458-40c4-a91f-cb2addcf8555"/>
+                                    <code code="64572001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED" displayName="Condition">
+                                        <translation code="75323-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Condition"/>
+                                    </code>
+                                    <value code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" xsi:type="CD"/>
+                                    <entryRelationship typeCode="COMP">
+                                        <organizer classCode="CLUSTER" moodCode="EVN">
+                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.13"/>
+                                            <id root="238c8dab-e18b-48bb-80bf-30ff73c520f3"/>
+                                            <code code="RRVS6" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="Location Relevance" displayName="Provider facility address"/>
+                                            <statusCode code="completed"/>
+                                            <participant typeCode="LOC">
+                                                <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.4.3"/>
+                                                <participantRole>
+                                                    <id extension="chi" root="2.16.840.1.113883.4.6"/>
+                                                    <code code="RR12" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Rules Authoring Agency"/>
+                                                    <addr use="WP">
+                                                        <streetAddressLine/>
+                                                        <city/>
+                                                        <state/>
+                                                        <postalCode nullFlavor="NI"/>
+                                                    </addr>
+                                                    <telecom nullFlavor="NI"/>
+                                                    <playingEntity>
+                                                        <name>Chicago Department of Public Health</name>
+                                                    </playingEntity>
+                                                </participantRole>
+                                            </participant>
+                                            <participant typeCode="LOC">
+                                                <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.4.1"/>
+                                                <participantRole>
+                                                    <id extension="chi" root="2.16.840.1.113883.4.6"/>
+                                                    <code code="RR7" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Routing Entity"/>
+                                                    <addr use="WP">
+                                                        <streetAddressLine/>
+                                                        <city/>
+                                                        <state/>
+                                                        <postalCode nullFlavor="NI"/>
+                                                    </addr>
+                                                    <playingEntity>
+                                                        <name>Chicago Department of Public Health</name>
+                                                    </playingEntity>
+                                                </participantRole>
+                                            </participant>
+                                            <component typeCode="COMP">
+                                                <observation classCode="OBS" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.19"/>
+                                                    <id root="36319701-994f-4c3f-8a8c-917256a03f08"/>
+                                                    <code code="RR1" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Determination of reportability"/>
+                                                    <value code="RRVS1" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Reportable" xsi:type="CD"/>
+                                                    <entryRelationship typeCode="RSON">
+                                                        <observation classCode="OBS" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.27"/>
+                                                            <id root="08acac2e-7b18-4b0b-aed8-3c3d06944121"/>
+                                                            <code code="RR3" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Determination of reportability rule"/>
+                                                            <value xsi:type="ST">All results of tests for detection of SARS-CoV-2 nucleic acid in a clinical specimen by any method </value>
+                                                        </observation>
+                                                    </entryRelationship>
+                                                    <entryRelationship typeCode="RSON">
+                                                        <observation classCode="OBS" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.27"/>
+                                                            <id root="da16bc5c-4ed0-4eb5-810c-0afb61d63d92"/>
+                                                            <code code="RR3" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Determination of reportability rule"/>
+                                                            <value xsi:type="ST">At least one of the following clinical findings: cough, shortness of breath, difficulty breathing, new olfactory disorder, or new taste disorder</value>
+                                                        </observation>
+                                                    </entryRelationship>
+                                                    <entryRelationship typeCode="RSON">
+                                                        <observation classCode="OBS" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.27"/>
+                                                            <id root="8f7dc920-5f58-4aa7-9508-611314dec299"/>
+                                                            <code code="RR3" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Determination of reportability rule"/>
+                                                            <value xsi:type="ST">Detection of SARS-CoV-2 nucleic acid in a clinical specimen by any method</value>
+                                                        </observation>
+                                                    </entryRelationship>
+                                                </observation>
+                                            </component>
+                                            <component typeCode="COMP">
+                                                <act classCode="ACT" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.20"/>
+                                                    <id root="c399b2ad-5541-44bb-b3f7-c80c0a15d7ac"/>
+                                                    <code code="RRVS13" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Outbreak- or Cluster related"/>
+                                                    <priorityCode code="RRVS15" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Information only"/>
+                                                    <reference typeCode="REFR">
+                                                        <externalDocument classCode="DOC" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.17"/>
+                                                            <code nullFlavor="OTH">
+                                                                <originalText>CDC COVID-19 webpage</originalText>
+                                                            </code>
+                                                            <text mediaType="text/html">
+                                                                <reference value="https://www.cdc.gov/coronavirus/2019-ncov/index.html"/>
+                                                            </text>
+                                                        </externalDocument>
+                                                    </reference>
+                                                </act>
+                                            </component>
+                                            <component typeCode="COMP">
+                                                <act classCode="ACT" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.20"/>
+                                                    <id root="bf287cd2-e55e-4005-bab4-d49c782c830d"/>
+                                                    <code code="RRVS12" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="PHA Contact Information"/>
+                                                    <priorityCode code="RRVS15" codeSystem="2.16.840.1.114222.4.5.274" codeSystemName="PHIN VS (CDC Local Coding System)" displayName="Information only"/>
+                                                    <reference typeCode="REFR">
+                                                        <externalDocument classCode="DOC" moodCode="EVN">
+                                                            <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.17"/>
+                                                            <code nullFlavor="OTH">
+                                                                <originalText>To report an illness, please call  312-743-9000 during business hours. For an after hours consultation with a Medical Director, call 311 within city limits or 312-744-5000 outside of Chicago to reach the physician on-call.</originalText>
+                                                            </code>
+                                                        </externalDocument>
+                                                    </reference>
+                                                </act>
+                                            </component>
+                                            <component typeCode="COMP">
+                                                <observation classCode="OBS" moodCode="EVN">
+                                                    <templateId extension="2017-04-01" root="2.16.840.1.113883.10.20.15.2.3.14"/>
+                                                    <id root="2b4396ec-8a52-40c3-a40a-69335f9060f1"/>
+                                                    <code code="RR4" codeSystem="2.16.840.1.114222.4.5.232" codeSystemName="PHIN Questions" displayName="Timeframe to report (urgency)"/>
+                                                    <value unit="min" value="0" xsi:type="PQ">
+                                                        <translation code="88694003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Immediate (qualifier value)"/>
+                                                    </value>
+                                                </observation>
+                                            </component>
+                                        </organizer>
+                                    </entryRelationship>
+                                </observation>
+                            </component>
+                        </organizer>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>

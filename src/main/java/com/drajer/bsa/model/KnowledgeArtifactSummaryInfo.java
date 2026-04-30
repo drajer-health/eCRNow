@@ -1,13 +1,7 @@
 package com.drajer.bsa.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
 
 /**
  *
@@ -22,7 +16,7 @@ import org.hibernate.annotations.Type;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "kar_info")
+@Table(name = "kar_info_v2")
 @DynamicUpdate
 public class KnowledgeArtifactSummaryInfo {
 
@@ -30,20 +24,20 @@ public class KnowledgeArtifactSummaryInfo {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  @Column(name = "kar_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_id", nullable = false, length = 8000)
   private String karId;
 
-  @Column(name = "kar_name", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_name", nullable = false, length = 8000)
   private String karName;
 
-  @Column(name = "kar_publisher", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_publisher", nullable = false, length = 8000)
   private String karPublisher;
 
-  @Column(name = "kar_version", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_version", nullable = false, length = 8000)
   private String karVersion;
 
   @Column(name = "kar_available", nullable = true)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean karAvailable;
 
   public String getVersionUniqueId() {

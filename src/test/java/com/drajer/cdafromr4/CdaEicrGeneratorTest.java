@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -48,6 +49,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
   ActionRepo.class,
   CdaResultGenerator.class
 })
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
   // Constants
@@ -124,7 +126,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            data, launchDetails, eicr, 0, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     // saveDataToFile(actualXml,
     // "C://codebase/eCRNow/src/test/resources/CdaTestData/Eicr/eicr.xml");
@@ -160,7 +162,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            r4Data, launchDetails, eicr, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            r4Data, launchDetails, eicr, 0, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     ApplicationUtils.saveDataToFile(actualXml, "./Eicr.xml");
 
@@ -172,7 +174,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
     String result =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            null, null, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            null, null, null, 0, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertThat(result).isEmpty();
   }
@@ -184,7 +186,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
         RuntimeException.class,
         () ->
             CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-                new R4FhirData(), null, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11));
+                new R4FhirData(), null, null, 0, CdaGeneratorConstants.CDA_EICR_VERSION_R11));
   }
 
   private R4FhirData createR4FhirData(String file) {

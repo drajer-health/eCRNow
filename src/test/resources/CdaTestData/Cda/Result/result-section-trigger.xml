@@ -11,35 +11,349 @@
                         <th>Lab Test Name</th>
                         <th>Lab Test Result Value</th>
                         <th>Lab Test Result Date</th>
-                        <th>Lab Test Interpretation</th>
-                        <th>Lab Test Reference Range</th>
                         <th>Lab Test Specimen Collection Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <content ID="labTestName1">Panel Name: custom candida molecular panel - thinprep/aptima swab</content>
+                            <content ID="labTestName1">Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid</content>
                         </td>
                         <td>
-                            <content ID="labTestResultValue1">Component Name: candida albicans, Result = positive</content>
+                            <content ID="labTestResultValue1"><table border="1" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Result Value</th>
+                                        <th>Reference Range</th>
+                                        <th>Interpretation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <content ID="Component0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Result Value0">Detected</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Reference Range0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Interpretation0">Unknown</content>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </content>
                         </td>
                         <td>
-                            <content ID="labTestResultValueDate1">20251006000000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestInterpretation1">abnormal</content>
-                        </td>
-                        <td>
-                            <content ID="labTestReferenceRange1">Unknown</content>
+                            <content ID="labTestResultValueDate1">20240107000000+0000</content>
                         </td>
                         <td>
                             <content ID="labTestSpecimenCollectionDate1">Unknown</content>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName2">Unknown</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue2"><table border="1" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Result Value</th>
+                                        <th>Reference Range</th>
+                                        <th>Interpretation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <content ID="Component0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Result Value0">positive</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Reference Range0">Low: 0.1|http://unitsofmeasure.org|mg/dL | High: 1|http://unitsofmeasure.org|mg/dL</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Interpretation0">Normal</content>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate2">20251007000000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate2">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName3">CULCHLAM</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue3"><table border="1" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Result Value</th>
+                                        <th>Reference Range</th>
+                                        <th>Interpretation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <content ID="Component0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Result Value0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Reference Range0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Interpretation0">Unknown</content>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate3">20250416000000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate3">20220927000000+0000</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName4">Eosinophils</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue4"><table border="1" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Result Value</th>
+                                        <th>Reference Range</th>
+                                        <th>Interpretation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <content ID="Component0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Result Value0">Adenovirus PCR — Not detected
+                                                Coronavirus 229E — Not detected
+                                                Influenza A — Not detected
+                                                Influenza B — Not detected</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Reference Range0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Interpretation0">Unknown</content>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate4">20260105100000-0800</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate4">Unknown</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="labTestName5">Panel Name: custom candida molecular panel - thinprep/aptima swab</content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValue5"><table border="1" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Result Value</th>
+                                        <th>Reference Range</th>
+                                        <th>Interpretation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <content ID="Component0">Unknown</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Result Value0">positive</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Reference Range0">1.005-1.015</content>
+                                        </td>
+                                        <td>
+                                            <content ID="Interpretation0">abnormal</content>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </content>
+                        </td>
+                        <td>
+                            <content ID="labTestResultValueDate5">20251006000000+0000</content>
+                        </td>
+                        <td>
+                            <content ID="labTestSpecimenCollectionDate5">Unknown</content>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </text>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="16177-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="05da9140-7ab6-491c-bc4a-3b2fb177ee4f"/>
+                        <code code="16177-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid"><originalText>
+                            <reference value="#labTestName1"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20240107000000+0000"/>
+                        <value xsi:type="CD" code="260373001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Detected (qualifier value)"><originalText>
+                            <reference value="#labTestResultValue1"/>
+                        </originalText>
+                        </value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="NI"/>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="3407eeea-cff5-4211-8cb3-858982f34887"/>
+                        <code nullFlavor="NI"/>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20251007000000+0000"/>
+                        <value xsi:type="ST">positive</value>
+                        <interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Normal"></interpretationCode>
+                        <referenceRange>
+                            <observationRange>
+                                <text>0.1-1</text>
+                                <value xsi:type="IVL_PQ">
+                                    <low value="0.1" unit="mg/dL"/>
+                                    <high value="1" unit="mg/dL"/>
+                                </value>
+                                <interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Normal"></interpretationCode>
+                            </observationRange>
+                        </referenceRange>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="6349-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low value="20250416000000+0000"/>
+                    <high value="20250416000000+0000"/>
+                </effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="abd14f55-4648-4e91-bfad-9b1844707748"/>
+                        <code code="6349-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
+                            <reference value="#labTestName3"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20250416000000+0000"/>
+                        <value xsi:type="ST">No Value</value>
+                    </observation>
+                </component>
+                <component>
+                    <procedure classCode="PROC" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.415"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.415" extension="2018-09-01"/>
+                        <code code="17636008" codeSystem="2.16.840.1.113883.6.96"/>
+                        <effectiveTime value="20220927000000+0000"/>
+                        <participant typeCode="PRD">
+                            <templateId root="2.16.840.1.113883.10.20.22.4.410"/>
+                            <templateId root="2.16.840.1.113883.10.20.22.4.410" extension="2018-09-01"/>
+                            <participantRole classCode="SPEC">
+                                <id root="2.16.840.1.113883.1.1.1.1" extension="9dfcd135-5521-4707-a694-209662388240"/>
+                                <playingEntity>
+                                    <code nullFlavor="NI"/>
+                                </playingEntity>
+                            </participantRole>
+                        </participant>
+                    </procedure>
+                </component>
+            </organizer>
+        </entry>
+        <entry typeCode="DRIV">
+            <organizer classCode="CLUSTER" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count"></code>
+                <statusCode code="completed"/>
+                <effectiveTime>
+                    <low nullFlavor="NI"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <component>
+                    <observation classCode="OBS" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+                        <id root="2.16.840.1.113883.1.1.1.1" extension="obs-see-note-example"/>
+                        <code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count"><originalText>
+                            <reference value="#labTestName4"/>
+                        </originalText>
+                        </code>
+                        <statusCode code="completed"/>
+                        <effectiveTime value="20260105100000-0800"/>
+                        <value xsi:type="ST">See Note:</value>
+                    </observation>
+                </component>
+            </organizer>
+        </entry>
         <entry typeCode="DRIV">
             <organizer classCode="CLUSTER" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
@@ -56,15 +370,18 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="3407eeea-cff5-4211-8cb3-858982f34886"/>
-                        <code nullFlavor="OTH">
-                            <originalText>
-                                candida albicans</originalText>
-
-                        </code>
+                        <code nullFlavor="NI"/>
                         <statusCode code="completed"/>
                         <effectiveTime value="20251007000000+0000"/>
                         <value xsi:type="ST">positive</value>
                         <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+                        <referenceRange>
+                            <observationRange>
+                                <text>1.005-1.015</text>
+                                <value xsi:type="IVL_PQ" nullFlavor="NI"/>
+                                <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+                            </observationRange>
+                        </referenceRange>
                     </observation>
                 </component>
             </organizer>

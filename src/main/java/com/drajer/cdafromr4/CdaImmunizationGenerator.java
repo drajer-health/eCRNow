@@ -2,6 +2,9 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,20 +187,38 @@ public class CdaImmunizationGenerator {
                 CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION,
                 CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
-        sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
-
         List<CodeableConcept> cds = new ArrayList<>();
         cds.add(imm.getVaccineCode());
 
-        String codeXml =
-            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-                cds,
-                CdaGeneratorConstants.CODE_EL_NAME,
-                false,
-                CdaGeneratorConstants.FHIR_CVX_URL,
-                false,
-                "");
+        String codeXml = "";
+
+        List<String> paths = new ArrayList<>();
+        paths.add("Immunization.code");
+        paths.add("Immunization.vaccineCode");
+
+        if (version.equals(CdaGeneratorConstants.CDA_EICR_VERSION_R31)) {
+          Pair<Boolean, String> codeXmlPair =
+              getImmunizationCodeXml(details, imm.getVaccineCode(), false, "", paths, version);
+
+          if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
+            sb.append(
+                CdaGeneratorUtils.getXmlForTemplateId(
+                    CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TRIGGER_TEMPLATE_ID,
+                    CdaGeneratorConstants.IMMUNIZATION_TRIGGER_TEMPLATE_ID_EXT_31));
+            codeXml = codeXmlPair.getValue1();
+          }
+        }
+        sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
+        if (StringUtils.isEmpty(codeXml)) {
+          codeXml =
+              CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                  cds,
+                  CdaGeneratorConstants.CODE_EL_NAME,
+                  false,
+                  CdaGeneratorConstants.FHIR_CVX_URL,
+                  false,
+                  "");
+        }
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
@@ -333,5 +355,55 @@ public class CdaImmunizationGenerator {
       R4FhirData data, LaunchDetails details, String version) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  public static Pair<Boolean, String> getImmunizationCodeXml(
+      LaunchDetails details,
+      CodeableConcept code,
+      Boolean valElement,
+      String contentRef,
+      List<String> paths,
+      String version) {
+
+    String elementType =
+        valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
+    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+
+    for (MatchedTriggerCodes mtc : mtcs) {
+      Pair<String, String> matchedCode = CdaFhirUtilities.findMatchingCode(mtc, code, paths);
+      if (matchedCode != null) {
+        String systemUrl =
+            valElement
+                ? CdaGeneratorConstants.FHIR_SNOMED_URL
+                : CdaGeneratorConstants.FHIR_RXNORM_URL;
+
+        logger.info("Found a matched {} for the Medication ", elementType);
+
+        Pair<String, String> systemName =
+            CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
+        String xml =
+            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
+                elementType,
+                matchedCode.getValue0(),
+                systemName.getValue0(),
+                systemName.getValue1(),
+                details.getRctcOid(),
+                details.getRctcVersion(),
+                code,
+                systemUrl,
+                contentRef,
+                valElement);
+        return new Pair<>(true, xml);
+      }
+    }
+
+    logger.info("Did not find a matched Code or value for the Medication");
+
+    String xml =
+        valElement
+            ? CdaFhirUtilities.getCodeableConceptXmlForValue(code, elementType, contentRef)
+            : CdaFhirUtilities.getCodeableConceptXml(code, elementType, contentRef);
+    return new Pair<>(false, xml);
   }
 }
