@@ -99,6 +99,7 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | rest.template.read.timeout=10000                     | REST template read timeout in milliseconds. |
 | mail.read.retries=3                                  | Maximum retry attempts for failed mail read operations. |
 | rr_check_time=300                                    | Used for  set  reportable Response  Check  time |
+| mail.imap.batch.size=500                             | Batch size for processing mail messages. |
 ---
 # 3. eCRNow-UI Project and its relationship to eCRNow:
 The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.
