@@ -418,7 +418,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         if ((drcf.getPath().toLowerCase().contains("code")
                 || drcf.getPath().contains("reasonCode")
                 || drcf.getPath().contains("value")
-                || drcf.getPath().equals("medication"))
+                || drcf.getPath().equals("medication")
+                || drcf.getPath().equals("vaccineCode"))
             && drcf.getValueSet() != null) {
 
           Resource vsr = getValueSet(kd, drcf.getValueSet());

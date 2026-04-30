@@ -703,6 +703,10 @@ public class CdaGeneratorConstants {
   public static final String MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.15.2.3.36";
   public static final String MEDICATION_ACTIVITY_TRIGGER_TEMPLATE_ID_EXT_31 = "2019-04-01";
+
+  public static final String IMMUNIZATION_ACTIVITY_TRIGGER_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.15.2.3.38";
+  public static final String IMMUNIZATION_TRIGGER_TEMPLATE_ID_EXT_31 = "2019-04-01";
   // Payer Related Information.
   public static final String PAYERS_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.18";
   public static final String PAYERS_SEC_TEMPLATE_ID_EXT = "2015-08-01";

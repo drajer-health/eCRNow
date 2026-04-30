@@ -316,7 +316,7 @@ public class R3ToR2DataConverterUtils {
             immList.add((Immunization) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setImmunizations(immList);
+          r4FhirData.addImmunizations(immList);
         }
       } else if (type.contentEquals(ResourceType.Procedure.toString())) {
 

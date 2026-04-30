@@ -337,6 +337,10 @@ public class R4FhirData extends FhirData {
     this.immunizations = immunizations;
   }
 
+  public void addImmunizations(List<Immunization> immunizations) {
+    this.immunizations.addAll(immunizations);
+  }
+
   public List<MedicationStatement> getMedicationStatements() {
     return medicationStatements;
   }
