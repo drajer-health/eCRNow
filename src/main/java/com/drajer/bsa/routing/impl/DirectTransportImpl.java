@@ -500,16 +500,6 @@ public class DirectTransportImpl implements DataTransportInterface {
         try {
           processSingleMessage(message, username, correlationId, msgId);
 
-          if (message.isSet(Flags.Flag.SEEN)) {
-
-            message.setFlag(Flags.Flag.DELETED, true);
-            logger.info(
-                "processMessages: deleted after processing — user={}, correlationId={}, messageId={}",
-                username,
-                correlationId,
-                msgId);
-          }
-
         } catch (FolderClosedException fe) {
           logger.warn(
               "processMessages: FolderClosedException on message {} of batch {} of {} — user={}, correlationId={}, messageId={} — rethrowing for retry",
@@ -533,6 +523,7 @@ public class DirectTransportImpl implements DataTransportInterface {
         }
       }
     }
+    deleteReadMessages(inbox, username, correlationId);
 
     logger.info(
         "processMessages: completed all {} batch(es) — user={}, correlationId={}",
@@ -580,6 +571,13 @@ public class DirectTransportImpl implements DataTransportInterface {
 
             rrReceiver.handleReportabilityResponse(data, msgId);
           }
+          message.setFlag(Flags.Flag.SEEN, true);
+          logger.info(
+              "processSingleMessage: marked SEEN — user={}, correlationId={}, messageId={}, sender={}",
+              username,
+              correlationId,
+              msgId,
+              senderAddress);
 
         } else {
           logger.info(
