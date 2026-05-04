@@ -26,6 +26,7 @@
         <skip.unit.tests>false</skip.unit.tests>
         <skip-jacoco-check>true</skip-jacoco-check>
         <cqf.fhir.version>4.5.1</cqf.fhir.version>
+        <kotlin.version>2.1.20</kotlin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.reporting.outputDirectory}/jacoco-merged/jacoco.xml

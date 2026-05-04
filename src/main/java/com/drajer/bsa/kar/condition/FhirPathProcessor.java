@@ -9,6 +9,7 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,13 +57,43 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
 
+    // DIAGNOSTIC: check if the expression references any of the resolved variables.
+    // If not, strip them to avoid potential compilation issues from unused param declarations.
+    String exprText = cond.getLogicExpression().getExpression();
+    List<ParametersParameterComponent> toRemove = new ArrayList<>();
+    for (ParametersParameterComponent p : params.getParameter()) {
+      String pName = p.getName();
+      if (pName != null && pName.startsWith("%") && !exprText.contains(pName)) {
+        toRemove.add(p);
+      }
+    }
+    if (!toRemove.isEmpty()) {
+      for (ParametersParameterComponent p : toRemove) {
+        params.getParameter().remove(p);
+        logger.info(" Stripped unused parameter: {}", p.getName());
+      }
+    }
+
+    // Diagnostic: dump parameter map before engine evaluation
+    for (ParametersParameterComponent p : params.getParameter()) {
+      String pName = p.getName();
+      String pValueClass = p.hasValue() ? p.getValue().getClass().getSimpleName() : "NO_VALUE";
+      String pValue = p.hasValue() ? p.getValue().toString() : (p.hasResource() ? p.getResource().fhirType() + "/" + p.getResource().getIdElement().getIdPart() : "null");
+      logger.info(" PARAM_DUMP: name={} valueClass={} value={}", pName, pValueClass, pValue);
+    }
+
+    // Pass the patient ID so the synthesized CQL library's "context Patient" can resolve.
+    // Without this, the engine's Patient context retrieval fails silently.
+    String patientId = kd.getNotificationContext() != null
+        ? kd.getNotificationContext().getPatientId() : null;
+
     Parameters result;
     try {
       result =
           (Parameters)
               newEvaluator()
                   .evaluate(
-                      null,
+                      patientId,
                       logicExpression,
                       params,
                       null,
@@ -80,12 +111,19 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
+      // Extract OperationOutcome from "evaluation error" part if present
+      ParametersParameterComponent errorPart = result.getParameter("evaluation error");
+      String errorDetail = "none";
+      if (errorPart != null && errorPart.hasResource()) {
+        errorDetail = ca.uhn.fhir.context.FhirContext.forR4Cached().newJsonParser().setPrettyPrint(false)
+            .encodeResourceToString(errorPart.getResource());
+      } else if (errorPart != null && errorPart.hasValue()) {
+        errorDetail = errorPart.getValue().toString();
+      }
       logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator for expression (no 'return' parameter). Expression: {}. Result Parameters: {}",
+          " Null Value returned from FHIR Path Expression Evaluator for expression (no 'return' parameter). Expression: {}. Error detail: {}",
           cond.getLogicExpression().getExpression(),
-          result.getParameter().stream()
-              .map(p -> p.getName() + "=" + p.getValue())
-              .reduce("", (a, b) -> a + "; " + b));
+          errorDetail);
       return false;
     } else {
       if (!(ppc.getValue() instanceof BooleanType)) {
@@ -159,8 +197,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               paramComponent.setValue(val);
 
             } else {
-
-              // TODO: Fix how this should be treated in the case the getParameter(PARAM) is null
 
               if (variableResult.getParameter(PARAM) == null) {
                 logger.error(
