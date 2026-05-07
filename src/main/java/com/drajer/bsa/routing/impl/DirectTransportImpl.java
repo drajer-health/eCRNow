@@ -308,7 +308,7 @@ public class DirectTransportImpl implements DataTransportInterface {
       headers = m.getAllHeaders();
       while (headers.hasMoreElements()) {
         Header h = (Header) headers.nextElement();
-        if (h.getName().contains("Message-ID")) {
+        if (h.getName().toLowerCase().contains("message-id")) {
           return h.getValue();
         }
       }
