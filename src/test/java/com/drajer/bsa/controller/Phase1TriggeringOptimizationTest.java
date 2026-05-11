@@ -38,7 +38,8 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(
     properties = {
       "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefilters",
-      "cql.enabled=false"
+      "cql.enabled=false",
+      "bsa.kar.activate=true"
     })
 public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);

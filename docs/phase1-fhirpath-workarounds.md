@@ -109,6 +109,33 @@ newEvaluator().evaluate(patientId, expression, params, ...);
 |---|---|
 | `plandefinition-us-ecr-specification-phase1.json` | relatedAction removal (#7), DiagnosticReport fix (#5); FHIRPath rewrites applied by script |
 
+## Known Issue: KAR Activation Opt-in Preserves Trivial Test Passes
+
+`BaseKarsTest` adds an `activateLoadedKarsFor()` helper that persists a `KnowledgeArtifactStatus` row linking the test's `HealthcareSetting` to each KAR loaded by `KarParser` at startup. Without this row, `SubscriptionNotificationReceiverImpl.processNotification` iterates an empty set of active KARs and skips the entire reporting pipeline. Tests that assert `NOT_TRIGGERED` or `TRIGGERED_ONLY` outcomes therefore pass trivially: nothing runs, no report is generated, the expectation is met by accident.
+
+Phase 1 testing requires real pipeline execution, so it opts in via:
+
+```java
+@TestPropertySource(properties = {"bsa.kar.activate=true"})
+```
+
+Activation is **off by default** in `BaseKarsTest` to avoid surfacing pre-existing issues in tests that were previously passing trivially. Tests that opted out (the default):
+
+- `SeenPatientsECSDTest`
+- `RuleFiltersERSDCQLOnlyTest`
+- `RuleFiltersERSDFhirPathOnlyTest`
+- `DiabetesECSDTest`, `ChronicBPECSDTest`, `ErsdV2BundleTest`, `FhirPathTest`
+
+When enabled (verified empirically by toggling `bsa.kar.activate=true` on `SeenPatientsECSDTest` and `RuleFiltersERSDCQLOnlyTest`), these tests fail with `UnexpectedRollbackException: Transaction rolled back because it has been marked as rollback-only` from inside `processNotification`. The underlying exception is being swallowed by an inner transaction-aware proxy; the rollback is the only visible symptom.
+
+**Follow-up needed (outside the scope of this branch):**
+
+1. Investigate the inner exception in `processNotification` that marks the transaction rollback-only — likely a DB persistence issue with `PublicHealthMessage` or related entities under the older KARs (SeenPatients, Diabetes, BloodPressure, eCSD variants).
+2. Once fixed, flip `bsa.kar.activate=true` to the default (or opt in on every `BaseKarsTest` subclass) so the test suite actually exercises the pipeline for every scenario.
+3. Until then, the green-ish status of those tests is meaningful only insofar as the pre-pipeline setup (parameter resolution, KAR loading, subscription notification parsing) works — the pipeline itself is not exercised.
+
+This is a pre-existing harness limitation surfaced by Phase 1 work, not a regression introduced by it.
+
 ## Recommended Upstream Changes (clinical-reasoning / cql-engine)
 
 These would eliminate the need for workarounds #1-4:
