@@ -6,8 +6,8 @@
     "code": {
         "coding": [{
             "system": "http://loinc.org",
-            "code": "14461-8",
-            "display": "Chlamydia trachomatis [Presence] in Blood"
+            "code": "33964-8",
+            "display": "SARS coronavirus Urbani RNA [Presence] in Specimen by NAA with probe detection"
         }]
     },
     "subject": { "reference": "Patient/combo-old-order" },
