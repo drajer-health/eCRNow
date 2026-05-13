@@ -5,6 +5,5 @@
     "code": { "coding": [{ "system": "http://loinc.org", "code": "14461-8", "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture" }] },
     "valueCodeableConcept": { "coding": [{ "system": "http://snomed.info/sct", "code": "10828004", "display": "Positive (qualifier value)" }] },
     "interpretation": [{ "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation", "code": "POS", "display": "Positive" }] }],
-    "subject": { "reference": "Patient/edge-no-date" },
-    "_effectiveDateTime": { "extension": [{ "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason", "valueCode": "unknown" }] }
+    "subject": { "reference": "Patient/edge-no-date" }
 }

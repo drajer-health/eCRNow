@@ -28,11 +28,14 @@ import org.springframework.test.context.TestPropertySource;
  *   <li>Neg-exempt conditions (e.g., Gonorrhea — negative results still reportable)
  * </ul>
  *
- * <p>CURRENT BEHAVIOR (pre-Phase I): All scenarios with trigger code matches will trigger/report
- * regardless of result value, interpretation, date, or verification status.
+ * <p>Expected outcomes reflect Phase 1 PD behavior: negative-value, refuted-status, and timebox
+ * filters exclude matching scenarios (NOT_TRIGGERED). Positive controls and mixed-result cases
+ * still REPORT.
  *
- * <p>POST-PHASE I BEHAVIOR: Scenarios 2-4, 6-8 should become NOT_TRIGGERED. Scenarios 1, 5, 9
- * should remain REPORTED (positive control, mixed results, neg-exempt condition).
+ * <p>Known Phase 1 logic gaps still under investigation (REPORTED expected, actual
+ * NOT_TRIGGERED): neg-exempt conditions (Gonorrhea/Hep C — need exemption logic from
+ * the negative-value filter); combo-old-dx-plus-recent-lab-order (lab order code
+ * 14461-8 isn't matching the `lotc` value set in the data requirement codeFilter).
  */
 @RunWith(Parameterized.class)
 @TestPropertySource(
@@ -58,11 +61,10 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
   }
 
   // -----------------------------------------------------------------------
-  // PRE-PHASE I expected outcomes:
-  //   All trigger-code-matching scenarios currently trigger/report.
-  //
-  // To validate Phase I changes, update the expected outcomes for exclusion
-  // scenarios from REPORTED/TRIGGERED_ONLY to NOT_TRIGGERED, then rerun.
+  // Expected outcomes reflect Phase 1 PD behavior. Scenarios that hit a
+  // Phase 1 exclusion filter (negative value, timebox exceeded, refuted
+  // verification status) expect NOT_TRIGGERED. Positive controls, mixed
+  // results, and pass-through cases expect REPORTED.
   // -----------------------------------------------------------------------
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
@@ -82,7 +84,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-negative-lab-snomed",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 3. NOT DETECTED LAB (SNOMED 260415000) — Chlamydia test with Not Detected result.
         //    Pre-Phase I: triggers.
@@ -91,7 +93,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-not-detected-lab-snomed",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 4. NEGATIVE LAB (TEXT) — Chlamydia test with valueString "Negative" (uncoded).
         //    Pre-Phase I: triggers.
@@ -100,7 +102,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-negative-lab-text",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 5. MIXED RESULTS CONTROL — One negative + one positive result on same patient.
         //    Should ALWAYS trigger. Exclusion only applies when ALL entries are negative.
@@ -117,7 +119,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-dx-timebox-exceeded",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 7. LAB RESULT TIMEBOX EXCEEDED — Lab result 45 days before encounter start.
         //    Pre-Phase I: triggers.
@@ -126,7 +128,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-lab-timebox-exceeded",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 8. REFUTED DIAGNOSIS — Condition with verificationStatus=refuted.
         //    Pre-Phase I: triggers (code matches dxtc).
@@ -135,7 +137,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-refuted-diagnosis",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 9. NEG-EXEMPT CONDITION — Gonorrhea with negative result.
         //    Should ALWAYS trigger. Gonorrhea is reportable even with negative results.
@@ -169,7 +171,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-edge-timebox-31d",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 13. NO EFFECTIVE DATE — Lab result with no effectiveDateTime.
         //     29.8% of real data per RCKMS investigation. Must NOT be excluded.
@@ -193,7 +195,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-edge-mixed-case-text",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 16. NO VERIFICATION STATUS — Condition without verificationStatus element.
         //     Absence of verificationStatus must NOT cause exclusion.
@@ -227,7 +229,7 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-combo-neg-lab-plus-refuted-dx",
-            REPORTED), // TODO Phase I: change to NOT_TRIGGERED
+            NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 20. OLD DX + RECENT LAB ORDER — Old dx timeboxed out, but recent lab order.
         //     Should ALWAYS trigger (lab orders are not filtered in Phase I).

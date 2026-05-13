@@ -89,6 +89,9 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
+  /** Day-shift computed in {@link #mockScenarioFolder} and reused by the notification bundle. */
+  protected long scenarioDateShiftDays;
+
   /**
    * Whether to activate loaded KARs by inserting a KnowledgeArtifactStatus row that links
    * the healthcare setting to each KAR in the configured directory. Defaults to false to
@@ -332,6 +335,26 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
     String patientId = resourceMap.get("Patient").get(0).getIdElement().getIdPart();
 
+    // Anchor all scenario dates to (today - 1 day) so scenarios don't go stale. The shift is
+    // computed from the scenario's Encounter.period.start and applied uniformly to every date
+    // in every scenario resource — preserving relative offsets between dates (e.g., a lab
+    // dated 30 days before encounter stays 30 days before encounter) while keeping the
+    // absolute calendar current. The same shift value is reused by getNotificationBundle().
+    scenarioDateShiftDays = 0L;
+    List<IBaseResource> encounters = resourceMap.get("Encounter");
+    if (encounters != null && !encounters.isEmpty()) {
+      org.hl7.fhir.r4.model.Encounter anchor = (org.hl7.fhir.r4.model.Encounter) encounters.get(0);
+      scenarioDateShiftDays = ScenarioDateShifter.computeShiftDays(anchor);
+      if (scenarioDateShiftDays != 0L) {
+        ScenarioDateShifter.logShift(scenario.getName(), scenarioDateShiftDays);
+        for (List<IBaseResource> resources : resourceMap.values()) {
+          for (IBaseResource r : resources) {
+            ScenarioDateShifter.shift((org.hl7.fhir.r4.model.Base) r, scenarioDateShiftDays);
+          }
+        }
+      }
+    }
+
     // Fallback stubs so any resource-type search the KAR issues returns an empty Bundle
     // rather than 404. Specific stubs below register at the default priority (5) and take
     // precedence; this catchall runs when no scenario resource of that type exists.
@@ -347,13 +370,29 @@ public class BaseKarsTest extends BaseIntegrationTest {
                     .withBody(emptyBundle)));
 
     for (Map.Entry<String, List<IBaseResource>> entry : resourceMap.entrySet()) {
-      // Mock a search for all resources of a given type.
-      String mockQueryString =
-          String.format("/fhir/%s?patient=Patient/%s", entry.getKey(), patientId);
-      stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
-      mockQueryString = String.format("/fhir/%s?patient=%s", entry.getKey(), patientId);
-      stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
-      // TODO: create stub that lets date based tests update stale dates.
+      // Mock a search for all resources of a given type. Use a regex that matches the
+      // resource type and patient param regardless of additional query parameters
+      // (e.g., &category=encounter-diagnosis, &intent=order, etc.) — the PD's data
+      // requirements often add such filters, and without this they fall through to the
+      // empty-bundle catchall and return no resources.
+      String body =
+          fhirContext
+              .newJsonParser()
+              .encodeResourceToString(stubHelper.makeBundle(entry.getValue()));
+      // Matches /fhir/{Type}?...patient=[Patient/]{id}... with any query param order
+      String patientRegex =
+          String.format(
+              "/fhir/%s\\?(.*&)?patient=(Patient(/|%%2F))?%s(&.*)?",
+              java.util.regex.Pattern.quote(entry.getKey()),
+              java.util.regex.Pattern.quote(patientId));
+      wireMockServer.stubFor(
+          get(urlMatching(patientRegex))
+              .atPriority(5)
+              .willReturn(
+                  aResponse()
+                      .withStatus(200)
+                      .withHeader("Content-Type", "application/fhir+json; charset=utf-8")
+                      .withBody(body)));
       for (IBaseResource r : entry.getValue()) {
         // Mock a read for a specific instance of a resource
         String id = r.getIdElement().getIdPart();
@@ -506,7 +545,13 @@ public class BaseKarsTest extends BaseIntegrationTest {
     }
 
     String absolutePath = bundles[0].getAbsolutePath();
-    return ap.readBundleFromFile(absolutePath);
+    Bundle bundle = ap.readBundleFromFile(absolutePath);
+    // Apply the same date shift computed in mockScenarioFolder() so the notification
+    // bundle's Encounter stays consistent with the FHIR-mocked scenario resources.
+    if (scenarioDateShiftDays != 0L) {
+      ScenarioDateShifter.shift(bundle, scenarioDateShiftDays);
+    }
+    return bundle;
   }
 
   public CapabilityStatement getCapabilityStatement() {

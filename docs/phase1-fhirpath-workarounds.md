@@ -84,7 +84,35 @@ newEvaluator().evaluate(patientId, expression, params, ...);
 
 **Fix:** Before evaluation, strip parameters whose names don't appear in the expression text.
 
-### 7. `relatedAction` loop (Phase 1 PD modeling bug)
+### 7. Choice-type `is` returning empty on absent fields (empty propagation)
+
+**Bug:** `(effective is FHIR.dateTime).not()` is used as a guard so the timebox filter accepts labs with no `effective` field (29.8% of real-world data per RCKMS investigation). But when `effective` is absent, `(effective is FHIR.dateTime)` returns empty (FHIRPath spec semantics for `is` on empty input). `empty.not()` returns empty. Empty propagates through the OR chain, the `where()` filter drops the resource, and `.exists()` returns false — so an Observation with no `effective` field never triggers reporting.
+
+Multiple attempts to handle empty failed to compile:
+
+| Attempt | Error |
+|---|---|
+| `effective.exists().not()` | `Could not resolve call to operator Exists with signature (choice<FHIR.Period,FHIR.dateTime>)` |
+| `exists(effective as FHIR.dateTime)` | `Could not resolve call to operator Exists with signature (FHIR.dateTime)` |
+| `effective.count() = 0` | `Could not resolve call to operator Count with signature (choice<FHIR.Period,FHIR.dateTime>)` |
+| `iif(effective is FHIR.dateTime, false, true)` | `Expected an expression of type 'System.Boolean', but found an expression of type 'DiagnosticReport'` |
+| `(... \| true).first()` / `.combine(true).first()` | `Could not resolve call to operator Flatten with signature (list<System.Boolean>)` |
+
+**Workaround:** Wrap with CQL `Coalesce` — it short-circuits at the value level and produces a concrete boolean even when the inner expression is empty.
+
+| Original | Rewritten |
+|---|---|
+| `(effective is FHIR.dateTime).not()` | `Coalesce((effective is FHIR.dateTime).not(), true)` |
+| `(onset is FHIR.dateTime).not()` | `Coalesce((onset is FHIR.dateTime).not(), true)` |
+
+Semantics:
+- Effective/onset is a `dateTime` → `is` true → `.not()` false → Coalesce(false, true) = false → normal date comparison applies
+- Effective/onset is a `Period` (or other non-dateTime) → `is` false → `.not()` true → Coalesce(true, true) = true → allow through (matches original semantics)
+- Effective/onset is **absent** → `is` empty → `.not()` empty → **Coalesce(null, true) = true** → allow through ✓ (was empty, dropped before)
+
+**Upstream fix:** `Exists`/`Count`/`Empty`/`Flatten` need overloads for FHIR choice types and for individual FHIR primitive types (`FHIR.dateTime`, `FHIR.Period`, etc.). Equivalent FHIRPath `.exists()`, `.empty()`, `.count()` should resolve cleanly without forcing authors to dip into CQL builtins.
+
+### 8. `relatedAction` loop (Phase 1 PD modeling bug)
 
 **Bug:** `is-encounter-in-progress` and `is-amb-encounter-in-progress` carried `relatedAction → check-reportable before-start 6h` which didn't exist in the original PD. Under `ignore.timers=true` (test configuration), the 6h offset collapsed to immediate re-execution, causing infinite recursion.
 
@@ -138,7 +166,7 @@ This is a pre-existing harness limitation surfaced by Phase 1 work, not a regres
 
 ## Recommended Upstream Changes (clinical-reasoning / cql-engine)
 
-These would eliminate the need for workarounds #1-4:
+These would eliminate the need for workarounds #1-4 and #7:
 
 1. **`SystemMethodResolver.createOfType`** — Emit narrowed result type on the Query so `.ofType(T).exists()` resolves to `Exists(list<T>)`, not `Exists(choice<...>)`.
 
@@ -151,3 +179,5 @@ These would eliminate the need for workarounds #1-4:
 5. **CQL compiler: reject `DateTime + Integer` (no unit)** — Currently compiles but throws `InvalidPrecision: 1` at runtime. Should be a compile-time error.
 
 6. **Typed choice accessors** — FHIR ModelInfo should expose `effectiveDateTime`, `valueString`, `onsetDateTime` as properties so FHIRPath authors can use them. Currently only `effective.ofType(dateTime)` / `(effective as FHIR.dateTime)` work.
+
+7. **Choice-type empty handling** — `.exists()`, `.empty()`, `.count()` should resolve cleanly on FHIR choice types (`choice<...>`) and on individual FHIR primitive types (`FHIR.dateTime`, etc.). Today they fail with `Could not resolve call to operator Exists/Count/Flatten with signature (...)`, forcing authors to use CQL `Coalesce` to handle the empty case for optional choice fields.
