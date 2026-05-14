@@ -137,6 +137,34 @@ Semantics:
 |---|---|
 | `plandefinition-us-ecr-specification-phase1.json` | relatedAction removal (#7), DiagnosticReport fix (#5); FHIRPath rewrites applied by script |
 
+## Deferred: neg-exempt conditions (Gonorrhea, Hep C) → Phase 2
+
+**Issue:** RCKMS guidance (Feb 2026 investigation) calls out a small but operationally important class of conditions — most prominently **Gonorrhea** and **Hepatitis C** — that remain reportable on *negative* lab results. Negative tests for these conditions still inform screening rates, contact tracing, and drug-resistance surveillance, so excluding them at trigger time over-filters real public-health signal.
+
+The Phase 1 PD applies its negative-value filter (SNOMED `260385009` / `260415000` + text "negative" / "not detected") uniformly to every `%labResults` entry, with no carve-out by lab-test code. Test scenario `phase1-neg-exempt-condition` (Neisseria gonorrhoeae culture with negative result) is therefore excluded by Phase 1 and is marked `NOT_TRIGGERED` in the test suite to reflect actual behavior, with a comment marking the gap for Phase 2.
+
+**Why this isn't a quick fix:** AIMS/eRSD does not publish an "always-reportable lab tests" or "neg-exempt" value set. The polarity-aware reportability determination lives in **RCKMS supplemental rules** — the jurisdictional layer that runs *after* eICR transmission — not in the eRSD value-set library. The six published groupers (`dxtc`, `lotc`, `lrtc`, `mrtc`, `ostc`, `sdtc`) are all result-polarity agnostic. Implementers who want client-side filtering must author their own list from per-condition VSAC test groupers.
+
+**Building blocks already in `src/test/resources/AppData/ersd.json`** (for when Phase 2 picks this up):
+
+| Condition | VSAC OID | Title | Codes |
+|---|---|---|---|
+| Gonorrhea | `2.16.840.1.113762.1.4.1146.245` | Tests for Neisseria gonorrhoeae by Culture and Identification Method | 14 |
+| Gonorrhea | `2.16.840.1.113762.1.4.1146.244` | Tests for Neisseria gonorrhoeae Nucleic Acid | 46 |
+| Gonorrhea | `2.16.840.1.113762.1.4.1146.1000` | Tests for Neisseria species by Culture and Identification Method | 7 |
+| Hep C | `2.16.840.1.113762.1.4.1146.407` | Tests for hepatitis C virus Antibody | 40 |
+| Hep C | `2.16.840.1.113762.1.4.1146.399` | Tests for hepatitis C virus Antigen | 3 |
+| Hep C | `2.16.840.1.113762.1.4.1146.398` | Tests for hepatitis C virus Nucleic Acid | 49 |
+
+**Phase 2 sketch:**
+1. Author a composite ValueSet in a project namespace (e.g. `http://drajer-health.org/fhir/ValueSet/phase1-neg-exempt-lab-tests`) that `compose.include.valueSet`s the 6 OIDs above.
+2. Add a new data requirement `negExemptLabResults` (`type: Observation`, `codeFilter` → the composite VS).
+3. In the `is-encounter-reportable` and `check-trigger-codes-encounter-modified` expressions, add an OR branch for that stream that keeps the timebox filter but drops the negative-value gates: `or %negExemptLabResults.where(<timebox-only>).exists()`.
+4. Add the composite VS + the 5 currently-missing sub-VS expansions to the test KAR bundle (`.245` is already included; `.244`, `.1000`, `.398`, `.399`, `.407` are not).
+5. Flip the `phase1-neg-exempt-condition` expectation back to `REPORTED` and re-run the suite.
+
+Optionally extend the starter list (with epidemiologist sign-off) to HIV, Syphilis, Chlamydia, and TB screening — those are also screening-driven surveillance conditions where negative results may be reportable depending on jurisdiction.
+
 ## Known Issue: KAR Activation Opt-in Preserves Trivial Test Passes
 
 `BaseKarsTest` adds an `activateLoadedKarsFor()` helper that persists a `KnowledgeArtifactStatus` row linking the test's `HealthcareSetting` to each KAR loaded by `KarParser` at startup. Without this row, `SubscriptionNotificationReceiverImpl.processNotification` iterates an empty set of active KARs and skips the entire reporting pipeline. Tests that assert `NOT_TRIGGERED` or `TRIGGERED_ONLY` outcomes therefore pass trivially: nothing runs, no report is generated, the expectation is met by accident.

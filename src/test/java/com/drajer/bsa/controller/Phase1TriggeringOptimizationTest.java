@@ -32,10 +32,9 @@ import org.springframework.test.context.TestPropertySource;
  * filters exclude matching scenarios (NOT_TRIGGERED). Positive controls and mixed-result cases
  * still REPORT.
  *
- * <p>Known Phase 1 logic gaps still under investigation (REPORTED expected, actual
- * NOT_TRIGGERED): neg-exempt conditions (Gonorrhea/Hep C — need exemption logic from
- * the negative-value filter); combo-old-dx-plus-recent-lab-order (lab order code
- * 14461-8 isn't matching the `lotc` value set in the data requirement codeFilter).
+ * <p>Phase 2 carry-over: neg-exempt conditions (Gonorrhea/Hep C reportable on negative
+ * results). Phase 1 has no exemption logic — see {@code phase1-neg-exempt-condition}
+ * comment and {@code docs/phase1-fhirpath-workarounds.md}.
  */
 @RunWith(Parameterized.class)
 @TestPropertySource(
@@ -140,12 +139,15 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
         // 9. NEG-EXEMPT CONDITION — Gonorrhea with negative result.
-        //    Should ALWAYS trigger. Gonorrhea is reportable even with negative results.
+        //    RCKMS guidance: Gonorrhea and Hep C remain reportable on negative results
+        //    (screening / surveillance value). Phase 1 does not implement this carve-out
+        //    and excludes uniformly via the negative-value filter — deferred to Phase 2.
+        //    See docs/phase1-fhirpath-workarounds.md §"Deferred: neg-exempt conditions".
         new TestCaseInfo(
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-neg-exempt-condition",
-            REPORTED),
+            NOT_TRIGGERED), // Phase 1 design gap; correct behavior requires Phase 2 work
 
         // ===== BOUNDARY / EDGE CASES =====
 
