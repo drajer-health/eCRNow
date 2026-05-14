@@ -33,6 +33,8 @@ build/
 
 ### Other ###
 *.DS_Store
+C:/
 D:/
+*.log
 *.eslintcache
 bin/

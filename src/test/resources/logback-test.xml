@@ -5,7 +5,7 @@
             <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="com.drajer" level="DEBUG"/>
+    <!-- Suppress framework noise during test runs; com.drajer follows the root INFO level. -->
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.hibernate" level="WARN"/>
     <logger name="ca.uhn.fhir" level="WARN"/>

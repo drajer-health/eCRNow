@@ -109,8 +109,14 @@ public class EvaluateMeasure extends BsaAction {
 
       CanonicalType measureCanonical = new CanonicalType(measureUri);
 
-      // TODO: Update for CQF 4.x R4MeasureProcessor API — evaluateMeasure() now requires
-      // CqlEngine and MeasureEvalType instead of endpoint/bundle params.
+      // Signature-only port to the CQF 4.5.1 R4MeasureProcessor API. The pre-4.x
+      // R4MeasureService.evaluate() took endpoint/bundle params (terminology, library,
+      // data, content) and a subject type string. R4MeasureProcessor.evaluateMeasure()
+      // instead takes additionalContext (List<String>), MeasureEvalType, CqlEngine, and
+      // CompositeEvaluationResultsPerMeasure. We pass nulls for the last four; the
+      // processor's null-handling for those is not exercised end-to-end by any test in
+      // this branch (DiabetesECSDTest, which is the only test that would hit a real
+      // Measure evaluation, opts out of KAR activation — see workarounds doc).
       MeasureReport result =
           measureService.evaluateMeasure(
               Eithers.forLeft3(measureCanonical),

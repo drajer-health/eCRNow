@@ -57,8 +57,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
 
-    // DIAGNOSTIC: check if the expression references any of the resolved variables.
-    // If not, strip them to avoid potential compilation issues from unused param declarations.
+    // Strip resolved variables that the expression doesn't reference. Each leftover param
+    // generates a `parameter` declaration in the synthesized CQL library, which (a) adds
+    // compile overhead and (b) can surface translator overload ambiguity for unused types.
+    // The opencds engine has no equivalent stripping pass; doing it here keeps the
+    // generated library minimal. See docs/phase1-fhirpath-workarounds.md §6.
     String exprText = cond.getLogicExpression().getExpression();
     List<ParametersParameterComponent> toRemove = new ArrayList<>();
     for (ParametersParameterComponent p : params.getParameter()) {
@@ -67,19 +70,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         toRemove.add(p);
       }
     }
-    if (!toRemove.isEmpty()) {
-      for (ParametersParameterComponent p : toRemove) {
-        params.getParameter().remove(p);
-        logger.info(" Stripped unused parameter: {}", p.getName());
-      }
-    }
-
-    // Diagnostic: dump parameter map before engine evaluation
-    for (ParametersParameterComponent p : params.getParameter()) {
-      String pName = p.getName();
-      String pValueClass = p.hasValue() ? p.getValue().getClass().getSimpleName() : "NO_VALUE";
-      String pValue = p.hasValue() ? p.getValue().toString() : (p.hasResource() ? p.getResource().fhirType() + "/" + p.getResource().getIdElement().getIdPart() : "null");
-      logger.info(" PARAM_DUMP: name={} valueClass={} value={}", pName, pValueClass, pValue);
+    for (ParametersParameterComponent p : toRemove) {
+      params.getParameter().remove(p);
+      logger.debug("Stripped unused parameter: {}", p.getName());
     }
 
     // Pass the patient ID so the synthesized CQL library's "context Patient" can resolve.
@@ -105,7 +98,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                       (IBaseResource) null,
                       (IBaseResource) null);
     } catch (Exception e) {
-      logger.error(" FHIR Path Expression Evaluator threw for expression: {}", logicExpression, e);
+      logger.error(
+          "FHIR Path Expression Evaluator threw for expression: {}", logicExpression, e);
       return false;
     }
     ParametersParameterComponent ppc = result.getParameter(PARAM);
@@ -121,7 +115,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         errorDetail = errorPart.getValue().toString();
       }
       logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator for expression (no 'return' parameter). Expression: {}. Error detail: {}",
+          "Null value returned from FHIR Path Expression Evaluator (no 'return' parameter). Expression: {}. Error detail: {}",
           cond.getLogicExpression().getExpression(),
           errorDetail);
       return false;
