@@ -112,11 +112,25 @@ Semantics:
 
 **Upstream fix:** `Exists`/`Count`/`Empty`/`Flatten` need overloads for FHIR choice types and for individual FHIR primitive types (`FHIR.dateTime`, `FHIR.Period`, etc.). Equivalent FHIRPath `.exists()`, `.empty()`, `.count()` should resolve cleanly without forcing authors to dip into CQL builtins.
 
-### 8. `relatedAction` loop (Phase 1 PD modeling bug)
+### 8. `relatedAction` re-check cadence vs. test-harness `ignore.timers=true` recursion
 
-**Bug:** `is-encounter-in-progress` and `is-amb-encounter-in-progress` carried `relatedAction → check-reportable before-start 6h` which didn't exist in the original PD. Under `ignore.timers=true` (test configuration), the 6h offset collapsed to immediate re-execution, causing infinite recursion.
+**History note (correction):** an earlier revision of this document framed this section as "a `relatedAction` block that didn't exist in the original PD." That was wrong on both counts. The base PD (`plandefinition-us-ecr-specification.json`) carries **two** `relatedAction → check-reportable before-start <offset>` blocks — `6h` on `is-encounter-in-progress` and `72h` on `is-amb-encounter-in-progress`. They are the canonical production polling cadence: re-check reportability at the right interval for inpatient/ED (6h) and ambulatory (72h) encounters that are still in progress. **They are not a bug.**
 
-**Fix:** Removed the `relatedAction` blocks from both actions in the source Phase 1 PD.
+**Real issue:** the eCRNow test harness runs with `ignore.timers=true`. That config collapses every time-based offset — including `relatedAction.offsetDuration` — to zero. The `before-start 6h` and `before-start 72h` relationships then fire immediately and recurse back to `check-reportable`, which re-enters `is-encounter-in-progress`, which fires the relatedAction again, ad infinitum.
+
+**Current state:**
+- The **canonical** Phase 1 PD (`aphl-ersd-specifications-v3/input/resources/plandefinition/plandefinition-us-ecr-specification-phase1.json`) has both `relatedAction` blocks restored to match the base PD byte-for-byte.
+- The **test KAR bundle** (`src/test/resources/Bsa/Scenarios/kars/rulefilters/eRSD-RuleFilter-bundle.json`) still has both blocks **stripped** as a localized test-harness workaround, otherwise Phase 1 scenarios infinite-loop. **This is a divergence from the canonical spec, applied solely to keep the test suite runnable.** When the harness is fixed (below), re-bundle the canonical PD and delete this section.
+
+**Harness-side fixes (pick one, all are Phase 2 work):**
+
+| Option | Approach | Effort |
+|---|---|---|
+| **A.** Cycle detection in `BsaAction` | Track action IDs visited in the current execution stack; bail with a warning when a cycle is detected under `ignore.timers=true`. Honors the spec's intent without breaking production. | Medium |
+| **B.** Don't collapse `relatedAction` offsets to zero | Change `ignore.timers=true` so only the top-level scheduling `Timing` is ignored; `relatedAction.offsetDuration` still gates execution (i.e., `before-start 6h` means "this would fire 6h before next — skip in test"). | Medium |
+| **C.** Per-scenario opt-out | New test-property knob (e.g., `bsa.kar.ignoreRelatedActionOffsets=false` default) so Phase 1 scenarios run without collapsing offsets, older tests keep current behavior. | Low |
+
+A or B is the durable fix; C is the smallest unblocker if a future change needs to ship before the harness work lands.
 
 ## Files Changed
 
