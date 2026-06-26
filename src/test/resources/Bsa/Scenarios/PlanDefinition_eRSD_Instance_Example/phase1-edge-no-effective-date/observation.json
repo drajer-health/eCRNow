@@ -2,7 +2,7 @@
     "resourceType": "Observation",
     "id": "obs-no-date",
     "status": "final",
-    "code": { "coding": [{ "system": "http://loinc.org", "code": "14461-8", "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture" }] },
+    "code": { "coding": [{ "system": "http://loinc.org", "code": "100343-3", "display": "Influenza virus B RNA [Presence] in Saliva (oral fluid) by NAA with probe detection" }] },
     "valueCodeableConcept": { "coding": [{ "system": "http://snomed.info/sct", "code": "10828004", "display": "Positive (qualifier value)" }] },
     "interpretation": [{ "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation", "code": "POS", "display": "Positive" }] }],
     "subject": { "reference": "Patient/edge-no-date" }

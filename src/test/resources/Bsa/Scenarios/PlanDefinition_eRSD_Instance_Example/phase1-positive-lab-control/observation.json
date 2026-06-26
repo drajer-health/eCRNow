@@ -5,8 +5,8 @@
     "code": {
         "coding": [{
             "system": "http://loinc.org",
-            "code": "14461-8",
-            "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture"
+            "code": "100343-3",
+            "display": "Influenza virus B RNA [Presence] in Saliva (oral fluid) by NAA with probe detection"
         }]
     },
     "valueCodeableConcept": {

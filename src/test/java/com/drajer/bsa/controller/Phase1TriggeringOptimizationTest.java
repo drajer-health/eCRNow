@@ -138,16 +138,26 @@ public class Phase1TriggeringOptimizationTest extends BaseKarsTest {
             "phase1-refuted-diagnosis",
             NOT_TRIGGERED), // Phase 1: excluded by negative-value / timebox / refuted-status filter
 
-        // 9. NEG-EXEMPT CONDITION — Gonorrhea with negative result.
-        //    RCKMS guidance: Gonorrhea and Hep C remain reportable on negative results
-        //    (screening / surveillance value). Phase 1 does not implement this carve-out
-        //    and excludes uniformly via the negative-value filter — deferred to Phase 2.
-        //    See docs/phase1-fhirpath-workarounds.md §"Deferred: neg-exempt conditions".
+        // 9. NEG-EXEMPT CONDITION (GONORRHEA) — Gonorrhea test with negative result.
+        //    Gonorrhea is on the 53-condition all-results-reportable list (RCTC 2026-02-27);
+        //    a negative result still triggers reporting. The PD's negExemptLabResults branch
+        //    is filtered by the artc composite ValueSet and skips the negative-value gates.
+        //    See docs/phase2-neg-exempt/ for the composite ValueSet + provenance.
         new TestCaseInfo(
             PLAN_DEF_FOLDER,
             PLAN_DEF_URL,
             "phase1-neg-exempt-condition",
-            NOT_TRIGGERED), // Phase 1 design gap; correct behavior requires Phase 2 work
+            REPORTED),
+
+        // 9b. NEG-EXEMPT CONDITION (HEP C) — Hepatitis C antibody test with negative result.
+        //     Parity scenario for the artc composite. Verifies that a second condition on the
+        //     53-condition list (Hep C anti-HCV antibody, LOINC 13955-0) also triggers despite
+        //     a negative SNOMED result code.
+        new TestCaseInfo(
+            PLAN_DEF_FOLDER,
+            PLAN_DEF_URL,
+            "phase1-neg-exempt-condition-hepc",
+            REPORTED),
 
         // ===== BOUNDARY / EDGE CASES =====
 
