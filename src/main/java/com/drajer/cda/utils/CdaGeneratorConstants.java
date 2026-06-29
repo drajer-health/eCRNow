@@ -16,10 +16,9 @@ public class CdaGeneratorConstants {
   public static final String OBSERVATION_RANGE_EL_NAME = "observationRange";
   public static final String VITAL_SIGNS_ORG_CODE_LOINC_NAME =
       "Vital signs, weight, height, head circumference, oximetry, BMI, and BSA panel";
-
-  private CdaGeneratorConstants() {
-    // not called
-  }
+  public static final String INNER_BODY_ID = "_id";
+  public static final String INNER_ROW_NUM = "_rowNum";
+  public static final String INNER_KEY_COMP_IDX = "_compIndex";
 
   private static final Logger logger = LoggerFactory.getLogger(CdaGeneratorConstants.class);
 
@@ -934,6 +933,7 @@ public class CdaGeneratorConstants {
   public static final String ASSIGNED_PERSON_EL_NAME = "assignedPerson";
   public static final String ASSOCIATED_PERSON_EL_NAME = "associatedPerson";
   public static final String REP_ORG_EL_NAME = "representedOrganization";
+  public static final String SCOPING_ORG_EL_NAME = "scopingOrganization";
   public static final String ENCOMPASSING_ENC_EL_NAME = "encompassingEncounter";
   public static final String ENCOUNTER_PARTICIPANT_EL_NAME = "encounterParticipant";
   public static final String COMPONENT_OF_EL_NAME = "componentOf";
@@ -1138,6 +1138,25 @@ public class CdaGeneratorConstants {
 
   public static final String ASSIGNED = "ASSIGNED";
 
+  public static final String RESULTS_PANEL_COL_TITLE = "Results Panel";
+  public static final String RESULTS_DATE_COL_TITLE = "Date(s)";
+
+  // Inner table headers
+  public static final String INNER_COL_TEST = "Test";
+  public static final String INNER_COL_OUTCOME = "Outcome";
+  public static final String INNER_COL_INTERP = "Interpretation";
+  public static final String INNER_COL_DATE = "Date(s)";
+  public static final String INNER_COL_REF_RANGE = "Reference Range";
+  public static final String INNER_COL_COLLECTION = "Specimen Collection Date";
+
+  // Inner table content IDs
+  public static final String INNER_BODY_TEST = "test";
+  public static final String INNER_BODY_OUTCOME = "outcome";
+  public static final String INNER_BODY_INTERP = "interpretation";
+  public static final String INNER_BODY_DATE = "date";
+  public static final String INNER_BODY_REF_RANGE = "refRange";
+  public static final String INNER_BODY_COLLECTION = "collection";
+
   public static final String HISTORY_OF_OCCUPATION_INDUSTRY = "History of Occupation Industry";
 
   // OID to URI Mapping
@@ -1234,7 +1253,7 @@ public class CdaGeneratorConstants {
               .getResourceAsStream("GestationalAgeEstimatedValueset.properties");
       {
         Properties prop5 = new Properties();
-        prop5.load(vsFile);
+        prop5.load(gsFile);
 
         prop5.forEach(
             (key, value) -> {

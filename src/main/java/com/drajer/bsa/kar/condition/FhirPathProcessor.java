@@ -43,26 +43,25 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     }
 
     logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
+    logParametersDetails(params, "Before resolving variables");
+
+    String logicExpression = cond.getLogicExpression().getExpression();
+    logger.info("Logic Expression to be evaluated: {}", logicExpression);
+    logger.info(
+        "Evaluating condition for action: {} with expression: {}",
+        act.getActionId(),
+        logicExpression);
 
     resolveVariables(cond, params, kd, act, ehrService);
 
     logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
+    logParametersDetails(params, "After resolving variables");
 
     Parameters result =
         (Parameters)
             newEvaluator()
                 .evaluate(
-                    null,
-                    cond.getLogicExpression().getExpression(),
-                    params,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+                    null, logicExpression, params, null, null, null, null, null, null, null, null);
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
@@ -538,6 +537,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         }
       }
     }
+    logParametersDetails(params, "After resolveInputParameters");
     return params;
   }
 
@@ -638,6 +638,67 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       logger.warn("Failed to normalize canonical URL: {}", url, e);
 
       return url;
+    }
+  }
+
+  /**
+   * Logs detailed information about each parameter in the Parameters object. Shows whether each
+   * parameter has a resource or a value.
+   *
+   * @param params the Parameters object to log
+   * @param context the context/stage information to include in the log
+   */
+  private void logParametersDetails(Parameters params, String context) {
+    if (params == null) {
+      logger.debug("[{}] Parameters object is null", context);
+      return;
+    }
+
+    List<ParametersParameterComponent> paramList = params.getParameter();
+    if (paramList == null || paramList.isEmpty()) {
+      logger.debug("[{}] No parameters found", context);
+      return;
+    }
+
+    logger.debug("[{}] Total parameters: {}", context, paramList.size());
+
+    for (ParametersParameterComponent param : paramList) {
+      String paramName = param.getName();
+      boolean hasResource = param.hasResource();
+      boolean hasValue = param.hasValue();
+
+      if (hasResource) {
+        Resource resource = param.getResource();
+        String resourceType = resource != null ? resource.fhirType() : "null";
+        String resourceId = resource != null ? resource.getId() : "null";
+        logger.debug(
+            "[{}] Parameter '{}' has RESOURCE - Type: {}, Id: {}",
+            context,
+            paramName,
+            resourceType,
+            resourceId);
+      } else if (hasValue) {
+        Type value = param.getValue();
+        String valueType = value != null ? value.getClass().getSimpleName() : "null";
+        String valueStr = value != null ? value.toString() : "null";
+        logger.debug(
+            "[{}] Parameter '{}' has VALUE - Type: {}, Value: {}",
+            context,
+            paramName,
+            valueType,
+            valueStr);
+      } else {
+        logger.debug("[{}] Parameter '{}' has neither RESOURCE nor VALUE", context, paramName);
+      }
+
+      // Log any extensions
+      if (param.hasExtension()) {
+        logger.debug(
+            "[{}] Parameter '{}' has {} extension(s)",
+            context,
+            paramName,
+            param.getExtension().size());
+      }
     }
   }
 }

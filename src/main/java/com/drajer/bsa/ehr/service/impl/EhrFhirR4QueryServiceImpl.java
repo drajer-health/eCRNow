@@ -1524,6 +1524,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
         }
       }
+      if (observation.hasBasedOn()) {
+
+        List<Reference> basedOnRefs = observation.getBasedOn();
+        for (Reference basedOnRef : basedOnRefs) {
+          if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
+            getAndAddSecondaryResource(
+                kd, basedOnRef, ResourceType.ServiceRequest, genericClient, context);
+          }
+        }
+      }
 
     } else if (res != null && rType == ResourceType.DiagnosticReport) {
 
@@ -1536,6 +1546,17 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         for (Reference specimen : specimens) {
           if (isResourceOfType(specimen, ResourceType.Specimen)) {
             getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
+          }
+        }
+      }
+      if (report.hasBasedOn()) {
+
+        List<Reference> basedOnRefs = report.getBasedOn();
+
+        for (Reference basedOnRef : basedOnRefs) {
+          if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
+            getAndAddSecondaryResource(
+                kd, basedOnRef, ResourceType.ServiceRequest, genericClient, context);
           }
         }
       }
@@ -1581,6 +1602,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 if (isPractitioner(performer)) {
                   getAndAddSecondaryResource(
                       kd, performer, ResourceType.Practitioner, genericClient, context);
+                }
+              }
+              if (observation.hasBasedOn()) {
+
+                List<Reference> basedOnRefs = observation.getBasedOn();
+                for (Reference basedOnRef : basedOnRefs) {
+                  if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
+                    getAndAddSecondaryResource(
+                        kd, basedOnRef, ResourceType.ServiceRequest, genericClient, context);
+                  }
                 }
               }
             }

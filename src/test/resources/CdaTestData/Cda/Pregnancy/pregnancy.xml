@@ -139,6 +139,14 @@
                         <value xsi:type="TS" value="20231227"/>
                     </observation>
                 </entryRelationship>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                    <templateId root="2.16.840.1.113883.10.20.22.4.280"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.4.280" extension="2018-04-01"/>
+                    <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="11884-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Gestational age Estimated"></code>
+                    <statusCode code="completed"/>
+                    <value xsi:type="PQ" value="22.0" unit="wk"/>
+                </entryRelationship>
             </observation>
         </entry>
         <entry>
@@ -181,6 +189,14 @@
                         <statusCode code="completed"/>
                         <value xsi:type="TS" value="20231227"/>
                     </observation>
+                </entryRelationship>
+                <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                    <templateId root="2.16.840.1.113883.10.20.22.4.280"/>
+                    <templateId root="2.16.840.1.113883.10.20.22.4.280" extension="2018-04-01"/>
+                    <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="11884-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Gestational age Estimated"></code>
+                    <statusCode code="completed"/>
+                    <value xsi:type="PQ" value="22.0" unit="wk"/>
                 </entryRelationship>
             </observation>
         </entry>

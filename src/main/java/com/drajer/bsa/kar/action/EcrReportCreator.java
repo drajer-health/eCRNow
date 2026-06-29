@@ -27,47 +27,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.CompositionStatus;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.DocumentReference;
-import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Immunization;
-import org.hl7.fhir.r4.model.MedicationAdministration;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
 import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
-import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
-import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
-import org.hl7.fhir.r4.model.OidType;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.Procedure;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.ServiceRequest;
-import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
@@ -77,8 +46,21 @@ import org.slf4j.LoggerFactory;
 public class EcrReportCreator extends ReportCreator {
 
   private static final String DEFAULT_VERSION = "1";
+
+  // FIX 1: Corrected extension URL constants
   private static final String VERSION_NUM_URL =
       "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
+
+  private static final String EICR_INITIATION_TYPE_EXT_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-initiation-type-extension";
+
+  // FIX 1: These two live in us/ph-library, not us/ecr
+  private static final String US_PH_INITIATION_REASON_EXT_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-initiation-reason-extension";
+
+  private static final String US_PH_INFO_RECIPIENT_EXT_URL =
+      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-information-recipient-extension";
+
   private static final String DEVICE_NAME = "eCRNow/Backend Service App";
   private static final String TRIGGER_CODE_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-trigger-code-flag-extension";
@@ -99,7 +81,8 @@ public class EcrReportCreator extends ReportCreator {
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
   public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
   public static final String MESSAGE_HEADER_PROFILE = "";
-  public static final String MESSAGE_TYPE_URL = "";
+  public static final String MESSAGE_TYPE_URL =
+      "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-message-types-codesystem";
   public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-triggerdefinition-namedevents";
 
@@ -134,29 +117,33 @@ public class EcrReportCreator extends ReportCreator {
           getFhirReport(kd, ehrService, dataRequirementId, EICR_DOCUMENT_BUNDLE, act);
       MessageHeader mh = createMessageHeader(kd, false, contentBundle);
 
-      // Add the Message Header Resource
-      BundleEntryComponent bec = new BundleEntryComponent();
-      bec.setResource(mh);
-      bec.setFullUrl(
+      BundleEntryComponent messageComponent = new BundleEntryComponent();
+      messageComponent.setResource(mh);
+      messageComponent.setFullUrl(
           StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
               + "/"
               + mh.getResourceType().toString()
               + "/"
               + mh.getIdElement().getIdPart());
 
-      reportingBundle.addEntry(bec);
+      BundleEntryComponent contentBundleEntry = new BundleEntryComponent();
+      contentBundleEntry.setResource(contentBundle);
+      contentBundleEntry.setFullUrl(
+          StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
+              + "/"
+              + contentBundle.getResourceType().toString()
+              + "/"
+              + contentBundle.getIdElement().getIdPart());
 
-      // Add the Content Bundle.
-      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
+      reportingBundle.addEntry(messageComponent);
+      reportingBundle.addEntry(contentBundleEntry);
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R11) {
 
       logger.info(" Creating a CDA R11 Eicr Report ");
-
       reportingBundle = createReportingBundle(profile);
       Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
-      // Add the Message Header Resource
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
@@ -167,8 +154,6 @@ public class EcrReportCreator extends ReportCreator {
               + mh.getIdElement().getIdPart());
 
       reportingBundle.addEntry(bec);
-
-      // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30
         || kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R31) {
@@ -178,7 +163,6 @@ public class EcrReportCreator extends ReportCreator {
       Bundle contentBundle = getCdaR31Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
-      // Add the Message Header Resource
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
@@ -189,21 +173,17 @@ public class EcrReportCreator extends ReportCreator {
               + mh.getIdElement().getIdPart());
 
       reportingBundle.addEntry(bec);
-
-      // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
 
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.BOTH) {
 
       logger.info(" Creating an Eicr for each of the above formats ");
-
       reportingBundle = createReportingBundle(profile);
       Bundle contentBundle1 = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       Bundle contentBundle2 = getFhirReport(kd, ehrService, dataRequirementId, profile, act);
       Bundle contentBundle3 = getCdaR31Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle1);
 
-      // Add the Message Header Resource
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
@@ -214,8 +194,6 @@ public class EcrReportCreator extends ReportCreator {
               + mh.getIdElement().getIdPart());
 
       reportingBundle.addEntry(bec);
-
-      // Add the Content Bundles..
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle1));
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle2));
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle3));
@@ -232,18 +210,14 @@ public class EcrReportCreator extends ReportCreator {
     header.setId(UUID.randomUUID().toString());
     header.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, MESSAGE_HEADER_PROFILE));
 
-    // Add extensions
     Extension ext = new Extension();
     ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
-    StringType st = new StringType();
-    st.setValue(MESSAGE_PROCESSING_CATEGORY_CODE);
-    ext.setValue(st);
+    ext.setValue(new CodeType(MESSAGE_PROCESSING_CATEGORY_CODE));
+
     List<Extension> exts = new ArrayList<>();
     exts.add(ext);
-
     header.setExtension(exts);
 
-    // Set message type.
     Coding c = new Coding();
     c.setSystem(MESSAGE_TYPE_URL);
     if (Boolean.TRUE.equals(cdaFlag)) {
@@ -251,10 +225,8 @@ public class EcrReportCreator extends ReportCreator {
     } else {
       c.setCode(BsaTypes.getMessageTypeString(MessageType.EICR_CASE_REPORT_MESSAGE));
     }
-
     header.setEvent(c);
 
-    // set destination
     Set<UriType> dests = kd.getKar().getReceiverAddresses();
     List<MessageDestinationComponent> mdcs = new ArrayList<>();
     for (UriType i : dests) {
@@ -264,29 +236,28 @@ public class EcrReportCreator extends ReportCreator {
     }
     header.setDestination(mdcs);
 
-    // Set source.
     MessageSourceComponent msgComp = new MessageSourceComponent();
     msgComp.setEndpoint(kd.getHealthcareSetting().getFhirServerBaseURL());
     header.setSource(msgComp);
 
-    // Set Reason.
     CodeableConcept codeCpt = new CodeableConcept();
     Coding coding = new Coding();
     coding.setSystem(NAMED_EVENT_URL);
-    coding.setCode(kd.getNotificationContext().getTriggerEvent());
+    String triggerEvent = kd.getNotificationContext().getTriggerEvent();
+    coding =
+        triggerEvent.equalsIgnoreCase("encounter-end")
+            ? coding.setCode("encounter-close")
+            : coding.setCode(triggerEvent);
     codeCpt.addCoding(coding);
     header.setReason(codeCpt);
 
-    // Add sender
     Organization org = ReportCreationUtilities.getOrganization(kd);
-
     if (org != null) {
       Reference orgRef = new Reference();
       orgRef.setResource(org);
       header.setSender(orgRef);
     }
 
-    // Setup Message Header to Content Bundle Linkage.
     Reference ref = new Reference();
     ref.setReference(BUNDLE_REL_URL + contentBundle.getId());
     List<Reference> refs = new ArrayList<>();
@@ -299,12 +270,10 @@ public class EcrReportCreator extends ReportCreator {
   public Bundle createReportingBundle(String profile) {
 
     Bundle returnBundle = new Bundle();
-
     returnBundle.setId(UUID.randomUUID().toString());
     returnBundle.setType(BundleType.MESSAGE);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
-
     return returnBundle;
   }
 
@@ -315,13 +284,11 @@ public class EcrReportCreator extends ReportCreator {
       String profile,
       BsaAction act) {
 
-    // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
     returnBundle.setId(UUID.randomUUID().toString());
     returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
-    // logger.info("Ehr Query Service :{}", ehrService);
 
     Eicr ecr = new Eicr();
     Integer submittedVersionNumber = 0;
@@ -331,7 +298,6 @@ public class EcrReportCreator extends ReportCreator {
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
 
-    // Save data to File for debugging.
     String outputFileName =
         KarProcessingData.LOADING_QUERY_FILE_NAME
             + "_"
@@ -362,7 +328,6 @@ public class EcrReportCreator extends ReportCreator {
       String profile,
       BsaAction act) {
 
-    // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
     returnBundle.setId(UUID.randomUUID().toString());
     returnBundle.setType(BundleType.DOCUMENT);
@@ -380,7 +345,6 @@ public class EcrReportCreator extends ReportCreator {
       submittedVersionNumber = kd.getPhm().getSubmittedVersionNumber();
     }
 
-    // Save data to File for debugging.
     String outputFileName =
         KarProcessingData.LOADING_QUERY_FILE_NAME
             + "_"
@@ -399,7 +363,6 @@ public class EcrReportCreator extends ReportCreator {
             CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
-
     returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
 
     return returnBundle;
@@ -412,11 +375,9 @@ public class EcrReportCreator extends ReportCreator {
     DocumentReference documentReference = new DocumentReference();
     documentReference.setId(ecr.getEicrDocId());
 
-    // Set Doc Ref Status
     documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
     documentReference.setDocStatus(DocumentReference.ReferredDocumentStatus.FINAL);
 
-    // Set Doc Ref Type
     CodeableConcept typeCode = new CodeableConcept();
     List<Coding> codingList = new ArrayList<>();
     Coding typeCoding = new Coding();
@@ -428,12 +389,10 @@ public class EcrReportCreator extends ReportCreator {
     typeCode.setText(EICR_REPORT_LOINC_CODE_DISPLAY_NAME);
     documentReference.setType(typeCode);
 
-    // Set Subject
     Reference patientReference = new Reference();
     patientReference.setReference("Patient/" + kd.getNotificationContext().getPatientId());
     documentReference.setSubject(patientReference);
 
-    // Set Doc Ref Content
     List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
     DocumentReference.DocumentReferenceContentComponent contentComp =
         new DocumentReference.DocumentReferenceContentComponent();
@@ -448,7 +407,6 @@ public class EcrReportCreator extends ReportCreator {
     contentList.add(contentComp);
     documentReference.setContent(contentList);
 
-    // Set Doc Ref Context
     if (kd.getNotificationContext()
         .getNotificationResourceType()
         .equals(ResourceType.Encounter.toString())) {
@@ -469,24 +427,29 @@ public class EcrReportCreator extends ReportCreator {
     }
 
     logger.debug("DocumentReference Object created successfully ");
-
     return documentReference;
   }
 
+  // ==========================================================================
+  // FIX 12: getFhirReport — bundle profile fallback, identifier urn: prefix,
+  //         dedupe entries by fullUrl
+  // ==========================================================================
   public Bundle getFhirReport(
       KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act) {
 
-    // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
     returnBundle.setId(id);
     returnBundle.setType(BundleType.DOCUMENT);
-    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
+    returnBundle.setMeta(
+        ActionUtils.getMeta(
+            DEFAULT_VERSION,
+            (profile != null && !profile.isEmpty()) ? profile : EICR_DOCUMENT_BUNDLE));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
-    // Add Identifier
+    // FIX 12: prefix bundle identifier value with urn:uuid:
     Identifier docId = new Identifier();
-    docId.setValue(java.util.UUID.randomUUID().toString());
     docId.setSystem(FhirGeneratorConstants.DOC_ID_SYSTEM);
+    docId.setValue("urn:uuid:" + UUID.randomUUID().toString());
     returnBundle.setIdentifier(docId);
 
     logger.info(" Creating R4FhirData");
@@ -497,200 +460,227 @@ public class EcrReportCreator extends ReportCreator {
     Set<Resource> resourcesTobeAdded = new HashSet<>();
     Composition comp = createComposition(kd, resourcesTobeAdded, data);
 
+    String baseUrl = StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/");
+
+    // Composition entry must be the FIRST entry in a document bundle
     BundleEntryComponent becComp = new BundleEntryComponent();
     becComp.setResource(comp);
     String fullUrlComp =
-        StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
-            + "/"
-            + comp.getResourceType().toString()
-            + "/"
-            + comp.getIdElement().getIdPart();
+        baseUrl + "/" + comp.getResourceType().toString() + "/" + comp.getIdElement().getIdPart();
     becComp.setFullUrl(fullUrlComp);
     returnBundle.addEntry(becComp);
 
+    // FIX 12: dedupe entries by fullUrl to avoid duplicate-id validation errors
+    Set<String> seenFullUrls = new HashSet<>();
+    seenFullUrls.add(fullUrlComp);
+
     for (Resource res : resourcesTobeAdded) {
+      String entryFullUrl =
+          baseUrl + "/" + res.getResourceType().toString() + "/" + res.getIdElement().getIdPart();
+      if (seenFullUrls.contains(entryFullUrl)) {
+        continue;
+      }
+      seenFullUrls.add(entryFullUrl);
 
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(res);
-      bec.setFullUrl(
-          StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
-              + "/"
-              + res.getResourceType().toString()
-              + "/"
-              + res.getIdElement().getIdPart());
-
+      bec.setFullUrl(entryFullUrl);
       returnBundle.addEntry(bec);
     }
 
     return returnBundle;
   }
 
+  // ==========================================================================
+  // createComposition — fixes 3, 4, 5, 6, 8, 9, 10
+  // ==========================================================================
   public Composition createComposition(
       KarProcessingData kd, Set<Resource> resTobeAdded, Pair<R4FhirData, LaunchDetails> data) {
 
     Composition comp = new Composition();
     comp.setId(UUID.randomUUID().toString());
 
-    // Add Meta
+    // FIX 8: meta.profile declares eICR Composition canonical URL
     comp.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, EICR_COMPOSITION_PROFILE_URL));
 
-    // Add clinical document version number extension.
+    // Add clinical document version + initiation type extensions
     comp.setExtension(getExtensions());
 
-    // Add Identifier.
-    Identifier val = new Identifier();
-    val.setValue(comp.getId());
-    comp.setIdentifier(val);
+    // FIX 3: identifier needs system (URN URI scheme) AND value
+    Identifier compId = new Identifier();
+    compId.setSystem(FhirGeneratorConstants.DOC_ID_SYSTEM); // urn:ietf:rfc:3986
+    compId.setValue("urn:uuid:" + comp.getId());
+    comp.setIdentifier(compId);
 
-    // Add status
+    // Status
     comp.setStatus(CompositionStatus.FINAL);
 
-    // Add Type
+    // Type
     comp.setType(
         FhirGeneratorUtils.getCodeableConcept(
             FhirGeneratorConstants.LOINC_CS_URL,
             FhirGeneratorConstants.ECR_COMP_TYPE_CODE,
             FhirGeneratorConstants.ECR_COMP_TYPE_CODE_DISPLAY));
 
-    // Set Patient
+    // Subject
     Set<Resource> patients = kd.getResourcesByType(ResourceType.Patient.toString());
     if (patients != null && !patients.isEmpty()) {
-
       logger.info(" Setting up the patient for the composition ");
       Resource patient = patients.iterator().next();
+      Reference patReference = new Reference();
 
-      comp.getSubject().setResource(patient);
+      String reference = ResourceType.Patient + "/" + patient.getIdElement().getIdPart();
+      patReference.setReference(reference);
+      comp.setSubject(patReference);
       resTobeAdded.add(patient);
+
     } else {
 
       logger.error(
           " Cannot setup the patient for Composition, need to determine best approach to deal with the error. ");
     }
 
-    // Set Encounter
+    // Encounter
     Set<Resource> encounters = kd.getResourcesByType(ResourceType.Encounter.toString());
     if (encounters != null && !encounters.isEmpty() && encounters.size() == 1) {
-
-      logger.info(" Setting up the patient for the composition ");
+      logger.info(" Setting up the encounter for the composition ");
+      Reference encounterRef = new Reference();
       Resource encounter = encounters.iterator().next();
-      comp.getEncounter().setResource(encounters.iterator().next());
+      String reference = ResourceType.Encounter + "/" + encounter.getIdElement().getIdPart();
+      encounterRef.setReference(reference);
+      comp.setEncounter(encounterRef);
       resTobeAdded.add(encounter);
-
     } else if (encounters != null && !encounters.isEmpty() && encounters.size() > 1) {
-
       logger.error(
           "Received more than one encounter for processing which is erroneous, using the first one.");
       comp.getEncounter().setResource(encounters.iterator().next());
     }
 
-    // Set Date
+    // Date
     comp.setDate(Date.from(Instant.now()));
 
-    // Set Author
+    // FIX 9: Author — fall back to Device when no Practitioner available
     List<Practitioner> practs = addAuthors(kd, comp);
-    if (practs != null && !practs.isEmpty()) resTobeAdded.addAll(practs);
-
-    // Add title
-    comp.setTitle(EICR_REPORT_LOINC_CODE_DISPLAY_NAME);
-
-    // Add Organization
-    Organization org = ReportCreationUtilities.getOrganization(kd);
-
-    if (org != null) {
-      Reference orgRef = new Reference();
-      orgRef.setResource(org);
-      comp.setCustodian(orgRef);
-      resTobeAdded.add(org);
+    if (practs != null && !practs.isEmpty()) {
+      resTobeAdded.addAll(practs);
     }
 
-    // Add sections
+    // Title
+    comp.setTitle(EICR_REPORT_LOINC_CODE_DISPLAY_NAME);
+
+    Organization org = ReportCreationUtilities.getOrganization(kd);
+    if (org == null) {
+      logger.info("No Organization from EHR — using fallback custodian Organization");
+      org = new Organization();
+      org.setId(UUID.randomUUID().toString());
+      org.setName(
+          kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getOrgName() != null
+              ? kd.getHealthcareSetting().getOrgName()
+              : "Unknown Healthcare Organization");
+    }
+    Reference orgRef = new Reference();
+    String reference = org.fhirType() + "/" + org.getIdElement().getIdPart();
+    orgRef.setReference(reference);
+    comp.setCustodian(orgRef);
+    resTobeAdded.add(org);
+
+    // Sections
     List<SectionComponent> scs = new ArrayList<>();
 
-    // Add chief complaint section.
     SectionComponent sc = getSection(SectionTypeEnum.REASON_FOR_VISIT, kd, data);
     if (sc != null) scs.add(sc);
 
-    // Add chief complaint section.
     sc = getSection(SectionTypeEnum.CHIEF_COMPLAINT, kd, data);
     if (sc != null) scs.add(sc);
 
-    // Add History of Present Illness section.
     sc = getSection(SectionTypeEnum.HISTORY_OF_PRESENT_ILLNESS, kd, data);
     if (sc != null) scs.add(sc);
 
-    // Add Review of Systems Section
     sc = getSection(SectionTypeEnum.REVIEW_OF_SYSTEMS, kd, data);
     if (sc != null) scs.add(sc);
 
-    // Add Problem section.
     sc = getSection(SectionTypeEnum.PROBLEM, kd, data);
-    if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Condition, kd, sc, resTobeAdded);
+    if (sc != null) {
+      addEntries(null, ResourceType.Condition, kd, sc, resTobeAdded);
+    }
+    scs.add(sc);
 
-    // Add Past Medical History section.
     sc = getSection(SectionTypeEnum.MEDICAL_HISTORY, kd, data);
     if (sc != null) scs.add(sc);
 
-    // Add Admission Medications section.
     sc = getSection(SectionTypeEnum.ADMISSION_MEDICATIONS, kd, data);
     if (sc != null) scs.add(sc);
 
-    // Add Medications Administered section.
     sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED, kd, data);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.MedicationAdministration, kd, sc, resTobeAdded);
+    addEntries(null, ResourceType.MedicationAdministration, kd, sc, resTobeAdded);
 
-    // Add Medications Administered section.
     sc = getSection(SectionTypeEnum.MEDICATIONS, kd, data);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
+    addEntries(null, ResourceType.MedicationStatement, kd, sc, resTobeAdded);
 
-    // Add Results section.
     sc = getSection(SectionTypeEnum.RESULTS, kd, data);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
-    addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
+    addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
+    addEntries(null, ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
 
-    // Add Plan Of Treatment section.
     sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd, data);
-    if (sc != null) scs.add(sc);
-    addEntries(ResourceType.ServiceRequest, kd, sc, resTobeAdded);
-    addEntries(ResourceType.MedicationRequest, kd, sc, resTobeAdded);
-    addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
+    if (sc != null) {
 
-    // Add Immunizations section.
+      addEntries(data.getValue0(), ResourceType.ServiceRequest, kd, sc, resTobeAdded);
+      addEntries(data.getValue0(), ResourceType.MedicationRequest, kd, sc, resTobeAdded);
+      addEntries(null, ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
+      if (sc.hasEntry()) {
+        scs.add(sc);
+      }
+    }
+
     sc = getSection(SectionTypeEnum.IMMUNIZATIONS, kd, data);
-    if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Immunization, kd, sc, resTobeAdded);
+    if (sc != null) {
+      addEntries(null, ResourceType.Immunization, kd, sc, resTobeAdded);
+      if (sc.hasEntry()) {
+        scs.add(sc);
+      }
+    }
 
-    // Add Procedures section.
     sc = getSection(SectionTypeEnum.PROCEDURES, kd, data);
-    if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Procedure, kd, sc, resTobeAdded);
+    if (sc != null) {
+      addEntries(data.getValue0(), ResourceType.Procedure, kd, sc, resTobeAdded);
+      if (sc.hasEntry()) {
+        scs.add(sc);
+      }
+    }
 
-    // Add Vital Signs section.
     sc = getSection(SectionTypeEnum.VITAL_SIGNS, kd, data);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
+    addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
 
-    // Add Social History section.
     sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd, data);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
+    addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
 
-    // Add Pregnancy section.
     sc = getSection(SectionTypeEnum.PREGNANCY, kd, data);
-    if (sc != null) scs.add(sc);
-    // addEntries(ResourceType.Observation, kd, sc, resTobeAdded, );
-
-    // Add Emergency Outbreak section.
+    if (sc != null) {
+      addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
+      if (sc.hasEntry()) {
+        scs.add(sc);
+      }
+    }
     sc = getSection(SectionTypeEnum.EMERGENCY_OUTBREAK_SECTION, kd, data);
     if (sc != null) scs.add(sc);
-
-    // Finalize the sections.
     comp.setSection(scs);
 
-    // Add Locations
+    for (SectionComponent scomp : scs) {
+      boolean hasText = scomp.getText() != null && scomp.getText().getDiv() != null;
+      boolean hasEntries = scomp.getEntry() != null && !scomp.getEntry().isEmpty();
+      boolean hasSections = scomp.getSection() != null && !scomp.getSection().isEmpty();
+
+      if (!hasEntries) {
+        addEmptyNarrative(scomp);
+      }
+    }
+
+    // Locations
     Set<Resource> locs = kd.getResourcesByType(ResourceType.Location);
     if (locs != null && !locs.isEmpty()) {
       resTobeAdded.addAll(locs);
@@ -705,10 +695,10 @@ public class EcrReportCreator extends ReportCreator {
         ReportCreationUtilities.getPractitioners(kd, V3ParticipationType.AUT);
 
     if (authors != null && !authors.isEmpty()) {
-
       Practitioner author = authors.get(0);
       Reference authReference = new Reference();
-      authReference.setResource(author);
+      String reference = author.fhirType() + "/" + author.getIdElement().getIdPart();
+      authReference.setReference(reference);
       List<Reference> authRefs = new ArrayList<>();
       authRefs.add(authReference);
       comp.setAuthor(authRefs);
@@ -719,7 +709,6 @@ public class EcrReportCreator extends ReportCreator {
 
   public SectionComponent getSection(
       SectionTypeEnum st, KarProcessingData kd, Pair<R4FhirData, LaunchDetails> data) {
-
     return getSectionComponent(st, kd, data);
   }
 
@@ -771,6 +760,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case MEDICAL_HISTORY:
@@ -796,7 +786,6 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
         break;
 
       case MEDICATIONS:
@@ -805,6 +794,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case RESULTS:
@@ -813,6 +803,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case PLAN_OF_TREATMENT:
@@ -829,6 +820,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case PROCEDURES:
@@ -837,6 +829,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case VITAL_SIGNS:
@@ -845,6 +838,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case SOCIAL_HISTORY:
@@ -853,6 +847,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case PREGNANCY:
@@ -861,6 +856,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE_DISPLAY);
+
         break;
 
       case EMERGENCY_OUTBREAK_SECTION:
@@ -880,15 +876,30 @@ public class EcrReportCreator extends ReportCreator {
     return sc;
   }
 
+  // ==========================================================================
+  // FIX 2: getExtensions — drop placeholder extensions that fail validation
+  // ==========================================================================
   public List<Extension> getExtensions() {
 
-    Extension ext = new Extension();
-    ext.setUrl(VERSION_NUM_URL);
-    StringType st = new StringType();
-    st.setValue(DEFAULT_VERSION);
-    ext.setValue(st);
     List<Extension> exts = new ArrayList<>();
-    exts.add(ext);
+
+    // (1) Clinical document version number — required
+    Extension versionExt = new Extension();
+    versionExt.setUrl(VERSION_NUM_URL);
+    versionExt.setValue(new StringType(DEFAULT_VERSION));
+    exts.add(versionExt);
+
+    // (2) eICR Initiation Type — with valid PHIN VADS coding
+    Extension initiationTypeExt = new Extension();
+    initiationTypeExt.setUrl(EICR_INITIATION_TYPE_EXT_URL);
+    CodeableConcept initiationTypeConcept = new CodeableConcept();
+    Coding initiationTypeCoding = new Coding();
+    initiationTypeCoding.setSystem("urn:oid:2.16.840.1.114222.4.5.274");
+    initiationTypeCoding.setCode("1");
+    initiationTypeCoding.setDisplay("Provider/Patient Initiated");
+    initiationTypeConcept.addCoding(initiationTypeCoding);
+    initiationTypeExt.setValue(initiationTypeConcept);
+    exts.add(initiationTypeExt);
 
     return exts;
   }
@@ -901,7 +912,6 @@ public class EcrReportCreator extends ReportCreator {
     List<DeviceDeviceNameComponent> dncs = new ArrayList<>();
     dncs.add(dnc);
     dev.setDeviceName(dncs);
-
     return dev;
   }
 
@@ -912,7 +922,6 @@ public class EcrReportCreator extends ReportCreator {
     val.setStatus(NarrativeStatus.ADDITIONAL);
 
     Encounter encounter = data.getValue0().getEncounter();
-    String text = "No Reason for Visit Information";
 
     if (encounter != null && encounter.hasText()) {
       val.setDivAsString(encounter.getText().getDivAsString());
@@ -920,7 +929,8 @@ public class EcrReportCreator extends ReportCreator {
       val.setDivAsString(
           ReportGenerationUtils.getTextForCodeableConcepts(encounter.getReasonCode()));
     } else {
-      val.setDivAsString("No Reason for Visit Information");
+      val.setDivAsString(
+          "<div xmlns=\"http://www.w3.org/1999/xhtml\">No Reason for Visit Information</div>");
     }
     sc.setText(val);
   }
@@ -931,7 +941,8 @@ public class EcrReportCreator extends ReportCreator {
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
-    val.setDivAsString("No Chief Complaint Information");
+    val.setDivAsString(
+        "<div xmlns=\"http://www.w3.org/1999/xhtml\">No Chief Complaint Information</div>");
     sc.setText(val);
   }
 
@@ -940,7 +951,8 @@ public class EcrReportCreator extends ReportCreator {
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
-    val.setDivAsString("No Narrative Information");
+    val.setDivAsString(
+        "<div xmlns=\"http://www.w3.org/1999/xhtml\">No Narrative Information</div>");
     sc.setText(val);
   }
 
@@ -960,21 +972,59 @@ public class EcrReportCreator extends ReportCreator {
             .map(strres -> strres.getText().getDivAsString())
             .collect(Collectors.joining(", "));
 
-    if (resultString != null && !resultString.isEmpty()) val.setDivAsString(resultString);
-    else val.setDivAsString("No Text Elements found in resources to generate narrative ");
+    if (resultString != null && !resultString.isEmpty()) {
+      val.setDivAsString(resultString);
+    } else {
+      val.setDivAsString(
+          "<div xmlns=\"http://www.w3.org/1999/xhtml\">No Text Elements found in resources to generate narrative</div>");
+    }
 
     sc.setText(val);
   }
 
+  // ==========================================================================
+  // FIX 7: addEmptyNarrative — status must match content (ADDITIONAL not EMPTY)
+  // ==========================================================================
+  public void addEmptyNarrative(SectionComponent sc) {
+    Narrative val = new Narrative();
+    val.setStatus(NarrativeStatus.ADDITIONAL);
+    val.setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">No Information</div>");
+    sc.setText(val);
+  }
+
+  // ==========================================================================
+  // FIX 11: addEntries — only populate narrative when textResources is non-empty
+  // ==========================================================================
   public void addEntries(
-      ResourceType rt, KarProcessingData kd, SectionComponent sc, Set<Resource> resTobeAdded) {
+      R4FhirData data,
+      ResourceType rt,
+      KarProcessingData kd,
+      SectionComponent sc,
+      Set<Resource> resTobeAdded) {
+
+    if (sc == null) {
+      return;
+    }
 
     Set<Resource> resourcesByType = kd.getResourcesByType(rt.toString());
+
     Set<Resource> res = null;
     Set<Resource> textResources = new HashSet<>();
     ObservationCategory filteredCategory = ObservationCategory.NULL;
+    if ((resourcesByType == null || resourcesByType.isEmpty())
+        && data != null
+        && data.getData() != null
+        && data.getData().getEntry() != null) {
+      resourcesByType =
+          data.getData().getEntry().stream()
+              .map(Bundle.BundleEntryComponent::getResource)
+              .filter(resource -> resource.fhirType().equals(rt.toString()))
+              .collect(Collectors.toSet());
+    }
 
-    if (resourcesByType != null
+    if (ReportGenerationUtils.isPregnancySection(sc)) {
+      res = ReportGenerationUtils.filterPregnancyObservations(resourcesByType);
+    } else if (resourcesByType != null
         && rt == ResourceType.Observation
         && Boolean.TRUE.equals(isResultsSection(sc))) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
@@ -983,6 +1033,11 @@ public class EcrReportCreator extends ReportCreator {
         && rt == ResourceType.Observation
         && Boolean.TRUE.equals(isVitalsSection(sc))) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
+      if (data != null && data.getVitalObs() != null) {
+        List<Resource> resources =
+            data.getVitalObs().stream().map(obs -> (Resource) obs).collect(Collectors.toList());
+        res.addAll(resources);
+      }
       filteredCategory = ObservationCategory.VITALSIGNS;
     } else if (resourcesByType != null
         && rt == ResourceType.Observation
@@ -990,6 +1045,10 @@ public class EcrReportCreator extends ReportCreator {
       res =
           filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
       filteredCategory = ObservationCategory.SOCIALHISTORY;
+
+      if (ReportGenerationUtils.isSocialHistorySection(sc)) {
+        res = ReportGenerationUtils.filterSocialHistoryObservations(res);
+      }
     } else if (resourcesByType != null
         && rt == ResourceType.DiagnosticReport
         && Boolean.TRUE.equals(isResultsSection(sc))) {
@@ -998,34 +1057,36 @@ public class EcrReportCreator extends ReportCreator {
         && rt == ResourceType.DiagnosticReport
         && Boolean.TRUE.equals(isPlanOfTreatmentSection(sc))) {
       res = filterDiagnosticReports(resourcesByType, false);
-    } else res = resourcesByType;
+    } else {
+      res = resourcesByType;
+    }
 
     if (res != null && !res.isEmpty()) {
 
       logger.info(" Adding resources of type {}", rt);
 
       for (Resource r : res) {
-
         Reference refRes = new Reference();
-        refRes.setResource(r);
 
-        // Add Trigger Code extension if appropriate.
+        String reference = r.fhirType() + "/" + r.getIdElement().getIdPart();
+
+        refRes.setReference(reference);
+
         addExtensionIfAppropriate(refRes, r, kd, rt, filteredCategory);
 
-        // Add Reference to the entry.
         sc.addEntry(refRes);
-
-        // add the resource to the set
         resTobeAdded.add(r);
         textResources.add(r);
       }
 
-      populateTextNarrative(sc, kd, textResources);
+      // FIX 11: only build narrative when we actually have resources
+      if (!textResources.isEmpty()) {
+        populateTextNarrative(sc, kd, textResources);
+      }
     }
   }
 
   private Set<Resource> filterDiagnosticReports(Set<Resource> resourcesByType, boolean resultFlag) {
-
     return ReportGenerationUtils.filterDiagnosticReports(resourcesByType, resultFlag);
   }
 
@@ -1046,7 +1107,6 @@ public class EcrReportCreator extends ReportCreator {
 
         logger.info(" Trigger codes have been found for resource {}", rt);
 
-        // Check to see if the resource being added has the same codes, if so add the extension.
         Pair<Boolean, ReportableMatchedTriggerCode> matchCode =
             resourceHasMatchedCode(res, ctcs, filteredCategory);
 
@@ -1055,37 +1115,37 @@ public class EcrReportCreator extends ReportCreator {
           Extension ext = new Extension();
           ext.setUrl(TRIGGER_CODE_EXT_URL);
 
-          // Add Value Set Url Extension.
+          // Value Set URL — ensure urn:oid: prefix
           Extension vsExt = new Extension();
           vsExt.setUrl(TRIGGER_CODE_VALUESET_EXT_URL);
-          StringType url = new StringType(matchCode.getValue1().getValueSetOid());
+          String oidValue = matchCode.getValue1().getValueSetOid();
+          if (oidValue != null && !oidValue.startsWith("urn:oid:")) {
+            oidValue = "urn:oid:" + oidValue;
+          }
           OidType oid = new OidType();
-          oid.setValue(url.asStringValue());
+          oid.setValue(oidValue);
           vsExt.setValue(oid);
           ext.addExtension(vsExt);
 
-          // Add Value Set Version Extension.
+          // Value Set Version
           Extension vsVerExt = new Extension();
           vsVerExt.setUrl(TRIGGER_CODE_VALUESET_VERSION_EXT_URL);
           StringType vsVer = new StringType(matchCode.getValue1().getValueSetVersion());
           vsVerExt.setValue(vsVer);
           ext.addExtension(vsVerExt);
 
-          // Add Trigger Code
+          // Trigger Code
           Extension tcExt = new Extension();
           tcExt.setUrl(TRIGGER_CODE_VALUE_EXT_URL);
-
           Coding code = new Coding();
           code.setSystem(matchCode.getValue1().getCodeSystem());
           code.setCode(matchCode.getValue1().getCode());
           tcExt.setValue(code);
           ext.addExtension(tcExt);
 
-          // Add Extension to the Reference .
           ref.addExtension(ext);
 
         } else {
-
           logger.debug(" Resource {} does not match any trigger code or value.", res.getId());
         }
 
@@ -1093,7 +1153,6 @@ public class EcrReportCreator extends ReportCreator {
         logger.info("Trigger Matches not found, hence nothing to add");
       }
     } else {
-
       logger.error("No Trigger codes can be added, as there is no status report from the action ");
     }
   }
@@ -1104,7 +1163,6 @@ public class EcrReportCreator extends ReportCreator {
     Pair<Boolean, ReportableMatchedTriggerCode> mtc = new Pair<>(false, null);
 
     if (res instanceof Condition) {
-
       Condition cond = (Condition) res;
       mtc = ctcs.getMatchedCode(cond.getCode());
 
@@ -1115,7 +1173,6 @@ public class EcrReportCreator extends ReportCreator {
 
       if (!mtc.getValue0() && obs.hasComponent()) {
         for (ObservationComponentComponent ob : obs.getComponent()) {
-
           mtc = ctcs.getMatchedCode(ob.getCode());
           if (mtc.getValue0()) break;
         }
@@ -1123,15 +1180,12 @@ public class EcrReportCreator extends ReportCreator {
 
     } else if (res instanceof DiagnosticReport) {
       logger.info(" DiagnosticReport Resource ");
-
       DiagnosticReport dr = (DiagnosticReport) res;
       mtc = ctcs.getMatchedCode(dr.getCode());
 
     } else if (res instanceof MedicationRequest) {
       logger.info(" MedicationRequest Resource ");
-
       MedicationRequest mr = (MedicationRequest) res;
-
       if (mr.hasMedicationCodeableConcept()) {
         mtc = ctcs.getMatchedCode(mr.getMedicationCodeableConcept());
       } else if (mr.hasMedicationReference()) {
@@ -1140,9 +1194,7 @@ public class EcrReportCreator extends ReportCreator {
 
     } else if (res instanceof MedicationStatement) {
       logger.info(" MedicationStatement Resource ");
-
       MedicationStatement ms = (MedicationStatement) res;
-
       if (ms.hasMedicationCodeableConcept()) {
         mtc = ctcs.getMatchedCode(ms.getMedicationCodeableConcept());
       } else if (ms.hasMedicationReference()) {
@@ -1151,34 +1203,29 @@ public class EcrReportCreator extends ReportCreator {
 
     } else if (res instanceof MedicationAdministration) {
       logger.info(" MedicationAdmininstration Resource ");
-
       MedicationAdministration ma = (MedicationAdministration) res;
-
       if (ma.hasMedicationCodeableConcept()) {
         mtc = ctcs.getMatchedCode(ma.getMedicationCodeableConcept());
       } else if (ma.hasMedicationReference()) {
         logger.info(" Address Medication References in future ");
       }
+
     } else if (res instanceof ServiceRequest) {
       logger.info(" ServiceRequest Resource ");
-
       ServiceRequest sr = (ServiceRequest) res;
       mtc = ctcs.getMatchedCode(sr.getCode());
 
     } else if (res instanceof Immunization) {
-
       logger.info(" Immunization Resource ");
       Immunization imm = (Immunization) res;
       mtc = ctcs.getMatchedCode(imm.getVaccineCode());
 
     } else if (res instanceof Procedure) {
       logger.info(" Procedure Resource ");
-
       Procedure pr = (Procedure) res;
       mtc = ctcs.getMatchedCode(pr.getCode());
 
     } else {
-
       logger.info(" Resource not being processed for matched codes ");
     }
 
@@ -1186,8 +1233,8 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Boolean isResultsSection(SectionComponent sc) {
-
-    if (sc.getCode() != null
+    if (sc != null
+        && sc.getCode() != null
         && sc.getCode().getCodingFirstRep() != null
         && sc.getCode().getCodingFirstRep().getSystem() != null
         && sc.getCode()
@@ -1202,13 +1249,12 @@ public class EcrReportCreator extends ReportCreator {
       logger.info("ResultsSection");
       return true;
     }
-
     return false;
   }
 
   public Boolean isVitalsSection(SectionComponent sc) {
-
-    if (sc.getCode() != null
+    if (sc != null
+        && sc.getCode() != null
         && sc.getCode().getCodingFirstRep() != null
         && sc.getCode().getCodingFirstRep().getSystem() != null
         && sc.getCode()
@@ -1223,13 +1269,12 @@ public class EcrReportCreator extends ReportCreator {
       logger.info("VitalsSection");
       return true;
     }
-
     return false;
   }
 
   public Boolean isSocialHistorySection(SectionComponent sc) {
-
-    if (sc.getCode() != null
+    if (sc != null
+        && sc.getCode() != null
         && sc.getCode().getCodingFirstRep() != null
         && sc.getCode().getCodingFirstRep().getSystem() != null
         && sc.getCode()
@@ -1244,13 +1289,12 @@ public class EcrReportCreator extends ReportCreator {
       logger.info("SocialHistorySection");
       return true;
     }
-
     return false;
   }
 
   public Boolean isPlanOfTreatmentSection(SectionComponent sc) {
-
-    if (sc.getCode() != null
+    if (sc != null
+        && sc.getCode() != null
         && sc.getCode().getCodingFirstRep() != null
         && sc.getCode().getCodingFirstRep().getSystem() != null
         && sc.getCode()
@@ -1265,12 +1309,36 @@ public class EcrReportCreator extends ReportCreator {
       logger.info("Plan Of Treatment Section");
       return true;
     }
-
     return false;
   }
 
   public Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
-
     return ReportGenerationUtils.filterObservationsByCategory(res, category);
+  }
+
+  public Set<Resource> getMeasureReports(KarProcessingData kd) {
+
+    Set<Resource> measureReports = kd.getResourcesByType(ResourceType.MeasureReport.toString());
+
+    if (measureReports != null && !measureReports.isEmpty()) {
+      logger.info("Measure Reports found for processing: {}", measureReports.size());
+      return measureReports;
+    }
+
+    Set<Resource> outputMeasureReports =
+        kd.getOutputDataById(ResourceType.MeasureReport.toString());
+
+    if (outputMeasureReports == null || outputMeasureReports.isEmpty()) {
+      outputMeasureReports = kd.getOutputDataById("measurereport");
+    }
+
+    if (outputMeasureReports != null && !outputMeasureReports.isEmpty()) {
+      logger.info(
+          "Measure Reports found in output data for processing: {}", outputMeasureReports.size());
+      return outputMeasureReports;
+    }
+
+    logger.info("No Measure Reports found for processing");
+    return new HashSet<>();
   }
 }

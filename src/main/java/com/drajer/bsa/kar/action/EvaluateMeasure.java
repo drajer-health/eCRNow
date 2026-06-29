@@ -5,11 +5,11 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.time.*;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.MeasureReport;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.opencds.cqf.fhir.utility.Constants;
 import org.opencds.cqf.fhir.utility.monad.Eithers;
@@ -84,8 +84,9 @@ public class EvaluateMeasure extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
+      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
       // Get the Resources that need to be retrieved.
-      ehrService.getFilteredData(data, getInputData());
+      ehrService.getFilteredData(data, resourceTypes);
 
       Endpoint endpoint =
           new Endpoint()
@@ -131,8 +132,14 @@ public class EvaluateMeasure extends BsaAction {
         actStatus.setReport(result);
         data.addActionOutput(this.getActionId(), result);
 
-        if (measureReportId != null && measureReportId.length() > 0)
-          data.addActionOutputById(measureReportId, result);
+        if (measureReportId != null && measureReportId.length() > 0) result.setId(measureReportId);
+        result.setId(UUID.randomUUID().toString());
+        data.addActionOutputById(measureReportId, result);
+        Set<Resource> measureReports = new HashSet<>();
+        measureReports.add(result);
+
+        data.addResourcesById(measureReportId, measureReports);
+        data.addResourcesByType(ResourceType.MeasureReport, measureReports);
       }
 
       if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {

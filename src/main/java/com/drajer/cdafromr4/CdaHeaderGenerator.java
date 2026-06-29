@@ -176,7 +176,8 @@ public class CdaHeaderGenerator {
         eICRHeader.append(getCustodianXml(details, data));
 
         eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
-
+        eICRHeader.append(
+            getServiceDiscoveryLocationParticipantXml(details, data.getLocation(), data));
         eICRHeader.append(getEncompassingEncounter(data.getEncounter(), prs, details, data));
       } else {
         String msg = "No Fhir Data Bundle retrieved to CREATE EICR.";
@@ -196,7 +197,7 @@ public class CdaHeaderGenerator {
 
   private static String getParticipantXml(LaunchDetails details, R4FhirData data, Patient patient) {
 
-    logger.info("LaunchDetails :{} R4FhirData:{}", details, data);
+    logger.debug("LaunchDetails :{} R4FhirData:{}", details, data);
 
     StringBuilder s = new StringBuilder("");
     if (patient != null && patient.getContact() != null) {
@@ -259,6 +260,47 @@ public class CdaHeaderGenerator {
 
     s.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+
+    s.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
+    s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+
+    return s.toString();
+  }
+
+  public static String getServiceDiscoveryLocationParticipantXml(
+      LaunchDetails details, Location location, R4FhirData data) {
+
+    StringBuilder s = new StringBuilder(200);
+    if (location == null) {
+      return "";
+    }
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+            CdaGeneratorConstants.PARTICIPANT_EL_NAME, CdaGeneratorConstants.TYPE_CODE_IND));
+
+    String identifierXml = getLocationIdentifierXml(location, details);
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+            CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME,
+            CdaGeneratorConstants.SDLOC_CLASS_CODE));
+    s.append(identifierXml);
+
+    s.append(
+        CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+            location.getType(),
+            CdaGeneratorConstants.CODE_EL_NAME,
+            false,
+            FHIR_LOC_ROLE_CODE_TYPE_V3,
+            true,
+            ""));
+
+    if (location.hasAddress()) {
+      s.append(CdaFhirUtilities.getAddressXml(location.getAddress()));
+    }
+
+    appendScopingOrganization(s, location, details, data);
 
     s.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
@@ -432,7 +474,9 @@ public class CdaHeaderGenerator {
             CdaGeneratorConstants.TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()));
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    String deviceExtension = manufacturer + "-" + swversion;
+    sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorUtils.getGuid(), deviceExtension));
+
     Address addr = null;
     sb.append(CdaFhirUtilities.getAddressXml(addr));
     List<ContactPoint> cps = null;
@@ -1108,6 +1152,30 @@ public class CdaHeaderGenerator {
     return CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI);
   }
 
+  private static String getLocationIdentifierXml(Location location, LaunchDetails details) {
+    if (location == null) {
+      return CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI);
+    }
+
+    Identifier npi =
+        CdaFhirUtilities.getIdentifierForSystem(location.getIdentifier(), FHIR_NPI_URL);
+
+    if (npi != null && !StringUtils.isEmpty(npi.getValue())) {
+      return CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue());
+    }
+
+    String orgId =
+        location.hasIdElement() && location.getIdElement().hasIdPart()
+            ? location.getIdElement().getIdPart()
+            : null;
+
+    if (!StringUtils.isEmpty(orgId)) {
+      return CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), orgId);
+    }
+
+    return CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI);
+  }
+
   public static Location filterLocation(List<Location> locations) {
     Location fallbackLocation = null;
 
@@ -1142,5 +1210,21 @@ public class CdaHeaderGenerator {
 
   public static boolean hasValidAddress(Address address) {
     return address.hasCity() && address.hasState() && address.hasPostalCode() && address.hasLine();
+  }
+
+  private static void appendScopingOrganization(
+      StringBuilder xml, Location location, LaunchDetails details, R4FhirData data) {
+
+    Organization org = null;
+    if (location != null && location.getManagingOrganization() != null) {
+      org =
+          location.getManagingOrganization().getResource() instanceof Organization
+              ? (Organization) location.getManagingOrganization().getResource()
+              : null;
+    }
+    xml.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SCOPING_ORG_EL_NAME));
+    xml.append(getOrganizationXml(org, details, false, false));
+
+    xml.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SCOPING_ORG_EL_NAME));
   }
 }
