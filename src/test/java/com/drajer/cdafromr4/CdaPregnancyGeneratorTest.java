@@ -1,6 +1,5 @@
 package com.drajer.cdafromr4;
 
-import static com.helger.commons.mock.CommonsAssert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
