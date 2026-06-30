@@ -574,7 +574,7 @@ public class CdaPregnancyGenerator {
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
     sb.append(CdaFhirUtilities.getXmlForType(quantity, CdaGeneratorConstants.VAL_EL_NAME, true));
-
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     return sb.toString();
   }
 
