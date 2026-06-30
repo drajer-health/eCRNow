@@ -461,6 +461,12 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>org.hl7.fhir.dstu2</artifactId>
+            <version>6.9.10</version>
+        </dependency>
+
 
         <!-- Dependency for formatting logs in json format -->
 

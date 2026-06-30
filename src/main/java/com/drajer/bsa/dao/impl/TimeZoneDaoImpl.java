@@ -19,8 +19,8 @@ public class TimeZoneDaoImpl extends AbstractDao implements TimeZoneDao {
   }
 
   @Override
-  public void setDatabaseTimezone(String query, String timeZone) {
-    String fullQuery = query + " '" + timeZone + "'";
+  public void setDatabaseTimezone(String timeZone) {
+    String fullQuery = "SET timezone = '" + timeZone + "'";
     NativeQuery<?> nativequery = getSession().createNativeQuery(fullQuery);
     nativequery.executeUpdate();
   }

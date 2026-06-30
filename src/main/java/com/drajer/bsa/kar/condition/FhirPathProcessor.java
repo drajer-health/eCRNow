@@ -46,8 +46,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     logParametersDetails(params, "Before resolving variables");
 
     String logicExpression = cond.getLogicExpression().getExpression();
-    logger.info("Logic Expression to be evaluated: {}", logicExpression);
-    logger.info(
+    logger.debug("Logic Expression to be evaluated: {}", logicExpression);
+    logger.debug(
         "Evaluating condition for action: {} with expression: {}",
         act.getActionId(),
         logicExpression);

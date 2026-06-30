@@ -43,14 +43,6 @@ public class TimeZoneServiceImpl implements TimeZoneService {
 
   @Override
   public void setDatabaseTimezone(String timeZone) {
-    String query =
-        Optional.ofNullable(queryReaderConfig.getQuery("query.setTimezone"))
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Query for 'query.setTimezone' not found in queries properties."));
-
     String effectiveTimeZone =
         Optional.ofNullable(timeZone)
             .orElseThrow(
@@ -59,7 +51,7 @@ public class TimeZoneServiceImpl implements TimeZoneService {
                         HttpStatus.BAD_REQUEST, "Invalid time zone provided"));
 
     try {
-      timeZoneDao.setDatabaseTimezone(query, effectiveTimeZone);
+      timeZoneDao.setDatabaseTimezone(effectiveTimeZone);
     } catch (Exception ex) {
       logErrorAndThrow("setting database timezone to '" + effectiveTimeZone + "'", ex);
     }

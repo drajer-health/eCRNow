@@ -62,6 +62,6 @@ public class TimeZoneDaoImplTest {
     // No need to set up return value for executeUpdate() as it does not return anything
 
     // Call the DAO method (no return value to assert)
-    timeZoneDaoImpl.setDatabaseTimezone(query, timeZone);
+    timeZoneDaoImpl.setDatabaseTimezone(timeZone);
   }
 }
