@@ -34,7 +34,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
     String authorizationHeader = request.getHeader("Authorization");
     if (authorizationHeader != null) {
-      log.info(
+      log.debug(
           "Received Authorization Header: {}", StringEscapeUtils.escapeJava(authorizationHeader));
     }
 
