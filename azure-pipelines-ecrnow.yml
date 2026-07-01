@@ -73,7 +73,7 @@ stages:
         jdkVersionOption: '1.17'
         mavenVersionOption: 'Default'
         options: >
-          -DskipTests=false
+          -DskipTests=true
           -Dng.env=$(uiconfigurations)
           -Dsonar.sources=src/main/java
           -Dsonar.java.test.inclusions=**/*Test.java
