@@ -9,6 +9,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
@@ -245,6 +246,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public Map<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, Map<String, ResourceType> resTypes) {
+    Profiler profiler = Profiler.get();
 
     logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
@@ -253,24 +255,26 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     IGenericClient client = getClient(kd, context);
 
     // Get Patient by Id always
-    Resource res =
-        getResourceById(
-            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
+    try (Profiler.Step p = profiler.step("Load Patient")) {
+      Resource res =
+          getResourceById(
+              client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
 
-    if (res != null && res.getResourceType() != ResourceType.OperationOutcome) {
+      if (res != null && res.getResourceType() != ResourceType.OperationOutcome) {
 
-      logger.info(
-          " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
+        logger.info(
+            " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
 
-      Set<Resource> resources = new HashSet<>();
-      resources.add(res);
-      Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
-      resMap.put(res.getResourceType(), resources);
-      kd.addResourcesByType(resMap);
-    } else {
-      logger.error(
-          " Did not find the patient resource for id {} as expected ",
-          kd.getNotificationContext().getPatientId());
+        Set<Resource> resources = new HashSet<>();
+        resources.add(res);
+        Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
+        resMap.put(res.getResourceType(), resources);
+        kd.addResourcesByType(resMap);
+      } else {
+        logger.error(
+            " Did not find the patient resource for id {} as expected ",
+            kd.getNotificationContext().getPatientId());
+      }
     }
 
     if (kd.getNotificationContext()
@@ -281,25 +285,27 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           " Fetch Encounter resource for Id : {} ",
           kd.getNotificationContext().getNotificationResourceId());
 
-      Resource enc =
-          getResourceById(
-              client,
-              context,
-              ResourceType.Encounter.toString(),
-              kd.getNotificationContext().getNotificationResourceId(),
-              true);
+      try (Profiler.Step e = profiler.step("Load Encounter")) {
+        Resource enc =
+            getResourceById(
+                client,
+                context,
+                ResourceType.Encounter.toString(),
+                kd.getNotificationContext().getNotificationResourceId(),
+                true);
 
-      if (enc != null && enc.getResourceType() != ResourceType.OperationOutcome) {
+        if (enc != null && enc.getResourceType() != ResourceType.OperationOutcome) {
 
-        logger.info(
-            " Found Encounter resource for Id : {}",
-            kd.getNotificationContext().getNotificationResourceId());
+          logger.info(
+              " Found Encounter resource for Id : {}",
+              kd.getNotificationContext().getNotificationResourceId());
 
-        Set<Resource> resources = new HashSet<>();
-        resources.add(enc);
-        Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
-        resMap.put(enc.getResourceType(), resources);
-        kd.addResourcesByType(resMap);
+          Set<Resource> resources = new HashSet<>();
+          resources.add(enc);
+          Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
+          resMap.put(enc.getResourceType(), resources);
+          kd.addResourcesByType(resMap);
+        }
       }
     }
 
@@ -318,14 +324,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(" Resource Query Url : {}", url);
 
-        getResourcesByPatientId(
-            client,
-            context,
-            entry.getValue().toString(),
-            url,
-            kd,
-            entry.getValue(),
-            entry.getKey());
+        try (Profiler.Step rs = profiler.step("Load " + entry.getValue().toString())) {
+          getResourcesByPatientId(
+              client,
+              context,
+              entry.getValue().toString(),
+              url,
+              kd,
+              entry.getValue(),
+              entry.getKey());
+        }
       }
     }
 
@@ -343,6 +351,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public Map<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, List<DataRequirement> dRequirements) {
+    Profiler profiler = Profiler.get();
     logger.info("Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
@@ -350,19 +359,21 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     IGenericClient client = getClient(kd, context);
 
     // Get Patient by Id always
-    Resource res =
-        getResourceById(
-            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
-    if (res != null) {
+    try (Profiler.Step p = profiler.step("Load Patient")) {
+      Resource res =
+          getResourceById(
+              client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
+      if (res != null) {
 
-      logger.info(
-          " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
+        logger.info(
+            " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
 
-      Set<Resource> resources = new HashSet<>();
-      resources.add(res);
-      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
-      resMap.put(res.getResourceType(), resources);
-      kd.addResourcesByType(resMap);
+        Set<Resource> resources = new HashSet<>();
+        resources.add(res);
+        HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+        resMap.put(res.getResourceType(), resources);
+        kd.addResourcesByType(resMap);
+      }
     }
 
     // Fetch Resources by Patient Id.
@@ -387,11 +398,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           logger.info(" Resource Query Url : {}", url);
 
           // get the resources
-          Set<Resource> resources = kd.getResourcesByType(type.toString());
-          if (resources == null || resources.isEmpty()) {
-            resources = fetchResources(client, context, url);
+          try (Profiler.Step rs = profiler.step("Load " + type.toString())) {
+            Set<Resource> resources = kd.getResourcesByType(type.toString());
+            if (resources == null || resources.isEmpty()) {
+              resources = fetchResources(client, context, url);
+            }
+            addFilteredResources(kd, entry, id, type, resources);
           }
-          addFilteredResources(kd, entry, id, type, resources);
         } else {
           kd.addResourcesById(id, kd.getResourcesByType(type.toString()));
         }
@@ -693,8 +706,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   public Set<Resource> fetchResources(
       IGenericClient genericClient, FhirContext context, String searchUrl) {
     logger.info("FhirContext: {}", context);
+    Profiler profiler = Profiler.get();
     Set<Resource> resources = new HashSet<>();
-    try {
+    try (Profiler.Step fetch = profiler.step("Fetch Resources")) {
       Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
       getAllR4RecordsUsingPagination(genericClient, bundle);
       List<BundleEntryComponent> bc = bundle.getEntry();
@@ -790,31 +804,34 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         List<BundleEntryComponent> bc = bundle.getEntry();
 
-        if (bc != null) {
+        Profiler profiler = Profiler.get();
+        try (Profiler.Step parse = profiler.step("Parse Bundle")) {
+          if (bc != null) {
 
-          resources = new HashSet<>();
-          resMap = new EnumMap<>(ResourceType.class);
-          resMapById = new HashMap<>();
-          for (BundleEntryComponent comp : bc) {
+            resources = new HashSet<>();
+            resMap = new EnumMap<>(ResourceType.class);
+            resMapById = new HashMap<>();
+            for (BundleEntryComponent comp : bc) {
 
-            if (comp.getResource().getResourceType() != ResourceType.OperationOutcome) {
-              logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
-              resources.add(comp.getResource());
-            } else {
-              logger.error("Found Operation Outcomes which are not expected ");
+              if (comp.getResource().getResourceType() != ResourceType.OperationOutcome) {
+                logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
+                resources.add(comp.getResource());
+              } else {
+                logger.error("Found Operation Outcomes which are not expected ");
+              }
             }
+
+            Set<Resource> uniqueResources =
+                ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+            resMap.put(resType, uniqueResources);
+            resMapById.put(id, uniqueResources);
+            kd.addResourcesByType(resMap);
+            kd.addResourcesById(resMapById);
+
+            logger.info(" Adding {} resources of type : {}", uniqueResources.size(), resType);
+          } else {
+            logger.error(" No entries found for type : {}", resType);
           }
-
-          Set<Resource> uniqueResources =
-              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
-          resMap.put(resType, uniqueResources);
-          resMapById.put(id, uniqueResources);
-          kd.addResourcesByType(resMap);
-          kd.addResourcesById(resMapById);
-
-          logger.info(" Adding {} resources of type : {}", uniqueResources.size(), resType);
-        } else {
-          logger.error(" No entries found for type : {}", resType);
         }
       } else {
         logger.error(" Unable to retrieve resources for type : {}", resType);
@@ -1025,7 +1042,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     HashMap<String, Set<Resource>> resMapById = null;
     HashMap<ResourceType, Set<Resource>> resMapType = null;
 
-    try {
+    Profiler profiler = Profiler.get();
+    try (Profiler.Step search = profiler.step("Search Query")) {
       logger.info("Getting data for resource type {} using query: {}", resType, searchUrl);
 
       Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();

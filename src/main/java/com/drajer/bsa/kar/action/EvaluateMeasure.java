@@ -4,6 +4,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import java.time.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,83 +79,97 @@ public class EvaluateMeasure extends BsaAction {
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
 
-    // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.SCHEDULED) {
+    // Start an overall profiler step for this action run. Per-run report will be logged when
+    // the root step is closed.
+    Profiler profiler = Profiler.get();
+    try (Profiler.Step total = profiler.step("Total Measure Processing")) {
 
-      logger.info(
-          " Action {} can proceed as it does not have timing information ", this.getActionId());
+      // Ensure the activity is In-Progress and the Conditions are met.
+      if (status != BsaActionStatusType.SCHEDULED) {
 
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-      // Get the Resources that need to be retrieved.
-      ehrService.getFilteredData(data, resourceTypes);
+        logger.info(
+            " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      Endpoint endpoint =
-          new Endpoint()
-              .setAddress(data.getKar().getKarPath())
-              .setConnectionType(new Coding().setCode(Constants.HL7_FHIR_FILES));
+        HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+        // Get the Resources that need to be retrieved.
+        try (Profiler.Step input = profiler.step("Input Loading at measure report evaluation")) {
+          ehrService.getFilteredData(data, resourceTypes);
+        }
 
-      String measureUri = getMeasureUri();
-      String patientId = data.getNotificationContext().getPatientId();
+        Endpoint endpoint =
+            new Endpoint()
+                .setAddress(data.getKar().getKarPath())
+                .setConnectionType(new Coding().setCode(Constants.HL7_FHIR_FILES));
 
-      Bundle additionalData = data.getInputResourcesAsBundle();
+        String measureUri = getMeasureUri();
+        String patientId = data.getNotificationContext().getPatientId();
 
-      logger.info(
-          "evaluating Measure {} for Patient {} for period {} - {} with {} resource(s). Content / terminology bundle is {}.",
-          measureUri,
-          patientId,
-          periodStart,
-          periodEnd,
-          additionalData.hasEntry() ? additionalData.getEntry().size() : 0,
-          data.getKar().getKarPath());
+        Bundle additionalData = data.getInputResourcesAsBundle();
 
-      CanonicalType measureCanonical = new CanonicalType(measureUri);
+        logger.info(
+            "evaluating Measure {} for Patient {} for period {} - {} with {} resource(s). Content / terminology bundle is {}.",
+            measureUri,
+            patientId,
+            periodStart,
+            periodEnd,
+            additionalData.hasEntry() ? additionalData.getEntry().size() : 0,
+            data.getKar().getKarPath());
 
-      // Evaluate Measure by passing the required parameters
-      // Set up and evaluate the measure.
-      MeasureReport result =
-          measureService.evaluate(
-              Eithers.forLeft3(measureCanonical), // measureUri,
-              periodStart,
-              periodEnd,
-              "subject",
-              patientId,
-              null, // practitioner
-              null, // received on
-              null, // Terminology Bundle
-              null, // Library Bundle
-              additionalData, // Endpoint for data
-              null,
-              null,
-              null); // Data Bundle
+        CanonicalType measureCanonical = new CanonicalType(measureUri);
 
-      if (result != null) {
+        // Evaluate Measure by passing the required parameters
+        // Set up and evaluate the measure. Profile the CQL evaluation as a nested step.
+        MeasureReport result = null;
+        try (Profiler.Step cql = profiler.step("CQL Processing")) {
+          try (Profiler.Step exec = profiler.step("Execute CQL")) {
+            result =
+                measureService.evaluate(
+                    Eithers.forLeft3(measureCanonical), // measureUri,
+                    periodStart,
+                    periodEnd,
+                    "subject",
+                    patientId,
+                    null, // practitioner
+                    null, // received on
+                    null, // Terminology Bundle
+                    null, // Library Bundle
+                    additionalData, // Endpoint for data
+                    null,
+                    null,
+                    null); // Data Bundle
+          }
+        }
 
-        actStatus.setReport(result);
-        data.addActionOutput(this.getActionId(), result);
+        if (result != null) {
 
-        if (measureReportId != null && measureReportId.length() > 0) result.setId(measureReportId);
-        result.setId(UUID.randomUUID().toString());
-        data.addActionOutputById(measureReportId, result);
-        Set<Resource> measureReports = new HashSet<>();
-        measureReports.add(result);
+          actStatus.setReport(result);
+          data.addActionOutput(this.getActionId(), result);
 
-        data.addResourcesById(measureReportId, measureReports);
-        data.addResourcesByType(ResourceType.MeasureReport, measureReports);
+          if (measureReportId != null && measureReportId.length() > 0)
+            result.setId(measureReportId);
+          result.setId(UUID.randomUUID().toString());
+          data.addActionOutputById(measureReportId, result);
+          Set<Resource> measureReports = new HashSet<>();
+          measureReports.add(result);
+
+          data.addResourcesById(measureReportId, measureReports);
+          data.addResourcesByType(ResourceType.MeasureReport, measureReports);
+        }
+
+        if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
+          // Execute sub Actions
+          executeSubActions(data, ehrService);
+          // Execute Related Actions.
+          executeRelatedActions(data, ehrService);
+        }
+        actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+
+      } else {
+        logger.info(
+            " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+            status);
+        actStatus.setActionStatus(status);
       }
-
-      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
-        // Execute sub Actions
-        executeSubActions(data, ehrService);
-        // Execute Related Actions.
-        executeRelatedActions(data, ehrService);
-      }
-      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
-
-    } else {
-      logger.info(
-          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
-          status);
-      actStatus.setActionStatus(status);
     }
 
     data.addActionStatus(data.getExecutionSequenceId(), actStatus);

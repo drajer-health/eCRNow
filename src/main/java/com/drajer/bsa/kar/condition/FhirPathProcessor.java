@@ -5,6 +5,7 @@ import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashMap;
@@ -36,54 +37,71 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public Boolean evaluateExpression(
       BsaCondition cond, BsaAction act, KarProcessingData kd, EhrQueryService ehrService) {
 
-    Parameters params = kd.getParametersByActionId(act.getActionId());
-    if (params == null) {
+    Profiler profiler = Profiler.get();
 
-      params = resolveInputParameters(act.getInputData(), kd, act);
-    }
+    try (Profiler.Step q = profiler.step("resolveVariabel - Execute evaluate condition ")) {
+      Parameters params = kd.getParametersByActionId(act.getActionId());
+      if (params == null) {
 
-    logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
-
-    String logicExpression = cond.getLogicExpression().getExpression();
-    logger.debug("Logic Expression to be evaluated: {}", logicExpression);
-    logger.debug(
-        "Evaluating condition for action: {} with expression: {}",
-        act.getActionId(),
-        logicExpression);
-
-    resolveVariables(cond, params, kd, act, ehrService);
-
-    logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
-
-    Parameters result =
-        (Parameters)
-            newEvaluator()
-                .evaluate(
-                    null, logicExpression, params, null, null, null, null, null, null, null, null);
-    ParametersParameterComponent ppc = result.getParameter(PARAM);
-
-    if (ppc == null) {
-      logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
-      return false;
-    } else {
-      if (!(ppc.getValue() instanceof BooleanType)) {
-        logger.error(
-            " Not BooleanType Value returned from FHIR Path Expression Evaluator in "
-                + cond.getLogicExpression().getExpression());
-        throw new RuntimeException("Unexpected FHIR Path Expression return type");
+        params = resolveInputParameters(act.getInputData(), kd, act);
       }
-    }
 
-    BooleanType value = (BooleanType) ppc.getValue();
+      logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
 
-    if (value != null && value.getValue() != null) {
-      logger.info(" Result from CQL FHIR Path Evaluation {}", value);
-      return value.getValue();
-    } else {
-      logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
-      return false;
+      String logicExpression = cond.getLogicExpression().getExpression();
+      logger.debug("Logic Expression to be evaluated: {}", logicExpression);
+      logger.debug(
+          "Evaluating condition for action: {} with expression: {}",
+          act.getActionId(),
+          logicExpression);
+
+      resolveVariables(cond, params, kd, act, ehrService);
+
+      logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
+
+      try (Profiler.Step q1 = profiler.step("evaluateExpression - Execute evaluate condition ")) {
+
+        Parameters result =
+            (Parameters)
+                newEvaluator()
+                    .evaluate(
+                        null,
+                        logicExpression,
+                        params,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+        ParametersParameterComponent ppc = result.getParameter(PARAM);
+
+        if (ppc == null) {
+          logger.error(
+              " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+          return false;
+        } else {
+          if (!(ppc.getValue() instanceof BooleanType)) {
+            logger.error(
+                " Not BooleanType Value returned from FHIR Path Expression Evaluator in "
+                    + cond.getLogicExpression().getExpression());
+            throw new RuntimeException("Unexpected FHIR Path Expression return type");
+          }
+        }
+
+        BooleanType value = (BooleanType) ppc.getValue();
+
+        if (value != null && value.getValue() != null) {
+          logger.info(" Result from CQL FHIR Path Evaluation {}", value);
+          return value.getValue();
+        } else {
+          logger.error(
+              " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+          return false;
+        }
+      }
     }
   }
 
