@@ -61,7 +61,7 @@ stages:
         cliProjectName: 'eCRNow_new'
         extraProperties: |
           sonar.projectVersion=$(Build.BuildId)
-          sonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+          sonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco-merged/jacoco.xml
 
     - task: Maven@3
       displayName: 'Run SonarQube Analysis (Maven Build + Scan)'
