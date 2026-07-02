@@ -1486,19 +1486,4 @@ public class CdaGeneratorConstants {
 
     // Unable to translate other codes
   }
-
-  public static String getSplitValueURL(Object theValue) {
-    String name = "";
-    try {
-      String[] values = ((String) theValue).trim().split("\\s*\\|\\s*");
-      if (values.length > 1) {
-        name = values[1];
-      } else {
-        name = StringUtils.substringAfterLast((String) theValue, "/");
-      }
-    } catch (Exception e) {
-      logger.error("Error while processing the OID/URI map value", e);
-    }
-    return name;
-  }
 }
