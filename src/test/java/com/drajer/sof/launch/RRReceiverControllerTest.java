@@ -49,6 +49,7 @@ public class RRReceiverControllerTest {
   @Test
   public void testRrReceiver_withMDN_shouldCallHandleFailureMdn() {
     rrResponse.setResponseType(Eicr.MDN_RESPONSE_TYPE);
+    rrResponse.setFhirUrl("https://example.com/fhir");
 
     rrReceiverController.rrReceiver("req-123", "corr-123", rrResponse, true, null, null);
 
