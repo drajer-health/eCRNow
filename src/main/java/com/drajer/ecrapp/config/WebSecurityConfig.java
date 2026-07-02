@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -67,6 +68,9 @@ public class WebSecurityConfig {
   }
 
   @Bean
+  @SuppressWarnings(
+      "java:S4502") // CSRF disabled intentionally - this is a stateless REST API using token-based
+  // authentication, not cookie-based auth
   public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
     logger.info("*******************************************************************");
@@ -84,6 +88,8 @@ public class WebSecurityConfig {
 
       http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
           .csrf(csrf -> csrf.disable())
+          .sessionManagement(
+              session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .authorizeHttpRequests(
               authorize ->
                   authorize
@@ -99,6 +105,8 @@ public class WebSecurityConfig {
 
       http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
           .csrf(csrf -> csrf.disable())
+          .sessionManagement(
+              session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
     }
 

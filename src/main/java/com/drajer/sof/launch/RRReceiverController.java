@@ -3,6 +3,7 @@ package com.drajer.sof.launch;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.ecrapp.service.EicrRRService;
+import com.drajer.sof.utils.SecurityValidationUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,12 @@ public class RRReceiverController {
           throw new ResponseStatusException(
               HttpStatus.BAD_REQUEST, "X-Correlation-ID header is not present in MDN request.");
         }
+        if (StringUtils.isBlank(data.getFhirUrl())
+            || !SecurityValidationUtils.validateUrl(data.getFhirUrl())) {
+          logger.error("FHIR URL is not present or invalid in MDN request.");
+          throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST, "FHIR URL is not present or invalid in MDN request.");
+        }
 
         // For MDN, no other data will be present.
         rrReceieverService.handleFailureMdn(
@@ -81,6 +88,7 @@ public class RRReceiverController {
           "Received EicrId:: {}, EicrDocId:: {} in the request",
           StringEscapeUtils.escapeJava(eicrId),
           StringEscapeUtils.escapeJava(eicrDocId));
+
       Eicr eicr = null;
       if (eicrId != null) {
         eicr = rrReceieverService.getEicrById(Integer.parseInt(eicrId));

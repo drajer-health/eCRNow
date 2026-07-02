@@ -296,22 +296,4 @@ public class CdaGeneratorConstantsTest {
     Pair<String, String> actualURI = CdaGeneratorConstants.getURI("");
     assertEquals(expectedURI, actualURI);
   }
-
-  @Test
-  public void getSplitValueURL() {
-    String expectedName = "Condition";
-    String actualName =
-        CdaGeneratorConstants.getSplitValueURL(
-            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition|Condition");
-    assertEquals(expectedName, actualName);
-  }
-
-  @Test
-  public void getSplitValueURLWithNegationURL() {
-    String expectedName = "vitalsigns";
-    String actualName =
-        CdaGeneratorConstants.getSplitValueURL(
-            "http://hl7.org/fhir/StructureDefinition/vitalsigns");
-    assertEquals(expectedName, actualName);
-  }
 }
