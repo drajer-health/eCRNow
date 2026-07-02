@@ -5,7 +5,6 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1177,7 +1176,7 @@ public class CdaMedicationGenerator {
 
         String medicationDosagePeriodText = dosageText + CdaGeneratorConstants.PIPE + periodText;
 
-        Map<String, String> bodyvals = new HashMap<>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
         bodyvals.put(
@@ -1341,7 +1340,7 @@ public class CdaMedicationGenerator {
                 + CdaGeneratorConstants.PIPE
                 + periodText;
 
-        Map<String, String> bodyvals = new HashMap<>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_COL_2_BODY_CONTENT, dt);
         bodyvals.put(CdaGeneratorConstants.MED_COL_3_BODY_CONTENT, medicationDosagePeriodText);
@@ -1447,7 +1446,7 @@ public class CdaMedicationGenerator {
         String medicationDosagePeriodText =
             CdaFhirUtilities.getStringForQuantity(dose) + CdaGeneratorConstants.PIPE + periodText;
 
-        Map<String, String> bodyvals = new HashMap<>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_COL_2_BODY_CONTENT, dt);
         bodyvals.put(CdaGeneratorConstants.MED_COL_3_BODY_CONTENT, medicationDosagePeriodText);
