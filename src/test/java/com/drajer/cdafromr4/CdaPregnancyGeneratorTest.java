@@ -76,6 +76,10 @@ public class CdaPregnancyGeneratorTest extends BaseGeneratorTest {
 
     PowerMockito.when(CdaGeneratorUtils.getXmlForII(any())).thenReturn(XML_FOR_II_USING_GUID);
 
+    PowerMockito.when(CdaGeneratorUtils.getXmlForII(any(), any()))
+        .thenReturn(
+            "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"5e70e24f-4d8b-4989-8453-dcc15b427f71\"/>");
+
     String actualXml = CdaPregnancyGenerator.generatePregnancySection(data, launchDetails, "");
 
     assertXmlEquals(expectedXml, actualXml);

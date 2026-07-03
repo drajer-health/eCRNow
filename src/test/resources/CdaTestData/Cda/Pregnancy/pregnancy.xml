@@ -85,8 +85,7 @@
                 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.293"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.293" extension="2018-04-01"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="16a12ec8-085f-4bf5-87a7-4f5db6f3e535"/>
-                <code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="5e70e24f-4d8b-4989-8453-dcc15b427f71"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
                 <statusCode code="completed"/>
                 <effectiveTime>
                     <low nullFlavor="NI"/>
@@ -115,8 +114,7 @@
                 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.293"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.293" extension="2018-04-01"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="7a5a1f8c-6e22-4b38-8a0a-e2093c999b1e"/>
-                <code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="5e70e24f-4d8b-4989-8453-dcc15b427f71"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
                 <statusCode code="completed"/>
                 <effectiveTime>
                     <low value="20231227000000+0000"/>
@@ -154,7 +152,7 @@
             <observation classCode="OBS" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.30.3.34"/>
                 <templateId root="2.16.840.1.113883.10.20.30.3.34" extension="2014-06-09"/>
-                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="8665-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Last Menstrual Period"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="5e70e24f-4d8b-4989-8453-dcc15b427f71"/><code code="8665-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Last Menstrual Period"/>
                 <statusCode code="completed"/>
                 <effectiveTime>
                     <low value="20231227000000+0000"/>
@@ -167,8 +165,7 @@
                 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.293"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.293" extension="2018-04-01"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="1bd47e05-52e6-4f2f-bed9-ad06a945a085"/>
-                <code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="5e70e24f-4d8b-4989-8453-dcc15b427f71"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
                 <statusCode code="completed"/>
                 <effectiveTime>
                     <low value="20231227000000+0000"/>
@@ -206,7 +203,7 @@
             <observation classCode="OBS" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.30.3.34"/>
                 <templateId root="2.16.840.1.113883.10.20.30.3.34" extension="2014-06-09"/>
-                <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="8665-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Last Menstrual Period"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="5e70e24f-4d8b-4989-8453-dcc15b427f71"/><code code="8665-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Last Menstrual Period"/>
                 <statusCode code="completed"/>
                 <effectiveTime>
                     <low value="20231227000000+0000"/>
@@ -242,8 +239,7 @@
             <observation classCode="OBS" moodCode="INT">
                 <templateId root="2.16.840.1.113883.10.20.22.4.281"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.281" extension="2018-04-01"/>
-                <id root="2.16.840.1.113883.3.8.60.2.1.50" extension="8896d4ef-e77f-45f4-a595-1a6ffffc9cd4"/>
-                <code code="86645-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnancy Intention"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="5e70e24f-4d8b-4989-8453-dcc15b427f71"/><code code="86645-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Pregnancy Intention"/>
                 <statusCode code="completed"/>
                 <effectiveTime>
                     <low value="20250317000000+0000"/>

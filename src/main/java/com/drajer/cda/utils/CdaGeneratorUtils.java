@@ -461,7 +461,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
         + CdaGeneratorConstants.NEW_LINE
         + getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
-        + text
+        + StringEscapeUtils.escapeXml11(text)
         + getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
         + CdaGeneratorConstants.NEW_LINE
         + getXmlForEndElement(cdName);
