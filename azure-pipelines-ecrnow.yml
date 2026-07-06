@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - 4.0.3-fixes
+      - master
 
 pr: none
 
