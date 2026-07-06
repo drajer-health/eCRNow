@@ -79,9 +79,6 @@ public class SpringConfiguration {
   @Autowired RetryStatusCode retryStatusCode;
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
 
-  public static final String AUTHORIZATION_TOKEN =
-      "d94874a5b6d848ae921e75b9bf202feb97905791ff890a6e189614053a8032c6f298662299dea42df6cef59fde";
-
   public static final FhirContext ctx = FhirContext.forR4();
 
   @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
@@ -186,7 +183,8 @@ public class SpringConfiguration {
   @Bean(name = "esrdGenericClient")
   public IGenericClient getEsrdFhirContext() {
     BearerTokenAuthInterceptor authInterceptor =
-        new BearerTokenAuthInterceptor(AUTHORIZATION_TOKEN);
+        new BearerTokenAuthInterceptor(
+            "d94874a5b6d848ae921e75b9bf202feb97905791ff890a6e189614053a8032c6f298662299dea42df6cef59fde");
     IGenericClient genericClient = ctx.newRestfulGenericClient(ERSD_FHIR_BASE_SERVER);
     genericClient.registerInterceptor(authInterceptor);
     return genericClient;

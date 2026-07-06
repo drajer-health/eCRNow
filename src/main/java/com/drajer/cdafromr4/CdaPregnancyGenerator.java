@@ -442,7 +442,8 @@ public class CdaPregnancyGenerator {
           rowNum++;
           table.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-          sb.append(generateLmpEntryFromComponent(id, obs.getEffective(), comp.getValue()));
+          sb.append(
+              generateLmpEntryFromComponent(id, obs.getEffective(), comp.getValue(), details));
         }
       }
     }
@@ -450,7 +451,8 @@ public class CdaPregnancyGenerator {
     return sb.toString();
   }
 
-  public static String generateLmpEntryFromComponent(String id, Type effTime, Type val) {
+  public static String generateLmpEntryFromComponent(
+      String id, Type effTime, Type val, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -466,7 +468,7 @@ public class CdaPregnancyGenerator {
         CdaGeneratorUtils.getXmlForTemplateId(
             CdaGeneratorConstants.LMP_TEMPLATE_ID, CdaGeneratorConstants.LMP_TEMPLATE_ID_EXT));
 
-    sb.append(CdaGeneratorUtils.getXmlForII(id));
+    sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
     sb.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -574,7 +576,7 @@ public class CdaPregnancyGenerator {
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
     sb.append(CdaFhirUtilities.getXmlForType(quantity, CdaGeneratorConstants.VAL_EL_NAME, true));
-
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     return sb.toString();
   }
 

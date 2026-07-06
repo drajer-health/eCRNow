@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +29,21 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
     logger.info("Ecr Measure Report Creator is executing");
 
     Resource res = super.createReport(kd, ehrService, id, profile, act);
-
     if (res instanceof Bundle bund) {
-
+      inputData.addAll(getMeasureReports(kd));
       Bundle measureReportBundle = createMeasureReportBundle(inputData);
+      if (!measureReportBundle.getEntry().isEmpty()) {
+        org.hl7.fhir.r4.model.Bundle.BundleEntryComponent measureEntry = new BundleEntryComponent();
+        measureEntry.setResource(measureReportBundle);
+        measureEntry.setFullUrl(
+            kd.getHealthcareSetting().getFhirServerBaseURL()
+                + "/"
+                + ResourceType.Bundle
+                + "/"
+                + measureReportBundle.getId());
 
-      bund.addEntry(new BundleEntryComponent().setResource(measureReportBundle));
+        bund.addEntry(measureEntry);
+      }
     }
 
     return res;
@@ -49,7 +59,6 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
     for (Resource r : resources) {
       bundle.addEntry(new BundleEntryComponent().setResource(r));
     }
-
     return bundle;
   }
 }

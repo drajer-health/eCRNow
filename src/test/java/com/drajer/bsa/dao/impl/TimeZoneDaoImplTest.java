@@ -2,6 +2,7 @@ package com.drajer.bsa.dao.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.hibernate.Session;
@@ -33,35 +34,38 @@ public class TimeZoneDaoImplTest {
 
   @Test
   public void testGetDatabaseTimezone() {
-    // Define the query and expected result
+
     String query = "SELECT current_setting('timezone')";
     String expectedTimeZone = "America/New_York";
 
-    // Ensure nativeQuery mock is properly initialized
     when(session.createNativeQuery(query)).thenReturn(nativeQuery);
     when(nativeQuery.getSingleResult()).thenReturn(expectedTimeZone);
 
-    // Call the DAO method and assert the result
     String actualTimeZone = timeZoneDaoImpl.getDatabaseTimezone(query);
+
     assertEquals(expectedTimeZone, actualTimeZone);
+
+    verify(session).createNativeQuery(query);
+    verify(nativeQuery).getSingleResult();
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testSetDatabaseTimezone() {
-    // Define the query and time zone
-    String query = "SET timezone = ";
+
     String timeZone = "Europe/London";
 
-    String fullQuery = query + "'" + timeZone + "'";
+    NativeQuery<?> query = Mockito.mock(NativeQuery.class);
 
-    NativeQuery<?> nq = Mockito.mock(NativeQuery.class);
-    Mockito.lenient().when(session.createNativeQuery(anyString())).thenReturn(nq);
+    when(session.createNativeQuery(anyString())).thenReturn((NativeQuery) query);
 
-    // Ensure nativeQuery mock is properly initialized
-    when(nq.executeUpdate()).thenReturn(1);
-    // No need to set up return value for executeUpdate() as it does not return anything
+    when(query.setParameter("timeZone", timeZone)).thenReturn((NativeQuery) query);
 
-    // Call the DAO method (no return value to assert)
-    timeZoneDaoImpl.setDatabaseTimezone(query, timeZone);
+    when(query.executeUpdate()).thenReturn(1);
+
+    timeZoneDaoImpl.setDatabaseTimezone(timeZone);
+
+    Mockito.verify(query).setParameter("timeZone", timeZone);
+    Mockito.verify(query).executeUpdate();
   }
 }

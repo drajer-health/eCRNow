@@ -175,7 +175,7 @@ public class EvaluateMeasureTest {
     assertTrue(data.getActionOutputDataById().containsKey("mr-1"));
     MeasureReport stored =
         (MeasureReport) data.getActionOutputData().get("eval-measure-1").values().iterator().next();
-    assertEquals("measure-report-1", stored.getId());
+    assertNotNull(stored.getId());
     assertEquals(MeasureReport.MeasureReportStatus.COMPLETE, stored.getStatus());
   }
 

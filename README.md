@@ -100,6 +100,16 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | mail.read.retries=3                                  | Maximum retry attempts for failed mail read operations. |
 | rr_check_time=300                                    | Used for  set  reportable Response  Check  time |
 | mail.imap.batch.size=500                             | Batch size for processing mail messages. |
+| mail.smtp.auth                                       | Enables SMTP authentication when connecting to the HISP server for sending Direct messages. Set to `true` to require credentials. |
+| mail.smtp.ssl.enable                                 | Enables SSL/TLS for the SMTP connection to the HISP. Set to `true` to encrypt outbound Direct transport. |
+| mail.smtp.starttls.enable                            | Enables STARTTLS upgrade on the SMTP connection. Set to `true` to allow upgrading a plain connection to TLS. |
+| mail.smtp.ssl.trust                                  | Specifies trusted SMTP SSL hosts. Setting to `*` trusts all hosts; restrict to a specific hostname in production. |
+| mail.smtp.ssl.protocols                              | Comma-separated list of SSL/TLS protocol versions allowed for SMTP (e.g. `TLSv1.2`). Leave empty to use JVM defaults. |
+| mail.imap.auth                                       | Enables IMAP authentication when connecting to the HISP server for receiving Direct messages. Set to `true` to require credentials. |
+| mail.imap.ssl.enable                                 | Enables SSL/TLS for the IMAP connection to the HISP. Set to `true` to encrypt inbound Direct transport. |
+| mail.imap.ssl.trust                                  | Specifies trusted IMAP SSL hosts. Setting to `*` trusts all hosts; restrict to a specific hostname in production. |
+| mail.imap.connectionpoolsize                         | Number of IMAP connections to maintain in the pool. Default value is `1`. Increase for higher-throughput environments. |
+| mail.imap.ssl.protocols                              | Comma-separated list of SSL/TLS protocol versions allowed for IMAP (e.g. `TLSv1.2`). Leave empty to use JVM defaults. |
 ---
 # 3. eCRNow-UI Project and its relationship to eCRNow:
 The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.

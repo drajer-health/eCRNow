@@ -8,851 +8,1217 @@
             <table border="1" width="100%">
                 <thead>
                     <tr>
-                        <th>Lab Test Name</th>
-                        <th>Lab Test Result Value</th>
-                        <th>Lab Test Result Date</th>
-                        <th>Lab Test Specimen Collection Date</th>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr ID="id_SH-73079797-q4625813_ref">
                         <td>
-                            <content ID="labTestName1">SHX Alcohol type</content>
-                        </td>
+                            SHX Alcohol type</td>
                         <td>
-                            <content ID="labTestResultValue1"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Wine</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate1">Unknown</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate1">Unknown</content>
-                        </td>
+                            Unknown</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName2">Tobacco</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue2"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate2">Unknown</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate2">Unknown</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="labTestName3">SHX Alcohol use</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue3"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Current</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate3">Unknown</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate3">Unknown</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName1_1">
+                                                <td>
+                                                    <content ID="labTestName1-1">SHX Alcohol type</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue1-1">Wine</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate1-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation1-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange1-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate1-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_SH-93-73079787_ref">
                         <td>
-                            <content ID="labTestName4">Gravida</content>
-                        </td>
+                            Tobacco</td>
                         <td>
-                            <content ID="labTestResultValue4"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">1</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate4">20200429140159+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate4">Unknown</content>
-                        </td>
+                            Unknown</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName5">Family Member Travel History</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue5"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">No recent travel</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate5">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate5">Unknown</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="labTestName6">Discharge To, Anticipated</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue6"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Home with hospice</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate6">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate6">Unknown</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName2_1">
+                                                <td>
+                                                    <content ID="labTestName2-1">Tobacco</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue2-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate2-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation2-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange2-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate2-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_SH-73079797-q4625817_ref">
                         <td>
-                            <content ID="labTestName7">Panel Name: Height/Length Measured</content>
-                        </td>
+                            SHX Alcohol use</td>
                         <td>
-                            <content ID="labTestResultValue7"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Systolic blood pressureUnknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate7">20200429133200+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate7">Unknown</content>
-                        </td>
+                            Unknown</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName8">SHX Tobacco use</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue8"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Never (less than 100 in lifetime)</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate8">Unknown</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate8">Unknown</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="labTestName9">Recent Travel History</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue9"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Last travel within 7 days</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate9">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate9">Unknown</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName3_1">
+                                                <td>
+                                                    <content ID="labTestName3-1">SHX Alcohol use</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue3-1">Current</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate3-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation3-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange3-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate3-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287440_ref">
                         <td>
-                            <content ID="labTestName10">Preferred Written Language</content>
-                        </td>
+                            Gravida</td>
                         <td>
-                            <content ID="labTestResultValue10"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">English</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate10">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate10">Unknown</content>
-                        </td>
+                            20200429140159+0000</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName11">Inpatient Visitor Restrictions</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue11"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Yes</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate11">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate11">Unknown</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="labTestName12">Preferred Spoken Language</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue12"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">English</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate12">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate12">Unknown</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName4_1">
+                                                <td>
+                                                    <content ID="labTestName4-1">Gravida</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue4-1">1</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate4-1">20200429140159+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation4-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange4-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate4-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287221_ref">
                         <td>
-                            <content ID="labTestName13">Chief Complaint</content>
-                        </td>
+                            Family Member Travel History</td>
                         <td>
-                            <content ID="labTestResultValue13"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Shortness of Breath, cough, fever, rule out COVID-19</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate13">20200428200847+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate13">Unknown</content>
-                        </td>
+                            20200428194000+0000</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName14">Weight Dosing</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue14"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">70.3|http://unitsofmeasure.org|kg</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate14">20200429133200+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate14">Unknown</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="labTestName15">D-VTE Risk Signs, Symptoms</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue15"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Yes</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate15">20200428194323+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate15">Unknown</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName5_1">
+                                                <td>
+                                                    <content ID="labTestName5-1">Family Member Travel History</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue5-1">No recent travel</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate5-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation5-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange5-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate5-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287241_ref">
                         <td>
-                            <content ID="labTestName16">Difficulty Breathing</content>
-                        </td>
+                            Discharge To, Anticipated</td>
                         <td>
-                            <content ID="labTestResultValue16"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Yes</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate16">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate16">Unknown</content>
-                        </td>
+                            20200428194000+0000</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName17">Coronavirus COVID-19</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue17"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Detected</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Not Detected</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">ABN</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate17">20200430082500+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate17">Unknown</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="labTestName18">SHX Alcohol frequency</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue18"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">1-2 times per week</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate18">Unknown</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate18">Unknown</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName6_1">
+                                                <td>
+                                                    <content ID="labTestName6-1">Discharge To, Anticipated</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue6-1">Home with hospice</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate6-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation6-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange6-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate6-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287271_ref">
                         <td>
-                            <content ID="labTestName19">Recent Travel Location</content>
-                        </td>
+                            Height/Length Measured</td>
                         <td>
-                            <content ID="labTestResultValue19"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Italy</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate19">20200428194000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate19">Unknown</content>
-                        </td>
+                            20200429133200+0000</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName20">Panel Name: http://loinc.org|94308-4</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue20"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Alcohol</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate20">20220920084400-0400</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate20">Unknown</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName7_1">
+                                                <td>
+                                                    <content ID="labTestName7-1">Systolic blood pressure</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue7-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate7-1">20200429133200+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation7-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange7-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate7-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_SH-73079787-q4625825_ref">
                         <td>
-                            <content ID="labTestName21">Panel Name: http://loinc.org|94308-4</content>
+                            SHX Tobacco use</td>
+                        <td>
+                            Unknown</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName8_1">
+                                                <td>
+                                                    <content ID="labTestName8-1">SHX Tobacco use</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue8-1">Never (less than 100 in lifetime)</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate8-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation8-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange8-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate8-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287217_ref">
                         <td>
-                            <content ID="labTestResultValue21"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Alcohol</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
+                            Recent Travel History</td>
+                        <td>
+                            20200428194000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName9_1">
+                                                <td>
+                                                    <content ID="labTestName9-1">Recent Travel History</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue9-1">Last travel within 7 days</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate9-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation9-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange9-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate9-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287207_ref">
                         <td>
-                            <content ID="labTestResultValueDate21">20220920084400-0400</content>
+                            Preferred Written Language</td>
+                        <td>
+                            20200428194000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName10_1">
+                                                <td>
+                                                    <content ID="labTestName10-1">Preferred Written Language</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue10-1">English</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate10-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation10-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange10-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate10-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287237_ref">
                         <td>
-                            <content ID="labTestSpecimenCollectionDate21">Unknown</content>
+                            Inpatient Visitor Restrictions</td>
+                        <td>
+                            20200428194000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName11_1">
+                                                <td>
+                                                    <content ID="labTestName11-1">Inpatient Visitor Restrictions</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue11-1">Yes</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate11-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation11-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange11-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate11-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287205_ref">
+                        <td>
+                            Preferred Spoken Language</td>
+                        <td>
+                            20200428194000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName12_1">
+                                                <td>
+                                                    <content ID="labTestName12-1">Preferred Spoken Language</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue12-1">English</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate12-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation12-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange12-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate12-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287257_ref">
+                        <td>
+                            Chief Complaint</td>
+                        <td>
+                            20200428200847+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName13_1">
+                                                <td>
+                                                    <content ID="labTestName13-1">Chief Complaint</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue13-1">Shortness of Breath, cough, fever, rule out COVID-19</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate13-1">20200428200847+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation13-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange13-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate13-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287269_ref">
+                        <td>
+                            Weight Dosing</td>
+                        <td>
+                            20200429133200+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName14_1">
+                                                <td>
+                                                    <content ID="labTestName14-1">Weight Dosing</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue14-1">70.3|http://unitsofmeasure.org|kg</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate14-1">20200429133200+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation14-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange14-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate14-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287247_ref">
+                        <td>
+                            D-VTE Risk Signs, Symptoms</td>
+                        <td>
+                            20200428194323+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName15_1">
+                                                <td>
+                                                    <content ID="labTestName15-1">D-VTE Risk Signs, Symptoms</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue15-1">Yes</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate15-1">20200428194323+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation15-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange15-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate15-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287225_ref">
+                        <td>
+                            Difficulty Breathing</td>
+                        <td>
+                            20200428194000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName16_1">
+                                                <td>
+                                                    <content ID="labTestName16-1">Difficulty Breathing</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue16-1">Yes</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate16-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation16-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange16-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate16-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287553_ref">
+                        <td>
+                            Coronavirus COVID-19</td>
+                        <td>
+                            20200430082500+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName17_1">
+                                                <td>
+                                                    <content ID="labTestName17-1">Coronavirus COVID-19</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue17-1">Detected</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate17-1">20200430082500+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation17-1">ABN</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange17-1">Not Detected</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate17-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_SH-73079797-q4625809_ref">
+                        <td>
+                            SHX Alcohol frequency</td>
+                        <td>
+                            Unknown</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName18_1">
+                                                <td>
+                                                    <content ID="labTestName18-1">SHX Alcohol frequency</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue18-1">1-2 times per week</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate18-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation18-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange18-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate18-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_M-197287219_ref">
+                        <td>
+                            Recent Travel Location</td>
+                        <td>
+                            20200428194000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName19_1">
+                                                <td>
+                                                    <content ID="labTestName19-1">Recent Travel Location</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue19-1">Italy</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate19-1">20200428194000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation19-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange19-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate19-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_a-11287.inptresultlab-1484_ref">
+                        <td>
+                            http://loinc.org|94308-4</td>
+                        <td>
+                            20220920084400-0400</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName20_1">
+                                                <td>
+                                                    <content ID="labTestName20-1">Alcohol</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue20-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate20-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation20-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange20-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate20-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_a-11287.inptresultlab-1484_ref">
+                        <td>
+                            http://loinc.org|94308-4</td>
+                        <td>
+                            20220920084400-0400</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName21_1">
+                                                <td>
+                                                    <content ID="labTestName21-1">Alcohol</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue21-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate21-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation21-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange21-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate21-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
                 </tbody>

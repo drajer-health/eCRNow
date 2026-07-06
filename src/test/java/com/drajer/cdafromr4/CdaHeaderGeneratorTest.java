@@ -320,29 +320,29 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   public void testGetAdditionalAuthorXml() {
 
     String expectedXml =
-        "<author>\r\n"
-            + "<time value=\"20230503103307+0000\"/><assignedAuthor>\r\n"
-            + "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/><addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<assignedAuthoringDevice>\r\n"
-            + "<manufacturerModelName>manfacture</manufacturerModelName>\r\n"
-            + "<softwareName>1.0v</softwareName>\r\n"
-            + "</assignedAuthoringDevice>\r\n"
-            + "</assignedAuthor>\r\n"
-            + "</author>\r\n"
-            + "";
+        "<author>\n"
+            + "<time value=\"20230503103307+0000\"/><assignedAuthor>\n"
+            + "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\" extension=\"manfacture-1.0v\"/>\n"
+            + "<addr>\n"
+            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
+            + "<city nullFlavor=\"NI\"/>\n"
+            + "<state nullFlavor=\"NI\"/>\n"
+            + "<postalCode nullFlavor=\"NI\"/>\n"
+            + "<country nullFlavor=\"NI\"/>\n"
+            + "</addr>\n"
+            + "<telecom nullFlavor=\"NI\"/>\n"
+            + "<assignedAuthoringDevice>\n"
+            + "<manufacturerModelName>manfacture</manufacturerModelName>\n"
+            + "<softwareName>1.0v</softwareName>\n"
+            + "</assignedAuthoringDevice>\n"
+            + "</assignedAuthor>\n"
+            + "</author>\n";
 
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForEffectiveTime(any(), any()))
         .thenReturn("<time value=\"20230503103307+0000\"/>");
-    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid())
-        .thenReturn("<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>");
+    PowerMockito.when(CdaGeneratorUtils.getGuid())
+        .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
     String actualXml = CdaHeaderGenerator.getAdditionalAuthorXml("manfacture", "1.0v");
 
     assertThat(actualXml).isNotNull();

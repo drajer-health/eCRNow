@@ -1,11 +1,12 @@
 package com.drajer.sof.utils;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class FhirHttpHeaderInterceptor extends HttpHeaderInterceptor {
   private static final int RANDOM_NUM_WIDTH = 5;
   private static final String RANDOM_NUM_FORMAT = "%0" + RANDOM_NUM_WIDTH + "d";
   private static final int RANDOM_NUM_BASE = (int) Math.round(Math.pow(10, RANDOM_NUM_WIDTH) - 1);
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
   private String xReqId;
   private String randomNum;
   private int pageNum = 1;
@@ -25,7 +26,7 @@ public class FhirHttpHeaderInterceptor extends HttpHeaderInterceptor {
   }
 
   public String newRandomNum() {
-    this.randomNum = String.format(RANDOM_NUM_FORMAT, new Random().nextInt(RANDOM_NUM_BASE));
+    this.randomNum = String.format(RANDOM_NUM_FORMAT, SECURE_RANDOM.nextInt(RANDOM_NUM_BASE));
     updateValue();
     return this.randomNum;
   }

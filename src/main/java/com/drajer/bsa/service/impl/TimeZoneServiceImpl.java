@@ -3,6 +3,7 @@ package com.drajer.bsa.service.impl;
 import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.bsa.service.TimeZoneService;
 import com.drajer.ecrapp.config.QueryReaderConfig;
+import java.time.ZoneId;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,26 +44,17 @@ public class TimeZoneServiceImpl implements TimeZoneService {
 
   @Override
   public void setDatabaseTimezone(String timeZone) {
-    String query =
-        Optional.ofNullable(queryReaderConfig.getQuery("query.setTimezone"))
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Query for 'query.setTimezone' not found in queries properties."));
 
     String effectiveTimeZone =
         Optional.ofNullable(timeZone)
             .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "Invalid time zone provided"));
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid time zone"));
 
-    try {
-      timeZoneDao.setDatabaseTimezone(query, effectiveTimeZone);
-    } catch (Exception ex) {
-      logErrorAndThrow("setting database timezone to '" + effectiveTimeZone + "'", ex);
+    if (!ZoneId.getAvailableZoneIds().contains(effectiveTimeZone)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported time zone");
     }
+
+    timeZoneDao.setDatabaseTimezone(effectiveTimeZone);
   }
 
   private void logErrorAndThrow(String action, Exception ex) {

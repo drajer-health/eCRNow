@@ -142,6 +142,7 @@ public class CdaResultGenerator {
             data,
             obsWithComponents.getIssuedElement(),
             obsWithComponents.getPerformer(),
+            obsWithComponents.getBasedOn(),
             version));
 
     int i = 1;
@@ -199,7 +200,13 @@ public class CdaResultGenerator {
     // Add dynamic organizer data
     lrEntry.append(
         getOrganizerEntryDynamicData(
-            obs.getCode(), details, data, obs.getIssuedElement(), obs.getPerformer(), version));
+            obs.getCode(),
+            details,
+            data,
+            obs.getIssuedElement(),
+            obs.getPerformer(),
+            obs.getBasedOn(),
+            version));
 
     // Add result entry component
     lrEntry.append(
@@ -258,6 +265,7 @@ public class CdaResultGenerator {
       R4FhirData data,
       InstantType issued,
       List<Reference> performerReferences,
+      List<Reference> basedOnRefs,
       String version) {
 
     logger.info("Generating Dynamic Data for Organizer ");
@@ -298,231 +306,11 @@ public class CdaResultGenerator {
     if (performerReferences != null && !performerReferences.isEmpty())
       lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerReferences, data));
 
+    if (basedOnRefs != null && !basedOnRefs.isEmpty()) {
+      lrEntry.append(getAuthorizingProviderParticipantXml(basedOnRefs, data));
+    }
+
     return lrEntry.toString();
-  }
-
-  public static void getTableValuesForObservationWithComponents(
-      Observation obs, int rowNum, StringBuilder textEntries, R4FhirData data) {
-
-    // Add the Panel code name
-    String obsDisplayName =
-        "Panel Name: " + CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
-
-    // Add information from Components.
-    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
-    String resultValue = "";
-    Boolean first = true;
-
-    StringBuilder innerTable = new StringBuilder(); // ===== Header for INNER TABLE =====
-    int innerRow = 0;
-    List<String> headerList = new ArrayList<>();
-    headerList.add("Component");
-    headerList.add("Result Value");
-    headerList.add("Reference Range");
-    headerList.add("Interpretation");
-
-    innerTable.append(
-        CdaGeneratorUtils.getXmlForTableHeader(
-            headerList, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
-
-    innerTable.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-    if (obs.hasComponent()) {
-
-      for (ObservationComponentComponent o : obs.getComponent()) {
-
-        if (first) {
-          resultValue += "";
-          first = false;
-        } else {
-          resultValue += "|";
-        }
-
-        resultValue += CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
-
-        if (o.hasValue()) {
-          resultValue += CdaFhirUtilities.getStringForType(o.getValue());
-        } else {
-          resultValue += CdaGeneratorConstants.UNKNOWN_VALUE;
-        }
-      }
-    }
-
-    String interpretationValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-    if (obs.hasInterpretation()) {
-      interpretationValue =
-          CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getInterpretation());
-    }
-
-    String referenceRangeValue = "";
-    Observation.ObservationReferenceRangeComponent referenceRange = null;
-    if (obs.hasReferenceRange()) {
-      referenceRange = getReferenceRange(obs.getReferenceRange());
-      if (referenceRange == null) {
-        referenceRange = obs.getReferenceRangeFirstRep();
-      }
-
-      if (referenceRange.hasLow()) {
-        referenceRangeValue +=
-            "Low: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getLow()) + " | ";
-      }
-      if (referenceRange.hasHigh()) {
-        referenceRangeValue +=
-            "High: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh());
-      }
-
-      if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
-        String refRangeString = referenceRange.getText();
-        referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
-      }
-    }
-    if (StringUtils.isBlank(referenceRangeValue)) {
-      referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-    }
-    referenceRangeValue = referenceRangeValue.replaceAll("\\|\\s*$", "");
-
-    Map<String, String> innerBodyVals = new LinkedHashMap<>();
-    innerBodyVals.put("Component", CdaGeneratorConstants.UNKNOWN_VALUE);
-    innerBodyVals.put("Result Value", resultValue);
-    innerBodyVals.put("Reference Range", referenceRangeValue);
-    innerBodyVals.put("Interpretation", interpretationValue);
-    innerTable.append(CdaGeneratorUtils.addTableRow(innerBodyVals, innerRow++));
-    innerTable.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-    innerTable.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
-
-    val = innerTable.toString();
-
-    String collectionDate =
-        CdaFhirUtilities.getStringForSpecimenCollectionDate(
-            Collections.singletonList(obs.getSpecimen()), data);
-
-    // Create the Test Name String
-    Map<String, String> bodyvals = new LinkedHashMap<>();
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
-        StringEscapeUtils.escapeXml11(obsDisplayName));
-
-    // Get Value String
-    if (val.isEmpty()) {
-      val = CdaGeneratorConstants.UNKNOWN_VALUE;
-    }
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
-
-    // Get the Date String
-    String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-    if (obs.getEffective() != null) {
-      dt = CdaFhirUtilities.getStringForType(obs.getEffective());
-    }
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
-
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
-        StringUtils.isEmpty(collectionDate) ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDate);
-
-    textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-  }
-
-  public static void getTableValues(
-      Observation obs, int rowNum, StringBuilder textEntries, R4FhirData data) {
-
-    String obsDisplayName = CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
-
-    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
-
-    StringBuilder innerTable = new StringBuilder(); // ===== Header for INNER TABLE =====
-    int innerRow = 0;
-    List<String> headerList = new ArrayList<>();
-    headerList.add("Component");
-    headerList.add("Result Value");
-    headerList.add("Reference Range");
-    headerList.add("Interpretation");
-
-    innerTable.append(
-        CdaGeneratorUtils.getXmlForTableHeader(
-            headerList, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
-
-    innerTable.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-    String interpretationValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-    if (obs.hasInterpretation()) {
-      interpretationValue =
-          CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getInterpretation());
-    }
-
-    String referenceRangeValue = "";
-    if (obs.hasReferenceRange()) {
-      Observation.ObservationReferenceRangeComponent referenceRange =
-          getReferenceRange(obs.getReferenceRange());
-      if (referenceRange == null) {
-        referenceRange = obs.getReferenceRangeFirstRep();
-      }
-
-      if (referenceRange.hasLow()) {
-        referenceRangeValue +=
-            "Low: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getLow()) + " | ";
-      }
-      if (referenceRange.hasHigh()) {
-        referenceRangeValue +=
-            "High: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh());
-      }
-
-      if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
-        String refRangeString = referenceRange.getText();
-        referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
-      }
-    }
-    if (StringUtils.isBlank(referenceRangeValue)) {
-      referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-    }
-    referenceRangeValue = referenceRangeValue.replaceAll("\\|\\s*$", "");
-
-    String collectionDate =
-        CdaFhirUtilities.getStringForSpecimenCollectionDate(
-            Collections.singletonList(obs.getSpecimen()), data);
-
-    String resultValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-    if (obs.hasValue()) {
-      resultValue = getNarrativeTextObservationValue(obs);
-    }
-
-    Map<String, String> innerBodyVals = new LinkedHashMap<>();
-    innerBodyVals.put("Component", CdaGeneratorConstants.UNKNOWN_VALUE);
-    innerBodyVals.put("Result Value", StringEscapeUtils.escapeXml11(resultValue));
-    innerBodyVals.put("Reference Range", referenceRangeValue);
-    innerBodyVals.put("Interpretation", interpretationValue);
-    innerTable.append(CdaGeneratorUtils.addTableRow(innerBodyVals, innerRow++));
-
-    innerTable.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-    innerTable.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
-
-    val = innerTable.toString();
-
-    // Create the Test Name String
-    Map<String, String> bodyvals = new LinkedHashMap<>();
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
-        StringEscapeUtils.escapeXml11(obsDisplayName));
-
-    // Get Value String
-
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
-
-    // Get the Date String
-    String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-    if (obs.getEffective() != null) {
-      dt = CdaFhirUtilities.getStringForType(obs.getEffective());
-    }
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
-        StringUtils.isEmpty(collectionDate) ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDate);
-
-    textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
   }
 
   public static int processDiagnosticResults(
@@ -583,6 +371,7 @@ public class CdaResultGenerator {
             data,
             report.getIssuedElement(),
             report.getPerformer(),
+            report.getBasedOn(),
             version));
 
     int i = 1;
@@ -617,130 +406,6 @@ public class CdaResultGenerator {
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
 
     resultEntries.append(lrEntry);
-  }
-
-  public static void getTableValuesForDiagnosticReport(
-      DiagnosticReport report,
-      List<Observation> obs,
-      int rowNum,
-      StringBuilder textEntries,
-      R4FhirData data) {
-
-    // Add the Panel code name
-    String obsDisplayName =
-        "Panel Name: " + CdaFhirUtilities.getStringForCodeableConcept(report.getCode());
-
-    // Add information from Components.
-
-    String interpretations = "";
-    String referenceRanges = "";
-    String collectionDates = "";
-    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
-
-    Boolean first = true;
-    if (obs != null && !obs.isEmpty()) {
-
-      StringBuilder innerTable = new StringBuilder(); // ===== Header for INNER TABLE =====
-      int innerRow = 0;
-      List<String> headerList = new ArrayList<>();
-      headerList.add("Component");
-      headerList.add("Result Value");
-      headerList.add("Reference Range");
-      headerList.add("Interpretation");
-
-      innerTable.append(
-          CdaGeneratorUtils.getXmlForTableHeader(
-              headerList, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
-
-      innerTable.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-      for (Observation o : obs) {
-
-        String componentName = CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
-
-        String resultValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-        if (o.hasValue()) {
-          resultValue = CdaFhirUtilities.getStringForType(o.getValue());
-        }
-
-        String interpretationValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-        if (o.hasInterpretation()) {
-          interpretationValue =
-              CdaFhirUtilities.getDisplayStringForCodeableConcept(o.getInterpretation());
-        }
-
-        String referenceRangeValue = "";
-        if (o.hasReferenceRange()) {
-          for (Observation.ObservationReferenceRangeComponent referenceRange :
-              o.getReferenceRange()) {
-            if (referenceRange.hasLow()) {
-              referenceRangeValue +=
-                  "Low: " + CdaFhirUtilities.getStringForQuantity(referenceRange.getLow()) + " | ";
-            }
-            if (referenceRange.hasHigh()) {
-              referenceRangeValue +=
-                  "High: "
-                      + CdaFhirUtilities.getStringForQuantity(referenceRange.getHigh())
-                      + " | ";
-            }
-            if (StringUtils.isEmpty(referenceRangeValue) && referenceRange.hasText()) {
-              String refRangeString = referenceRange.getText();
-              referenceRangeValue = StringEscapeUtils.escapeXml11(refRangeString);
-            }
-          }
-        }
-        if (StringUtils.isBlank(referenceRangeValue)) {
-          referenceRangeValue = CdaGeneratorConstants.UNKNOWN_VALUE;
-        }
-
-        Map<String, String> innerBodyVals = new LinkedHashMap<>();
-        innerBodyVals.put("Component", componentName);
-        innerBodyVals.put("Result Value", resultValue);
-        innerBodyVals.put("Reference Range", referenceRangeValue);
-        innerBodyVals.put("Interpretation", interpretationValue);
-        innerTable.append(CdaGeneratorUtils.addTableRow(innerBodyVals, innerRow++));
-
-        String collectionDate = "";
-        if (o.hasSpecimen()) {
-          collectionDate =
-              CdaFhirUtilities.getStringForSpecimenCollectionDate(
-                  Collections.singletonList(o.getSpecimen()), data);
-        }
-        if (!collectionDates.isEmpty()) {
-          collectionDates += " | ";
-        }
-        collectionDates += collectionDate;
-
-        referenceRanges += referenceRangeValue;
-      }
-      innerTable.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-      innerTable.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
-
-      val = innerTable.toString();
-    }
-
-    collectionDates = collectionDates.replaceAll("\\|\\s*$", "");
-    // Create the Test Name String
-    Map<String, String> bodyvals = new LinkedHashMap<>();
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
-
-    // Get Value String
-    if (val.isEmpty()) val = CdaGeneratorConstants.UNKNOWN_VALUE;
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
-
-    // Get the Date String
-    String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-    if (report.hasEffective()) {
-      dt = CdaFhirUtilities.getStringForType(report.getEffective());
-    }
-    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
-    bodyvals.put(
-        CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT,
-        collectionDates.isEmpty() ? CdaGeneratorConstants.UNKNOWN_VALUE : collectionDates);
-    textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
   }
 
   public static Map<DiagnosticReport, List<Observation>> getDiagnosticReportsWithObservations(
@@ -832,30 +497,11 @@ public class CdaResultGenerator {
 
     // Add Narrative Text
     hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
-
-    // Create Table Header.
-    List<String> list = new ArrayList<>();
-    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_1_TITLE);
-    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_2_TITLE);
-    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_3_TITLE);
-    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_6_TITLE);
-    hsb.append(
-        CdaGeneratorUtils.getXmlForTableHeader(
-            list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
-
-    // Add Table Body
-    hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
   }
 
   public static void createSectionEnd(
       StringBuilder hsb, StringBuilder textEntries, StringBuilder resultEntries) {
 
-    // End the Sb string.
-    textEntries.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-    // End Table.
-    textEntries.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
     textEntries.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
     hsb.append(textEntries);
@@ -1649,5 +1295,573 @@ public class CdaResultGenerator {
     if (StringUtils.isNotEmpty(interpretXml)) {
       sb.append(interpretXml);
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // CdaResultGenerator — replace the three getTableValues* methods
+  // and add the private helpers below
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  // ── Public methods ────────────────────────────────────────────────────────────
+
+  /**
+   * Narrative table for a plain Observation (no components). One outer panel row + one inner detail
+   * row.
+   */
+  public static void getTableValues(
+      Observation obs, int rowNum, StringBuilder textEntries, R4FhirData data) {
+
+    String panelId = "id_" + obs.getIdElement().getIdPart() + "_ref";
+    String panelName = CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
+    String panelDate = getEffectiveDate(obs.getEffective());
+
+    String outcome =
+        obs.hasValue()
+            ? CdaFhirUtilities.getStringForType(obs.getValue())
+            : CdaGeneratorConstants.UNKNOWN_VALUE;
+    String interp = getInterpretation(obs.getInterpretation());
+    String refRange = buildReferenceRangeString(obs.getReferenceRange());
+    String collection = getCollectionDate(Collections.singletonList(obs.getSpecimen()), data);
+
+    Map<String, String> row =
+        buildInnerRow(rowNum, 1, panelName, outcome, interp, panelDate, refRange, collection);
+
+    textEntries.append(
+        buildNestedResultTable(panelId, panelName, panelDate, Collections.singletonList(row)));
+  }
+
+  /**
+   * Narrative table for an Observation that has components (panel). One outer panel row + one inner
+   * row per component.
+   */
+  public static void getTableValuesForObservationWithComponents(
+      Observation obs, int rowNum, StringBuilder textEntries, R4FhirData data) {
+
+    String panelId = "id_" + obs.getIdElement().getIdPart() + "_ref";
+    String panelName = CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
+    String panelDate = getEffectiveDate(obs.getEffective());
+
+    List<Map<String, String>> rows = new ArrayList<>();
+
+    int compIndex = 1;
+    for (ObservationComponentComponent comp : obs.getComponent()) {
+      String compId = "id_" + obs.getIdElement().getIdPart() + "_comp" + compIndex + "_ref";
+      String name = CdaFhirUtilities.getStringForCodeableConcept(comp.getCode());
+      String outcome =
+          comp.hasValue()
+              ? CdaFhirUtilities.getStringForType(comp.getValue())
+              : CdaGeneratorConstants.UNKNOWN_VALUE;
+      String interp = getInterpretation(comp.getInterpretation());
+      String refRange = buildReferenceRangeString(obs.getReferenceRange());
+
+      rows.add(
+          buildInnerRow(
+              rowNum,
+              compIndex,
+              name,
+              outcome,
+              interp,
+              panelDate,
+              refRange,
+              CdaGeneratorConstants.UNKNOWN_VALUE));
+      compIndex++;
+    }
+
+    textEntries.append(buildNestedResultTable(panelId, panelName, panelDate, rows));
+  }
+
+  /**
+   * Narrative table for a DiagnosticReport with its Observations. One outer panel row + one inner
+   * row per observation.
+   */
+  public static void getTableValuesForDiagnosticReport(
+      DiagnosticReport report,
+      List<Observation> observations,
+      int rowNum,
+      StringBuilder textEntries,
+      R4FhirData data) {
+
+    String panelId = "id_" + report.getIdElement().getIdPart() + "_ref";
+    String panelName = CdaFhirUtilities.getStringForCodeableConcept(report.getCode());
+    String panelDate =
+        report.hasEffective()
+            ? CdaFhirUtilities.getStringForType(report.getEffective())
+            : CdaGeneratorConstants.UNKNOWN_VALUE;
+
+    List<Map<String, String>> rows = new ArrayList<>();
+    if (observations != null) {
+      int compIndex = 1;
+      for (Observation obs : observations) {
+
+        String compId = "id_" + obs.getIdElement().getIdPart() + "_ref";
+        String name = CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
+        String outcome =
+            obs.hasValue()
+                ? CdaFhirUtilities.getStringForType(obs.getValue())
+                : CdaGeneratorConstants.UNKNOWN_VALUE;
+        String interp = getInterpretation(obs.getInterpretation());
+        String date = getEffectiveDate(obs.getEffective());
+        String refRange = buildReferenceRangeString(obs.getReferenceRange());
+        String collection =
+            obs.hasSpecimen()
+                ? getCollectionDate(Collections.singletonList(obs.getSpecimen()), data)
+                : CdaGeneratorConstants.UNKNOWN_VALUE;
+
+        rows.add(
+            buildInnerRow(rowNum, compIndex, name, outcome, interp, date, refRange, collection));
+        compIndex++;
+      }
+    }
+
+    textEntries.append(buildNestedResultTable(panelId, panelName, panelDate, rows));
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────────────────
+
+  /**
+   * Builds the complete nested table block for one panel.
+   *
+   * <p>Produces:
+   *
+   * <table> outer panel header + summary row
+   *     <tr colspan="20"> inner table with one row per component
+   *   </table>
+   */
+  private static String buildNestedResultTable(
+      String panelId, String panelName, String panelDate, List<Map<String, String>> innerRows) {
+
+    StringBuilder sb = new StringBuilder(1000);
+
+    // ── outer table ──────────────────────────────────────────────────────────
+    sb.append(buildOuterTableOpen());
+    sb.append(buildOuterSummaryRow(panelId, panelName, panelDate));
+    sb.append(buildInnerTableBlock(innerRows));
+    sb.append(buildOuterTableClose());
+
+    return sb.toString();
+  }
+
+  /**
+   * Opens the outer table with its two-column header.
+   *
+   * <table border="1" width="100%">
+   *   <thead><tr><th>Results Panel</th><th>Date(s)</th></tr></thead>
+   *   <tbody>
+   */
+  private static String buildOuterTableOpen() {
+
+    StringBuilder sb = new StringBuilder(300);
+
+    // <table border="1" width="100%">
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.TABLE_EL_NAME)
+        .append(CdaGeneratorConstants.SPACE)
+        .append(CdaGeneratorConstants.TABLE_BORDER_ATTR_NAME)
+        .append(CdaGeneratorConstants.EQUAL)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.TABLE_BORDER)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.SPACE)
+        .append(CdaGeneratorConstants.TABLE_WIDTH_ATTR_NAME)
+        .append(CdaGeneratorConstants.EQUAL)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.TABLE_WIDTH)
+        .append("%")
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append(CdaGeneratorConstants.NEW_LINE);
+
+    // <thead>
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_HEAD_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.RESULTS_PANEL_COL_TITLE));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.RESULTS_DATE_COL_TITLE));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_HEAD_EL_NAME));
+
+    // <tbody>
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+    return sb.toString();
+  }
+
+  /**
+   * The outer summary row showing panel name and date.
+   *
+   * <p><tr ID="panelId"><td>name</td><td>date</td></tr>
+   */
+  private static String buildOuterSummaryRow(String panelId, String panelName, String panelDate) {
+
+    StringBuilder sb = new StringBuilder(200);
+
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.TABLE_ROW_EL_NAME)
+        .append(CdaGeneratorConstants.SPACE)
+        .append(CdaGeneratorConstants.TABLE_BODY_CONTENT_ID_EL_NAME)
+        .append(CdaGeneratorConstants.EQUAL)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(panelId)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append(CdaGeneratorConstants.NEW_LINE);
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME));
+    sb.append(StringEscapeUtils.escapeXml11(panelName));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME));
+    sb.append(StringEscapeUtils.escapeXml11(panelDate));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+
+    return sb.toString();
+  }
+
+  /**
+   * The colspan row containing the inner detail table.
+   *
+   * <p><tr> <td colspan="20"> <list styleCode="none"><item>
+   *
+   * <table>
+   *         <thead> Test | Outcome | Interpretation | Date(s) | Reference Range | Specimen Collection Date </thead>
+   *         <tbody> one <tr> per component </tbody>
+   *       </table>
+   *
+   * </item></list> </td> </tr>
+   */
+  private static String buildInnerTableBlock(List<Map<String, String>> rows) {
+
+    StringBuilder sb = new StringBuilder(800);
+
+    // <tr>
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+
+    // <td colspan="20">
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME)
+        .append(" colspan=\"20\"")
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append(CdaGeneratorConstants.NEW_LINE);
+
+    // <list styleCode="none"><item>
+    sb.append("<list styleCode=\"none\">").append(CdaGeneratorConstants.NEW_LINE);
+    sb.append(CdaGeneratorUtils.getXmlForStartElement("item"));
+
+    // ── inner <table> ──────────────────────────────────────────────────────
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.TABLE_EL_NAME)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append(CdaGeneratorConstants.NEW_LINE);
+
+    // inner <thead>
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_HEAD_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.INNER_COL_TEST));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.INNER_COL_OUTCOME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.INNER_COL_INTERP));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.INNER_COL_DATE));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.INNER_COL_REF_RANGE));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
+            CdaGeneratorConstants.INNER_COL_COLLECTION));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_HEAD_EL_NAME));
+
+    // inner <tbody>
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+    for (Map<String, String> row : rows) {
+      sb.append(buildInnerComponentRow(row));
+    }
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+    // close inner table
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+
+    // </item></list>
+    sb.append(CdaGeneratorUtils.getXmlForEndElement("item"));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement("list"));
+
+    // </td></tr>
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+
+    return sb.toString();
+  }
+
+  /** Closes outer tbody and table. */
+  private static String buildOuterTableClose() {
+    return CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME)
+        + CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME);
+  }
+
+  private static String buildInnerComponentRow(Map<String, String> row) {
+
+    StringBuilder sb = new StringBuilder(400);
+    String trId = row.get(CdaGeneratorConstants.INNER_BODY_ID); // e.g. "labTestName2_1"
+    String rowNum = row.get(CdaGeneratorConstants.INNER_ROW_NUM); // e.g. "2"
+    String compIdx = row.get(CdaGeneratorConstants.INNER_KEY_COMP_IDX); // e.g. "1"
+
+    String contentSuffix = compIdx.equals("0") ? rowNum : rowNum + "-" + compIdx;
+
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.TABLE_ROW_EL_NAME)
+        .append(CdaGeneratorConstants.SPACE)
+        .append(CdaGeneratorConstants.TABLE_BODY_CONTENT_ID_EL_NAME)
+        .append(CdaGeneratorConstants.EQUAL)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(trId)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append(CdaGeneratorConstants.NEW_LINE);
+
+    // content IDs now unique per row
+    appendTd(
+        sb,
+        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + contentSuffix,
+        row.get(CdaGeneratorConstants.INNER_BODY_TEST));
+    appendTd(
+        sb,
+        CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT + contentSuffix,
+        row.get(CdaGeneratorConstants.INNER_BODY_OUTCOME));
+    appendTd(
+        sb,
+        CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT + contentSuffix,
+        row.get(CdaGeneratorConstants.INNER_BODY_DATE));
+    appendTd(
+        sb,
+        CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT + contentSuffix,
+        row.get(CdaGeneratorConstants.INNER_BODY_INTERP));
+    appendTd(
+        sb,
+        CdaGeneratorConstants.LABTEST_TABLE_COL_5_BODY_CONTENT + contentSuffix,
+        row.get(CdaGeneratorConstants.INNER_BODY_REF_RANGE));
+    appendTd(
+        sb,
+        CdaGeneratorConstants.LABTEST_TABLE_COL_6_BODY_CONTENT + contentSuffix,
+        row.get(CdaGeneratorConstants.INNER_BODY_COLLECTION));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
+    return sb.toString();
+  }
+
+  private static void appendTd(StringBuilder sb, String contentId, String value) {
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTableBodyContent(
+            contentId,
+            StringUtils.isNotBlank(value) ? value : CdaGeneratorConstants.UNKNOWN_VALUE));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_ROW_EL_NAME));
+  }
+
+  /**
+   * Builds the inner row data map. The "_id" key carries the row ID so buildInnerComponentRow() can
+   * stamp it on the <tr> and each <content>.
+   */
+  private static Map<String, String> buildInnerRow(
+      int rowNum,
+      int compIndex,
+      String test,
+      String outcome,
+      String interpretation,
+      String date,
+      String refRange,
+      String collection) {
+
+    String trId =
+        compIndex == 0
+            ? CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + rowNum
+            : CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + rowNum + "_" + compIndex;
+
+    Map<String, String> row = new LinkedHashMap<>();
+    row.put(CdaGeneratorConstants.INNER_BODY_ID, String.valueOf(trId));
+    row.put(CdaGeneratorConstants.INNER_ROW_NUM, String.valueOf(rowNum));
+    row.put(CdaGeneratorConstants.INNER_KEY_COMP_IDX, String.valueOf(compIndex));
+    row.put(CdaGeneratorConstants.INNER_BODY_TEST, StringEscapeUtils.escapeXml11(test));
+    row.put(CdaGeneratorConstants.INNER_BODY_OUTCOME, StringEscapeUtils.escapeXml11(outcome));
+    row.put(CdaGeneratorConstants.INNER_BODY_INTERP, StringEscapeUtils.escapeXml11(interpretation));
+    row.put(CdaGeneratorConstants.INNER_BODY_DATE, date);
+    row.put(CdaGeneratorConstants.INNER_BODY_REF_RANGE, refRange);
+    row.put(CdaGeneratorConstants.INNER_BODY_COLLECTION, collection);
+    return row;
+  }
+
+  // ── Small data utilities ──────────────────────────────────────────────────────
+
+  private static String getEffectiveDate(Type effective) {
+    return effective != null
+        ? CdaFhirUtilities.getStringForType(effective)
+        : CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  private static String getInterpretation(List<CodeableConcept> interpretations) {
+    if (interpretations == null || interpretations.isEmpty()) {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+    String val = CdaFhirUtilities.getDisplayStringForCodeableConcept(interpretations);
+    return StringUtils.isNotBlank(val) ? val : CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  private static String getCollectionDate(List<Reference> specimenRefs, R4FhirData data) {
+    String date = CdaFhirUtilities.getStringForSpecimenCollectionDate(specimenRefs, data);
+    return StringUtils.isNotBlank(date) ? date : CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  private static String buildReferenceRangeString(
+      List<Observation.ObservationReferenceRangeComponent> ranges) {
+
+    if (ranges == null || ranges.isEmpty()) {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    Observation.ObservationReferenceRangeComponent best = getReferenceRange(ranges);
+    if (best == null) best = ranges.get(0);
+
+    if (!best.hasLow() && !best.hasHigh()) {
+      return best.hasText()
+          ? StringEscapeUtils.escapeXml11(best.getText())
+          : CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    String low = best.hasLow() ? CdaFhirUtilities.getStringForQuantity(best.getLow()) : "";
+    String high = best.hasHigh() ? CdaFhirUtilities.getStringForQuantity(best.getHigh()) : "";
+    return (low + " | " + high).trim();
+  }
+
+  public static String getAuthorizingProviderParticipantXml(
+      List<Reference> basedOnRefs, R4FhirData data) {
+
+    if (basedOnRefs == null || basedOnRefs.isEmpty() || data == null) {
+      return "";
+    }
+
+    // Find the first ServiceRequest linked via basedOn
+    ServiceRequest serviceRequest = null;
+    for (Reference ref : basedOnRefs) {
+      String id = ref.getReferenceElement().getIdPart();
+      ServiceRequest sr = data.getServiceRequestById(id); // see note below
+      if (sr != null) {
+        serviceRequest = sr;
+        if (serviceRequest.hasRequester()) {
+          break;
+        }
+      }
+    }
+
+    if (serviceRequest == null || !serviceRequest.hasRequester()) {
+      logger.info("No ServiceRequest with requester found via basedOn references.");
+      return "";
+    }
+
+    // Resolve the requester reference to a Practitioner
+    Reference requesterRef = serviceRequest.getRequester();
+    String practitionerId = requesterRef.getReferenceElement().getIdPart();
+    Practitioner practitioner = data.getPractitionerById(practitionerId); // see note below
+
+    if (practitioner == null) {
+      logger.warn(
+          "Practitioner {} referenced by ServiceRequest.requester not found in bundle.",
+          practitionerId);
+      return "";
+    }
+
+    // Extract name — prefer official use, fall back to first available
+    HumanName name = null;
+    for (HumanName hn : practitioner.getName()) {
+      if (hn.hasUse() && hn.getUse().equals(HumanName.NameUse.OFFICIAL)) {
+        name = hn;
+        break;
+      } else {
+        name = hn;
+      }
+    }
+    if (name == null && !practitioner.getName().isEmpty()) {
+      name = practitioner.getName().get(0);
+    }
+
+    if (name == null) {
+      logger.warn("Practitioner {} has no name element.", practitionerId);
+      return "";
+    }
+
+    String given = name.getGivenAsSingleString(); // space-joined given names
+    String family = name.getFamily();
+
+    if (StringUtils.isBlank(given) && StringUtils.isBlank(family)) {
+      return "";
+    }
+
+    return buildAuthorizingProviderParticipantXml(given, family);
+  }
+
+  /** Produces the raw CDA XML for the participant block. */
+  private static String buildAuthorizingProviderParticipantXml(String given, String family) {
+
+    StringBuilder sb = new StringBuilder(400);
+
+    sb.append(CdaGeneratorConstants.START_XMLTAG)
+        .append(CdaGeneratorConstants.PARTICIPANT_EL_NAME)
+        .append(CdaGeneratorConstants.SPACE)
+        .append(CdaGeneratorConstants.TYPECODE_ATTR_NAME)
+        .append(CdaGeneratorConstants.EQUAL)
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append("REF")
+        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
+        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
+        .append(CdaGeneratorConstants.NEW_LINE);
+
+    sb.append(CdaGeneratorUtils.getXmlForParticipantRole(CdaGeneratorConstants.ASSIGNED));
+
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PLAYING_ENTITY));
+
+    // <name>
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    if (StringUtils.isNotBlank(given)) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForText(
+              CdaGeneratorConstants.FIRST_NAME_EL_NAME, StringEscapeUtils.escapeXml11(given)));
+    }
+    if (StringUtils.isNotBlank(family)) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForText(
+              CdaGeneratorConstants.LAST_NAME_EL_NAME, StringEscapeUtils.escapeXml11(family)));
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PLAYING_ENTITY));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+
+    return sb.toString();
   }
 }

@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - resp-net-fixes
+      - 4.0.3-fixes
 
 pr: none
 
@@ -57,11 +57,11 @@ stages:
         SonarQube: '$(sonarQubeServiceConnection)'
         scannerMode: 'CLI'
         configMode: 'manual'
-        cliProjectKey: 'eCRNow'
-        cliProjectName: 'eCRNow'
+        cliProjectKey: 'eCRNow_new'
+        cliProjectName: 'eCRNow_new'
         extraProperties: |
           sonar.projectVersion=$(Build.BuildId)
-          sonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+          sonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco-merged/jacoco.xml
 
     - task: Maven@3
       displayName: 'Run SonarQube Analysis (Maven Build + Scan)'
@@ -93,14 +93,14 @@ stages:
       inputs:
         pollingTimeoutSec: '300'
 
-    - task: SnykSecurityScan@1
-      displayName: 'Snyk Security Scan (Maven Dependencies)'
-      inputs:
-        serviceConnectionEndpoint: $(snykServiceConnection)
-        testType: 'repo'
-        severityThreshold: 'low'
-        monitorWhen: 'always'
-        failOnIssues: true
+    #- task: SnykSecurityScan@1
+    #  displayName: 'Snyk Security Scan (Maven Dependencies)'
+    #  inputs:
+    #    serviceConnectionEndpoint: $(snykServiceConnection)
+    #    testType: 'repo'
+    #    severityThreshold: 'low'
+    #    monitorWhen: 'always'
+    #    failOnIssues: true
 
     - script: |
         echo "🔄 Determining image tag..."

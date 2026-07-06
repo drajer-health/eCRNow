@@ -282,10 +282,8 @@ public class EicrServiceImpl implements EicrRRService {
 
   public void submitDocRefToEhr(DocumentReference docRef, Eicr ecr) {
 
-    final String fhirServerURL = ecr.getFhirServerUrl();
-
     // Get ClientDetails using the FHIR Server URL
-    ClientDetails clientDetails = clientDetailservice.getClientDetailsByUrl(fhirServerURL);
+    ClientDetails clientDetails = clientDetailservice.getClientDetailsByUrl(ecr.getFhirServerUrl());
 
     // Get the AccessToken using the Client Details and read the Metadata
     // Information to know
@@ -294,6 +292,7 @@ public class EicrServiceImpl implements EicrRRService {
 
       logger.info(" Found the Ehr Server Url ");
 
+      final String fhirServerURL = clientDetails.getFhirServerBaseURL();
       JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
       if (tokenResponse == null) {
         throw new ResponseStatusException(

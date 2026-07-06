@@ -69,17 +69,8 @@ public class TimeZoneServiceImplTest {
   }
 
   @Test(expected = ResponseStatusException.class)
-  public void testSetDatabaseTimezone_QueryNotFound() {
-    when(queryReaderConfig.getQuery("query.setTimezone")).thenReturn(null);
-
-    timeZoneService.setDatabaseTimezone("America/Los_Angeles");
-  }
-
-  @Test(expected = ResponseStatusException.class)
   public void testSetDatabaseTimezone_InvalidTimeZone() {
     String expectedQuery = "UPDATE settings SET timezone = ";
-
-    when(queryReaderConfig.getQuery("query.setTimezone")).thenReturn(expectedQuery);
 
     timeZoneService.setDatabaseTimezone(null);
   }

@@ -8,214 +8,289 @@
             <table border="1" width="100%">
                 <thead>
                     <tr>
-                        <th>Lab Test Name</th>
-                        <th>Lab Test Result Value</th>
-                        <th>Lab Test Result Date</th>
-                        <th>Lab Test Specimen Collection Date</th>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr ID="id_05da9140-7ab6-491c-bc4a-3b2fb177ee4f_ref">
                         <td>
-                            <content ID="labTestName1">Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid</content>
-                        </td>
+                            Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid</td>
                         <td>
-                            <content ID="labTestResultValue1"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Detected</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate1">20240107000000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate1">Unknown</content>
-                        </td>
+                            20240107000000+0000</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName2">Unknown</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue2"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">positive</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Low: 0.1|http://unitsofmeasure.org|mg/dL | High: 1|http://unitsofmeasure.org|mg/dL</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Normal</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate2">20251007000000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate2">Unknown</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="labTestName3">CULCHLAM</content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValue3"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate3">20250416000000+0000</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate3">20220927000000+0000</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName1_1">
+                                                <td>
+                                                    <content ID="labTestName1-1">Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue1-1">Detected</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate1-1">20240107000000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation1-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange1-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate1-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
                     <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_3407eeea-cff5-4211-8cb3-858982f34887_ref">
                         <td>
-                            <content ID="labTestName4">Eosinophils</content>
-                        </td>
+                            Unknown</td>
                         <td>
-                            <content ID="labTestResultValue4"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">Adenovirus PCR — Not detected
-                                                Coronavirus 229E — Not detected
-                                                Influenza A — Not detected
-                                                Influenza B — Not detected</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">Unknown</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
-                        </td>
-                        <td>
-                            <content ID="labTestResultValueDate4">20260105100000-0800</content>
-                        </td>
-                        <td>
-                            <content ID="labTestSpecimenCollectionDate4">Unknown</content>
-                        </td>
+                            20251007000000+0000</td>
                     </tr>
                     <tr>
-                        <td>
-                            <content ID="labTestName5">Panel Name: custom candida molecular panel - thinprep/aptima swab</content>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName2_1">
+                                                <td>
+                                                    <content ID="labTestName2-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue2-1">positive</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate2-1">20251007000000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation2-1">Normal</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange2-1">0.1|http://unitsofmeasure.org|mg/dL | 1|http://unitsofmeasure.org|mg/dL</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate2-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_abd14f55-4648-4e91-bfad-9b1844707748_ref">
                         <td>
-                            <content ID="labTestResultValue5"><table border="1" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Result Value</th>
-                                        <th>Reference Range</th>
-                                        <th>Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <content ID="Component0">Unknown</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Result Value0">positive</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Reference Range0">1.005-1.015</content>
-                                        </td>
-                                        <td>
-                                            <content ID="Interpretation0">abnormal</content>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </content>
+                            CULCHLAM</td>
+                        <td>
+                            20250416000000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName3_1">
+                                                <td>
+                                                    <content ID="labTestName3-1">CULCHLAM</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue3-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate3-1">20250416000000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation3-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange3-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate3-1">20220927000000+0000</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_obs-see-note-example_ref">
                         <td>
-                            <content ID="labTestResultValueDate5">20251006000000+0000</content>
+                            Eosinophils</td>
+                        <td>
+                            20260105100000-0800</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName4_1">
+                                                <td>
+                                                    <content ID="labTestName4-1">Eosinophils</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue4-1">See Note:</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate4-1">20260105100000-0800</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation4-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange4-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate4-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Results Panel</th>
+                        <th>Date(s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ID="id_43b72a5f-0551-4b1b-8f1b-736ee3ca1d51_ref">
                         <td>
-                            <content ID="labTestSpecimenCollectionDate5">Unknown</content>
+                            custom candida molecular panel - thinprep/aptima swab</td>
+                        <td>
+                            20251006000000+0000</td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <list styleCode="none">
+                                <item>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Test</th>
+                                                <th>Outcome</th>
+                                                <th>Interpretation</th>
+                                                <th>Date(s)</th>
+                                                <th>Reference Range</th>
+                                                <th>Specimen Collection Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ID="labTestName5_1">
+                                                <td>
+                                                    <content ID="labTestName5-1">Unknown</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValue5-1">positive</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestResultValueDate5-1">20251007000000+0000</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestInterpretation5-1">abnormal</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestReferenceRange5-1">1.005-1.015</content>
+                                                </td>
+                                                <td>
+                                                    <content ID="labTestSpecimenCollectionDate5-1">Unknown</content>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </item>
+                            </list>
                         </td>
                     </tr>
                 </tbody>
@@ -231,6 +306,40 @@
                     <low nullFlavor="NI"/>
                     <high nullFlavor="NI"/>
                 </effectiveTime>
+                <author>
+                    <time value="20241225000000+0000"/>
+                    <assignedAuthor>
+                        <id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+                        <addr>
+                            <streetAddressLine>[&quot;5400 N Oak Trfy&quot;]</streetAddressLine>
+                            <city>Washington</city>
+                            <county>Northwest</county>
+                            <state>DC</state>
+                            <postalCode>20001</postalCode>
+                            <country>US</country>
+                        </addr>
+                        <telecom value="tel:(816)673-2878" use="MC"/>
+                        <telecom value="mailto:arthur.james73@gmail.com"/>
+                        <assignedPerson>
+                            <name>
+                                <given>Arthur</given>
+                                <given>James</given>
+                                <family>Smith</family>
+                            </name>
+                        </assignedPerson>
+                        <representedOrganization>
+                            <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><name>Model Hospital</name>
+                            <telecom value="tel:(555)555-0013" use="WP"/>
+                            <addr>
+                                <streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;[\\\\\\\\\\\\\\\&quot;6276 Rockriver Drive\\\\\\\\\\\\\\\&quot;]\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+                                <city>Kansas City</city>
+                                <state>MO</state>
+                                <postalCode>64117</postalCode>
+                                <country>US</country>
+                            </addr>
+                        </representedOrganization>
+                    </assignedAuthor>
+                </author>
                 <component>
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
@@ -246,6 +355,40 @@
                             <reference value="#labTestResultValue1"/>
                         </originalText>
                         </value>
+                        <author>
+                            <time value="20241225000000+0000"/>
+                            <assignedAuthor>
+                                <id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+                                <addr>
+                                    <streetAddressLine>[&quot;5400 N Oak Trfy&quot;]</streetAddressLine>
+                                    <city>Washington</city>
+                                    <county>Northwest</county>
+                                    <state>DC</state>
+                                    <postalCode>20001</postalCode>
+                                    <country>US</country>
+                                </addr>
+                                <telecom value="tel:(816)673-2878" use="MC"/>
+                                <telecom value="mailto:arthur.james73@gmail.com"/>
+                                <assignedPerson>
+                                    <name>
+                                        <given>Arthur</given>
+                                        <given>James</given>
+                                        <family>Smith</family>
+                                    </name>
+                                </assignedPerson>
+                                <representedOrganization>
+                                    <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><name>Model Hospital</name>
+                                    <telecom value="tel:(555)555-0013" use="WP"/>
+                                    <addr>
+                                        <streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;[\\\\\\\\\\\\\\\&quot;6276 Rockriver Drive\\\\\\\\\\\\\\\&quot;]\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+                                        <city>Kansas City</city>
+                                        <state>MO</state>
+                                        <postalCode>64117</postalCode>
+                                        <country>US</country>
+                                    </addr>
+                                </representedOrganization>
+                            </assignedAuthor>
+                        </author>
                     </observation>
                 </component>
             </organizer>
@@ -294,6 +437,16 @@
                     <low value="20250416000000+0000"/>
                     <high value="20250416000000+0000"/>
                 </effectiveTime>
+                <participant typeCode="REF">
+                    <participantRole classCode="ASSIGNED">
+                        <playingEntity>
+                            <name>
+                                <given>Arthur James</given>
+                                <family>Smith</family>
+                            </name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
                 <component>
                     <observation classCode="OBS" moodCode="EVN">
                         <templateId root="2.16.840.1.113883.10.20.22.4.2"/>

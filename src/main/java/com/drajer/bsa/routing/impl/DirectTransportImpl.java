@@ -56,6 +56,36 @@ public class DirectTransportImpl implements DataTransportInterface {
   @Value("${mail.imap.batch.size:500}")
   private int imapBatchSize;
 
+  @Value("${mail.smtp.auth:true}")
+  private String smtpAuth;
+
+  @Value("${mail.smtp.ssl.enable:true}")
+  private String smtpSslEnable;
+
+  @Value("${mail.smtp.starttls.enable:false}")
+  private String smtpStartTlsEnable;
+
+  @Value("${mail.smtp.ssl.trust:*}")
+  private String smtpSslTrust;
+
+  @Value("${mail.smtp.ssl.protocols:}")
+  private String smtpSslProtocols;
+
+  @Value("${mail.imap.auth:true}")
+  private String imapAuth;
+
+  @Value("${mail.imap.ssl.enable:true}")
+  private String imapSslEnable;
+
+  @Value("${mail.imap.ssl.trust:*}")
+  private String imapSslTrust;
+
+  @Value("${mail.imap.connectionpoolsize:1}")
+  private String imapConnectionPoolSize;
+
+  @Value("${mail.imap.ssl.protocols:}")
+  private String imapSslProtocols;
+
   public class DirectMimeMessage extends MimeMessage {
 
     Session sessions;
@@ -183,11 +213,13 @@ public class DirectTransportImpl implements DataTransportInterface {
         port);
 
     Properties props = new Properties();
-    props.put("mail.smtp.auth", "true");
-    props.setProperty("mail.smtp.ssl.trust", "*");
-    props.setProperty("mail.smtp.ssl.enable", "true");
+    props.put("mail.smtp.auth", smtpAuth);
+    props.setProperty("mail.smtp.ssl.trust", smtpSslTrust);
+    props.setProperty("mail.smtp.ssl.enable", smtpSslEnable);
     if (!StringUtils.isEmpty(directTlsVersion)) {
       props.setProperty("mail.smtp.ssl.protocols", directTlsVersion);
+    } else if (!StringUtils.isEmpty(smtpSslProtocols)) {
+      props.setProperty("mail.smtp.ssl.protocols", smtpSslProtocols);
     }
 
     Session session = Session.getInstance(props, null);
@@ -394,12 +426,14 @@ public class DirectTransportImpl implements DataTransportInterface {
         port);
 
     Properties props = new Properties();
-    props.put("mail.imap.auth", "true");
-    props.put("mail.imap.ssl.enable", "true");
-    props.setProperty("mail.imap.ssl.trust", "*");
-    props.put("mail.imap.connectionpoolsize", "1");
+    props.put("mail.imap.auth", imapAuth);
+    props.put("mail.imap.ssl.enable", imapSslEnable);
+    props.setProperty("mail.imap.ssl.trust", imapSslTrust);
+    props.put("mail.imap.connectionpoolsize", imapConnectionPoolSize);
     if (!StringUtils.isEmpty(directTlsVersion)) {
       props.put("mail.imap.ssl.protocols", directTlsVersion);
+    } else if (!StringUtils.isEmpty(imapSslProtocols)) {
+      props.put("mail.imap.ssl.protocols", imapSslProtocols);
     }
 
     Session session = Session.getInstance(props, null);

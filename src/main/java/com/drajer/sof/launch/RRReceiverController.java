@@ -81,6 +81,7 @@ public class RRReceiverController {
           "Received EicrId:: {}, EicrDocId:: {} in the request",
           StringEscapeUtils.escapeJava(eicrId),
           StringEscapeUtils.escapeJava(eicrDocId));
+
       Eicr eicr = null;
       if (eicrId != null) {
         eicr = rrReceieverService.getEicrById(Integer.parseInt(eicrId));
