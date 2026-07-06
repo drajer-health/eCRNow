@@ -16,35 +16,35 @@
                 <tbody>
                     <tr>
                         <td>
-                            <content ID="medDosagePeriod1">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|frequency: 2|period: 1|periodUnit: D</content>
+                            <content ID="med1">Prednisone 5 MG Oral Tablet [Deltasone]</content>
                         </td>
                         <td>
                             <content ID="medDate1">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="med1">Prednisone 5 MG Oral Tablet [Deltasone]</content>
+                            <content ID="medDosagePeriod1">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|frequency: 2|period: 1|periodUnit: D</content>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <content ID="medDosagePeriod2">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|Unknown</content>
+                            <content ID="med2">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector</content>
                         </td>
                         <td>
                             <content ID="medDate2">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="med2">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector</content>
+                            <content ID="medDosagePeriod2">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|Unknown</content>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <content ID="medDosagePeriod3">1|http://unitsofmeasure.org|{tbl}|frequency: 2|period: 6|periodUnit: H</content>
+                            <content ID="med3">8 HR Carbidopa 36.25 MG / L-DOPA 145 MG Extended Release Oral Capsule [Rytary]</content>
                         </td>
                         <td>
                             <content ID="medDate3">20241227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="med3">8 HR Carbidopa 36.25 MG / L-DOPA 145 MG Extended Release Oral Capsule [Rytary]</content>
+                            <content ID="medDosagePeriod3">1|http://unitsofmeasure.org|{tbl}|frequency: 2|period: 6|periodUnit: H</content>
                         </td>
                     </tr>
                 </tbody>
