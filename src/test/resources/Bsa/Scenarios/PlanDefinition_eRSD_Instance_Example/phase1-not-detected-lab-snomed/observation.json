@@ -5,8 +5,8 @@
     "code": {
         "coding": [{
             "system": "http://loinc.org",
-            "code": "100343-3",
-            "display": "Influenza virus B RNA [Presence] in Saliva (oral fluid) by NAA with probe detection"
+            "code": "100114-8",
+            "display": "Toxoplasma gondii 30kD Ab [Presence] in Serum by Immunoblot"
         }]
     },
     "valueCodeableConcept": {
