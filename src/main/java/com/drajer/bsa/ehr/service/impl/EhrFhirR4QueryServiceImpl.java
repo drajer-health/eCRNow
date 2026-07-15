@@ -757,7 +757,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info("Getting data for Resource : {} with Id : {}", resourceName, resourceId);
 
-      fhirOperationExecutor.execute(
+   resource= (Resource) fhirOperationExecutor.execute(
           kd,
           context,
           client -> {
