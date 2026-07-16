@@ -42,21 +42,36 @@ All workarounds are applied automatically by `scripts/rewrite_fhirpath.py` to th
 
 **Upstream fix:** The FHIRPath-to-CQL translator should wrap string literals in singleton lists before emitting `Union`, or translate the `in` + `|` pattern to CQL `in { 'a', 'b' }`.
 
-### 3. Duration arithmetic: `1 day * %integerParam` fails at runtime
+### 3. Duration arithmetic: PD-level Duration parameters fail at runtime
 
-**Bug:** When integer parameters are bound as HAPI `IntegerType` (FHIR.integer), the CQL engine's `Multiply(Quantity, IntegerType)` path throws `CqlException: Cannot cast IntegerType as Quantity`. The `CqlFhirParametersConverter.toCqlType()` should unwrap `IntegerType` → `java.lang.Integer`, but the engine's runtime arithmetic doesn't apply `FHIRHelpers.ToInteger` on the bound value.
+Two related failure modes, one fix.
 
-**Workaround:** Inline duration literals directly in expressions, eliminating the multiplication.
+**Bug 3a — Quantity-typed parameters: `DateTime + %quantityParam` throws data-provider error.**
+When a PD-level `variable` extension declares a Quantity duration (e.g. `%labTimeboxDuration = 30 'd'`), `CqlFhirParametersConverter.toCqlType()` binds it in a form whose underlying value is a `java.math.BigDecimal`. When the runtime tries to add it to a DateTime (`%encounterStartDate + %labTimeboxDuration`), the CQL engine attempts to resolve a `DataProvider` for the `java.math` package and fails:
+
+```
+ERROR CqlEngine : Exception for Library: expression, Message: Could not resolve data provider for package 'java.math'.
+```
+
+The exception is caught internally by `CqlEngine`, converted into an `OperationOutcome`-shaped result with no `return` parameter, and returned to the caller. From the outside this looks like a silent evaluation failure — every action that references a PD-level Quantity variable in date arithmetic quietly returns `false`. Because the `continue-check-reportable` action fires *before* `is-encounter-reportable` in the canonical PD, this cascades: continue-check fails, its sub-actions don't fire, and the main reportability check never runs. Verified against the canonical PD as of 2026-07-15 with cqf-fhir 4.5.1 — all 22 Phase 1 scenarios that expect `REPORTED` produce silent no-report.
+
+**Bug 3b — Integer-typed parameters: `1 day * %integerParam` throws cast error.**
+When a PD-level parameter is bound as HAPI `IntegerType` (`FHIR.integer`), the engine's `Multiply(Quantity, IntegerType)` path throws `CqlException: Cannot cast IntegerType as Quantity`. The converter should unwrap `IntegerType` → `java.lang.Integer`, but the runtime arithmetic doesn't apply `FHIRHelpers.ToInteger` on the bound value. (Distinct from Bug 3a — different type, different symptom, same underlying converter gap.)
+
+**Workaround (both bugs):** Inline duration literals directly in expressions. Removes the Quantity-parameter reference entirely, so neither converter path is exercised.
 
 | Original | Rewritten |
 |---|---|
-| `1 day * %normalReportingDuration` | `14 days` |
-| `1 day * %dxTimeboxDuration` | `30 days` |
-| `1 day * %labTimeboxDuration` | `30 days` |
-| `+ %normalReportingDuration +` | `+ 14 days +` |
-| `+ %ambulatoryReportingDuration +` | `+ 1 day +` |
+| `%encounterStartDate + %normalReportingDuration` | `%encounterStartDate + 14 days` |
+| `%encounterStartDate - %labTimeboxDuration` | `%encounterStartDate - 30 days` |
+| `%encounterStartDate - %dxTimeboxDuration` | `%encounterStartDate - 30 days` |
+| `%encounterStartDate - %extendedLabTimeboxDuration` | `%encounterStartDate - 365 days` |
+| `+ %ambulatoryReportingDuration` | `+ 1 day` |
+| `1 day * %normalReportingDuration` (bug 3b) | `14 days` |
 
-**Upstream fix:** The engine's `ToQuantityEvaluator` / arithmetic paths should auto-unwrap HAPI `IntegerType`/`DecimalType` to Java primitives, or the `CqlFhirParametersConverter` should ensure bound values are always CQL-native types.
+The `variable` extension declarations for these parameters remain in the PD — nothing needs to be removed from the source of truth. Only FHIRPath-side arithmetic references are inlined. When the upstream fix lands, restoring the parameter references is a mechanical revert.
+
+**Upstream fix:** Filed as a candidate issue against `cqframework/clinical-reasoning` — `CqlFhirParametersConverter.toCqlType()` should either convert Quantity values to a CQL-native representation whose backing types don't require caller-side data-provider registration, or the engine should register a `java.math` `DataProvider` by default so `BigDecimal`-backed values are always resolvable. Once fixed, the workaround here can be reverted — the PD-level Quantity variables are the more expressive and maintainable form.
 
 ### 4. `context Patient` with no subject ID
 
