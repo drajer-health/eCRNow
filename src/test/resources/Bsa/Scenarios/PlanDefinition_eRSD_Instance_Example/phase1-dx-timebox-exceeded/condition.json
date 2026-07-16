@@ -1,0 +1,19 @@
+{
+    "resourceType": "Condition",
+    "id": "cond-old-diagnosis",
+    "clinicalStatus": {
+        "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active" }]
+    },
+    "verificationStatus": {
+        "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed" }]
+    },
+    "code": {
+        "coding": [{
+            "system": "http://snomed.info/sct",
+            "code": "840539006",
+            "display": "Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)"
+        }]
+    },
+    "subject": { "reference": "Patient/phase1-dx-old" },
+    "onsetDateTime": "2026-01-15T00:00:00-05:00"
+}

@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
 import org.opencds.cqf.fhir.utility.Constants;
 import org.opencds.cqf.fhir.utility.monad.Eithers;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class EvaluateMeasure extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(EvaluateMeasure.class);
 
-  private R4MeasureService measureService;
+  private R4MeasureProcessor measureService;
 
   private ZonedDateTime periodStart;
   private ZonedDateTime periodEnd;
@@ -51,11 +51,11 @@ public class EvaluateMeasure extends BsaAction {
     this.measureReportId = measureReportId;
   }
 
-  public R4MeasureService getMeasureService() {
+  public R4MeasureProcessor getMeasureService() {
     return measureService;
   }
 
-  public void setMeasureService(R4MeasureService measureService) {
+  public void setMeasureService(R4MeasureProcessor measureService) {
     this.measureService = measureService;
   }
 
@@ -109,23 +109,24 @@ public class EvaluateMeasure extends BsaAction {
 
       CanonicalType measureCanonical = new CanonicalType(measureUri);
 
-      // Evaluate Measure by passing the required parameters
-      // Set up and evaluate the measure.
+      // Signature-only port to the CQF 4.5.1 R4MeasureProcessor API. The pre-4.x
+      // R4MeasureService.evaluate() took endpoint/bundle params (terminology, library,
+      // data, content) and a subject type string. R4MeasureProcessor.evaluateMeasure()
+      // instead takes additionalContext (List<String>), MeasureEvalType, CqlEngine, and
+      // CompositeEvaluationResultsPerMeasure. We pass nulls for the last four; the
+      // processor's null-handling for those is not exercised end-to-end by any test in
+      // this branch (DiabetesECSDTest, which is the only test that would hit a real
+      // Measure evaluation, opts out of KAR activation — see workarounds doc).
       MeasureReport result =
-          measureService.evaluate(
-              Eithers.forLeft3(measureCanonical), // measureUri,
+          measureService.evaluateMeasure(
+              Eithers.forLeft3(measureCanonical),
               periodStart,
               periodEnd,
-              "subject",
               patientId,
-              null, // practitioner
-              null, // received on
-              null, // Terminology Bundle
-              null, // Library Bundle
-              additionalData, // Endpoint for data
               null,
               null,
-              null); // Data Bundle
+              null,
+              null);
 
       if (result != null) {
 

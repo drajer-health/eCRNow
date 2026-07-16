@@ -13,14 +13,14 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
+// opencds CqlProcessor used via FQN to avoid collision with this class name
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CqlProcessor implements BsaConditionProcessor {
   private static final Logger logger = LoggerFactory.getLogger(CqlProcessor.class);
 
-  private R4LibraryEvaluationService libraryExecutionService;
+  private org.opencds.cqf.fhir.cr.cql.CqlProcessor libraryExecutionService;
 
   @Override
   public Boolean evaluateExpression(
@@ -45,11 +45,13 @@ public class CqlProcessor implements BsaConditionProcessor {
     Parameters result =
         (Parameters)
             this.libraryExecutionService.evaluate(
-                new IdType(),
+                null,
                 cqlCondition.getPatientId(),
-                new ArrayList<>(expressions),
                 parameters,
+                null,
+                false,
                 kd.getInputResourcesAsBundle(),
+                null,
                 null,
                 cqlCondition.getDataEndpoint(),
                 cqlCondition.getLibraryEndpoint(),
@@ -61,11 +63,11 @@ public class CqlProcessor implements BsaConditionProcessor {
     return value.getValue();
   }
 
-  public R4LibraryEvaluationService getLibraryEvaluationService() {
+  public org.opencds.cqf.fhir.cr.cql.CqlProcessor getLibraryEvaluationService() {
     return libraryExecutionService;
   }
 
-  public void setLibraryEvaluationService(R4LibraryEvaluationService libraryEvaluationService) {
+  public void setLibraryEvaluationService(org.opencds.cqf.fhir.cr.cql.CqlProcessor libraryEvaluationService) {
     this.libraryExecutionService = libraryExecutionService;
   }
 

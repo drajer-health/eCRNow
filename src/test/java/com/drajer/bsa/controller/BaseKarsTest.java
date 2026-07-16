@@ -10,9 +10,13 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.util.BundleUtil;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.action.EvaluateMeasureStatus;
 import com.drajer.bsa.kar.action.SubmitReportStatus;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
@@ -52,6 +56,7 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -79,6 +84,24 @@ public class BaseKarsTest extends BaseIntegrationTest {
   protected ApplicationUtils ap;
 
   @Autowired HealthcareSettingsDao hsDao;
+
+  @Autowired KarDao karDao;
+
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
+  /** Day-shift computed in {@link #mockScenarioFolder} and reused by the notification bundle. */
+  protected long scenarioDateShiftDays;
+
+  /**
+   * Whether to activate loaded KARs by inserting a KnowledgeArtifactStatus row that links
+   * the healthcare setting to each KAR in the configured directory. Defaults to false to
+   * preserve the historical test-harness behavior (KARs not activated → notification
+   * pipeline iterates an empty set → tests with NOT_TRIGGERED / TRIGGERED_ONLY outcomes pass
+   * trivially). Opt in via @TestPropertySource("bsa.kar.activate=true") for tests that need
+   * to exercise the full pipeline. See docs/phase1-fhirpath-workarounds.md for context.
+   */
+  @Value("${bsa.kar.activate:false}")
+  private boolean activateKars;
 
   @Autowired ApplicationContext applicationContext;
 
@@ -312,14 +335,64 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
     String patientId = resourceMap.get("Patient").get(0).getIdElement().getIdPart();
 
+    // Anchor all scenario dates to (today - 1 day) so scenarios don't go stale. The shift is
+    // computed from the scenario's Encounter.period.start and applied uniformly to every date
+    // in every scenario resource — preserving relative offsets between dates (e.g., a lab
+    // dated 30 days before encounter stays 30 days before encounter) while keeping the
+    // absolute calendar current. The same shift value is reused by getNotificationBundle().
+    scenarioDateShiftDays = 0L;
+    List<IBaseResource> encounters = resourceMap.get("Encounter");
+    if (encounters != null && !encounters.isEmpty()) {
+      org.hl7.fhir.r4.model.Encounter anchor = (org.hl7.fhir.r4.model.Encounter) encounters.get(0);
+      scenarioDateShiftDays = ScenarioDateShifter.computeShiftDays(anchor);
+      if (scenarioDateShiftDays != 0L) {
+        ScenarioDateShifter.logShift(scenario.getName(), scenarioDateShiftDays);
+        for (List<IBaseResource> resources : resourceMap.values()) {
+          for (IBaseResource r : resources) {
+            ScenarioDateShifter.shift((org.hl7.fhir.r4.model.Base) r, scenarioDateShiftDays);
+          }
+        }
+      }
+    }
+
+    // Fallback stubs so any resource-type search the KAR issues returns an empty Bundle
+    // rather than 404. Specific stubs below register at the default priority (5) and take
+    // precedence; this catchall runs when no scenario resource of that type exists.
+    String emptyBundle =
+        fhirContext.newJsonParser().encodeResourceToString(new Bundle().setType(Bundle.BundleType.SEARCHSET));
+    wireMockServer.stubFor(
+        get(urlMatching("/fhir/[^/?]+\\?.*"))
+            .atPriority(10)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")
+                    .withBody(emptyBundle)));
+
     for (Map.Entry<String, List<IBaseResource>> entry : resourceMap.entrySet()) {
-      // Mock a search for all resources of a given type.
-      String mockQueryString =
-          String.format("/fhir/%s?patient=Patient/%s", entry.getKey(), patientId);
-      stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
-      mockQueryString = String.format("/fhir/%s?patient=%s", entry.getKey(), patientId);
-      stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
-      // TODO: create stub that lets date based tests update stale dates.
+      // Mock a search for all resources of a given type. Use a regex that matches the
+      // resource type and patient param regardless of additional query parameters
+      // (e.g., &category=encounter-diagnosis, &intent=order, etc.) — the PD's data
+      // requirements often add such filters, and without this they fall through to the
+      // empty-bundle catchall and return no resources.
+      String body =
+          fhirContext
+              .newJsonParser()
+              .encodeResourceToString(stubHelper.makeBundle(entry.getValue()));
+      // Matches /fhir/{Type}?...patient=[Patient/]{id}... with any query param order
+      String patientRegex =
+          String.format(
+              "/fhir/%s\\?(.*&)?patient=(Patient(/|%%2F))?%s(&.*)?",
+              java.util.regex.Pattern.quote(entry.getKey()),
+              java.util.regex.Pattern.quote(patientId));
+      wireMockServer.stubFor(
+          get(urlMatching(patientRegex))
+              .atPriority(5)
+              .willReturn(
+                  aResponse()
+                      .withStatus(200)
+                      .withHeader("Content-Type", "application/fhir+json; charset=utf-8")
+                      .withBody(body)));
       for (IBaseResource r : entry.getValue()) {
         // Mock a read for a specific instance of a resource
         String id = r.getIdElement().getIdPart();
@@ -378,12 +451,47 @@ public class BaseKarsTest extends BaseIntegrationTest {
     }
 
     HealthcareSetting existing = hsDao.getHealthcareSettingByUrl(hcs.getFhirServerBaseURL());
-    if (existing != null) {
+    if (existing == null) {
+      hsDao.saveOrUpdate(hcs);
+    } else {
       logger.debug("Found existing healthcare settings");
+      hcs = existing;
+    }
+
+    if (activateKars) {
+      activateLoadedKarsFor(hcs);
+    }
+  }
+
+  // The KarParser loads KARs into the in-memory KnowledgeArtifactRepositorySystem at startup,
+  // but nothing persists a KnowledgeArtifactStatus linking them to the HealthcareSetting. Without
+  // that row the notification pipeline iterates an empty set and skips KAR processing entirely,
+  // which is why every REPORTED scenario in this suite has historically failed.
+  private void activateLoadedKarsFor(HealthcareSetting hs) {
+    if (knowledgeArtifactRepositorySystem == null
+        || knowledgeArtifactRepositorySystem.getArtifacts() == null
+        || knowledgeArtifactRepositorySystem.getArtifacts().isEmpty()) {
+      logger.warn("No KARs loaded in the repository system — nothing to activate for hs {}", hs.getId());
       return;
     }
 
-    hsDao.saveOrUpdate(hcs);
+    for (KnowledgeArtifact kar : knowledgeArtifactRepositorySystem.getArtifacts().values()) {
+      KnowledgeArtifactStatus existingStatus =
+          karDao.getKarStausByKarIdAndKarVersion(kar.getKarId(), kar.getKarVersion(), hs.getId());
+      if (existingStatus != null) {
+        continue;
+      }
+
+      KnowledgeArtifactStatus status = new KnowledgeArtifactStatus();
+      status.setHsId(hs.getId());
+      status.setKarId(kar.getKarId());
+      status.setKarVersion(kar.getKarVersion());
+      status.setVersionUniqueKarId(kar.getVersionUniqueId());
+      status.setIsActive(Boolean.TRUE);
+      status.setCovidOnly(Boolean.FALSE);
+      karDao.saveOrUpdateKARStatus(status);
+      logger.info("Activated KAR {} for HealthcareSetting {}", kar.getVersionUniqueId(), hs.getId());
+    }
   }
 
   private void mockAccessToken() {
@@ -437,7 +545,13 @@ public class BaseKarsTest extends BaseIntegrationTest {
     }
 
     String absolutePath = bundles[0].getAbsolutePath();
-    return ap.readBundleFromFile(absolutePath);
+    Bundle bundle = ap.readBundleFromFile(absolutePath);
+    // Apply the same date shift computed in mockScenarioFolder() so the notification
+    // bundle's Encounter stays consistent with the FHIR-mocked scenario resources.
+    if (scenarioDateShiftDays != 0L) {
+      ScenarioDateShifter.shift(bundle, scenarioDateShiftDays);
+    }
+    return bundle;
   }
 
   public CapabilityStatement getCapabilityStatement() {

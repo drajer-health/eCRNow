@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CqlProcessorTest {
@@ -27,7 +26,7 @@ public class CqlProcessorTest {
   @Mock private BsaAction bsaAction;
   @Mock private KarProcessingData karProcessingData;
 
-  @Mock private R4LibraryEvaluationService libraryExecutionService;
+  @Mock private org.opencds.cqf.fhir.cr.cql.CqlProcessor libraryExecutionService;
 
   @InjectMocks private CqlProcessor cqlProcessor;
 
@@ -68,15 +67,17 @@ public class CqlProcessorTest {
     Mockito.lenient()
         .when(
             libraryExecutionService.evaluate(
-                Mockito.any(IdType.class),
+                Mockito.any(),
                 Mockito.anyString(),
-                Mockito.anyList(),
-                Mockito.any(Parameters.class),
-                Mockito.any(Bundle.class),
-                Mockito.isNull(),
                 Mockito.any(),
                 Mockito.any(),
-                Mockito.any()))
+                Mockito.anyBoolean(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.nullable(org.hl7.fhir.instance.model.api.IBaseResource.class),
+                Mockito.nullable(org.hl7.fhir.instance.model.api.IBaseResource.class),
+                Mockito.nullable(org.hl7.fhir.instance.model.api.IBaseResource.class)))
         .thenReturn(resultParams);
 
     Boolean result =

@@ -1,0 +1,10 @@
+{
+    "resourceType": "Observation",
+    "id": "obs-mixcase",
+    "status": "final",
+    "code": { "coding": [{ "system": "http://loinc.org", "code": "100114-8", "display": "Toxoplasma gondii 30kD Ab [Presence] in Serum by Immunoblot" }] },
+    "valueString": "Not Detected",
+    
+    "subject": { "reference": "Patient/edge-mixcase" },
+    "effectiveDateTime": "2026-03-01T10:00:00-05:00"
+}
