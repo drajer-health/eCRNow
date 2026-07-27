@@ -84,6 +84,7 @@ public class HcsReportCreatorTest {
     Composition.SectionComponent sectionComponent = new Composition.SectionComponent();
     sectionComponent.fhirType();
     hcsReportCreator.populateReasonForVisitNarrative(sectionComponent, karProcessingData);
+    assertNotNull("Section component should be populated after method call", sectionComponent);
   }
 
   private BsaAction getBsaAction() {

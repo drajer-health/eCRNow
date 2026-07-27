@@ -411,66 +411,91 @@ public class BsaServiceUtils {
   }
 
   public static Boolean isCodePresentInValueSet(ValueSet vs, String system, String code) {
+    if (vs == null) {
+      return false;
+    }
 
-    boolean retVal = false;
+    if (isCodeInCompose(vs, system, code)) {
+      return true;
+    }
 
-    if (vs != null && vs.hasCompose()) {
+    return isCodeInExpansion(vs, system, code);
+  }
 
-      ValueSetComposeComponent vsc = vs.getCompose();
+  private static boolean isCodeInCompose(ValueSet vs, String system, String code) {
+    if (!vs.hasCompose()) {
+      return false;
+    }
 
-      List<ConceptSetComponent> cscs = vsc.getInclude();
+    ValueSetComposeComponent vsc = vs.getCompose();
+    List<ConceptSetComponent> cscs = vsc.getInclude();
 
-      if (cscs != null) {
+    if (cscs == null) {
+      return false;
+    }
 
-        for (ConceptSetComponent csc : cscs) {
-
-          if (csc.getSystem() != null && csc.getSystem().contentEquals(system)) {
-
-            logger.info(" Found Code System {} in value set ", system);
-
-            List<ConceptReferenceComponent> crcs = csc.getConcept();
-
-            if (crcs != null) {
-
-              for (ConceptReferenceComponent crc : crcs) {
-
-                if (crc.getCode().contentEquals(code)) {
-                  logger.info(" Found code system {} and code {} in value set ", system, code);
-                  retVal = true;
-                  break;
-                }
-              }
-            }
-          }
+    for (ConceptSetComponent csc : cscs) {
+      if (isConceptSetMatchesSystem(csc, system)) {
+        if (isConceptPresentInSet(csc, code)) {
+          logger.info(" Found code system {} and code {} in value set ", system, code);
+          return true;
         }
       }
     }
 
-    if (!retVal && vs.hasExpansion()) {
+    return false;
+  }
 
-      ValueSetExpansionComponent vsec = vs.getExpansion();
+  private static boolean isConceptSetMatchesSystem(ConceptSetComponent csc, String system) {
+    return csc.getSystem() != null && csc.getSystem().contentEquals(system);
+  }
 
-      if (vsec.hasContains()) {
+  private static boolean isConceptPresentInSet(ConceptSetComponent csc, String code) {
+    logger.info(" Found Code System {} in value set ", csc.getSystem());
 
-        List<ValueSetExpansionContainsComponent> expansion = vsec.getContains();
+    List<ConceptReferenceComponent> crcs = csc.getConcept();
+    if (crcs == null) {
+      return false;
+    }
 
-        for (ValueSetExpansionContainsComponent vsecc : expansion) {
-
-          if (vsecc.getSystem() != null
-              && vsecc.getSystem().contentEquals(system)
-              && vsecc.getCode() != null
-              && vsecc.getCode().contentEquals(code)) {
-
-            logger.info(
-                " Found Match for CodeSystem {} and Code {} in ValueSet {}", system, code, vs);
-            retVal = true;
-            break;
-          }
-        }
+    for (ConceptReferenceComponent crc : crcs) {
+      if (crc.getCode().contentEquals(code)) {
+        return true;
       }
     }
 
-    return retVal;
+    return false;
+  }
+
+  private static boolean isCodeInExpansion(ValueSet vs, String system, String code) {
+    if (!vs.hasExpansion()) {
+      return false;
+    }
+
+    ValueSetExpansionComponent vsec = vs.getExpansion();
+
+    if (!vsec.hasContains()) {
+      return false;
+    }
+
+    List<ValueSetExpansionContainsComponent> expansion = vsec.getContains();
+
+    for (ValueSetExpansionContainsComponent vsecc : expansion) {
+      if (isExpansionComponentMatches(vsecc, system, code)) {
+        logger.info(" Found Match for CodeSystem {} and Code {} in ValueSet {}", system, code, vs);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean isExpansionComponentMatches(
+      ValueSetExpansionContainsComponent vsecc, String system, String code) {
+    return vsecc.getSystem() != null
+        && vsecc.getSystem().contentEquals(system)
+        && vsecc.getCode() != null
+        && vsecc.getCode().contentEquals(code);
   }
 
   /**

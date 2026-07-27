@@ -233,6 +233,9 @@ public class BsaServiceUtilsTest {
     parametersParameterComponent.setName("%Jon%4656");
     List<ParametersParameterComponent> parameterList = params.getParameter();
     bsaServiceUtils.convertDataToParameters("4656", "R4", "10", resources, params);
+    assertNotNull(params);
+    assertNotNull(params.getParameter());
+    assertTrue(params.getParameter().size() > 0);
   }
 
   @Test
@@ -244,6 +247,8 @@ public class BsaServiceUtilsTest {
     parametersParameterComponent.setName("%Jon%4656");
     List<ParametersParameterComponent> parameterList = params.getParameter();
     bsaServiceUtils.convertDataToParameters("4656", "R4", "10", resource, params);
+    assertNotNull(params);
+    assertTrue(resource.isEmpty());
   }
 
   @Test
@@ -294,6 +299,9 @@ public class BsaServiceUtilsTest {
     patient.setId("1");
     patient.addName().setFamily("Doe").addGiven("John");
     bsaServiceUtils.saveFhirResourceToFile(patient, "NotificationBundleEncounterClose");
+    assertNotNull(patient);
+    assertEquals("1", patient.getId());
+    assertTrue(patient.hasName());
   }
 
   @Test
@@ -302,6 +310,9 @@ public class BsaServiceUtilsTest {
     patient.setId("1");
     patient.addName().setFamily("Doe").addGiven("John");
     bsaServiceUtils.saveResourceToFile(patient);
+    assertNotNull(patient);
+    assertEquals("1", patient.getId());
+    assertFalse(patient.getName().isEmpty());
   }
 
   @Test

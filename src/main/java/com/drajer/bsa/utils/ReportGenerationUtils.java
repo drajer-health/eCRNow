@@ -14,6 +14,17 @@ public class ReportGenerationUtils {
   private static final Logger logger = LoggerFactory.getLogger(ReportGenerationUtils.class);
 
   private static final String SMOKING_STATUS_CODE = "72166-2";
+  // Map key constants (used 29+ times)
+  private static final String SYSTEM_KEY = "system";
+  private static final String CODE_KEY = "code";
+
+  // System URL constants
+  private static final String LOINC_SYSTEM = "http://loinc.org";
+  private static final String SNOMED_SYSTEM = "http://snomed.info/sct";
+
+  // Code constants (for section methods)
+  private static final String PREGNANCY_SECTION_CODE = "90767-5";
+  private static final String SOCIAL_HISTORY_SECTION_CODE = "29762-2";
 
   private static final Set<String> PREGNANCY_CODES =
       Set.of(
@@ -26,53 +37,53 @@ public class ReportGenerationUtils {
       List.of(
 
           // Section code
-          Map.of("system", "http://loinc.org", "code", "29762-2"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, CODE_KEY, SOCIAL_HISTORY_SECTION_CODE),
 
           // Tobacco / Smoking
-          Map.of("system", "http://loinc.org", "code", "72166-2"),
-          Map.of("system", "http://loinc.org", "code", "11367-0"),
-          Map.of("system", "http://snomed.info/sct", "code", "229819007"),
-          Map.of("system", "http://snomed.info/sct", "code", "365980008"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", SMOKING_STATUS_CODE),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11367-0"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "229819007"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "365980008"),
 
           // Alcohol use
-          Map.of("system", "http://loinc.org", "code", "74013-4"),
-          Map.of("system", "http://loinc.org", "code", "11343-1"),
-          Map.of("system", "http://snomed.info/sct", "code", "228273003"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "74013-4"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11343-1"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "228273003"),
 
           // Substance / Drug use
-          Map.of("system", "http://loinc.org", "code", "11344-9"),
-          Map.of("system", "http://snomed.info/sct", "code", "228366006"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11344-9"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "228366006"),
 
           // Occupational Data for Health (ODH)
-          Map.of("system", "http://loinc.org", "code", "11341-5"),
-          Map.of("system", "http://loinc.org", "code", "21843-8"),
-          Map.of("system", "http://loinc.org", "code", "87510-4"),
-          Map.of("system", "http://loinc.org", "code", "74165-2"),
-          Map.of("system", "http://snomed.info/sct", "code", "364703007"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11341-5"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "21843-8"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "87510-4"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "74165-2"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "364703007"),
 
           // Travel History
-          Map.of("system", "http://loinc.org", "code", "8691-8"),
-          Map.of("system", "http://snomed.info/sct", "code", "420008001"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "8691-8"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "420008001"),
 
           // Home Environment
-          Map.of("system", "http://loinc.org", "code", "71802-3"),
-          Map.of("system", "http://snomed.info/sct", "code", "224229001"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "71802-3"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "224229001"),
 
           // Disability Status
-          Map.of("system", "http://loinc.org", "code", "69858-6"),
-          Map.of("system", "http://snomed.info/sct", "code", "363787002"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "69858-6"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "363787002"),
 
           // Country / Residence / Nationality
-          Map.of("system", "http://loinc.org", "code", "77983-5"),
-          Map.of("system", "http://snomed.info/sct", "code", "186034007"),
-          Map.of("system", "http://loinc.org", "code", "46463-6"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "77983-5"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "186034007"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "46463-6"),
 
           // Exposure / Contact Information
-          Map.of("system", "http://loinc.org", "code", "85657-3"),
-          Map.of("system", "http://snomed.info/sct", "code", "418038007"),
+          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "85657-3"),
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "418038007"),
 
           // General social context
-          Map.of("system", "http://snomed.info/sct", "code", "365508006"));
+          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "365508006"));
 
   private ReportGenerationUtils() {}
 
@@ -305,8 +316,8 @@ public class ReportGenerationUtils {
 
         if (obs.hasCode() && obs.getCode().hasCoding()) {
           for (Map<String, Object> pregnancyCodeMap : pregnancyCodes) {
-            String system = (String) pregnancyCodeMap.get("system");
-            String code = (String) pregnancyCodeMap.get("code");
+            String system = (String) pregnancyCodeMap.get(SYSTEM_KEY);
+            String code = (String) pregnancyCodeMap.get(CODE_KEY);
             if (CdaFhirUtilities.isCodePresent(
                 Collections.singletonList(obs.getCode()), code, system)) {
               returnVal.add(r);
@@ -339,8 +350,8 @@ public class ReportGenerationUtils {
 
           for (Map<String, String> codeMap : socialHistoryCodes) {
 
-            String system = codeMap.get("system");
-            String code = codeMap.get("code");
+            String system = codeMap.get(SYSTEM_KEY);
+            String code = codeMap.get(CODE_KEY);
 
             if (CdaFhirUtilities.isCodePresent(
                 Collections.singletonList(observation.getCode()), code, system)) {
@@ -365,8 +376,8 @@ public class ReportGenerationUtils {
     return sc.getCode().getCoding().stream()
         .anyMatch(
             coding ->
-                "http://loinc.org".equalsIgnoreCase(coding.getSystem())
-                    && "90767-5".equals(coding.getCode()));
+                LOINC_SYSTEM.equalsIgnoreCase(coding.getSystem())
+                    && PREGNANCY_SECTION_CODE.equals(coding.getCode()));
   }
 
   public static Boolean isSocialHistorySection(Composition.SectionComponent sc) {
@@ -378,7 +389,7 @@ public class ReportGenerationUtils {
     return sc.getCode().getCoding().stream()
         .anyMatch(
             coding ->
-                "http://loinc.org".equalsIgnoreCase(coding.getSystem())
-                    && "29762-2".equals(coding.getCode()));
+                LOINC_SYSTEM.equalsIgnoreCase(coding.getSystem())
+                    && SOCIAL_HISTORY_SECTION_CODE.equals(coding.getCode()));
   }
 }

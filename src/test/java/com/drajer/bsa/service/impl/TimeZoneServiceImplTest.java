@@ -1,13 +1,15 @@
 package com.drajer.bsa.service.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
 
 import com.drajer.bsa.dao.TimeZoneDao;
 import com.drajer.ecrapp.config.QueryReaderConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -66,6 +68,17 @@ public class TimeZoneServiceImplTest {
     when(queryReaderConfig.getQuery("query.setTimezone")).thenReturn(expectedQuery);
 
     timeZoneService.setDatabaseTimezone(timeZone);
+
+    // ASSERT - Verify DAO method was called with correct timezone (1 argument only)
+    verify(timeZoneDao, times(1)).setDatabaseTimezone(timeZone);
+
+    // ASSERT - Capture and verify the timezone parameter
+    ArgumentCaptor<String> tzCaptor = ArgumentCaptor.forClass(String.class);
+    verify(timeZoneDao).setDatabaseTimezone(tzCaptor.capture());
+
+    // ASSERT - Verify parameter value
+    assertEquals("Timezone should be Europe/London", timeZone, tzCaptor.getValue());
+    assertNotNull("Timezone should not be null", tzCaptor.getValue());
   }
 
   @Test(expected = ResponseStatusException.class)

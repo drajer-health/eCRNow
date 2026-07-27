@@ -103,124 +103,154 @@ public class RrReceiverImpl implements RrReceiver {
     }
   }
 
+  /**
+   * Validate document IDs.
+   *
+   * @param rrDocId the RR document ID
+   * @param eicrDocId the EICR document ID
+   */
+  private void validateDocumentIds(CdaIi rrDocId, CdaIi eicrDocId) {
+    if (rrDocId == null || StringUtils.isBlank(rrDocId.getRootValue())) {
+      throw new IllegalArgumentException("Reportability response is missing RR_Doc_Id");
+    }
+
+    if (eicrDocId == null || StringUtils.isBlank(eicrDocId.getRootValue())) {
+      throw new IllegalArgumentException("Reportability response is missing EICR_Doc_Id");
+    }
+  }
+
+  /**
+   * Set PHM response properties from RR model.
+   *
+   * @param phm the public health message
+   * @param rrModel the RR model
+   * @param rrDocId the RR document ID
+   * @param rrXml the RR XML
+   */
+  private void setPhmResponseProperties(
+      PublicHealthMessage phm, CdaRrModel rrModel, CdaIi rrDocId, String rrXml) {
+    phm.setCdaResponseData(rrXml);
+    phm.setResponseDataId(rrDocId.getRootValue());
+    phm.setResponseMessageType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+    phm.setResponseReceivedTime(Date.from(Instant.now()));
+
+    if (rrModel.getReportableStatus() != null && rrModel.getReportableStatus().getCode() != null) {
+      phm.setResponseProcessingInstruction(rrModel.getReportableStatus().getCode());
+    } else {
+      phm.setResponseProcessingInstruction(EicrTypes.ReportabilityType.UNKNOWN.toString());
+    }
+  }
+
+  /**
+   * Process healthcare setting for RR.
+   *
+   * @param phm the public health message
+   * @param rrModel the RR model
+   * @param rrXml the RR XML
+   */
+  private void processHealthcareSetting(PublicHealthMessage phm, CdaRrModel rrModel, String rrXml) {
+    HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(phm.getFhirServerBaseUrl());
+
+    if (hs != null) {
+      phm.setResponseProcessingStatus(EicrTypes.RrProcessingStatus.SUCCESS.toString());
+      handleDocumentReferenceCreation(phm, rrModel, hs, rrXml);
+      handleRestApiSubmission(phm, rrModel, hs, rrXml);
+    } else {
+      logger.error(
+          "Healthcare Setting not found for {}, hence cannot continue processing.",
+          phm.getFhirServerBaseUrl());
+      phm.setResponseProcessingStatus(
+          EicrTypes.RrProcessingStatus.HEALTHCARE_SETTING_NOT_FOUND_FOR_RR.toString());
+    }
+  }
+
+  /**
+   * Handle document reference creation.
+   *
+   * @param phm the public health message
+   * @param rrModel the RR model
+   * @param hs the healthcare setting
+   * @param rrXml the RR XML
+   */
+  private void handleDocumentReferenceCreation(
+      PublicHealthMessage phm, CdaRrModel rrModel, HealthcareSetting hs, String rrXml) {
+    try {
+      if (Boolean.TRUE.equals(hs.getCreateDocRefForResponse())) {
+        createAndSubmitDocRefToEhr(phm, rrModel, hs, rrXml);
+      }
+    } catch (Exception e) {
+      logger.error(
+          " Error submitting RR Xml to EHR as Document Reference due to exception: {}",
+          e.getMessage());
+      phm.setResponseProcessingStatus(
+          EicrTypes.RrProcessingStatus.FAILED_RR_SUBMISSION_TO_EHR.toString());
+    }
+  }
+
+  /**
+   * Handle REST API submission.
+   *
+   * @param phm the public health message
+   * @param rrModel the RR model
+   * @param hs the healthcare setting
+   * @param rrXml the RR XML
+   */
+  private void handleRestApiSubmission(
+      PublicHealthMessage phm, CdaRrModel rrModel, HealthcareSetting hs, String rrXml) {
+    try {
+      if (hs.getHandOffResponseToRestApi() != null && !hs.getHandOffResponseToRestApi().isEmpty()) {
+        logger.info("getHandOffResponseToRestApi is not empty");
+        if (!submitResponseToRestApi(phm, rrModel, hs, rrXml)) {
+          phm.setResponseProcessingStatus(
+              EicrTypes.RrProcessingStatus.FAILED_RR_SUBMISSION_TO_REST_API.toString());
+        }
+      }
+    } catch (Exception e) {
+      logger.error(
+          " Error submitting RR Xml to EHR or Rest API endpoint due to exception: {}",
+          e.getMessage());
+      phm.setResponseProcessingStatus(
+          EicrTypes.RrProcessingStatus.FAILED_RR_SUBMISSION_TO_REST_API.toString());
+    }
+  }
+
   @Override
   public void handleReportabilityResponse(ReportabilityResponse data, String xRequestId) {
 
     logger.info(" Start processing RR");
 
-    if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
-
-      logger.debug("Reportability Response: {}", data.getRrXml());
-
-      final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
-      final CdaIi rrDocId = rrModel.getRrDocId();
-      final CdaIi eicrDocId = rrModel.getEicrDocId();
-
-      if (rrDocId == null || StringUtils.isBlank(rrDocId.getRootValue())) {
-        throw new IllegalArgumentException("Reportability response is missing RR_Doc_Id");
-      }
-
-      if (eicrDocId == null || StringUtils.isBlank(eicrDocId.getRootValue())) {
-        throw new IllegalArgumentException("Reportability response is missing EICR_Doc_Id");
-      }
-
-      logger.info(
-          "Processing RR_DOC_ID {} of type {} for EICR_DOC_ID {}",
-          rrDocId.getRootValue(),
-          rrModel.getReportableType(),
-          eicrDocId.getRootValue());
-      PublicHealthMessage phm = phDao.getBySubmittedDataId(eicrDocId.getRootValue());
-
-      if (phm != null) {
-
-        logger.info(" Found the ecr for doc Id = {}", eicrDocId.getRootValue());
-
-        phm.setCdaResponseData(data.getRrXml());
-        // phm.setxRequestId(xRequestId);
-        phm.setResponseDataId(rrDocId.getRootValue());
-        phm.setResponseMessageType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
-        phm.setResponseReceivedTime(Date.from(Instant.now()));
-
-        if (rrModel.getReportableStatus() != null
-            && rrModel.getReportableStatus().getCode() != null) {
-
-          // Set the RRVS1 (Reportable) , RRVS2 (May be Reportable),
-          // RRVS3 (Not Reportable), RRVS4 (No Rule Met) attribute to push to EHR.
-          phm.setResponseProcessingInstruction(rrModel.getReportableStatus().getCode());
-        } else phm.setResponseProcessingInstruction(EicrTypes.ReportabilityType.UNKNOWN.toString());
-
-        // Check where the response needs to be delivered.
-        HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(phm.getFhirServerBaseUrl());
-
-        if (hs != null) {
-
-          // Default to Success.
-          phm.setResponseProcessingStatus(EicrTypes.RrProcessingStatus.SUCCESS.toString());
-
-          try {
-            // Check and create Document Reference
-            if (Boolean.TRUE.equals(hs.getCreateDocRefForResponse())) {
-
-              createAndSubmitDocRefToEhr(phm, rrModel, hs, data.getRrXml());
-            }
-
-          } catch (Exception e) {
-            logger.error(
-                " Error submitting RR Xml to EHR as Document Reference due to exception: {}",
-                e.getMessage());
-
-            phm.setResponseProcessingStatus(
-                EicrTypes.RrProcessingStatus.FAILED_RR_SUBMISSION_TO_EHR.toString());
-          }
-
-          try {
-
-            // Check and handoff to REST API if needed
-            if (hs.getHandOffResponseToRestApi() != null
-                && !hs.getHandOffResponseToRestApi().isEmpty()) {
-              logger.info("getHandOffResponseToRestApi is not empty");
-
-              if (!submitResponseToRestApi(phm, rrModel, hs, data.getRrXml())) {
-
-                phm.setResponseProcessingStatus(
-                    EicrTypes.RrProcessingStatus.FAILED_RR_SUBMISSION_TO_REST_API.toString());
-              }
-            }
-
-          } catch (Exception e) {
-            logger.error(
-                " Error submitting RR Xml to EHR or Rest API endpoint due to exception: {}",
-                e.getMessage());
-
-            phm.setResponseProcessingStatus(
-                EicrTypes.RrProcessingStatus.FAILED_RR_SUBMISSION_TO_REST_API.toString());
-          }
-
-        } else {
-          logger.error(
-              "Healthcare Setting not found for {}, hence cannot continue processing.",
-              phm.getFhirServerBaseUrl());
-
-          phm.setResponseProcessingStatus(
-              EicrTypes.RrProcessingStatus.HEALTHCARE_SETTING_NOT_FOUND_FOR_RR.toString());
-        }
-
-        // Save the state, no matter what so that they can be reprocessed.
-        phDao.saveOrUpdate(phm);
-
-      } else {
-        String errorMsg =
-            "Unable to find PublicHealthMessage (Eicr) for Doc Id: {} " + rrDocId.getRootValue();
-        logger.error(errorMsg);
-
-        // Throw to see if we can succeed again, maybe we should store orphan messages in a
-        // different table in future.
-        throw new IllegalArgumentException(errorMsg);
-      }
-    } else {
-      String errorMsg = "Received empty RR in request: " + xRequestId;
-      logger.error(errorMsg);
+    if (data.getRrXml() == null || data.getRrXml().isEmpty()) {
+      logger.error("Received empty RR in request: " + xRequestId);
+      return;
     }
+
+    logger.debug("Reportability Response: {}", data.getRrXml());
+
+    final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
+    final CdaIi rrDocId = rrModel.getRrDocId();
+    final CdaIi eicrDocId = rrModel.getEicrDocId();
+
+    validateDocumentIds(rrDocId, eicrDocId);
+
+    logger.info(
+        "Processing RR_DOC_ID {} of type {} for EICR_DOC_ID {}",
+        rrDocId.getRootValue(),
+        rrModel.getReportableType(),
+        eicrDocId.getRootValue());
+
+    PublicHealthMessage phm = phDao.getBySubmittedDataId(eicrDocId.getRootValue());
+
+    if (phm == null) {
+      String errorMsg =
+          "Unable to find PublicHealthMessage (Eicr) for Doc Id: {} " + rrDocId.getRootValue();
+      logger.error(errorMsg);
+      throw new IllegalArgumentException(errorMsg);
+    }
+
+    logger.info(" Found the ecr for doc Id = {}", eicrDocId.getRootValue());
+    setPhmResponseProperties(phm, rrModel, rrDocId, data.getRrXml());
+    processHealthcareSetting(phm, rrModel, data.getRrXml());
+    phDao.saveOrUpdate(phm);
   }
 
   private DocumentReference createAndSubmitDocRefToEhr(

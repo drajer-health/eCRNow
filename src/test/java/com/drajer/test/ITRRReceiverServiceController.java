@@ -66,7 +66,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     map.put("token", "R4/Misc/AccessToken.json");
     map.put("metadata", "R4/Misc/MetaData_r4.json");
 
-    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    stubHelper = new WireMockHelper(wireMockServer, WIRE_MOCK_HTTP_PORT);
     stubHelper.stubAuthAndMetadata(map);
 
     String response =
@@ -83,7 +83,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
                     .withHeader(
                         "location",
                         "http://localhost:"
-                            + wireMockHttpPort
+                            + WIRE_MOCK_HTTP_PORT
                             + "/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/DocumentReference/197477086")
                     .withHeader("x-request-id", "32034a8e-07ff-4bfb-a686-de8a956fbda9")
                     .withHeader("Cache-Control", "no-cache")));
@@ -243,7 +243,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       String rrXml =
           rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", "WrongXCorrelationID");
       rr.setRrXml(rrXml);
-      String fhirUrl = "http://localhost:" + wireMockHttpPort + "/FHIR";
+      String fhirUrl = "http://localhost:" + WIRE_MOCK_HTTP_PORT + "/FHIR";
       rr.setFhirUrl(fhirUrl);
       ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
       wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
@@ -329,7 +329,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       String rrXml =
           rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", "WrongXCorrelationID");
       rr.setRrXml(rrXml);
-      String fhirUrl = "http://localhost:" + wireMockHttpPort + "/FHIR";
+      String fhirUrl = "http://localhost:" + WIRE_MOCK_HTTP_PORT + "/FHIR";
       rr.setFhirUrl(fhirUrl);
       ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
       wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
@@ -346,7 +346,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       String rrXml =
           rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", "WrongXCorrelationID");
       rr.setRrXml(rrXml);
-      String fhirUrl = "http://localhost:" + wireMockHttpPort + "/FHIR";
+      String fhirUrl = "http://localhost:" + WIRE_MOCK_HTTP_PORT + "/FHIR";
       rr.setFhirUrl(fhirUrl);
       ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
       wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));

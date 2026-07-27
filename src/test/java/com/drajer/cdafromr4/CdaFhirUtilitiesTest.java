@@ -36,9 +36,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -53,7 +53,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   public static final String INTERPRETATION_CODE = "interpretationCode";
   private static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilitiesTest.class);
 
-  @Before
+  @BeforeEach
   public void setUp() throws JSONException {
     createTestDataForStatusCodeTest();
     createTestDataForCodingXML();
@@ -270,7 +270,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertNull(testLocation);
   }
 
-  @Test
+  @org.junit.jupiter.api.Test
   public void testGetCodingXmlForMappedConceptDomain() {
     String expectedResult =
         "<interpretationCode code=\"A\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Abnormal\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Normal\"/>";
@@ -294,7 +294,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expectedResult, actualResult);
   }
 
-  @Test
+  @org.junit.jupiter.api.Test
   public void testGetCodingXmlForValueForMappedConceptDomain() {
     String expectedResult =
         "<value xsi:type=\"CD\" code=\"A\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Abnormal\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Normal\"/>";
@@ -1874,6 +1874,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     String result = CdaFhirUtilities.getXmlForTypeForValueIvlTsEffectiveTime("effectiveTime", dt);
 
     // assertEquals(expected.trim(), result.trim());
+    assertNotNull("Result should not be null", result);
+    assertThat(result).isNotEmpty();
+    assertThat(result).contains("effectiveTime");
+    assertThat(result).contains("xsi:type=\"IVL_TS\"");
   }
 
   @Test
@@ -1946,7 +1950,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @Test
   public void testGetXmlForTypeForValueIvlTsEffectiveTime_WithDifferentInputs() {
     DateTimeType dateTimeType = new DateTimeType("2022-01-01T00:00:00Z");
-    String expectedValue = "";
     String actualValue = null;
 
     Timing timing = new Timing();
@@ -1957,31 +1960,41 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     period.setStart(new Date(2323223232L));
     period.setEnd(new Date(2523223232L));
 
-    expectedValue = "<effectiveTime value=\"20220101000000+0000\"/>\r\n";
+    // ============ TEST 1: DateTimeType ============
     actualValue =
         CdaFhirUtilities.getXmlForTypeForValueIvlTsEffectiveTime(
             CdaGeneratorConstants.EFF_TIME_EL_NAME, dateTimeType);
-    actualValue = StringUtils.normalizeSpace(actualValue).trim();
-    // assertEquals(expectedValue.trim(), actualValue.trim());
 
-    expectedValue = "";
+    assertNotNull("Result for DateTimeType should not be null", actualValue);
+    assertThat(actualValue)
+        .isNotEmpty()
+        .contains("effectiveTime")
+        .contains("xsi:type=\"IVL_TS\"")
+        .contains("20220101000000");
+
+    // ============ TEST 2: Null Input ============
     actualValue =
         CdaFhirUtilities.getXmlForTypeForValueIvlTsEffectiveTime(
             CdaGeneratorConstants.EFF_TIME_EL_NAME, null);
-    actualValue = StringUtils.normalizeSpace(actualValue).trim();
-    // assertEquals(expectedValue.trim(), actualValue.trim());
 
-    expectedValue =
-        "<effectiveTime>\r\n"
-            + "<low value=\"19700127212023+0000\"/>\r\n"
-            + "<high value=\"19700130045343+0000\"/>\r\n"
-            + "</effectiveTime>";
+    assertNotNull("Result for null input should not be null", actualValue);
+    // Null should return empty or simple structure
+    assertTrue(actualValue.isEmpty() || actualValue.contains("NI"));
+
+    // ============ TEST 3: Period with Start and End ============
     actualValue =
         CdaFhirUtilities.getXmlForTypeForValueIvlTsEffectiveTime(
             CdaGeneratorConstants.EFF_TIME_EL_NAME, period);
-    actualValue = StringUtils.normalizeSpace(actualValue).trim();
-    expectedValue = StringUtils.normalizeSpace(expectedValue).trim();
-    // assertEquals(expectedValue, actualValue);
+
+    String normalizedActual = StringUtils.normalizeSpace(actualValue).trim();
+
+    assertNotNull("Result for Period should not be null", normalizedActual);
+    assertThat(normalizedActual)
+        .contains("effectiveTime")
+        .contains("low")
+        .contains("high")
+        .contains("19700127212023") // start date
+        .contains("19700130045343"); // end date
   }
 
   @Test
@@ -2762,7 +2775,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     boolean isPresent =
         CdaFhirUtilities.isCodeableConceptPresentInValueSet(valueset, codeableConcept);
-    assertNotNull(isPresent);
+    assertFalse(isPresent);
   }
 
   @Test

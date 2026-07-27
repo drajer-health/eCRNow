@@ -28,6 +28,22 @@ import org.springframework.web.server.ResponseStatusException;
 public class PhMessageController {
 
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
+  private static final String PATIENT_ID = "patientId";
+  private static final String NO_PH_MESSAGE_RECORDS_FOUND = "No phMessage records found.";
+  private static final String FHIR_SERVER_BASE_URL = "fhirServerBaseUrl";
+  private static final String ENCOUNTER_ID = "encounterId";
+  private static final String X_REQUEST_ID = "xRequestId";
+  private static final String SUBMITTED_DATA_ID = "submittedDataId";
+  private static final String VERSION = "version";
+  private static final String RESPONSE_DATA_ID = "responseDataId";
+  private static final String RESPONSE_PROCESSING_INSTRUCTION = "responseProcessingInstruction";
+  private static final String NOTIFIED_RESOURCE_ID = "notifiedResourceId";
+  private static final String NOTIFIED_RESOURCE_TYPE = "notifiedResourceType";
+  private static final String KAR_UNIQUE_ID = "karUniqueId";
+  private static final String NOTIFICATION_ID = "notificationId";
+  private static final String X_CORRELATION_ID = "xCorrelationId";
+  private static final String SUBMISSION_TIME = "submissionTime";
+  private static final String RESPONSE_RECEIVED_TIME = "responseReceivedTime";
   private final Logger logger = LoggerFactory.getLogger(PhMessageController.class);
 
   @Autowired PhMessageService phMessageService;
@@ -35,20 +51,20 @@ public class PhMessageController {
   @CrossOrigin
   @GetMapping(value = "/api/phMessage", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getPhMessageDetails(
-      @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
-      @RequestParam(name = "patientId", required = false) String patientId,
-      @RequestParam(name = "encounterId", required = false) String encounterId,
-      @RequestParam(name = "xRequestId", required = false) String xRequestId,
-      @RequestParam(name = "submittedDataId", required = false) String submittedDataId,
-      @RequestParam(name = "version", required = false) String version,
-      @RequestParam(name = "responseDataId", required = false) String responseDataId,
-      @RequestParam(name = "responseProcessingInstruction", required = false)
+      @RequestParam(name = FHIR_SERVER_BASE_URL, required = false) String fhirServerBaseUrl,
+      @RequestParam(name = PATIENT_ID, required = false) String patientId,
+      @RequestParam(name = ENCOUNTER_ID, required = false) String encounterId,
+      @RequestParam(name = X_REQUEST_ID, required = false) String xRequestId,
+      @RequestParam(name = SUBMITTED_DATA_ID, required = false) String submittedDataId,
+      @RequestParam(name = VERSION, required = false) String version,
+      @RequestParam(name = RESPONSE_DATA_ID, required = false) String responseDataId,
+      @RequestParam(name = RESPONSE_PROCESSING_INSTRUCTION, required = false)
           String responseProcessingInstruction,
-      @RequestParam(name = "notifiedResourceId", required = false) String notifiedResourceId,
-      @RequestParam(name = "notifiedResourceType", required = false) String notifiedResourceType,
-      @RequestParam(name = "karUniqueId", required = false) String karUniqueId,
-      @RequestParam(name = "notificationId", required = false) String notificationId,
-      @RequestParam(name = "xCorrelationId", required = false) String xCorrelationId,
+      @RequestParam(name = NOTIFIED_RESOURCE_ID, required = false) String notifiedResourceId,
+      @RequestParam(name = NOTIFIED_RESOURCE_TYPE, required = false) String notifiedResourceType,
+      @RequestParam(name = KAR_UNIQUE_ID, required = false) String karUniqueId,
+      @RequestParam(name = NOTIFICATION_ID, required = false) String notificationId,
+      @RequestParam(name = X_CORRELATION_ID, required = false) String xCorrelationId,
       @RequestParam(name = "startTime", required = false) String startTime,
       @RequestParam(name = "endTime", required = false) String endTime,
       @RequestParam(name = "summaryFlag", required = false, defaultValue = "false")
@@ -82,75 +98,31 @@ public class PhMessageController {
           karUniqueId,
           notificationId);
 
-      Map<String, String> searchParams = new HashMap<>();
-      if (fhirServerBaseUrl != null && !fhirServerBaseUrl.isEmpty()) {
-        searchParams.put("fhirServerBaseUrl", fhirServerBaseUrl);
-      }
-      if (patientId != null && !patientId.isEmpty()) {
-        searchParams.put("patientId", patientId);
-      }
-      if (encounterId != null && !encounterId.isEmpty()) {
-        searchParams.put("encounterId", encounterId);
-      }
-      if (patientId != null && !patientId.isEmpty()) {
-        searchParams.put("patientId", patientId);
-      }
-
-      if (xRequestId != null && !xRequestId.isEmpty()) {
-        searchParams.put("xRequestId", xRequestId);
-      }
-
-      if (submittedDataId != null && !submittedDataId.isEmpty()) {
-        searchParams.put("submittedDataId", submittedDataId);
-      }
-      if (version != null && !version.isEmpty()) {
-        searchParams.put("version", version);
-      }
-      if (responseDataId != null && !responseDataId.isEmpty()) {
-        searchParams.put("responseDataId", responseDataId);
-      }
-
-      if (responseProcessingInstruction != null && !responseProcessingInstruction.isEmpty()) {
-        searchParams.put("responseProcessingInstruction", responseProcessingInstruction);
-      }
-
-      if (notifiedResourceId != null && !notifiedResourceId.isEmpty()) {
-        searchParams.put("notifiedResourceId", notifiedResourceId);
-      }
-
-      if (notifiedResourceType != null && !notifiedResourceType.isEmpty()) {
-        searchParams.put("notifiedResourceType", notifiedResourceType);
-      }
-
-      if (karUniqueId != null && !karUniqueId.isEmpty()) {
-        searchParams.put("karUniqueId", karUniqueId);
-      }
-
-      if (notificationId != null && !notificationId.isEmpty()) {
-        searchParams.put("notificationId", notificationId);
-      }
-
-      if (xCorrelationId != null && !xCorrelationId.isEmpty()) {
-        searchParams.put("xCorrelationId", xCorrelationId);
-      }
-
-      if (startTime != null) {
-        searchParams.put("submissionTime", startTime);
-      }
-
-      if (endTime != null) {
-        searchParams.put("responseReceivedTime", endTime);
-      }
+      Map<String, String> searchParams =
+          buildPhMessageSearchParams(
+              fhirServerBaseUrl,
+              patientId,
+              encounterId,
+              xRequestId,
+              submittedDataId,
+              version,
+              responseDataId,
+              responseProcessingInstruction,
+              notifiedResourceId,
+              notifiedResourceType,
+              karUniqueId,
+              notificationId,
+              xCorrelationId,
+              startTime,
+              endTime);
 
       List<PublicHealthMessage> phMessage =
           phMessageService.getPhMessageData(searchParams, summaryFlag);
 
       if (phMessage != null) {
         return new ResponseEntity<>(phMessage, HttpStatus.OK);
-      } else {
-        String message = "Failed to get ph message data:";
-        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
       }
+      return new ResponseEntity<>("Failed to get ph message data:", HttpStatus.NOT_FOUND);
 
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -161,20 +133,20 @@ public class PhMessageController {
   @CrossOrigin
   @GetMapping(value = "/api/getPhMessagesSummary", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getPhMessageDetailsSummary(
-      @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
-      @RequestParam(name = "patientId", required = false) String patientId,
-      @RequestParam(name = "encounterId", required = false) String encounterId,
-      @RequestParam(name = "xRequestId", required = false) String xRequestId,
-      @RequestParam(name = "submittedDataId", required = false) String submittedDataId,
-      @RequestParam(name = "version", required = false) String version,
-      @RequestParam(name = "responseDataId", required = false) String responseDataId,
-      @RequestParam(name = "responseProcessingInstruction", required = false)
+      @RequestParam(name = FHIR_SERVER_BASE_URL, required = false) String fhirServerBaseUrl,
+      @RequestParam(name = PATIENT_ID, required = false) String patientId,
+      @RequestParam(name = ENCOUNTER_ID, required = false) String encounterId,
+      @RequestParam(name = X_REQUEST_ID, required = false) String xRequestId,
+      @RequestParam(name = SUBMITTED_DATA_ID, required = false) String submittedDataId,
+      @RequestParam(name = VERSION, required = false) String version,
+      @RequestParam(name = RESPONSE_DATA_ID, required = false) String responseDataId,
+      @RequestParam(name = RESPONSE_PROCESSING_INSTRUCTION, required = false)
           String responseProcessingInstruction,
-      @RequestParam(name = "notifiedResourceId", required = false) String notifiedResourceId,
-      @RequestParam(name = "notifiedResourceType", required = false) String notifiedResourceType,
-      @RequestParam(name = "karUniqueId", required = false) String karUniqueId,
-      @RequestParam(name = "notificationId", required = false) String notificationId,
-      @RequestParam(name = "xCorrelationId", required = false) String xCorrelationId,
+      @RequestParam(name = NOTIFIED_RESOURCE_ID, required = false) String notifiedResourceId,
+      @RequestParam(name = NOTIFIED_RESOURCE_TYPE, required = false) String notifiedResourceType,
+      @RequestParam(name = KAR_UNIQUE_ID, required = false) String karUniqueId,
+      @RequestParam(name = NOTIFICATION_ID, required = false) String notificationId,
+      @RequestParam(name = X_CORRELATION_ID, required = false) String xCorrelationId,
       @RequestParam(name = "startTime", required = false) String startTime,
       @RequestParam(name = "endTime", required = false) String endTime) {
     List<JSONObject> phMessageData = new ArrayList<>();
@@ -206,74 +178,30 @@ public class PhMessageController {
           karUniqueId,
           notificationId);
 
-      Map<String, String> searchParams = new HashMap<>();
-      if (fhirServerBaseUrl != null && !fhirServerBaseUrl.isEmpty()) {
-        searchParams.put("fhirServerBaseUrl", fhirServerBaseUrl);
-      }
-      if (patientId != null && !patientId.isEmpty()) {
-        searchParams.put("patientId", patientId);
-      }
-      if (encounterId != null && !encounterId.isEmpty()) {
-        searchParams.put("encounterId", encounterId);
-      }
-      if (patientId != null && !patientId.isEmpty()) {
-        searchParams.put("patientId", patientId);
-      }
-
-      if (xRequestId != null && !xRequestId.isEmpty()) {
-        searchParams.put("xRequestId", xRequestId);
-      }
-
-      if (submittedDataId != null && !submittedDataId.isEmpty()) {
-        searchParams.put("submittedDataId", submittedDataId);
-      }
-      if (version != null && !version.isEmpty()) {
-        searchParams.put("version", version);
-      }
-      if (responseDataId != null && !responseDataId.isEmpty()) {
-        searchParams.put("responseDataId", responseDataId);
-      }
-
-      if (responseProcessingInstruction != null && !responseProcessingInstruction.isEmpty()) {
-        searchParams.put("responseProcessingInstruction", responseProcessingInstruction);
-      }
-
-      if (notifiedResourceId != null && !notifiedResourceId.isEmpty()) {
-        searchParams.put("notifiedResourceId", notifiedResourceId);
-      }
-
-      if (notifiedResourceType != null && !notifiedResourceType.isEmpty()) {
-        searchParams.put("notifiedResourceType", notifiedResourceType);
-      }
-
-      if (karUniqueId != null && !karUniqueId.isEmpty()) {
-        searchParams.put("karUniqueId", karUniqueId);
-      }
-
-      if (notificationId != null && !notificationId.isEmpty()) {
-        searchParams.put("notificationId", notificationId);
-      }
-
-      if (xCorrelationId != null && !xCorrelationId.isEmpty()) {
-        searchParams.put("xCorrelationId", xCorrelationId);
-      }
-
-      if (startTime != null) {
-        searchParams.put("submissionTime", startTime);
-      }
-
-      if (endTime != null) {
-        searchParams.put("responseReceivedTime", endTime);
-      }
+      Map<String, String> searchParams =
+          buildPhMessageSearchParams(
+              fhirServerBaseUrl,
+              patientId,
+              encounterId,
+              xRequestId,
+              submittedDataId,
+              version,
+              responseDataId,
+              responseProcessingInstruction,
+              notifiedResourceId,
+              notifiedResourceType,
+              karUniqueId,
+              notificationId,
+              xCorrelationId,
+              startTime,
+              endTime);
 
       List<PublicHealthMessage> phMessage = phMessageService.getPhMessageDataSummary(searchParams);
 
       if (phMessage != null) {
         return new ResponseEntity<>(phMessage, HttpStatus.OK);
-      } else {
-        String message = "Failed to get ph message data:";
-        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
       }
+      return new ResponseEntity<>("Failed to get ph message data:", HttpStatus.NOT_FOUND);
 
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -294,7 +222,7 @@ public class PhMessageController {
       if (phMessage != null && !phMessage.isEmpty()) {
         return ResponseEntity.ok(phMessage);
       } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No phMessage records found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NO_PH_MESSAGE_RECORDS_FOUND);
       }
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
@@ -317,7 +245,7 @@ public class PhMessageController {
       if (phMessage != null && !phMessage.isEmpty()) {
         return ResponseEntity.ok(phMessage);
       } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No phMessage records found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NO_PH_MESSAGE_RECORDS_FOUND);
       }
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
@@ -350,7 +278,7 @@ public class PhMessageController {
 
       if (publicHealthMessages.isEmpty()) {
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No phMessage records found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NO_PH_MESSAGE_RECORDS_FOUND);
       }
       publicHealthMessages.forEach(
           publicHealthMessage -> {
@@ -362,6 +290,54 @@ public class PhMessageController {
       logger.error("Error in processing the request", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("Error in processing the request");
+    }
+  }
+
+  private Map<String, String> buildPhMessageSearchParams(
+      String fhirServerBaseUrl,
+      String patientId,
+      String encounterId,
+      String xRequestId,
+      String submittedDataId,
+      String version,
+      String responseDataId,
+      String responseProcessingInstruction,
+      String notifiedResourceId,
+      String notifiedResourceType,
+      String karUniqueId,
+      String notificationId,
+      String xCorrelationId,
+      String startTime,
+      String endTime) {
+    Map<String, String> searchParams = new HashMap<>();
+    addParameterIfPresent(searchParams, FHIR_SERVER_BASE_URL, fhirServerBaseUrl);
+    addParameterIfPresent(searchParams, PATIENT_ID, patientId);
+    addParameterIfPresent(searchParams, ENCOUNTER_ID, encounterId);
+    addParameterIfPresent(searchParams, X_REQUEST_ID, xRequestId);
+    addParameterIfPresent(searchParams, SUBMITTED_DATA_ID, submittedDataId);
+    addParameterIfPresent(searchParams, VERSION, version);
+    addParameterIfPresent(searchParams, RESPONSE_DATA_ID, responseDataId);
+    addParameterIfPresent(
+        searchParams, RESPONSE_PROCESSING_INSTRUCTION, responseProcessingInstruction);
+    addParameterIfPresent(searchParams, NOTIFIED_RESOURCE_ID, notifiedResourceId);
+    addParameterIfPresent(searchParams, NOTIFIED_RESOURCE_TYPE, notifiedResourceType);
+    addParameterIfPresent(searchParams, KAR_UNIQUE_ID, karUniqueId);
+    addParameterIfPresent(searchParams, NOTIFICATION_ID, notificationId);
+    addParameterIfPresent(searchParams, X_CORRELATION_ID, xCorrelationId);
+    addTimeParameterIfPresent(searchParams, SUBMISSION_TIME, startTime);
+    addTimeParameterIfPresent(searchParams, RESPONSE_RECEIVED_TIME, endTime);
+    return searchParams;
+  }
+
+  private void addParameterIfPresent(Map<String, String> map, String key, String value) {
+    if (value != null && !value.isEmpty()) {
+      map.put(key, value);
+    }
+  }
+
+  private void addTimeParameterIfPresent(Map<String, String> map, String key, String value) {
+    if (value != null) {
+      map.put(key, value);
     }
   }
 

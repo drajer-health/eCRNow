@@ -1,6 +1,7 @@
 package com.drajer.cdafromr4;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
@@ -131,6 +132,10 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     // saveDataToFile(actualXml,
     // "C://codebase/eCRNow/src/test/resources/CdaTestData/Eicr/eicr.xml");
     // assertXmlEquals(expectedXml, actualXml);
+    assertNotNull("Generated XML should not be null", actualXml);
+    assertThat(actualXml).isNotEmpty();
+    assertThat(actualXml).contains("ClinicalDocument");
+    assertThat(actualXml).contains("recordTarget");
   }
 
   @Test
@@ -167,6 +172,12 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     ApplicationUtils.saveDataToFile(actualXml, "./Eicr.xml");
 
     // assertXmlEquals(expectedXml, actualXml);
+    assertNotNull("Generated EICR XML should not be null", actualXml);
+    assertThat(actualXml).isNotEmpty();
+    assertThat(actualXml).contains("ClinicalDocument");
+    assertThat(actualXml).contains("<realmCode code=\"US\"/>");
+    assertThat(actualXml).contains("recordTarget");
+    assertThat(actualXml).contains("author");
   }
 
   @Test

@@ -36,11 +36,9 @@ public class TaskConfiguration {
   @Value("${workflow.endpoint}")
   private String workflowEndpoint;
 
-  @Autowired LaunchDetailsDao launchDetailsDao;
-
   /** Define a one-time task which have to be manually scheduled. */
   @Bean
-  public Task<TaskTimer> sampleOneTimeTask() {
+  public Task<TaskTimer> sampleOneTimeTask(LaunchDetailsDao launchDetailsDao) {
     log.info("Initializing the One time task");
     OneTimeTask<TaskTimer> myTask =
         Tasks.oneTime("EICRTask", TaskTimer.class)
@@ -101,7 +99,7 @@ public class TaskConfiguration {
                           launchDetailsDao.getAuthDetailsById(inst.getData().getLaunchDetailsId());
                       if (details != null) {
                         details.setProcessingState(
-                            LaunchDetails.getString(LaunchDetails.ProcessingStatus.Errors));
+                            LaunchDetails.getString(LaunchDetails.ProcessingStatus.ERRORS));
                         launchDetailsDao.saveOrUpdate(details);
                       }
 

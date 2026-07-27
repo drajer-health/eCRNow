@@ -11,14 +11,14 @@ public class ScheduledJobData implements Serializable {
 
   static final long serialVersionUID = 1403267933737660088L;
 
-  UUID karExecutionStateId;
-  String actionId;
-  BsaTypes.ActionType actionType;
-  String jobId;
-  transient Instant expirationTime;
-  Map<String, String> mdcContext;
-  String xRequestId;
-  BsaJobType jobType;
+  private UUID karExecutionStateId;
+  private String actionId;
+  private BsaTypes.ActionType actionType;
+  private String jobId;
+  private transient Instant expirationTime;
+  private Map<String, String> mdcContext;
+  private String xRequestId;
+  private BsaJobType jobType;
 
   public ScheduledJobData(
       UUID id,

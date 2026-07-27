@@ -55,7 +55,17 @@ public class ApplicationUtils {
   @Qualifier("jsonParser")
   IParser jsonParser;
 
-  public ApplicationUtils() {}
+  /**
+   * Default constructor for Spring framework dependency injection. This no-arg constructor is
+   * required for Spring's component scanning, reflection-based instantiation, and framework
+   * compatibility. The jsonParser dependency is provided through Spring's @Autowired field
+   * injection mechanism.
+   */
+  public ApplicationUtils() {
+    // This constructor is intentionally empty. All dependencies are injected via @Autowired
+    // annotations on class fields, not through constructor parameters. No initialization logic
+    // is required here.
+  }
 
   private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
 

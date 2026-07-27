@@ -302,7 +302,17 @@ public class R3ToR2DataConverterUtilsTest {
           typeAsString,
           uniqueResourceIdsByType);
       resources.remove(resource);
+      // ASSERTIONS - Verify method behavior
+      assertNotNull(r4FhirData);
+      assertNotNull(bundle);
+      assertNotNull(uniqueResourceIdsByType);
     }
+
+    // Final assertions after all iterations
+    assertNotNull(r4FhirData);
+    assertNotNull(r4FhirData.getPatient()); // Verify patient was set
+    assertNotNull(r4FhirData.getEncounter()); // Verify encounter was set
+    assertTrue(resources.isEmpty()); // After removing all, set should be empty
   }
 
   @Test

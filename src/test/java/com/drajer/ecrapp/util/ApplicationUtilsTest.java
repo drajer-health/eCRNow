@@ -71,6 +71,12 @@ public class ApplicationUtilsTest {
     ValueSet vsNullCompose = new ValueSet();
     vsNullCompose.setUrl("nullCompose");
     ValueSetSingleton.getInstance().getGrouperValueSets().add(vsNullCompose);
+    // ============ ASSERTIONS ============
+    List<CanonicalType> result = ApplicationUtils.getValueSetListFromGrouper("nullCompose");
+    assertNull("Should return null for ValueSet with null compose", result);
+
+    List<CanonicalType> notFoundResult = ApplicationUtils.getValueSetListFromGrouper("notFound");
+    assertNull("Should return null for non-existent grouper", notFoundResult);
   }
 
   @Test
@@ -393,6 +399,9 @@ public class ApplicationUtilsTest {
         ApplicationUtils.calculateNewTimeForTimer(
             startHour, startMin, endHour, endMin, timeZone, d, now);
     result.isAfter(now);
+    // ============ ASSERTIONS ============
+    assertNotNull("Result should not be null", result);
+    assertTrue("Result should be after current time", result.isAfter(now));
   }
 
   @Test

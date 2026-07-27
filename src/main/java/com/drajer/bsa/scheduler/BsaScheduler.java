@@ -2,6 +2,7 @@ package com.drajer.bsa.scheduler;
 
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaJobType;
+import com.drajer.bsa.service.KarProcessor;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import java.time.Instant;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class BsaScheduler {
   @Autowired ScheduleJobConfiguration schedulerConfig;
 
   @Autowired Scheduler scheduler;
+  @Autowired KarProcessor karProcessor;
 
   public void scheduleJob(
       UUID karExecId,
@@ -53,7 +55,7 @@ public class BsaScheduler {
 
     scheduler.schedule(
         schedulerConfig
-            .sampleOneTimeJob()
+            .sampleOneTimeJob(karProcessor)
             .instance(
                 jobId,
                 new ScheduledJobData(karExecId, actionId, type, t, jobId, xReqId, jobtype, mdc)),

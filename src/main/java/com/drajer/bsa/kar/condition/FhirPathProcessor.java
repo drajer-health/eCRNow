@@ -29,6 +29,10 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String PARAM = "return";
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
+  private static final String NULL_FHIR_PATH_EVALUATION =
+      " Null Value returned from FHIR Path Expression Evaluator : So condition not met";
+  private static final String MED_HIERARCHY_TODO =
+      " To be done, to navigate the Med Hiearachy to get the code ";
 
   private Supplier<R4CqlExecutionService> evaluatorFactory;
 
@@ -63,8 +67,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
-      logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      logger.error(NULL_FHIR_PATH_EVALUATION);
       return false;
     } else {
       if (!(ppc.getValue() instanceof BooleanType)) {
@@ -81,8 +84,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       logger.info(" Result from CQL FHIR Path Evaluation {}", value);
       return value.getValue();
     } else {
-      logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      logger.error(NULL_FHIR_PATH_EVALUATION);
       return false;
     }
   }
@@ -219,179 +221,235 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       Map<String, Set<Resource>> resources) {
 
     if (candidates != null) {
-
       for (Resource res : candidates) {
-
-        if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.Condition) {
-
-          logger.debug(" Found Condition Resource {}", res.getId());
-          Condition cond = (Condition) res;
-          CodeableConcept cc = cond.getCode();
-
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
-
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.Observation) {
-
-          logger.debug(" Found Observation Resource {}", res.getId());
-          Observation obs = (Observation) res;
-          CodeableConcept cc = obs.getCode();
-
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
-
-          if (obs.getValue() instanceof CodeableConcept && obs.getValueCodeableConcept() != null) {
-            CodeableConcept ccv = obs.getValueCodeableConcept();
-            filterByCode(dr, ccv, kd, ctc, resources, res, false);
-          }
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.ServiceRequest) {
-
-          logger.debug(" Found ServiceRequest Resource {}", res.getId());
-          ServiceRequest sr = (ServiceRequest) res;
-          CodeableConcept cc = sr.getCode();
-
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.DiagnosticReport) {
-
-          logger.debug(" Found DiagnosticReport Resource {}", res.getId());
-          DiagnosticReport d = (DiagnosticReport) res;
-          CodeableConcept cc = d.getCode();
-
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.MedicationRequest) {
-
-          logger.debug(" Found MedicationRequest Resource {}", res.getId());
-          MedicationRequest mr = (MedicationRequest) res;
-          Type med = mr.getMedication();
-
-          if (med instanceof CodeableConcept) {
-            CodeableConcept cc = (CodeableConcept) med;
-            filterByCode(dr, cc, kd, ctc, resources, res, false);
-          } else if (med instanceof Reference) {
-            Reference medRef = (Reference) med;
-            String medId =
-                medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
-            if (medId != null && !medId.isEmpty()) {
-              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
-              if (medication != null && !medication.isEmpty()) {
-                Medication m = (Medication) medication;
-                if (m.hasCode()) {
-                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
-                }
-              }
-            }
-          } else {
-            logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
-          }
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.MedicationStatement) {
-
-          logger.debug(" Found MedicationStatement Resource {}", res.getId());
-          MedicationStatement mr = (MedicationStatement) res;
-          Type med = mr.getMedication();
-
-          if (med instanceof CodeableConcept) {
-            CodeableConcept cc = (CodeableConcept) med;
-            filterByCode(dr, cc, kd, ctc, resources, res, false);
-          } else if (med instanceof Reference) {
-            Reference medRef = (Reference) med;
-            String medId =
-                medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
-            if (medId != null && !medId.isEmpty()) {
-              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
-              if (medication != null && !medication.isEmpty()) {
-                Medication m = (Medication) medication;
-                if (m.hasCode()) {
-                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
-                }
-              }
-            }
-          } else {
-            logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
-          }
-
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.MedicationAdministration) {
-
-          logger.debug(" Found MedicationAdministration Resource {}", res.getId());
-          MedicationAdministration mr = (MedicationAdministration) res;
-          Type med = mr.getMedication();
-          if (med instanceof CodeableConcept) {
-            CodeableConcept cc = (CodeableConcept) med;
-            filterByCode(dr, cc, kd, ctc, resources, res, false);
-          } else if (med instanceof Reference) {
-            Reference medRef = (Reference) med;
-            String medId =
-                medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
-            if (medId != null && !medId.isEmpty()) {
-              Resource medication = kd.getResourceById(medId, ResourceType.Medication);
-              if (medication != null && !medication.isEmpty()) {
-                Medication m = (Medication) medication;
-                if (m.hasCode()) {
-                  filterByCode(dr, m.getCode(), kd, ctc, resources, res, false);
-                }
-              }
-            }
-          } else {
-            logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
-          }
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.Procedure) {
-
-          logger.debug(" Found Procedure Resource {}", res.getId());
-          Procedure pr = (Procedure) res;
-
-          CodeableConcept cc = pr.getCode();
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
-
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.Immunization) {
-
-          logger.debug(" Found Immunization Resource {}", res.getId());
-          Immunization immz = (Immunization) res;
-
-          CodeableConcept cc = immz.getVaccineCode();
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.Encounter) {
-
-          logger.debug(" Found Encounter Resource {}", res.getId());
-          Encounter enc = (Encounter) res;
-
-          CodeableConcept cc = enc.getReasonCodeFirstRep();
-          filterByCode(dr, cc, kd, ctc, resources, res, false);
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.MeasureReport) {
-          if (resources.get(res.fhirType()) != null) {
-            resources.get(res.fhirType()).add(res);
-          } else {
-            Set<Resource> resources2 = new HashSet<>();
-            resources2.add(res);
-            resources.put(res.fhirType(), resources2);
-          }
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.ValueSet) {
-          if (resources.get(res.fhirType()) != null) {
-            resources.get(res.fhirType()).add(res);
-          } else {
-            Set<Resource> resources2 = new HashSet<>();
-            resources2.add(res);
-            resources.put(res.fhirType(), resources2);
-          }
-        } else if (res.getResourceType().toString().contentEquals(dr.getType())
-            && res.getResourceType() == ResourceType.CodeSystem) {
-          if (resources.get(res.fhirType()) != null) {
-            resources.get(res.fhirType()).add(res);
-          } else {
-            Set<Resource> resources2 = new HashSet<>();
-            resources2.add(res);
-            resources.put(res.fhirType(), resources2);
-          }
+        if (res.getResourceType().toString().contentEquals(dr.getType())) {
+          handleResourceByType(res, dr, kd, ctc, resources);
         }
       }
+    }
+  }
+
+  private void handleResourceByType(
+      Resource res,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    switch (res.getResourceType()) {
+      case Condition:
+        handleCondition((Condition) res, dr, kd, ctc, resources);
+        break;
+      case Observation:
+        handleObservation((Observation) res, dr, kd, ctc, resources);
+        break;
+      case ServiceRequest:
+        handleServiceRequest((ServiceRequest) res, dr, kd, ctc, resources);
+        break;
+      case DiagnosticReport:
+        handleDiagnosticReport((DiagnosticReport) res, dr, kd, ctc, resources);
+        break;
+      case MedicationRequest:
+        handleMedicationRequest((MedicationRequest) res, dr, kd, ctc, resources);
+        break;
+      case MedicationStatement:
+        handleMedicationStatement((MedicationStatement) res, dr, kd, ctc, resources);
+        break;
+      case MedicationAdministration:
+        handleMedicationAdministration((MedicationAdministration) res, dr, kd, ctc, resources);
+        break;
+      case Procedure:
+        handleProcedure((Procedure) res, dr, kd, ctc, resources);
+        break;
+      case Immunization:
+        handleImmunization((Immunization) res, dr, kd, ctc, resources);
+        break;
+      case Encounter:
+        handleEncounter((Encounter) res, dr, kd, ctc, resources);
+        break;
+      case MeasureReport:
+      case ValueSet:
+      case CodeSystem:
+        handleCodeBasedResources(res, resources);
+        break;
+      default:
+        logger.debug("Unsupported resource type: {}", res.getResourceType());
+    }
+  }
+
+  private void handleCondition(
+      Condition cond,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found Condition Resource {}", cond.getId());
+    CodeableConcept cc = cond.getCode();
+    filterByCode(dr, cc, kd, ctc, resources, cond, false);
+  }
+
+  private void handleObservation(
+      Observation obs,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found Observation Resource {}", obs.getId());
+    CodeableConcept cc = obs.getCode();
+    filterByCode(dr, cc, kd, ctc, resources, obs, false);
+
+    if (obs.getValue() instanceof CodeableConcept && obs.getValueCodeableConcept() != null) {
+      CodeableConcept ccv = obs.getValueCodeableConcept();
+      filterByCode(dr, ccv, kd, ctc, resources, obs, false);
+    }
+  }
+
+  private void handleServiceRequest(
+      ServiceRequest sr,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found ServiceRequest Resource {}", sr.getId());
+    CodeableConcept cc = sr.getCode();
+    filterByCode(dr, cc, kd, ctc, resources, sr, false);
+  }
+
+  private void handleDiagnosticReport(
+      DiagnosticReport d,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found DiagnosticReport Resource {}", d.getId());
+    CodeableConcept cc = d.getCode();
+    filterByCode(dr, cc, kd, ctc, resources, d, false);
+  }
+
+  private void handleMedicationRequest(
+      MedicationRequest mr,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found MedicationRequest Resource {}", mr.getId());
+    processMedicationReference(mr.getMedication(), dr, kd, ctc, resources, mr);
+  }
+
+  private void handleMedicationStatement(
+      MedicationStatement mr,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found MedicationStatement Resource {}", mr.getId());
+    processMedicationReference(mr.getMedication(), dr, kd, ctc, resources, mr);
+  }
+
+  private void handleMedicationAdministration(
+      MedicationAdministration mr,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found MedicationAdministration Resource {}", mr.getId());
+    processMedicationReference(mr.getMedication(), dr, kd, ctc, resources, mr);
+  }
+
+  private void processMedicationReference(
+      Type med,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources,
+      Resource medicationResource) {
+
+    if (med instanceof CodeableConcept) {
+      CodeableConcept cc = (CodeableConcept) med;
+      filterByCode(dr, cc, kd, ctc, resources, medicationResource, false);
+    } else if (med instanceof Reference) {
+      processMedicationReferenceType((Reference) med, dr, kd, ctc, resources, medicationResource);
+    } else {
+      logger.info(" To be done, to navigate the Med Hierarchy to get the code ");
+    }
+  }
+
+  private void processMedicationReferenceType(
+      Reference medRef,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources,
+      Resource medicationResource) {
+
+    String medId = medRef.hasReferenceElement() ? medRef.getReferenceElement().getIdPart() : null;
+    if (medId != null && !medId.isEmpty()) {
+      Resource medication = kd.getResourceById(medId, ResourceType.Medication);
+      if (medication != null && !medication.isEmpty()) {
+        Medication m = (Medication) medication;
+        if (m.hasCode()) {
+          filterByCode(dr, m.getCode(), kd, ctc, resources, medicationResource, false);
+        }
+      }
+    }
+  }
+
+  private void handleProcedure(
+      Procedure pr,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found Procedure Resource {}", pr.getId());
+    CodeableConcept cc = pr.getCode();
+    filterByCode(dr, cc, kd, ctc, resources, pr, false);
+  }
+
+  private void handleImmunization(
+      Immunization immz,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found Immunization Resource {}", immz.getId());
+    CodeableConcept cc = immz.getVaccineCode();
+    filterByCode(dr, cc, kd, ctc, resources, immz, false);
+  }
+
+  private void handleEncounter(
+      Encounter enc,
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Map<String, Set<Resource>> resources) {
+
+    logger.debug(" Found Encounter Resource {}", enc.getId());
+    CodeableConcept cc = enc.getReasonCodeFirstRep();
+    filterByCode(dr, cc, kd, ctc, resources, enc, false);
+  }
+
+  private void handleCodeBasedResources(Resource res, Map<String, Set<Resource>> resources) {
+
+    addResourceToMap(res, resources);
+  }
+
+  private void addResourceToMap(Resource res, Map<String, Set<Resource>> resources) {
+    String resourceType = res.fhirType();
+    if (resources.containsKey(resourceType)) {
+      resources.get(resourceType).add(res);
+    } else {
+      Set<Resource> resourceSet = new HashSet<>();
+      resourceSet.add(res);
+      resources.put(resourceType, resourceSet);
     }
   }
 
@@ -464,6 +522,95 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     }
   }
 
+  /**
+   * Create a parameters component with extension.
+   *
+   * @param name the parameter name
+   * @param limit the limit value
+   * @param fhirType the FHIR type
+   * @return the parameters component
+   */
+  private ParametersParameterComponent createParameterWithExtension(
+      String name, String limit, String fhirType) {
+    ParametersParameterComponent parameter =
+        new ParametersParameterComponent().setName("%" + String.format("%s", name));
+    parameter.addExtension(
+        CPG_PARAM_DEFINITION,
+        new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
+    return parameter;
+  }
+
+  /**
+   * Process filtered resources with code filter.
+   *
+   * @param params the parameters to add to
+   * @param req the data requirement
+   * @param kd the KAR processing data
+   * @param name the parameter name
+   * @param fhirType the FHIR type
+   * @param limit the limit value
+   */
+  private void processCodeFilteredResources(
+      Parameters params,
+      DataRequirement req,
+      KarProcessingData kd,
+      String name,
+      String fhirType,
+      String limit) {
+    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> resources = filterResources(req, kd);
+
+    if (resources == null || resources.getValue1() == null || resources.getValue1().isEmpty()) {
+      ParametersParameterComponent parameter = createParameterWithExtension(name, limit, fhirType);
+      params.addParameter(parameter);
+    } else {
+      for (Entry<String, Set<Resource>> entry : resources.getValue1().entrySet()) {
+        if (entry.getKey().equals(fhirType)) {
+          for (Resource resource : entry.getValue()) {
+            ParametersParameterComponent parameter =
+                createParameterWithExtension(name, limit, fhirType);
+            parameter.setResource(resource);
+            params.addParameter(parameter);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Process non-filtered resources.
+   *
+   * @param params the parameters to add to
+   * @param req the data requirement
+   * @param kd the KAR processing data
+   * @param act the BSA action
+   * @param name the parameter name
+   * @param fhirType the FHIR type
+   * @param limit the limit value
+   */
+  private void processNonFilteredResources(
+      Parameters params,
+      DataRequirement req,
+      KarProcessingData kd,
+      BsaAction act,
+      String name,
+      String fhirType,
+      String limit) {
+    logger.info(" Data Requirement does not have Code Filter ");
+    Set<Resource> resources = kd.getDataForId(req.getId(), act.getRelatedDataId(req.getId()));
+
+    if (resources != null) {
+      for (Resource res : resources) {
+        ParametersParameterComponent parameter =
+            createParameterWithExtension(name, limit, fhirType);
+        parameter.setResource(res);
+        params.addParameter(parameter);
+      }
+    } else {
+      ParametersParameterComponent parameter = createParameterWithExtension(name, limit, fhirType);
+      params.addParameter(parameter);
+    }
+  }
+
   private Parameters resolveInputParameters(
       List<DataRequirement> dataRequirements, KarProcessingData kd, BsaAction act) {
     if (dataRequirements == null || dataRequirements.isEmpty()) {
@@ -473,66 +620,14 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     Parameters params = new Parameters();
 
     for (DataRequirement req : dataRequirements) {
+      String name = req.getId();
+      String fhirType = req.getType();
+      String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
 
       if (req.hasCodeFilter()) {
-
-        String name = req.getId();
-        String fhirType = req.getType();
-        String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
-
-        Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> resources =
-            filterResources(req, kd);
-
-        if (resources == null || resources.getValue1() == null || resources.getValue1().isEmpty()) {
-          ParametersParameterComponent parameter =
-              new ParametersParameterComponent().setName("%" + String.format("%s", name));
-          parameter.addExtension(
-              CPG_PARAM_DEFINITION,
-              new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
-          params.addParameter(parameter);
-        } else {
-          for (Entry<String, Set<Resource>> entry : resources.getValue1().entrySet()) {
-            if (entry.getKey().equals(fhirType)) {
-              for (Resource resource : entry.getValue()) {
-                ParametersParameterComponent parameter =
-                    new ParametersParameterComponent().setName("%" + String.format("%s", name));
-                parameter.addExtension(
-                    CPG_PARAM_DEFINITION,
-                    new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
-                parameter.setResource(resource);
-                params.addParameter(parameter);
-              }
-            }
-          }
-        }
+        processCodeFilteredResources(params, req, kd, name, fhirType, limit);
       } else {
-
-        logger.info(" Data Requirement does not have Code Filter ");
-        String name = req.getId();
-        String fhirType = req.getType();
-        String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
-
-        Set<Resource> resources = kd.getDataForId(req.getId(), act.getRelatedDataId(req.getId()));
-
-        if (resources != null) {
-          for (Resource res : resources) {
-
-            ParametersParameterComponent parameter =
-                new ParametersParameterComponent().setName("%" + String.format("%s", name));
-            parameter.addExtension(
-                CPG_PARAM_DEFINITION,
-                new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
-            parameter.setResource(res);
-            params.addParameter(parameter);
-          }
-        } else {
-          ParametersParameterComponent parameter =
-              new ParametersParameterComponent().setName("%" + String.format("%s", name));
-          parameter.addExtension(
-              CPG_PARAM_DEFINITION,
-              new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
-          params.addParameter(parameter);
-        }
+        processNonFilteredResources(params, req, kd, act, name, fhirType, limit);
       }
     }
     return params;
@@ -576,8 +671,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
-      logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      logger.error(NULL_FHIR_PATH_EVALUATION);
       return false;
     } else {
       if (!(ppc.getValue() instanceof BooleanType)) {
@@ -594,8 +688,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       return value.getValue();
     } else {
 
-      logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      logger.error(NULL_FHIR_PATH_EVALUATION);
       return false;
     }
   }

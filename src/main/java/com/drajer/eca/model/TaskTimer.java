@@ -8,11 +8,11 @@ import java.util.Map;
 public class TaskTimer implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  Long id;
-  Integer launchDetailsId;
-  EcrActionTypes actionTypes;
-  transient Instant t;
-  Map<String, String> mdcContext;
+  private Long id;
+  private Integer launchDetailsId;
+  private EcrActionTypes actionTypes;
+  private transient Instant t;
+  private Map<String, String> mdcContext;
 
   public TaskTimer(
       Long id1,

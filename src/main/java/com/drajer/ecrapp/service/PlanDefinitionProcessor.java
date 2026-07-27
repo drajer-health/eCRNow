@@ -86,219 +86,197 @@ public class PlanDefinitionProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(PlanDefinitionProcessor.class);
 
+  /** Helper class to hold collections of bundle resources. */
+  private static class BundleResourceCollections {
+    Set<ValueSet> emergentValuesets = new HashSet<>();
+    Set<ValueSet> valuesets = new HashSet<>();
+    Set<ValueSet> grouperValueSets = new HashSet<>();
+  }
+
   @PostConstruct
   public void initializeClientMethods() {
     processResourceBundle();
   }
 
   public void processResourceBundle() {
-
-    // Reading Bundle with Id 506 from ersd server.
-    // Bundle esrdBundle =
-
     logger.info(" Reading ERSD Bundle File ");
     Bundle ersdBundle = readErsdBundleFromFile();
-    Bundle actualErsdBundle = null;
 
-    if (ersdBundle != null) {
+    if (ersdBundle == null) {
+      return;
+    }
 
-      if (ersdBundle.getEntry() != null) {
-        logger.info(" Bundle has been created with Entries : {}", ersdBundle.getEntry().size());
-      }
+    if (ersdBundle.getEntry() != null) {
+      logger.info(" Bundle has been created with Entries : {}", ersdBundle.getEntry().size());
+    }
 
-      // Check to see if this is a searchset bundle.
-      if (ersdBundle.getType() == Bundle.BundleType.SEARCHSET) {
+    Bundle actualErsdBundle = extractInnerErsdBundle(ersdBundle);
+    List<BundleEntryComponent> bundleEntries = getBundleEntries(actualErsdBundle, ersdBundle);
 
-        // Check if there is a bundle of type collection and use it.
-        // Typically it will be the first one.
+    BundleResourceCollections collections = processValueSetsAndLibraries(bundleEntries);
+    Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts = new HashMap<>();
+    processPlanDefinitionAndActions(bundleEntries, collections, acts);
 
-        logger.info("Found a Bundle from a search result, containing the actual ERSD Bundle");
+    if (acts != null) {
+      ActionRepo.getInstance().setActions(acts);
+      ActionRepo.getInstance().setupTriggerBasedActions();
+    }
+  }
 
-        List<BundleEntryComponent> innerBundle = ersdBundle.getEntry();
+  private Bundle extractInnerErsdBundle(Bundle ersdBundle) {
+    if (ersdBundle.getType() != Bundle.BundleType.SEARCHSET) {
+      return null;
+    }
 
-        for (BundleEntryComponent bundleEntry : innerBundle) {
+    logger.info("Found a Bundle from a search result, containing the actual ERSD Bundle");
+    List<BundleEntryComponent> innerBundle = ersdBundle.getEntry();
 
-          if (Optional.ofNullable(bundleEntry).isPresent()
-              && bundleEntry.getResource().getResourceType().equals(ResourceType.Bundle)) {
+    for (BundleEntryComponent bundleEntry : innerBundle) {
+      if (Optional.ofNullable(bundleEntry).isPresent()
+          && bundleEntry.getResource().getResourceType().equals(ResourceType.Bundle)) {
+        logger.debug(" Found a bundle within a bundle ");
+        Bundle ib = (Bundle) bundleEntry.getResource();
 
-            logger.debug(" Found a bundle within a bundle ");
-
-            Bundle ib = (Bundle) (bundleEntry.getResource());
-
-            if (ib.getType() == Bundle.BundleType.COLLECTION
-                && ib.getId().contains(ERSD_BUNDLE_ID_STRING)) {
-
-              logger.info(" Found the bundle which is the actual ERSD Bundle file ");
-              actualErsdBundle = ib;
-              break;
-            }
-          }
+        if (ib.getType() == Bundle.BundleType.COLLECTION
+            && ib.getId().contains(ERSD_BUNDLE_ID_STRING)) {
+          logger.info(" Found the bundle which is the actual ERSD Bundle file ");
+          return ib;
         }
       }
+    }
+    return null;
+  }
 
-      List<BundleEntryComponent> bundleEntries = null;
+  private List<BundleEntryComponent> getBundleEntries(Bundle actualErsdBundle, Bundle ersdBundle) {
+    if (actualErsdBundle != null) {
+      logger.info(" Inner ERSD Bundle Found from where we need to extract the plan definition");
+      return actualErsdBundle.getEntry();
+    }
+    logger.info(" Bundle read from configuration is a valid bundle to extract the plan definition");
+    return ersdBundle.getEntry();
+  }
 
-      if (actualErsdBundle != null) {
-        logger.info(" Inner ERSD Bundle Found from where we need to extract the plan definition");
-        bundleEntries = actualErsdBundle.getEntry();
-      } else {
-        logger.info(
-            " Bundle read from configuration is a valid bundle to extract the plan definition");
-        bundleEntries = ersdBundle.getEntry();
-      }
+  private BundleResourceCollections processValueSetsAndLibraries(
+      List<BundleEntryComponent> bundleEntries) {
+    BundleResourceCollections collections = new BundleResourceCollections();
 
-      ValueSet valueSet = null;
-      PlanDefinition planDefinition = null;
-      List<PlanDefinitionActionComponent> actions = null;
-      List<TriggerDefinition> triggerDefinitionsList = null;
-      Set<ValueSet> emergentValuesets = new HashSet<>();
-      Set<ValueSet> valuesets = new HashSet<>();
-      Set<ValueSet> grouperValueSets = new HashSet<>();
-      Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts = new HashMap<>();
+    for (BundleEntryComponent bundleEntry : bundleEntries) {
+      if (Optional.ofNullable(bundleEntry).isPresent()) {
+        ResourceType resourceType = bundleEntry.getResource().getResourceType();
 
-      for (BundleEntryComponent bundleEntry : bundleEntries) {
-
-        if (Optional.ofNullable(bundleEntry).isPresent()) {
-
-          logger.debug(
-              " Bundle Entries present and is of type {}",
-              bundleEntry.getResource().getResourceType());
-
-          if (bundleEntry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
-
-            logger.debug(" Found Value set");
-
-            valueSet = (ValueSet) bundleEntry.getResource();
-
-            if (ApplicationUtils.isAEmergentValueSet(valueSet)) {
-
-              logger.debug(" Found a Emergent Value Set {}", valueSet.getId());
-
-              emergentValuesets.add(valueSet);
-              valuesets.add(valueSet);
-            } else if (ApplicationUtils.isAGrouperValueSet(valueSet)) {
-
-              logger.debug(" Found a Grouper Value Set {}", valueSet.getId());
-              // valueSetService.createValueSetGrouper(valueSet);
-              grouperValueSets.add(valueSet);
-
-            } else {
-              logger.debug(" Found a Regular Value Set {}", valueSet.getId());
-              // valueSetService.createValueSet(valueSet);
-              valuesets.add(valueSet);
-            }
-
-          } else if (bundleEntry.getResource().getResourceType().equals(ResourceType.Library)) {
-            logger.debug(" Found the Library ");
-            Library lib = (Library) bundleEntry.getResource();
-
-            if (lib.getId().contains("rctc")) {
-
-              logger.debug(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
-              ActionRepo.getInstance().setRctcVersion(lib.getVersion());
-            }
-          }
+        if (resourceType.equals(ResourceType.ValueSet)) {
+          processValueSet((ValueSet) bundleEntry.getResource(), collections);
+        } else if (resourceType.equals(ResourceType.Library)) {
+          processLibrary((Library) bundleEntry.getResource());
         }
       }
+    }
 
-      ValueSetSingleton.getInstance().setEmergentValueSets(emergentValuesets);
-      ValueSetSingleton.getInstance().setValueSets(valuesets);
-      ValueSetSingleton.getInstance().setGrouperValueSets(grouperValueSets);
+    ValueSetSingleton.getInstance().setEmergentValueSets(collections.emergentValuesets);
+    ValueSetSingleton.getInstance().setValueSets(collections.valuesets);
+    ValueSetSingleton.getInstance().setGrouperValueSets(collections.grouperValueSets);
 
-      for (BundleEntryComponent bundleEntry : bundleEntries) {
+    return collections;
+  }
 
-        if (Optional.ofNullable(bundleEntry).isPresent()) {
-          logger.debug("Bundle exist");
+  private void processValueSet(ValueSet valueSet, BundleResourceCollections collections) {
+    logger.debug(" Found Value set");
 
-          if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
-            planDefinition = (PlanDefinition) bundleEntry.getResource();
-            actions = planDefinition.getAction();
+    if (ApplicationUtils.isAEmergentValueSet(valueSet)) {
+      logger.debug(" Found a Emergent Value Set {}", valueSet.getId());
+      collections.emergentValuesets.add(valueSet);
+      collections.valuesets.add(valueSet);
+    } else if (ApplicationUtils.isAGrouperValueSet(valueSet)) {
+      logger.debug(" Found a Grouper Value Set {}", valueSet.getId());
+      collections.grouperValueSets.add(valueSet);
+    } else {
+      logger.debug(" Found a Regular Value Set {}", valueSet.getId());
+      collections.valuesets.add(valueSet);
+    }
+  }
 
-            logger.info(" Found Plan Definition ");
-            if (actions != null && !actions.isEmpty()) {
+  private void processLibrary(Library lib) {
+    logger.debug(" Found the Library ");
+    if (lib.getId().contains("rctc")) {
+      logger.debug(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
+      ActionRepo.getInstance().setRctcVersion(lib.getVersion());
+    }
+  }
 
-              for (PlanDefinitionActionComponent action : actions) {
-
-                if (action.getId().equals("match-trigger")) {
-
-                  logger.info(" Identified Match Trigger EICR Action ");
-
-                  MatchTriggerAction mta = new MatchTriggerAction();
-
-                  populateActionData(mta, acts, action, EcrActionTypes.MATCH_TRIGGER);
-
-                  triggerDefinitionsList = action.getTrigger();
-
-                  if (triggerDefinitionsList != null && !triggerDefinitionsList.isEmpty()) {
-
-                    logger.info(" Number of Trigger Definitions {}", triggerDefinitionsList.size());
-
-                    for (TriggerDefinition triggerDefinition : triggerDefinitionsList) {
-
-                      valueSetService.createPlanDefinitionAction(triggerDefinition);
-                    }
-                  }
-
-                } else if (action.getId().equals("create-eicr")) {
-
-                  logger.info(" Identified Create EICR Action ");
-
-                  CreateEicrAction mta = new CreateEicrAction();
-
-                  populateActionData(mta, acts, action, EcrActionTypes.CREATE_EICR);
-
-                } else if (action.getId().equals("periodic-update-eicr")) {
-
-                  logger.info(" Identified Periodic Update EICR Action ");
-
-                  PeriodicUpdateEicrAction mta = new PeriodicUpdateEicrAction();
-
-                  populateActionData(mta, acts, action, EcrActionTypes.PERIODIC_UPDATE_EICR);
-
-                } else if (action.getId().equals("create-eicr-after-recheck")) {
-
-                  logger.info(" Identified Create EICR After Recheck Action ");
-
-                  CreateEicrAfterRecheckAction cra = new CreateEicrAfterRecheckAction();
-
-                  populateActionData(cra, acts, action, EcrActionTypes.CREATE_EICR_AFTER_RECHECK);
-
-                } else if (action.getId().equals("close-out-eicr")) {
-
-                  logger.info(" Identified Close Out EICR Action ");
-
-                  CloseOutEicrAction mta = new CloseOutEicrAction();
-
-                  populateActionData(mta, acts, action, EcrActionTypes.CLOSE_OUT_EICR);
-
-                } else if (action.getId().equals("validate-eicr")) {
-
-                  logger.info(" Identified Validate EICR Action ");
-
-                  ValidateEicrAction mta = new ValidateEicrAction();
-
-                  populateActionData(mta, acts, action, EcrActionTypes.VALIDATE_EICR);
-
-                } else if (action.getId().equals("route-and-send-eicr")) {
-
-                  logger.info(" Identified Submit EICR Action ");
-
-                  SubmitEicrAction mta = new SubmitEicrAction();
-
-                  populateActionData(mta, acts, action, EcrActionTypes.SUBMIT_EICR);
-
-                  populateRRCheckAction(acts, mta);
-                }
-              }
-            }
-          }
+  private void processPlanDefinitionAndActions(
+      List<BundleEntryComponent> bundleEntries,
+      BundleResourceCollections collections,
+      Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts) {
+    for (BundleEntryComponent bundleEntry : bundleEntries) {
+      if (Optional.ofNullable(bundleEntry).isPresent()) {
+        if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
+          PlanDefinition planDefinition = (PlanDefinition) bundleEntry.getResource();
+          processPlanDefinitionActions(planDefinition, acts);
         }
       }
+    }
+  }
 
-      if (acts != null) {
-        ActionRepo.getInstance().setActions(acts);
+  private void processPlanDefinitionActions(
+      PlanDefinition planDefinition, Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts) {
+    List<PlanDefinitionActionComponent> actions = planDefinition.getAction();
 
-        ActionRepo.getInstance().setupTriggerBasedActions();
+    logger.info(" Found Plan Definition ");
+    if (actions == null || actions.isEmpty()) {
+      return;
+    }
+
+    for (PlanDefinitionActionComponent action : actions) {
+      processActionByType(action, acts);
+    }
+  }
+
+  private void processActionByType(
+      PlanDefinitionActionComponent action,
+      Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts) {
+    String actionId = action.getId();
+
+    if ("match-trigger".equals(actionId)) {
+      logger.info(" Identified Match Trigger EICR Action ");
+      MatchTriggerAction mta = new MatchTriggerAction();
+      populateActionData(mta, acts, action, EcrActionTypes.MATCH_TRIGGER);
+      processMatchTriggerAction(action);
+    } else if ("create-eicr".equals(actionId)) {
+      logger.info(" Identified Create EICR Action ");
+      CreateEicrAction mta = new CreateEicrAction();
+      populateActionData(mta, acts, action, EcrActionTypes.CREATE_EICR);
+    } else if ("periodic-update-eicr".equals(actionId)) {
+      logger.info(" Identified Periodic Update EICR Action ");
+      PeriodicUpdateEicrAction mta = new PeriodicUpdateEicrAction();
+      populateActionData(mta, acts, action, EcrActionTypes.PERIODIC_UPDATE_EICR);
+    } else if ("create-eicr-after-recheck".equals(actionId)) {
+      logger.info(" Identified Create EICR After Recheck Action ");
+      CreateEicrAfterRecheckAction cra = new CreateEicrAfterRecheckAction();
+      populateActionData(cra, acts, action, EcrActionTypes.CREATE_EICR_AFTER_RECHECK);
+    } else if ("close-out-eicr".equals(actionId)) {
+      logger.info(" Identified Close Out EICR Action ");
+      CloseOutEicrAction mta = new CloseOutEicrAction();
+      populateActionData(mta, acts, action, EcrActionTypes.CLOSE_OUT_EICR);
+    } else if ("validate-eicr".equals(actionId)) {
+      logger.info(" Identified Validate EICR Action ");
+      ValidateEicrAction mta = new ValidateEicrAction();
+      populateActionData(mta, acts, action, EcrActionTypes.VALIDATE_EICR);
+    } else if ("route-and-send-eicr".equals(actionId)) {
+      logger.info(" Identified Submit EICR Action ");
+      SubmitEicrAction mta = new SubmitEicrAction();
+      populateActionData(mta, acts, action, EcrActionTypes.SUBMIT_EICR);
+      populateRRCheckAction(acts, mta);
+    }
+  }
+
+  private void processMatchTriggerAction(PlanDefinitionActionComponent action) {
+    List<TriggerDefinition> triggerDefinitionsList = action.getTrigger();
+
+    if (triggerDefinitionsList != null && !triggerDefinitionsList.isEmpty()) {
+      logger.info(" Number of Trigger Definitions {}", triggerDefinitionsList.size());
+
+      for (TriggerDefinition triggerDefinition : triggerDefinitionsList) {
+        valueSetService.createPlanDefinitionAction(triggerDefinition);
       }
     }
   }
@@ -390,70 +368,77 @@ public class PlanDefinitionProcessor {
   }
 
   private void processTriggerDefinitions(List<TriggerDefinition> tdlist, AbstractAction act) {
+    if (tdlist == null || tdlist.isEmpty()) {
+      return;
+    }
 
-    if (tdlist != null && !tdlist.isEmpty()) {
-
-      for (TriggerDefinition triggerDefinition : tdlist) {
-
-        if (triggerDefinition.getType() != TriggerType.NAMEDEVENT
-            && triggerDefinition.getType() != TriggerType.PERIODIC
-            && triggerDefinition.hasData()) {
-
-          logger.info(" Identified Data Trigger for Act {}", act.getActionId());
-
-          List<DataRequirement> dr = triggerDefinition.getData();
-
-          for (DataRequirement d : dr) {
-
-            // Create ActionData object
-            ActionData ad = new ActionData();
-
-            ad.setTriggerType(triggerDefinition.getType());
-
-            ad.setFhirDataType(FHIRAllTypes.valueOf(d.getType().toUpperCase()));
-
-            if (d.hasProfile()) ad.setProfiles(d.getProfile());
-
-            if (d.hasCodeFilter()) {
-
-              DataRequirementCodeFilterComponent cf = d.getCodeFilterFirstRep();
-
-              if (cf.hasPath()) {
-                ad.setPath(d.getType() + "." + cf.getPath());
-                logger.info(" Evaluation Path = {}", ad.getPath());
-              }
-
-              if (cf.hasValueSet()) ad.setValueSet(cf.getValueSetElement());
-            }
-
-            act.addActionData(ad);
-          }
-
-        } else if (triggerDefinition.getType() == TriggerType.PERIODIC) {
-
-          if (triggerDefinition.hasTimingTiming()) {
-
-            Timing t = triggerDefinition.getTimingTiming();
-
-            if (t.hasRepeat()) {
-
-              TimingSchedule ts = getTimingSchedule(t, triggerDefinition.getType());
-
-              if (ts != null) {
-                act.addTimingData(ts);
-              }
-            }
-
-          } else {
-
-            // Not handling the others for eCR
-          }
-
-        } else {
-
-          // Ignore other types for eCR
-        }
+    for (TriggerDefinition triggerDefinition : tdlist) {
+      if (isDataTrigger(triggerDefinition)) {
+        processDataTrigger(triggerDefinition, act);
+      } else if (triggerDefinition.getType() == TriggerType.PERIODIC) {
+        processPeriodicTrigger(triggerDefinition, act);
       }
+    }
+  }
+
+  private boolean isDataTrigger(TriggerDefinition triggerDefinition) {
+    return triggerDefinition.getType() != TriggerType.NAMEDEVENT
+        && triggerDefinition.getType() != TriggerType.PERIODIC
+        && triggerDefinition.hasData();
+  }
+
+  private void processDataTrigger(TriggerDefinition triggerDefinition, AbstractAction act) {
+    logger.info(" Identified Data Trigger for Act {}", act.getActionId());
+    List<DataRequirement> dataRequirements = triggerDefinition.getData();
+
+    for (DataRequirement dataReq : dataRequirements) {
+      ActionData actionData = createActionDataFromDataRequirement(triggerDefinition, dataReq);
+      act.addActionData(actionData);
+    }
+  }
+
+  private ActionData createActionDataFromDataRequirement(
+      TriggerDefinition triggerDefinition, DataRequirement dataReq) {
+    ActionData ad = new ActionData();
+    ad.setTriggerType(triggerDefinition.getType());
+    ad.setFhirDataType(FHIRAllTypes.valueOf(dataReq.getType().toUpperCase()));
+
+    if (dataReq.hasProfile()) {
+      ad.setProfiles(dataReq.getProfile());
+    }
+
+    if (dataReq.hasCodeFilter()) {
+      extractCodeFilterData(dataReq.getCodeFilterFirstRep(), dataReq.getType(), ad);
+    }
+
+    return ad;
+  }
+
+  private void extractCodeFilterData(
+      DataRequirementCodeFilterComponent codeFilter, String dataType, ActionData ad) {
+    if (codeFilter.hasPath()) {
+      ad.setPath(dataType + "." + codeFilter.getPath());
+      logger.info(" Evaluation Path = {}", ad.getPath());
+    }
+
+    if (codeFilter.hasValueSet()) {
+      ad.setValueSet(codeFilter.getValueSetElement());
+    }
+  }
+
+  private void processPeriodicTrigger(TriggerDefinition triggerDefinition, AbstractAction act) {
+    if (!triggerDefinition.hasTimingTiming()) {
+      return;
+    }
+
+    Timing timing = triggerDefinition.getTimingTiming();
+    if (timing == null || !timing.hasRepeat()) {
+      return;
+    }
+
+    TimingSchedule ts = getTimingSchedule(timing, triggerDefinition.getType());
+    if (ts != null) {
+      act.addTimingData(ts);
     }
   }
 

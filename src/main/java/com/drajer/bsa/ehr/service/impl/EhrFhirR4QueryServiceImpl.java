@@ -53,7 +53,6 @@ import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationPerformerComponent;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationAdministration.MedicationAdministrationStatus;
 import org.hl7.fhir.r4.model.MedicationDispense;
@@ -106,6 +105,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String EHR_ACCESS_TOKEN_EXPIRES_IN = "expires_in";
   private static final String EHR_ACCESS_TOKEN_PROVIDER_ID = "uuid";
   private static final String DATE_FORMAT = "yyy-MM-dd";
+  private static final String IGNORING_RESOURCE_LOG_MSG = " Ignoring {} resource with id {}";
 
   // Variables for custom queries
   private static final String QUERY_FILE_EXT = "queries";
@@ -536,110 +536,142 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     Map<String, String> practitionerMap = new HashMap<>();
 
     for (Resource r : res) {
-
       Encounter encounter = (Encounter) r;
 
-      // Load Practitioners
-      if (encounter.getParticipant() != null) {
+      practitioners.addAll(
+          loadPractitionersFromEncounter(client, context, encounter, kd, practitionerMap));
+      organizations.addAll(loadOrganizationFromEncounter(client, context, encounter, kd));
+      locations.addAll(loadLocationsFromEncounter(client, context, encounter, kd));
+    }
 
-        List<EncounterParticipantComponent> participants = encounter.getParticipant();
+    addResourcesToKarData(kd, practitioners, locations, organizations);
+    return kd.getFhirInputDataByType();
+  }
 
-        for (EncounterParticipantComponent participant : participants) {
-          if (participant.getIndividual() != null) {
-            Reference practitionerReference = participant.getIndividual();
-            String practitionerID = practitionerReference.getReferenceElement().getIdPart();
-            if (!practitionerMap.containsKey(practitionerID)
-                && !kd.containsResourceWithId(practitionerID, ResourceType.Practitioner)) {
-              Practitioner practitioner =
-                  (Practitioner)
-                      getResourceById(
-                          client,
-                          context,
-                          ResourceType.Practitioner.toString(),
-                          practitionerID,
-                          true);
-              if (practitioner != null && !practitionerMap.containsKey(practitionerID)) {
-                practitioners.add(practitioner);
-                kd.storeResourceById(practitionerID, practitioner);
-                practitionerMap.put(practitionerID, ResourceType.Practitioner.toString());
-              }
-            }
-          } // Individual != null
-        } // For all participants
-      } // For participant != null
+  private Set<Resource> loadPractitionersFromEncounter(
+      IGenericClient client,
+      FhirContext context,
+      Encounter encounter,
+      KarProcessingData kd,
+      Map<String, String> practitionerMap) {
 
-      // Load Organizations
-      if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
-        Reference organizationReference = encounter.getServiceProvider();
-        if (organizationReference.hasReferenceElement()
-            && !kd.containsResourceWithId(
-                organizationReference.getReferenceElement().getIdPart(),
-                ResourceType.Organization)) {
-          Organization organization =
-              (Organization)
-                  getResourceById(
-                      client,
-                      context,
-                      "Organization",
-                      organizationReference.getReferenceElement().getIdPart(),
-                      true);
-          if (organization != null) {
-            organizations.add(organization);
-            kd.storeResourceById(
-                organizationReference.getReferenceElement().getIdPart(), organization);
-          }
-        }
-      }
+    Set<Resource> practitioners = new HashSet<>();
 
-      // Load Locations
-      if (Boolean.TRUE.equals(encounter.hasLocation())) {
-        List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
-        for (EncounterLocationComponent location : enocunterLocations) {
-          if (location.hasLocation()
-              && !kd.containsResourceWithId(
-                  location.getLocation().getReferenceElement().getIdPart(),
-                  ResourceType.Location)) {
-            Reference locationReference = location.getLocation();
-            Location locationResource =
-                (Location)
+    if (encounter.getParticipant() != null) {
+      List<EncounterParticipantComponent> participants = encounter.getParticipant();
+
+      for (EncounterParticipantComponent participant : participants) {
+        if (participant.getIndividual() != null) {
+          Reference practitionerReference = participant.getIndividual();
+          String practitionerID = practitionerReference.getReferenceElement().getIdPart();
+
+          if (!practitionerMap.containsKey(practitionerID)
+              && !kd.containsResourceWithId(practitionerID, ResourceType.Practitioner)) {
+            Practitioner practitioner =
+                (Practitioner)
                     getResourceById(
                         client,
                         context,
-                        "Location",
-                        locationReference.getReferenceElement().getIdPart(),
+                        ResourceType.Practitioner.toString(),
+                        practitionerID,
                         true);
-            if (locationResource != null) {
-              locations.add(locationResource);
-              kd.storeResourceById(
-                  locationReference.getReferenceElement().getIdPart(), locationResource);
+            if (practitioner != null && !practitionerMap.containsKey(practitionerID)) {
+              practitioners.add(practitioner);
+              kd.storeResourceById(practitionerID, practitioner);
+              practitionerMap.put(practitionerID, ResourceType.Practitioner.toString());
             }
           }
         }
       }
-    } // for all encounters
+    }
+
+    return practitioners;
+  }
+
+  private Set<Resource> loadOrganizationFromEncounter(
+      IGenericClient client, FhirContext context, Encounter encounter, KarProcessingData kd) {
+
+    Set<Resource> organizations = new HashSet<>();
+
+    if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
+      Reference organizationReference = encounter.getServiceProvider();
+      if (organizationReference.hasReferenceElement()
+          && !kd.containsResourceWithId(
+              organizationReference.getReferenceElement().getIdPart(), ResourceType.Organization)) {
+        Organization organization =
+            (Organization)
+                getResourceById(
+                    client,
+                    context,
+                    "Organization",
+                    organizationReference.getReferenceElement().getIdPart(),
+                    true);
+        if (organization != null) {
+          organizations.add(organization);
+          kd.storeResourceById(
+              organizationReference.getReferenceElement().getIdPart(), organization);
+        }
+      }
+    }
+
+    return organizations;
+  }
+
+  private Set<Resource> loadLocationsFromEncounter(
+      IGenericClient client, FhirContext context, Encounter encounter, KarProcessingData kd) {
+
+    Set<Resource> locations = new HashSet<>();
+
+    if (Boolean.TRUE.equals(encounter.hasLocation())) {
+      List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
+      for (EncounterLocationComponent location : enocunterLocations) {
+        if (location.hasLocation()
+            && !kd.containsResourceWithId(
+                location.getLocation().getReferenceElement().getIdPart(), ResourceType.Location)) {
+          Reference locationReference = location.getLocation();
+          Location locationResource =
+              (Location)
+                  getResourceById(
+                      client,
+                      context,
+                      "Location",
+                      locationReference.getReferenceElement().getIdPart(),
+                      true);
+          if (locationResource != null) {
+            locations.add(locationResource);
+            kd.storeResourceById(
+                locationReference.getReferenceElement().getIdPart(), locationResource);
+          }
+        }
+      }
+    }
+
+    return locations;
+  }
+
+  private void addResourcesToKarData(
+      KarProcessingData kd,
+      Set<Resource> practitioners,
+      Set<Resource> locations,
+      Set<Resource> organizations) {
 
     if (!practitioners.isEmpty()) {
-
       Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(ResourceType.Practitioner, practitioners);
       kd.addResourcesByType(resMap);
     }
 
     if (!locations.isEmpty()) {
-
       Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(ResourceType.Location, locations);
       kd.addResourcesByType(resMap);
     }
 
     if (!organizations.isEmpty()) {
-
       Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(ResourceType.Organization, organizations);
       kd.addResourcesByType(resMap);
     }
-
-    return kd.getFhirInputDataByType();
   }
 
   @Override
@@ -1092,193 +1124,192 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   public Boolean isValidResource(Resource res) {
 
-    Boolean retVal = true;
-
     if (res.getResourceType() == ResourceType.Observation) {
-
-      Observation obs = (Observation) res;
-
-      // Ignore observations that should not be included.
-      if (obs.getStatus() != null
-          && (obs.getStatus() == ObservationStatus.CANCELLED
-              || obs.getStatus() == ObservationStatus.ENTEREDINERROR
-              || obs.getStatus() == ObservationStatus.UNKNOWN)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
+      return isValidObservation((Observation) res);
     } else if (res.getResourceType() == ResourceType.Condition) {
-
-      Condition cond = (Condition) res;
-
-      // Ignore conditions based on clinical status that should not be included.
-      if (cond.hasClinicalStatus()
-          && cond.getClinicalStatus() != null
-          && (doesCodeableConceptContain(
-                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "inactive", cond.getClinicalStatus())
-              || doesCodeableConceptContain(
-                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "resolved", cond.getClinicalStatus())
-              || doesCodeableConceptContain(
-                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "remission", cond.getClinicalStatus())
-              || doesCodeableConceptContain(
-                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "unknown", cond.getClinicalStatus()))) {
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
-
-      // Ignore conditions based on verification status
-      if (cond.hasVerificationStatus()
-          && cond.getVerificationStatus() != null
-          && (doesCodeableConceptContain(
-                  CONDITION_VERIFICATION_STATUS_SYSTEM_URL, "refuted", cond.getVerificationStatus())
-              || doesCodeableConceptContain(
-                  CONDITION_VERIFICATION_STATUS_SYSTEM_URL,
-                  "entered-in-error",
-                  cond.getVerificationStatus()))) {
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
+      return isValidCondition((Condition) res);
     } else if (res.getResourceType() == ResourceType.ServiceRequest) {
-
-      ServiceRequest sr = (ServiceRequest) res;
-
-      // Ignore service requests that should not be included.
-      if (sr.getStatus() != null
-          && (sr.getStatus() == ServiceRequestStatus.REVOKED
-              || sr.getStatus() == ServiceRequestStatus.ENTEREDINERROR
-              || sr.getStatus() == ServiceRequestStatus.DRAFT
-              || sr.getStatus() == ServiceRequestStatus.ONHOLD
-              || sr.getStatus() == ServiceRequestStatus.UNKNOWN)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
-
+      return isValidServiceRequest((ServiceRequest) res);
     } else if (res.getResourceType() == ResourceType.MedicationRequest) {
-
-      MedicationRequest mr = (MedicationRequest) res;
-
-      // Ignore observations that should not be included.
-      if (mr.hasStatus()
-          && (mr.getStatus() == MedicationRequestStatus.ENTEREDINERROR
-              || mr.getStatus() == MedicationRequestStatus.STOPPED
-              || mr.getStatus() == MedicationRequestStatus.CANCELLED
-              || mr.getStatus() == MedicationRequestStatus.DRAFT
-              || mr.getStatus() == MedicationRequestStatus.UNKNOWN)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
-
+      return isValidMedicationRequest((MedicationRequest) res);
     } else if (res.getResourceType() == ResourceType.MedicationAdministration) {
-
-      MedicationAdministration ma = (MedicationAdministration) res;
-
-      // Ignore observations that should not be included.
-      if (ma.hasStatus()
-          && (ma.getStatus() == MedicationAdministrationStatus.ENTEREDINERROR
-              || ma.getStatus() == MedicationAdministrationStatus.STOPPED
-              || ma.getStatus() == MedicationAdministrationStatus.NOTDONE
-              || ma.getStatus() == MedicationAdministrationStatus.UNKNOWN)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
-
+      return isValidMedicationAdministration((MedicationAdministration) res);
     } else if (res.getResourceType() == ResourceType.MedicationStatement) {
-
-      MedicationStatement ms = (MedicationStatement) res;
-
-      // Ignore observations that should not be included.
-      if (ms.hasStatus()
-          && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR
-              || ms.getStatus() == MedicationStatementStatus.STOPPED
-              || ms.getStatus() == MedicationStatementStatus.NOTTAKEN
-              || ms.getStatus() == MedicationStatementStatus.UNKNOWN)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
+      return isValidMedicationStatement((MedicationStatement) res);
     } else if (res.getResourceType() == ResourceType.DiagnosticReport) {
-
-      DiagnosticReport dr = (DiagnosticReport) res;
-
-      // Ignore observations that should not be included.
-      if (dr.getStatus() != null
-          && (dr.getStatus() == DiagnosticReportStatus.ENTEREDINERROR
-              || dr.getStatus() == DiagnosticReportStatus.CANCELLED
-              || dr.getStatus() == DiagnosticReportStatus.UNKNOWN)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
-
+      return isValidDiagnosticReport((DiagnosticReport) res);
     } else if (res.getResourceType() == ResourceType.Immunization) {
-
-      Immunization imm = (Immunization) res;
-
-      // Ignore observations that should not be included.
-      if (imm.getStatus() != null
-          && (imm.getStatus() == ImmunizationStatus.ENTEREDINERROR
-              || imm.getStatus() == ImmunizationStatus.NOTDONE)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
+      return isValidImmunization((Immunization) res);
     } else if (res.getResourceType() == ResourceType.Procedure) {
-
-      Procedure pr = (Procedure) res;
-
-      // Ignore observations that should not be included.
-      if (pr.getStatus() != null
-          && (pr.getStatus() == ProcedureStatus.ENTEREDINERROR
-              || pr.getStatus() == ProcedureStatus.STOPPED
-              || pr.getStatus() == ProcedureStatus.UNKNOWN)) {
-
-        logger.info(
-            " Ignoring {} resource with id {}",
-            res.getResourceType().toString(),
-            res.getIdElement().getIdPart());
-        retVal = false;
-      }
-
+      return isValidProcedure((Procedure) res);
     } else if (res.getResourceType() == ResourceType.Medication) {
-
-      // Include the resource for now.
-      Medication m = (Medication) res;
-
+      return true;
     } else if (res.getResourceType() == ResourceType.OperationOutcome) {
-      retVal = false;
-    } else retVal = true;
+      return false;
+    }
 
-    return retVal;
+    return true;
+  }
+
+  private Boolean isValidObservation(Observation obs) {
+    if (obs.getStatus() != null
+        && (obs.getStatus() == ObservationStatus.CANCELLED
+            || obs.getStatus() == ObservationStatus.ENTEREDINERROR
+            || obs.getStatus() == ObservationStatus.UNKNOWN)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.Observation.toString(),
+          obs.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean isValidCondition(Condition cond) {
+    if (cond.hasClinicalStatus()
+        && cond.getClinicalStatus() != null
+        && (doesCodeableConceptContain(
+                CONDITION_CLINICAL_STATUS_SYSTEM_URL, "inactive", cond.getClinicalStatus())
+            || doesCodeableConceptContain(
+                CONDITION_CLINICAL_STATUS_SYSTEM_URL, "resolved", cond.getClinicalStatus())
+            || doesCodeableConceptContain(
+                CONDITION_CLINICAL_STATUS_SYSTEM_URL, "remission", cond.getClinicalStatus())
+            || doesCodeableConceptContain(
+                CONDITION_CLINICAL_STATUS_SYSTEM_URL, "unknown", cond.getClinicalStatus()))) {
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.Condition.toString(),
+          cond.getIdElement().getIdPart());
+      return false;
+    }
+
+    if (cond.hasVerificationStatus()
+        && cond.getVerificationStatus() != null
+        && (doesCodeableConceptContain(
+                CONDITION_VERIFICATION_STATUS_SYSTEM_URL, "refuted", cond.getVerificationStatus())
+            || doesCodeableConceptContain(
+                CONDITION_VERIFICATION_STATUS_SYSTEM_URL,
+                "entered-in-error",
+                cond.getVerificationStatus()))) {
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.Condition.toString(),
+          cond.getIdElement().getIdPart());
+      return false;
+    }
+
+    return true;
+  }
+
+  private Boolean isValidServiceRequest(ServiceRequest sr) {
+    if (sr.getStatus() != null
+        && (sr.getStatus() == ServiceRequestStatus.REVOKED
+            || sr.getStatus() == ServiceRequestStatus.ENTEREDINERROR
+            || sr.getStatus() == ServiceRequestStatus.DRAFT
+            || sr.getStatus() == ServiceRequestStatus.ONHOLD
+            || sr.getStatus() == ServiceRequestStatus.UNKNOWN)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.ServiceRequest.toString(),
+          sr.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean isValidMedicationRequest(MedicationRequest mr) {
+    if (mr.hasStatus()
+        && (mr.getStatus() == MedicationRequestStatus.ENTEREDINERROR
+            || mr.getStatus() == MedicationRequestStatus.STOPPED
+            || mr.getStatus() == MedicationRequestStatus.CANCELLED
+            || mr.getStatus() == MedicationRequestStatus.DRAFT
+            || mr.getStatus() == MedicationRequestStatus.UNKNOWN)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.MedicationRequest.toString(),
+          mr.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean isValidMedicationAdministration(MedicationAdministration ma) {
+    if (ma.hasStatus()
+        && (ma.getStatus() == MedicationAdministrationStatus.ENTEREDINERROR
+            || ma.getStatus() == MedicationAdministrationStatus.STOPPED
+            || ma.getStatus() == MedicationAdministrationStatus.NOTDONE
+            || ma.getStatus() == MedicationAdministrationStatus.UNKNOWN)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.MedicationAdministration.toString(),
+          ma.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean isValidMedicationStatement(MedicationStatement ms) {
+    if (ms.hasStatus()
+        && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR
+            || ms.getStatus() == MedicationStatementStatus.STOPPED
+            || ms.getStatus() == MedicationStatementStatus.NOTTAKEN
+            || ms.getStatus() == MedicationStatementStatus.UNKNOWN)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.MedicationStatement.toString(),
+          ms.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean isValidDiagnosticReport(DiagnosticReport dr) {
+    if (dr.getStatus() != null
+        && (dr.getStatus() == DiagnosticReportStatus.ENTEREDINERROR
+            || dr.getStatus() == DiagnosticReportStatus.CANCELLED
+            || dr.getStatus() == DiagnosticReportStatus.UNKNOWN)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.DiagnosticReport.toString(),
+          dr.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean isValidImmunization(Immunization imm) {
+    if (imm.getStatus() != null
+        && (imm.getStatus() == ImmunizationStatus.ENTEREDINERROR
+            || imm.getStatus() == ImmunizationStatus.NOTDONE)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.Immunization.toString(),
+          imm.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean isValidProcedure(Procedure pr) {
+    if (pr.getStatus() != null
+        && (pr.getStatus() == ProcedureStatus.ENTEREDINERROR
+            || pr.getStatus() == ProcedureStatus.STOPPED
+            || pr.getStatus() == ProcedureStatus.UNKNOWN)) {
+
+      logger.info(
+          IGNORING_RESOURCE_LOG_MSG,
+          ResourceType.Procedure.toString(),
+          pr.getIdElement().getIdPart());
+      return false;
+    }
+    return true;
   }
 
   public Boolean doesCodeableConceptContain(String system, String code, CodeableConcept cd) {
@@ -1322,210 +1353,365 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       KarProcessingData kd,
       ResourceType rType) {
 
-    if (res != null && rType == ResourceType.MedicationRequest) {
-      MedicationRequest mreq = (MedicationRequest) res;
+    if (res == null) {
+      return;
+    }
 
-      // Retrieve any medications
-      if (mreq.hasMedicationReference()) {
-        Reference medRef = (Reference) mreq.getMedication();
+    switch (rType) {
+      case MedicationRequest:
+        populateMedicationRequestResources(genericClient, context, (MedicationRequest) res, kd);
+        break;
+      case MedicationAdministration:
+        populateMedicationAdministrationResources(
+            genericClient, context, (MedicationAdministration) res, kd);
+        break;
+      case MedicationStatement:
+        populateMedicationStatementResources(genericClient, context, (MedicationStatement) res, kd);
+        break;
+      case MedicationDispense:
+        populateMedicationDispenseResources(genericClient, context, (MedicationDispense) res, kd);
+        break;
+      case Immunization:
+        populateImmunizationResources(genericClient, context, (Immunization) res, kd);
+        break;
+      case Observation:
+        populateObservationResources(genericClient, context, (Observation) res, kd);
+        break;
+      case DiagnosticReport:
+        populateDiagnosticReportResources(genericClient, context, (DiagnosticReport) res, kd);
+        break;
+      case ServiceRequest:
+        populateServiceRequestResources(genericClient, context, (ServiceRequest) res, kd);
+        break;
+      default:
+        break;
+    }
+  }
 
-        if (medRef.getReferenceElement().hasIdPart()) {
-          Resource secRes =
-              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
+  private void populateMedicationRequestResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      MedicationRequest mreq,
+      KarProcessingData kd) {
 
-          if (secRes == null) {
-            secRes =
-                getResourceById(
-                    genericClient,
-                    context,
-                    ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart(),
-                    true);
-          }
+    if (mreq.hasMedicationReference()) {
+      Reference medRef = (Reference) mreq.getMedication();
 
-          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+      if (medRef.getReferenceElement().hasIdPart()) {
+        Resource secRes =
+            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-            logger.info(
-                " Adding secondary Medication resource for MedicationRequest with id {}",
-                secRes.getId());
-            kd.addResourceByType(secRes.getResourceType(), secRes);
-            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
-          }
-        } // has Id Part in Reference
-      } // has MedicationReference
-    } else if (res != null && rType == ResourceType.MedicationAdministration) {
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Medication.toString(),
+                  medRef.getReferenceElement().getIdPart(),
+                  true);
+        }
 
-      MedicationAdministration mAdm = (MedicationAdministration) res;
-
-      // Retrieve any medications
-      if (mAdm.hasMedicationReference()) {
-        Reference medRef = (Reference) mAdm.getMedication();
-
-        if (medRef.getReferenceElement().hasIdPart()) {
-          Resource secRes =
-              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
-
-          if (secRes == null) {
-            secRes =
-                getResourceById(
-                    genericClient,
-                    context,
-                    ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart(),
-                    true);
-          }
-
-          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
-
-            logger.info(
-                " Adding secondary Medication resource for MedicationAdministration with id {}",
-                secRes.getId());
-            kd.addResourceByType(secRes.getResourceType(), secRes);
-            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
-          }
-        } // has Id Part in Reference
-      }
-
-      if (mAdm.hasRequest()) {
-        Reference medRequestRef = (Reference) mAdm.getRequest();
-
-        if (medRequestRef.getReferenceElement().hasIdPart()) {
-          Resource secRes =
-              kd.getResourceById(
-                  medRequestRef.getReferenceElement().getIdPart(), ResourceType.MedicationRequest);
-
-          if (secRes == null) {
-            secRes =
-                getResourceById(
-                    genericClient,
-                    context,
-                    ResourceType.MedicationRequest.toString(),
-                    medRequestRef.getReferenceElement().getIdPart(),
-                    false);
-          }
-
-          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
-
-            logger.info(
-                " Adding secondary Medication Request resource for MedicationAdministration with id {}",
-                secRes.getId());
-            kd.addResourceByType(secRes.getResourceType(), secRes);
-            kd.storeResourceById(medRequestRef.getReferenceElement().getIdPart(), secRes);
-          }
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          logger.info(
+              " Adding secondary Medication resource for MedicationRequest with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
-    } else if (res != null && rType == ResourceType.MedicationStatement) {
+    }
+  }
 
-      MedicationStatement mst = (MedicationStatement) res;
+  private void populateMedicationAdministrationResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      MedicationAdministration mAdm,
+      KarProcessingData kd) {
 
-      // Retrieve any medications
-      if (mst.hasMedicationReference()) {
-        Reference medRef = (Reference) mst.getMedication();
+    if (mAdm.hasMedicationReference()) {
+      Reference medRef = (Reference) mAdm.getMedication();
 
-        if (medRef.getReferenceElement().hasIdPart()) {
-          Resource secRes =
-              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
+      if (medRef.getReferenceElement().hasIdPart()) {
+        Resource secRes =
+            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
-          if (secRes == null) {
-            secRes =
-                getResourceById(
-                    genericClient,
-                    context,
-                    ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart(),
-                    true);
-          }
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Medication.toString(),
+                  medRef.getReferenceElement().getIdPart(),
+                  true);
+        }
 
-          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
-
-            logger.info(
-                " Adding secondary Medication resource for MedicationStatement with id {}",
-                secRes.getId());
-            kd.addResourceByType(secRes.getResourceType(), secRes);
-            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
-          }
-        } // has Id Part in Reference
-      } // has MedicationReference
-    } else if (res != null && rType == ResourceType.MedicationDispense) {
-
-      MedicationDispense mDisp = (MedicationDispense) res;
-
-      // Retrieve any medications
-      if (mDisp.hasMedicationReference()) {
-        Reference medRef = (Reference) mDisp.getMedication();
-
-        if (medRef.getReferenceElement().hasIdPart()) {
-          Resource secRes =
-              kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
-
-          if (secRes == null) {
-            secRes =
-                getResourceById(
-                    genericClient,
-                    context,
-                    ResourceType.Medication.toString(),
-                    medRef.getReferenceElement().getIdPart(),
-                    true);
-          }
-
-          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
-
-            logger.info(
-                " Adding secondary Medidcation resource for MedicationDispense with id {}",
-                secRes.getId());
-            kd.addResourceByType(secRes.getResourceType(), secRes);
-            kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
-          }
-        } // has Id Part in Reference
-      } // has MedicationReference
-    } else if (res != null && rType == ResourceType.Immunization) {
-
-      Immunization immz = (Immunization) res;
-
-      // Retrieve any medications
-      if (immz.hasPerformer()) {
-
-        List<ImmunizationPerformerComponent> perfs = immz.getPerformer();
-
-        for (ImmunizationPerformerComponent perf : perfs) {
-
-          if (perf.hasActor() && isPractitioner(perf.getActor())) {
-            getAndAddSecondaryResource(
-                kd, perf.getActor(), ResourceType.Practitioner, genericClient, context);
-          }
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          logger.info(
+              " Adding secondary Medication resource for MedicationAdministration with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
+    }
 
-      if (immz.hasManufacturer()
-          && isResourceOfType(immz.getManufacturer(), ResourceType.Organization)) {
-        getAndAddSecondaryResource(
-            kd, immz.getManufacturer(), ResourceType.Organization, genericClient, context);
-      }
-    } else if (res != null && rType == ResourceType.Observation) {
+    if (mAdm.hasRequest()) {
+      Reference medRequestRef = (Reference) mAdm.getRequest();
 
-      Observation observation = (Observation) res;
+      if (medRequestRef.getReferenceElement().hasIdPart()) {
+        Resource secRes =
+            kd.getResourceById(
+                medRequestRef.getReferenceElement().getIdPart(), ResourceType.MedicationRequest);
 
-      if (observation.hasPerformer()) {
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.MedicationRequest.toString(),
+                  medRequestRef.getReferenceElement().getIdPart(),
+                  false);
+        }
 
-        List<Reference> performers = observation.getPerformer();
-        for (Reference performer : performers) {
-
-          if (isPractitioner(performer)) {
-            getAndAddSecondaryResource(
-                kd, performer, ResourceType.Practitioner, genericClient, context);
-          }
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          logger.info(
+              " Adding secondary Medication Request resource for MedicationAdministration with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.storeResourceById(medRequestRef.getReferenceElement().getIdPart(), secRes);
         }
       }
-      if (observation.hasSpecimen()) {
+    }
+  }
 
-        Reference specimen = observation.getSpecimen();
+  private void populateMedicationStatementResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      MedicationStatement mst,
+      KarProcessingData kd) {
 
+    if (mst.hasMedicationReference()) {
+      Reference medRef = (Reference) mst.getMedication();
+
+      if (medRef.getReferenceElement().hasIdPart()) {
+        Resource secRes =
+            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
+
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Medication.toString(),
+                  medRef.getReferenceElement().getIdPart(),
+                  true);
+        }
+
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          logger.info(
+              " Adding secondary Medication resource for MedicationStatement with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+        }
+      }
+    }
+  }
+
+  private void populateMedicationDispenseResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      MedicationDispense mDisp,
+      KarProcessingData kd) {
+
+    if (mDisp.hasMedicationReference()) {
+      Reference medRef = (Reference) mDisp.getMedication();
+
+      if (medRef.getReferenceElement().hasIdPart()) {
+        Resource secRes =
+            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
+
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Medication.toString(),
+                  medRef.getReferenceElement().getIdPart(),
+                  true);
+        }
+
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          logger.info(
+              " Adding secondary Medication resource for MedicationDispense with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+        }
+      }
+    }
+  }
+
+  private void populateImmunizationResources(
+      IGenericClient genericClient, FhirContext context, Immunization immz, KarProcessingData kd) {
+
+    if (immz.hasPerformer()) {
+      List<ImmunizationPerformerComponent> perfs = immz.getPerformer();
+
+      for (ImmunizationPerformerComponent perf : perfs) {
+        if (perf.hasActor() && isPractitioner(perf.getActor())) {
+          getAndAddSecondaryResource(
+              kd, perf.getActor(), ResourceType.Practitioner, genericClient, context);
+        }
+      }
+    }
+
+    if (immz.hasManufacturer()
+        && isResourceOfType(immz.getManufacturer(), ResourceType.Organization)) {
+      getAndAddSecondaryResource(
+          kd, immz.getManufacturer(), ResourceType.Organization, genericClient, context);
+    }
+  }
+
+  private void populateObservationResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      Observation observation,
+      KarProcessingData kd) {
+
+    if (observation.hasPerformer()) {
+      List<Reference> performers = observation.getPerformer();
+      for (Reference performer : performers) {
+        if (isPractitioner(performer)) {
+          getAndAddSecondaryResource(
+              kd, performer, ResourceType.Practitioner, genericClient, context);
+        }
+      }
+    }
+
+    if (observation.hasSpecimen()) {
+      Reference specimen = observation.getSpecimen();
+
+      if (isResourceOfType(specimen, ResourceType.Specimen)) {
+        getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
+      }
+    }
+
+    if (observation.hasBasedOn()) {
+      List<Reference> basedOnRefs = observation.getBasedOn();
+      for (Reference basedOnRef : basedOnRefs) {
+        if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
+          getAndAddSecondaryResource(
+              kd, basedOnRef, ResourceType.ServiceRequest, genericClient, context);
+        }
+      }
+    }
+  }
+
+  private void populateDiagnosticReportResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      DiagnosticReport report,
+      KarProcessingData kd) {
+
+    populateDiagnosticReportSpecimens(genericClient, context, report, kd);
+    populateDiagnosticReportBasedOn(genericClient, context, report, kd);
+    populateDiagnosticReportResults(genericClient, context, report, kd);
+    populateDiagnosticReportPerformers(genericClient, context, report, kd);
+  }
+
+  private void populateDiagnosticReportSpecimens(
+      IGenericClient genericClient,
+      FhirContext context,
+      DiagnosticReport report,
+      KarProcessingData kd) {
+
+    if (report.hasSpecimen()) {
+      List<Reference> specimens = report.getSpecimen();
+
+      for (Reference specimen : specimens) {
         if (isResourceOfType(specimen, ResourceType.Specimen)) {
           getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
         }
       }
-      if (observation.hasBasedOn()) {
+    }
+  }
 
+  private void populateDiagnosticReportBasedOn(
+      IGenericClient genericClient,
+      FhirContext context,
+      DiagnosticReport report,
+      KarProcessingData kd) {
+
+    if (report.hasBasedOn()) {
+      List<Reference> basedOnRefs = report.getBasedOn();
+
+      for (Reference basedOnRef : basedOnRefs) {
+        if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
+          getAndAddSecondaryResource(
+              kd, basedOnRef, ResourceType.ServiceRequest, genericClient, context);
+        }
+      }
+    }
+  }
+
+  private void populateDiagnosticReportResults(
+      IGenericClient genericClient,
+      FhirContext context,
+      DiagnosticReport report,
+      KarProcessingData kd) {
+
+    if (report.getResult() != null) {
+      List<Reference> components = report.getResult();
+
+      for (Reference r : components) {
+        Resource secRes =
+            kd.getResourceById(r.getReferenceElement().getIdPart(), ResourceType.Observation);
+
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Observation.toString(),
+                  r.getReferenceElement().getIdPart(),
+                  true);
+        }
+
+        if (secRes != null
+            && secRes.getResourceType() != ResourceType.OperationOutcome
+            && isValidResource(secRes)) {
+
+          logger.info(
+              " Adding secondary Observation resource for Diagnostic Report with id {}",
+              secRes.getId());
+
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.storeResourceById(r.getReferenceElement().getIdPart(), secRes);
+
+          Observation observation = (Observation) secRes;
+          populateObservationForDiagnosticReport(genericClient, context, observation, kd);
+        }
+      }
+    }
+  }
+
+  private void populateObservationForDiagnosticReport(
+      IGenericClient genericClient,
+      FhirContext context,
+      Observation observation,
+      KarProcessingData kd) {
+
+    if (observation.hasPerformer()) {
+      List<Reference> performers = observation.getPerformer();
+      for (Reference performer : performers) {
+        if (isPractitioner(performer)) {
+          getAndAddSecondaryResource(
+              kd, performer, ResourceType.Practitioner, genericClient, context);
+        }
+      }
+
+      if (observation.hasBasedOn()) {
         List<Reference> basedOnRefs = observation.getBasedOn();
         for (Reference basedOnRef : basedOnRefs) {
           if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
@@ -1534,118 +1720,44 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           }
         }
       }
+    }
 
-    } else if (res != null && rType == ResourceType.DiagnosticReport) {
+    if (observation.hasSpecimen()) {
+      Reference specimen = observation.getSpecimen();
 
-      DiagnosticReport report = (DiagnosticReport) res;
+      if (isResourceOfType(specimen, ResourceType.Specimen)) {
+        getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
+      }
+    }
+  }
 
-      if (report.hasSpecimen()) {
+  private void populateDiagnosticReportPerformers(
+      IGenericClient genericClient,
+      FhirContext context,
+      DiagnosticReport report,
+      KarProcessingData kd) {
 
-        List<Reference> specimens = report.getSpecimen();
-
-        for (Reference specimen : specimens) {
-          if (isResourceOfType(specimen, ResourceType.Specimen)) {
-            getAndAddSecondaryResource(kd, specimen, ResourceType.Specimen, genericClient, context);
-          }
+    if (report.hasPerformer()) {
+      for (Reference reference : report.getPerformer()) {
+        ResourceType type = getResourceType(reference);
+        if ((type == ResourceType.Practitioner || type == ResourceType.Organization)) {
+          getAndAddSecondaryResource(kd, reference, type, genericClient, context);
         }
       }
-      if (report.hasBasedOn()) {
+    }
+  }
 
-        List<Reference> basedOnRefs = report.getBasedOn();
+  private void populateServiceRequestResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      ServiceRequest serviceRequest,
+      KarProcessingData kd) {
 
-        for (Reference basedOnRef : basedOnRefs) {
-          if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
-            getAndAddSecondaryResource(
-                kd, basedOnRef, ResourceType.ServiceRequest, genericClient, context);
-          }
-        }
-      }
-
-      if (report.getResult() != null) {
-
-        List<Reference> components = report.getResult();
-
-        for (Reference r : components) {
-
-          Resource secRes =
-              kd.getResourceById(r.getReferenceElement().getIdPart(), ResourceType.Observation);
-
-          if (secRes == null) {
-            secRes =
-                getResourceById(
-                    genericClient,
-                    context,
-                    ResourceType.Observation.toString(),
-                    r.getReferenceElement().getIdPart(),
-                    true);
-          }
-
-          if (secRes != null
-              && secRes.getResourceType() != ResourceType.OperationOutcome
-              && isValidResource(secRes)) {
-
-            logger.info(
-                " Adding secondary Observation resource for Diagnostic Report with id {}",
-                secRes.getId());
-
-            kd.addResourceByType(secRes.getResourceType(), secRes);
-            kd.storeResourceById(r.getReferenceElement().getIdPart(), secRes);
-            //
-
-            Observation observation = (Observation) secRes;
-
-            if (observation.hasPerformer()) {
-
-              List<Reference> performers = observation.getPerformer();
-              for (Reference performer : performers) {
-
-                if (isPractitioner(performer)) {
-                  getAndAddSecondaryResource(
-                      kd, performer, ResourceType.Practitioner, genericClient, context);
-                }
-              }
-              if (observation.hasBasedOn()) {
-
-                List<Reference> basedOnRefs = observation.getBasedOn();
-                for (Reference basedOnRef : basedOnRefs) {
-                  if (isResourceOfType(basedOnRef, ResourceType.ServiceRequest)) {
-                    getAndAddSecondaryResource(
-                        kd, basedOnRef, ResourceType.ServiceRequest, genericClient, context);
-                  }
-                }
-              }
-            }
-
-            if (observation.hasSpecimen()) {
-
-              Reference specimen = observation.getSpecimen();
-
-              if (isResourceOfType(specimen, ResourceType.Specimen)) {
-                getAndAddSecondaryResource(
-                    kd, specimen, ResourceType.Specimen, genericClient, context);
-              }
-            }
-          }
-        }
-      }
-
-      if (report.hasPerformer()) {
-        for (Reference reference : report.getPerformer()) {
-          ResourceType type = getResourceType(reference);
-          if ((type == ResourceType.Practitioner || type == ResourceType.Organization)) {
-            getAndAddSecondaryResource(kd, reference, type, genericClient, context);
-          }
-        }
-      }
-
-    } else if (res != null && rType == ResourceType.ServiceRequest) {
-      ServiceRequest serviceRequest = (ServiceRequest) res;
-      if (serviceRequest.hasRequester()) {
-        Reference requesterRef = serviceRequest.getRequester();
-        if (isResourceOfType(requesterRef, ResourceType.Practitioner)) {
-          getAndAddSecondaryResource(
-              kd, requesterRef, ResourceType.Practitioner, genericClient, context);
-        }
+    if (serviceRequest.hasRequester()) {
+      Reference requesterRef = serviceRequest.getRequester();
+      if (isResourceOfType(requesterRef, ResourceType.Practitioner)) {
+        getAndAddSecondaryResource(
+            kd, requesterRef, ResourceType.Practitioner, genericClient, context);
       }
     }
   }

@@ -803,7 +803,9 @@ public class HcsReportCreator extends ReportCreator {
   }
 
   public void addExtensionIfAppropriate(
-      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {}
+      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {
+    // No extensions required in base implementation; subclasses can override
+  }
 
   public Pair<Boolean, ReportableMatchedTriggerCode> resourceHasMatchedCode(
       Resource res, CheckTriggerCodeStatus ctcs) {

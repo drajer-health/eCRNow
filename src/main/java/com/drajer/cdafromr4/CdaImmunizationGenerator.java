@@ -76,175 +76,14 @@ public class CdaImmunizationGenerator {
           CdaGeneratorUtils.getXmlForTableHeader(
               list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
 
-      // add Table Body
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-      // add Body Rows
-      int rowNum = 1;
-      for (Immunization imm : imms) {
-
-        String medDisplayName = CdaFhirUtilities.getStringForCodeableConcept(imm.getVaccineCode());
-        if (StringUtils.isEmpty(medDisplayName))
-          medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
-
-        String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-        if (imm.hasOccurrenceDateTimeType() && imm.getOccurrenceDateTimeType() != null) {
-          dt = imm.getOccurrenceDateTimeType().getValue().toString();
-        }
-
-        Map<String, String> bodyvals = new LinkedHashMap<>();
-        bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_1_BODY_CONTENT, medDisplayName);
-        bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_2_BODY_CONTENT, dt);
-
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-
-        ++rowNum;
-      }
-
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+      buildImmunizationTableBody(imms, sb);
 
       // End Table.
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
-      for (Immunization imm : imms) {
-        // add the Entries.
-        sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
-
-        // add the immunization Act
-        if (imm.getStatus() != ImmunizationStatus.COMPLETED) {
-          sb.append(
-              CdaGeneratorUtils.getXmlForActWithNegationInd(
-                  CdaGeneratorConstants.MED_ACT_EL_NAME,
-                  CdaGeneratorConstants.MED_CLASS_CODE,
-                  CdaGeneratorConstants.MOOD_CODE_DEF,
-                  "true",
-                  true));
-        } else {
-          sb.append(
-              CdaGeneratorUtils.getXmlForActWithNegationInd(
-                  CdaGeneratorConstants.MED_ACT_EL_NAME,
-                  CdaGeneratorConstants.MED_CLASS_CODE,
-                  CdaGeneratorConstants.MOOD_CODE_DEF,
-                  "false",
-                  true));
-        }
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID));
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID,
-                CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID_EXT));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), imm.getIdElement().getIdPart()));
-
-        // set status code
-        sb.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
-
-        // Set up Effective Time for start and End time.
-        if (imm.getOccurrenceDateTimeType() != null) {
-          logger.debug("Date Value = {}", imm.getOccurrenceDateTimeType().getValue());
-          sb.append(
-              CdaFhirUtilities.getDateTimeTypeXml(
-                  imm.getOccurrenceDateTimeType(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
-        } else {
-          sb.append(
-              CdaGeneratorUtils.getXmlForNullEffectiveTime(
-                  CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
-        }
-
-        if (imm.hasRoute() && imm.getRoute().hasCoding()) {
-          sb.append(
-              CdaFhirUtilities.getCodeableConceptXml(
-                  imm.getRoute(), CdaGeneratorConstants.ROUTE_CODE_EL_NAME, ""));
-        }
-
-        if (imm.hasDoseQuantity()) {
-          sb.append(
-              CdaFhirUtilities.getQuantityXml(
-                  imm.getDoseQuantity(), CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false));
-        }
-
-        // add the consumable presentation.
-        sb.append(
-            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
-        sb.append(
-            CdaGeneratorUtils.getXmlForStartElementWithClassCode(
-                CdaGeneratorConstants.MAN_PROD_EL_NAME, CdaGeneratorConstants.MANU_CLASS_CODE));
-
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION));
-        sb.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION,
-                CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION_EXT));
-
-        List<CodeableConcept> cds = new ArrayList<>();
-        cds.add(imm.getVaccineCode());
-
-        String codeXml = "";
-
-        List<String> paths = new ArrayList<>();
-        paths.add("Immunization.code");
-        paths.add("Immunization.vaccineCode");
-
-        if (version.equals(CdaGeneratorConstants.CDA_EICR_VERSION_R31)) {
-          Pair<Boolean, String> codeXmlPair =
-              getImmunizationCodeXml(details, imm.getVaccineCode(), false, "", paths, version);
-
-          if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
-            sb.append(
-                CdaGeneratorUtils.getXmlForTemplateId(
-                    CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TRIGGER_TEMPLATE_ID,
-                    CdaGeneratorConstants.IMMUNIZATION_TRIGGER_TEMPLATE_ID_EXT_31));
-            codeXml = codeXmlPair.getValue1();
-          }
-        }
-        sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
-        if (StringUtils.isEmpty(codeXml)) {
-          codeXml =
-              CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-                  cds,
-                  CdaGeneratorConstants.CODE_EL_NAME,
-                  false,
-                  CdaGeneratorConstants.FHIR_CVX_URL,
-                  false,
-                  "");
-        }
-
-        if (!codeXml.isEmpty()) {
-          sb.append(codeXml);
-        } else {
-          sb.append(
-              CdaFhirUtilities.getCodeableConceptXml(
-                  cds, CdaGeneratorConstants.CODE_EL_NAME, false));
-        }
-
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
-
-        if (imm.hasManufacturer()) {
-          sb.append(getManufacturerXml(imm, data));
-        }
-
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
-
-        if (imm.hasPerformer()) {
-          sb.append(getXmlForPerformer(imm.getPerformer(), data));
-        }
-
-        // End Tags for Entries
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MED_ACT_EL_NAME));
-        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
-      }
+      processImmunizationEntries(imms, details, version, data, sb);
 
       // Complete the section end tags.
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -405,5 +244,208 @@ public class CdaImmunizationGenerator {
             ? CdaFhirUtilities.getCodeableConceptXmlForValue(code, elementType, contentRef)
             : CdaFhirUtilities.getCodeableConceptXml(code, elementType, contentRef);
     return new Pair<>(false, xml);
+  }
+
+  private static void buildImmunizationTableBody(List<Immunization> imms, StringBuilder sb) {
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+    int rowNum = 1;
+    for (Immunization imm : imms) {
+      String medDisplayName = CdaFhirUtilities.getStringForCodeableConcept(imm.getVaccineCode());
+      if (StringUtils.isEmpty(medDisplayName)) {
+        medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
+      }
+
+      String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
+      if (imm.hasOccurrenceDateTimeType() && imm.getOccurrenceDateTimeType() != null) {
+        dt = imm.getOccurrenceDateTimeType().getValue().toString();
+      }
+
+      Map<String, String> bodyvals = new LinkedHashMap<>();
+      bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_1_BODY_CONTENT, medDisplayName);
+      bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_2_BODY_CONTENT, dt);
+
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+      ++rowNum;
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+  }
+
+  private static void processImmunizationEntries(
+      List<Immunization> imms,
+      LaunchDetails details,
+      String version,
+      R4FhirData data,
+      StringBuilder sb) {
+    for (Immunization imm : imms) {
+      sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
+      addImmunizationStatus(imm, sb);
+      addTemplateIds(sb);
+      addImmunizationIdentifier(imm, details, sb);
+      addStatusCode(sb);
+      addEffectiveTime(imm, sb);
+      addRouteAndDoseInformation(imm, sb);
+      addVaccineCodeAndConsumable(imm, details, version, data, sb);
+      addPerformerInformation(imm, data, sb);
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MED_ACT_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    }
+  }
+
+  private static void addImmunizationStatus(Immunization imm, StringBuilder sb) {
+    if (imm.getStatus() != ImmunizationStatus.COMPLETED) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForActWithNegationInd(
+              CdaGeneratorConstants.MED_ACT_EL_NAME,
+              CdaGeneratorConstants.MED_CLASS_CODE,
+              CdaGeneratorConstants.MOOD_CODE_DEF,
+              "true",
+              true));
+    } else {
+      sb.append(
+          CdaGeneratorUtils.getXmlForActWithNegationInd(
+              CdaGeneratorConstants.MED_ACT_EL_NAME,
+              CdaGeneratorConstants.MED_CLASS_CODE,
+              CdaGeneratorConstants.MOOD_CODE_DEF,
+              "false",
+              true));
+    }
+  }
+
+  private static void addTemplateIds(StringBuilder sb) {
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID,
+            CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID_EXT));
+  }
+
+  private static void addImmunizationIdentifier(
+      Immunization imm, LaunchDetails details, StringBuilder sb) {
+    sb.append(
+        CdaGeneratorUtils.getXmlForII(
+            details.getAssigningAuthorityId(), imm.getIdElement().getIdPart()));
+  }
+
+  private static void addStatusCode(StringBuilder sb) {
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+  }
+
+  private static void addEffectiveTime(Immunization imm, StringBuilder sb) {
+    if (imm.getOccurrenceDateTimeType() != null) {
+      logger.debug("Date Value = {}", imm.getOccurrenceDateTimeType().getValue());
+      sb.append(
+          CdaFhirUtilities.getDateTimeTypeXml(
+              imm.getOccurrenceDateTimeType(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
+    } else {
+      sb.append(
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+    }
+  }
+
+  private static void addRouteAndDoseInformation(Immunization imm, StringBuilder sb) {
+    if (imm.hasRoute() && imm.getRoute().hasCoding()) {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXml(
+              imm.getRoute(), CdaGeneratorConstants.ROUTE_CODE_EL_NAME, ""));
+    }
+
+    if (imm.hasDoseQuantity()) {
+      sb.append(
+          CdaFhirUtilities.getQuantityXml(
+              imm.getDoseQuantity(), CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false));
+    }
+  }
+
+  private static void addVaccineCodeAndConsumable(
+      Immunization imm, LaunchDetails details, String version, R4FhirData data, StringBuilder sb) {
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+            CdaGeneratorConstants.MAN_PROD_EL_NAME, CdaGeneratorConstants.MANU_CLASS_CODE));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION,
+            CdaGeneratorConstants.IMMUNIZATION_MEDICATION_INFORMATION_EXT));
+
+    List<CodeableConcept> cds = new ArrayList<>();
+    cds.add(imm.getVaccineCode());
+
+    Pair<String, Boolean> codeXmlResult = generateVaccineCodeXml(imm, details, version, cds);
+    String codeXml = codeXmlResult.getValue0();
+    Boolean isR31Match = codeXmlResult.getValue1();
+
+    if (isR31Match) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TRIGGER_TEMPLATE_ID,
+              CdaGeneratorConstants.IMMUNIZATION_TRIGGER_TEMPLATE_ID_EXT_31));
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
+    if (StringUtils.isEmpty(codeXml)) {
+      codeXml =
+          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+              cds,
+              CdaGeneratorConstants.CODE_EL_NAME,
+              false,
+              CdaGeneratorConstants.FHIR_CVX_URL,
+              false,
+              "");
+    }
+
+    if (!codeXml.isEmpty()) {
+      sb.append(codeXml);
+    } else {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
+
+    if (imm.hasManufacturer()) {
+      sb.append(getManufacturerXml(imm, data));
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
+  }
+
+  private static Pair<String, Boolean> generateVaccineCodeXml(
+      Immunization imm, LaunchDetails details, String version, List<CodeableConcept> cds) {
+    String codeXml = "";
+    Boolean isR31Match = false;
+
+    if (version.equals(CdaGeneratorConstants.CDA_EICR_VERSION_R31)) {
+      List<String> paths = new ArrayList<>();
+      paths.add("Immunization.code");
+      paths.add("Immunization.vaccineCode");
+
+      Pair<Boolean, String> codeXmlPair =
+          getImmunizationCodeXml(details, imm.getVaccineCode(), false, "", paths, version);
+
+      if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
+        codeXml = codeXmlPair.getValue1();
+        isR31Match = true;
+      }
+    }
+
+    return new Pair<>(codeXml, isR31Match);
+  }
+
+  private static void addPerformerInformation(Immunization imm, R4FhirData data, StringBuilder sb) {
+    if (imm.hasPerformer()) {
+      sb.append(getXmlForPerformer(imm.getPerformer(), data));
+    }
   }
 }

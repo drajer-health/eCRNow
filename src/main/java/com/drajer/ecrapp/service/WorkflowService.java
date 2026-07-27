@@ -16,6 +16,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.routing.impl.DirectResponseReceiver;
+import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
@@ -91,6 +92,9 @@ public class WorkflowService {
   @Autowired AppConfig appConfig;
 
   @Autowired FhirContextInitializer fhirContextInitializer;
+  @Autowired LaunchDetailsDao launchDetailsDao;
+
+  private static LaunchDetailsDao staticLaunchDetailsDao;
 
   private static SchedulerService staticSchedulerService;
 
@@ -125,6 +129,7 @@ public class WorkflowService {
     this.staticScheduler = scheduler;
     this.staticTaskConfiguration = taskConfiguration;
     this.staticSchedulerService = schedulerService;
+    this.staticLaunchDetailsDao = launchDetailsDao;
   }
 
   public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -368,7 +373,7 @@ public class WorkflowService {
       task = ignored -> logger.info("Scheduling one time task to after!");
       staticScheduler.schedule(
           staticTaskConfiguration
-              .sampleOneTimeTask()
+              .sampleOneTimeTask(staticLaunchDetailsDao)
               .instance(
                   actionType.toString()
                       + "_"

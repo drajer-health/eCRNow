@@ -21,7 +21,10 @@ public class AbstractConditionTest {
           }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for condition type validation
+
+          }
         };
   }
 

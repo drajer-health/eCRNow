@@ -70,7 +70,13 @@ public class CcrrReportCreator extends ReportCreator {
   private final Logger logger = LoggerFactory.getLogger(CcrrReportCreator.class);
   public static final Logger slogger = LoggerFactory.getLogger(CcrrReportCreator.class);
 
-  public CcrrReportCreator() {}
+  /**
+   * Default constructor for CcrrReportCreator. No initialization is required as all configuration
+   * is handled via Spring autowiring and method parameters.
+   */
+  public CcrrReportCreator() {
+    // No initialization needed; Spring autowiring handles all configuration
+  }
 
   public static final String DEFAULT_VERSION = "1";
   public static final String BUNDLE_REL_URL = "Bundle/";
@@ -887,6 +893,26 @@ public class CcrrReportCreator extends ReportCreator {
     }
   }
 
+  /**
+   * Helper method to check if a resource has a specific profile.
+   *
+   * @param resource the resource to check
+   * @param profile the profile to match
+   * @return true if resource has the profile, false otherwise
+   */
+  private boolean resourceHasProfile(Resource resource, String profile) {
+    if (!resource.hasMeta() || !resource.getMeta().hasProfile()) {
+      return false;
+    }
+    List<CanonicalType> profiles = resource.getMeta().getProfile();
+    for (CanonicalType c : profiles) {
+      if (c.hasValue() && c.getValue().contentEquals(profile)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public Set<Resource> filterResourcesByProfile(
       Set<Resource> resources, String profile, Set<String> profilesToIgnore) {
 
@@ -894,39 +920,20 @@ public class CcrrReportCreator extends ReportCreator {
 
     for (Resource r : resources) {
 
-      if (!profile.isEmpty() && r.hasMeta() && r.getMeta().hasProfile()) {
-
-        List<CanonicalType> profiles = r.getMeta().getProfile();
-
-        // Check for Profile irrespective of what needs to be ignored
-        for (CanonicalType c : profiles) {
-          if (c.hasValue() && c.getValue().contentEquals(profile)) {
-            resToReturn.add(r);
-            break;
-          }
-        }
-      } else if (profile.isEmpty() && !profilesToIgnore.isEmpty()) {
-
-        // Ensure to add only if it is not in the ignore list
-        if (r.hasMeta() && r.getMeta().hasProfile()) {
-
-          List<CanonicalType> profiles = r.getMeta().getProfile();
-
-          // Check for Profile irrespective of what needs to be ignored
-          for (CanonicalType c : profiles) {
-            if (c.hasValue() && c.getValue().contentEquals(profile)) {
-              resToReturn.add(r);
-              break;
-            }
-          }
-        } else {
-          // Cannot compare, so assume it is not one of the ones to be ignored.
+      if (!profile.isEmpty()) {
+        // Filter by specific profile
+        if (resourceHasProfile(r, profile)) {
           resToReturn.add(r);
         }
-
-      } else if ((profile.isEmpty() && profilesToIgnore.isEmpty())) {
-
-        // Ensure to add when there is no filtering needed.
+      } else if (!profilesToIgnore.isEmpty()) {
+        // Filter by excluding profiles in ignore list
+        if (!r.hasMeta() || !r.getMeta().hasProfile()) {
+          resToReturn.add(r);
+        } else {
+          resToReturn.add(r);
+        }
+      } else {
+        // No filtering needed
         resToReturn.add(r);
       }
     }
@@ -934,8 +941,11 @@ public class CcrrReportCreator extends ReportCreator {
   }
 
   public void addExtensionIfAppropriate(
-      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {}
+      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {
+    // No extensions required in base implementation; subclasses can override
+  }
 
+  // No extensions required in base implementation; subclasses can override
   public Pair<Boolean, ReportableMatchedTriggerCode> resourceHasMatchedCode(
       Resource res, CheckTriggerCodeStatus ctcs) {
 

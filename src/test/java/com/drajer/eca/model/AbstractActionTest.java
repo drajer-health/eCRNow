@@ -14,10 +14,14 @@ public class AbstractActionTest {
 
   private static class TestAction extends AbstractAction {
     @Override
-    public void execute(Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {}
+    public void execute(Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {
+      // Intentionally empty - concrete implementation for test purposes only
+    }
 
     @Override
-    public void print() {}
+    public void print() {
+      // Intentionally empty - print functionality not needed for unit tests
+    }
   }
 
   @Before
@@ -77,7 +81,10 @@ public class AbstractActionTest {
           }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for condition evaluation testing
+
+          }
         };
     action.addCondition(cond);
     assertNotNull(action.getPreConditions());
@@ -100,7 +107,10 @@ public class AbstractActionTest {
     RelatedAction ra =
         new RelatedAction() {
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for related action testing
+
+          }
         };
     assertNull(action.getRelatedActions());
     action.addRelatedAction(ra);
@@ -118,7 +128,10 @@ public class AbstractActionTest {
     TimingSchedule ts =
         new TimingSchedule() {
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for timing schedule testing
+
+          }
         };
     assertNull(action.getTimingData());
     action.addTimingData(ts);
@@ -136,7 +149,10 @@ public class AbstractActionTest {
     ActionData ad =
         new ActionData() {
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for trigger data testing
+
+          }
         };
     assertNull(action.getTriggerData());
     action.addActionData(ad);
@@ -159,7 +175,10 @@ public class AbstractActionTest {
           }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for condition matching testing
+
+          }
         };
 
     assertNull(action.getPreConditions());
@@ -175,7 +194,10 @@ public class AbstractActionTest {
           }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for condition matching testing
+
+          }
         };
     action.addCondition(condFalse);
     assertFalse(action.matchCondition(new LaunchDetails()));
@@ -191,25 +213,33 @@ public class AbstractActionTest {
           }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Intentionally empty - test stub does not require print implementation
+          }
         };
 
     RelatedAction ra =
         new RelatedAction() {
           @Override
-          public void print() {}
+          public void print() {
+            // Intentionally empty - test stub does not require print implementation
+          }
         };
 
     TimingSchedule ts =
         new TimingSchedule() {
           @Override
-          public void print() {}
+          public void print() {
+            // Intentionally empty - test stub does not require print implementation
+          }
         };
 
     ActionData ad =
         new ActionData() {
           @Override
-          public void print() {}
+          public void print() {
+            // Intentionally empty - test stub does not require print implementation
+          }
         };
 
     action.addCondition(cond);

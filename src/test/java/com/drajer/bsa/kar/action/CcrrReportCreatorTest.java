@@ -84,6 +84,7 @@ public class CcrrReportCreatorTest {
     Composition.SectionComponent sectionComponent = new Composition.SectionComponent();
     sectionComponent.fhirType();
     ccrrReportCreator.populateReasonForVisitNarrative(sectionComponent, karProcessingData);
+    assertNotNull("Section component should be populated after method call", sectionComponent);
   }
 
   public String getComposition(Bundle bundle) {

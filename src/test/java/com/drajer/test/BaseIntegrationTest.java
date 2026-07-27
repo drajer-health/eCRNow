@@ -66,9 +66,10 @@ public abstract class BaseIntegrationTest {
   protected static final ObjectMapper mapper = new ObjectMapper();
 
   protected static final String URL = "http://localhost:";
-  protected static final String fhirBaseUrl = "/FHIR";
 
-  protected static final int wireMockHttpPort = 9011;
+  protected static final String FHIR_BASE_URL = "/FHIR";
+  protected static final int WIRE_MOCK_HTTP_PORT = 9011;
+
   protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
   protected TestRestTemplate restTemplate;
@@ -84,7 +85,7 @@ public abstract class BaseIntegrationTest {
             );
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();
-    wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
+    wireMockServer = WireMockHandle.getInstance().getWireMockServer(WIRE_MOCK_HTTP_PORT);
     wireMockServer.resetMappings();
     headers.clear();
   }
@@ -105,7 +106,7 @@ public abstract class BaseIntegrationTest {
       String fhirUrl =
           clientDetails != null
               ? clientDetails.getFhirServerBaseURL()
-              : URL + wireMockHttpPort + fhirBaseUrl;
+              : URL + WIRE_MOCK_HTTP_PORT + FHIR_BASE_URL;
       JSONObject jsonObject = new JSONObject(systemLaunchPayload);
       jsonObject.put("fhirServerURL", fhirUrl);
       systemLaunchPayload = jsonObject.toString();
@@ -126,9 +127,9 @@ public abstract class BaseIntegrationTest {
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
 
     // Hardcode FHIR & Token URL to avoid mistakes in test data file.
-    String fhirUrl = URL + wireMockHttpPort + fhirBaseUrl;
+    String fhirUrl = URL + WIRE_MOCK_HTTP_PORT + FHIR_BASE_URL;
     String authUrl = fhirUrl + "/token";
-    String directUrl = URL + wireMockHttpPort + "/directurl";
+    String directUrl = URL + WIRE_MOCK_HTTP_PORT + "/directurl";
     JSONObject jsonObject = new JSONObject(clientDetailString);
     jsonObject.put("fhirServerBaseURL", fhirUrl);
     jsonObject.put("tokenURL", authUrl);

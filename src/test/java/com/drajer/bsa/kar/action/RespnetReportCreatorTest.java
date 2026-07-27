@@ -84,6 +84,7 @@ public class RespnetReportCreatorTest {
     Composition.SectionComponent sectionComponent = new Composition.SectionComponent();
     sectionComponent.fhirType();
     respnetReportCreator.populateReasonForVisitNarrative(sectionComponent, karProcessingData);
+    assertNotNull("Section component should be populated after method call", sectionComponent);
   }
 
   private BsaAction getBsaAction() {

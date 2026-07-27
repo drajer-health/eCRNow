@@ -67,6 +67,23 @@ public class PatientLaunchController {
 
   private static final String FHIR_VERSION = "fhirVersion";
   private static final String X_REQUEST_ID = "X-Request-ID";
+  private static final String NO_REQUEST_ID_ERROR =
+      "No Request Id set in the header. Add X-Request-ID parameter for request tracking.";
+
+  private static final String UNRECOGNIZED_FHIR_URL_ERROR =
+      "Unrecognized healthcare setting FHIR URL";
+
+  private static final String LAUNCH_PATIENT_ERROR = "Unable to launch Patient Instance, Error: ";
+  private static final String REPROCESS_PATIENT_ERROR =
+      "Unable to reProcess Patient Instance, Error: ";
+  private static final String APP_NOT_STARTED_PREFIX =
+      "Unable to launch Patient Instance since the app has not started yet, wait till ";
+
+  private static final String APP_NOT_STARTED_SUFFIX =
+      " for the application to startup and launch patients";
+
+  private static final String UNIQUE_CONSTRAINT_ERROR =
+      "Unable to launch Patient Instance, Unique Constraint Violation, Detailed Error: ";
 
   /**
    * The method is the API to launch a patient instance within the app for processing. In addition
@@ -116,22 +133,18 @@ public class PatientLaunchController {
 
           } else {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(
-                    OperationOutcomeUtil.createErrorOperationOutcome(
-                        "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+                .body(OperationOutcomeUtil.createErrorOperationOutcome(NO_REQUEST_ID_ERROR));
           }
 
         } else {
           return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-              .body(
-                  OperationOutcomeUtil.createErrorOperationOutcome(
-                      "Unrecognized healthcare setting FHIR URL"));
+              .body(OperationOutcomeUtil.createErrorOperationOutcome(UNRECOGNIZED_FHIR_URL_ERROR));
         }
         logger.info(
             " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
             StringEscapeUtils.escapeJava(launchContext.getPatientId()),
             StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-            StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
+            StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(
@@ -141,19 +154,17 @@ public class PatientLaunchController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
+                    LAUNCH_PATIENT_ERROR + e.getMessage()));
       } catch (DataIntegrityViolationException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unable to launch Patient Instance, Unique Constraint Violation, Detailed Error: "
-                        + e.getMessage()));
+                    UNIQUE_CONSTRAINT_ERROR + e.getMessage()));
       } catch (Exception e) {
-
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
+                    LAUNCH_PATIENT_ERROR + e.getMessage()));
       }
     } else {
 
@@ -161,9 +172,9 @@ public class PatientLaunchController {
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
           .body(
               OperationOutcomeUtil.createErrorOperationOutcome(
-                  "Unable to launch Patient Instance since the app has not started yet, wait till "
-                      + StartupUtils.getPatientLaunchInstanceTime().toString()
-                      + " for the application to startup and launch patients"));
+                  APP_NOT_STARTED_PREFIX
+                      + StartupUtils.getPatientLaunchInstanceTime()
+                      + APP_NOT_STARTED_SUFFIX));
     }
   }
 
@@ -228,36 +239,32 @@ public class PatientLaunchController {
 
           } else {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(
-                    OperationOutcomeUtil.createErrorOperationOutcome(
-                        "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+                .body(OperationOutcomeUtil.createErrorOperationOutcome(NO_REQUEST_ID_ERROR));
           }
 
         } else {
           return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-              .body(
-                  OperationOutcomeUtil.createErrorOperationOutcome(
-                      "Unrecognized healthcare setting FHIR URL"));
+              .body(OperationOutcomeUtil.createErrorOperationOutcome(UNRECOGNIZED_FHIR_URL_ERROR));
         }
 
       } catch (AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
+                    LAUNCH_PATIENT_ERROR + e.getMessage()));
       } catch (Exception e) {
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unable to launch Patient Instance, Error: " + e.getMessage()));
+                    LAUNCH_PATIENT_ERROR + e.getMessage()));
       }
 
       logger.info(
           " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
           StringEscapeUtils.escapeJava(launchContext.getPatientId()),
           StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-          StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
+          StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
 
       return ResponseEntity.status(HttpStatus.OK)
           .body(
@@ -269,9 +276,9 @@ public class PatientLaunchController {
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
           .body(
               OperationOutcomeUtil.createErrorOperationOutcome(
-                  "Unable to launch Patient Instance since the app has not started yet, wait till "
-                      + StartupUtils.getPatientLaunchInstanceTime().toString()
-                      + " for the application to startup and launch patients"));
+                  APP_NOT_STARTED_PREFIX
+                      + StartupUtils.getPatientLaunchInstanceTime()
+                      + APP_NOT_STARTED_SUFFIX));
     }
   }
 
@@ -333,36 +340,32 @@ public class PatientLaunchController {
 
           } else {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(
-                    OperationOutcomeUtil.createErrorOperationOutcome(
-                        "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+                .body(OperationOutcomeUtil.createErrorOperationOutcome(NO_REQUEST_ID_ERROR));
           }
 
         } else {
           return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-              .body(
-                  OperationOutcomeUtil.createErrorOperationOutcome(
-                      "Unrecognized healthcare setting FHIR URL"));
+              .body(OperationOutcomeUtil.createErrorOperationOutcome(UNRECOGNIZED_FHIR_URL_ERROR));
         }
 
       } catch (AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unable to reProcess Patient Instance, Error: " + e.getMessage()));
+                    REPROCESS_PATIENT_ERROR + e.getMessage()));
       } catch (Exception e) {
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
                 OperationOutcomeUtil.createErrorOperationOutcome(
-                    "Unable to reProcess Patient Instance, Error: " + e.getMessage()));
+                    REPROCESS_PATIENT_ERROR + e.getMessage()));
       }
 
       logger.info(
           " Patient reProcess was successful for patientId: {}, encounterId: {}, requestId: {}",
           StringEscapeUtils.escapeJava(launchContext.getPatientId()),
           StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-          StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
+          StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
 
       return ResponseEntity.status(HttpStatus.OK)
           .body(
@@ -374,9 +377,9 @@ public class PatientLaunchController {
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
           .body(
               OperationOutcomeUtil.createErrorOperationOutcome(
-                  "Unable to launch Patient Instance since the app has not started yet, wait till "
-                      + StartupUtils.getPatientLaunchInstanceTime().toString()
-                      + " for the application to startup and launch patients"));
+                  APP_NOT_STARTED_PREFIX
+                      + StartupUtils.getPatientLaunchInstanceTime()
+                      + APP_NOT_STARTED_SUFFIX));
     }
   }
 

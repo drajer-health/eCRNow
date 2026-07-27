@@ -411,6 +411,79 @@ public class KarParserImpl implements KarParser {
     }
   }
 
+  /**
+   * Process library resource and update KAR metadata.
+   *
+   * @param lib the library resource
+   * @param art the knowledge artifact
+   */
+  private void processLibrary(Library lib, KnowledgeArtifact art) {
+    logger.info(" Processing Library");
+
+    // Add Version
+    if (lib.hasMeta() && lib.getMeta().hasProfile()) {
+      List<CanonicalType> profiles = lib.getMeta().getProfile();
+      for (CanonicalType prof : profiles) {
+        if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+            && lib.getMeta().hasVersionId()
+            && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
+          logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
+          art.setKarVersion(lib.getMeta().getVersionId());
+          break;
+        } else if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+            && lib.hasVersion()
+            && lib.getVersion().startsWith(VERSION3_ERSD)) {
+          logger.info(" Adding Version {} to KAR", lib.getVersion());
+          art.setKarVersion(lib.getVersion());
+          break;
+        }
+      }
+    }
+
+    if (art.getKarName() == null) {
+      art.setKarName(lib.getName());
+    }
+    if (art.getKarPublisher() == null) {
+      art.setKarPublisher(lib.getPublisher());
+    }
+
+    if (lib.getId().contains("rctc")) {
+      logger.info(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
+      art.setRctcVersion(lib.getVersion());
+      art.setRctcOid(getRctcOid(lib));
+    }
+  }
+
+  /**
+   * Process a bundle entry component based on resource type.
+   *
+   * @param comp the bundle entry component
+   * @param art the knowledge artifact
+   * @param kar the KAR file
+   */
+  private void processBundleEntry(BundleEntryComponent comp, KnowledgeArtifact art, File kar) {
+    if (!Optional.ofNullable(comp).isPresent()) {
+      return;
+    }
+
+    ResourceType resourceType = comp.getResource().getResourceType();
+
+    if (resourceType == ResourceType.ValueSet) {
+      logger.debug(" Processing ValueSet ");
+      processValueSet((ValueSet) comp.getResource(), art);
+    } else if (resourceType == ResourceType.PlanDefinition) {
+      logger.info(" Processing PlanDefinition ");
+      processPlanDefinition((PlanDefinition) comp.getResource(), art, kar);
+      art.initializeRelatedActions();
+      art.initializeRelatedDataIds();
+    } else if (resourceType == ResourceType.Library) {
+      processLibrary((Library) comp.getResource(), art);
+    } else {
+      logger.info(" Adding resource to dependencies");
+      art.addDependentResource(comp.getResource());
+    }
+  }
+
   private void processKar(File kar, String repoUrl, String repoName) {
 
     logger.info(" Processing File : {}", kar);
@@ -437,64 +510,7 @@ public class KarParserImpl implements KarParser {
       List<BundleEntryComponent> entries = karBundle.getEntry();
 
       for (BundleEntryComponent comp : entries) {
-
-        if (Optional.ofNullable(comp).isPresent()
-            && comp.getResource().getResourceType() == ResourceType.ValueSet) {
-          logger.debug(" Processing ValueSet ");
-          processValueSet((ValueSet) comp.getResource(), art);
-        } else if (Optional.ofNullable(comp).isPresent()
-            && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
-          logger.info(" Processing PlanDefinition ");
-          processPlanDefinition((PlanDefinition) comp.getResource(), art, kar);
-          art.initializeRelatedActions();
-          art.initializeRelatedDataIds();
-        } else if (Optional.ofNullable(comp).isPresent()
-            && comp.getResource().getResourceType() == ResourceType.Library) {
-          logger.info(" Processing Library");
-
-          Library lib = (Library) comp.getResource();
-
-          // Add Version
-          if (lib.hasMeta() && lib.getMeta().hasProfile()) {
-
-            List<CanonicalType> profiles = lib.getMeta().getProfile();
-
-            for (CanonicalType prof : profiles) {
-
-              if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
-                  && lib.getMeta().hasVersionId()
-                  && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
-                logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
-                art.setKarVersion(lib.getMeta().getVersionId());
-                break;
-              } else if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
-                  && lib.hasVersion()
-                  && lib.getVersion().startsWith(VERSION3_ERSD)) {
-                logger.info(" Adding Version {} to KAR", lib.getVersion());
-                art.setKarVersion(lib.getVersion());
-                break;
-              }
-            }
-          }
-
-          if (art.getKarName() == null) {
-            art.setKarName(lib.getName());
-          }
-          if (art.getKarPublisher() == null) {
-            art.setKarPublisher(lib.getPublisher());
-          }
-
-          if (lib.getId().contains("rctc")) {
-
-            logger.info(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
-            art.setRctcVersion(lib.getVersion());
-            art.setRctcOid(getRctcOid(lib));
-          }
-        } else if (Optional.ofNullable(comp).isPresent()) {
-          logger.info(" Adding resource to dependencies");
-          art.addDependentResource(comp.getResource());
-        }
-
+        processBundleEntry(comp, art, kar);
         addKarResourceToFhirRepository(comp.getResource());
       }
 
@@ -944,6 +960,146 @@ public class KarParserImpl implements KarParser {
     }
   }
 
+  /**
+   * Create a KAR endpoint for loading terminology and library logic.
+   *
+   * @param karBundleFile the KAR bundle file
+   * @return the endpoint
+   */
+  private Endpoint createKarEndpoint(File karBundleFile) {
+    return new Endpoint()
+        .setAddress(karBundleFile.getParentFile().getAbsolutePath())
+        .setConnectionType(new Coding().setCode("hl7-fhir-files"));
+  }
+
+  /**
+   * Handle CQL condition.
+   *
+   * @param action the action to add the condition to
+   * @param expression the CQL expression
+   * @param libraryCanonical the library canonical
+   * @param karBundleFile the KAR bundle file
+   */
+  private void handleCqlCondition(
+      BsaAction action, Expression expression, CanonicalType libraryCanonical, File karBundleFile) {
+    logger.info(" Found a CQL Expression ");
+    BsaCqlCondition bc = new BsaCqlCondition();
+    bc.setUrl(libraryCanonical.getValue());
+    Endpoint karEndpoint = createKarEndpoint(karBundleFile);
+    bc.setLibraryEndpoint(karEndpoint);
+    bc.setTerminologyEndpoint(karEndpoint);
+    bc.setDataEndpoint(karEndpoint);
+    bc.setLogicExpression(expression);
+    bc.setLibraryEvaluationService(libraryEvaluationService);
+    bc.setNormalReportingDuration(null);
+    action.addCondition(bc);
+  }
+
+  /**
+   * Handle FhirPath condition.
+   *
+   * @param action the action to add the condition to
+   * @param expression the FhirPath expression
+   */
+  private void handleFhirPathCondition(BsaAction action, Expression expression) {
+    logger.info(" Found a FHIR Path Expression ");
+    BsaFhirPathCondition bc = new BsaFhirPathCondition();
+    if (planVariableExpressions != null) {
+      bc.setVariables(planVariableExpressions);
+    }
+    bc.setLogicExpression(expression);
+    bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
+    action.addCondition(bc);
+  }
+
+  /**
+   * Process a condition component.
+   *
+   * @param con the condition component
+   * @param action the action
+   * @param libraryCanonical the library canonical
+   * @param karBundleFile the KAR bundle file
+   */
+  private void processConditionComponent(
+      PlanDefinitionActionConditionComponent con,
+      BsaAction action,
+      CanonicalType libraryCanonical,
+      File karBundleFile) {
+    if (con.getExpression() == null) {
+      return;
+    }
+
+    Expression.ExpressionLanguage language = fromCode(con.getExpression().getLanguage());
+
+    if (language.equals(Expression.ExpressionLanguage.TEXT_CQL) && cqlEnabled) {
+      handleCqlCondition(action, con.getExpression(), libraryCanonical, karBundleFile);
+    } else if (hasAlternativeExpression(con) && (cqlEnabled || fhirpathEnabled)) {
+      handleAlternativeExpression(con, action, libraryCanonical, karBundleFile);
+    } else if (language.equals(Expression.ExpressionLanguage.TEXT_FHIRPATH) && fhirpathEnabled) {
+      handleFhirPathCondition(action, con.getExpression());
+    } else {
+      logger.error(" Unknown type of Expression passed, cannot process ");
+    }
+  }
+
+  /**
+   * Check if condition has alternative expression.
+   *
+   * @param con the condition component
+   * @return true if has alternative expression
+   */
+  private boolean hasAlternativeExpression(PlanDefinitionActionConditionComponent con) {
+    return con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+        || con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+  }
+
+  /**
+   * Handle alternative expression.
+   *
+   * @param con the condition component
+   * @param action the action
+   * @param libraryCanonical the library canonical
+   * @param karBundleFile the KAR bundle file
+   */
+  private void handleAlternativeExpression(
+      PlanDefinitionActionConditionComponent con,
+      BsaAction action,
+      CanonicalType libraryCanonical,
+      File karBundleFile) {
+    Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+    if (ext == null) {
+      ext =
+          con.getExpression().getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+    }
+    Expression exp = (Expression) ext.getValue();
+    if (exp == null) {
+      logger.error(" Unknown type of Alternative Expression passed, cannot process ");
+      return;
+    }
+
+    Expression.ExpressionLanguage language = fromCode(exp.getLanguage());
+
+    if (language.equals(Expression.ExpressionLanguage.TEXT_CQL) && cqlEnabled) {
+      logger.info(" Found a CQL Expression from an alternative expression extension");
+      if (libraryCanonical == null && exp.hasReferenceElement()) {
+        libraryCanonical = new CanonicalType(exp.getReference());
+      }
+      handleCqlCondition(action, exp, libraryCanonical, karBundleFile);
+    } else if (language.equals(Expression.ExpressionLanguage.TEXT_FHIRPATH) && fhirpathEnabled) {
+      logger.info(" Found a FHIR Path Expression from an alternative expression extension");
+      handleFhirPathCondition(action, exp);
+    } else if (con.getExpression() != null
+        && fromCode(con.getExpression().getLanguage())
+            .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH)
+        && fhirpathEnabled) {
+      logger.info(
+          " Cql disabled and found alternative cql expression therefor using primary fhirpath expression");
+      handleFhirPathCondition(action, con.getExpression());
+    } else {
+      logger.error(" Unknown type of Alternative Expression passed, cannot process ");
+    }
+  }
+
   private void populateCondition(
       PlanDefinitionActionComponent ac,
       BsaAction action,
@@ -953,116 +1109,7 @@ public class KarParserImpl implements KarParser {
     List<PlanDefinitionActionConditionComponent> conds = ac.getCondition();
 
     for (PlanDefinitionActionConditionComponent con : conds) {
-
-      if (con.getExpression() != null
-          // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
-          // so using
-          // local fromCode for now
-          && (fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_CQL))
-          && cqlEnabled) {
-
-        logger.info(" Found a CQL Expression ");
-        BsaCqlCondition bc = new BsaCqlCondition();
-        bc.setUrl(libraryCanonical.getValue());
-
-        // Set location of eRSD bundle for loading terminology and library logic
-        Endpoint karEndpoint =
-            new Endpoint()
-                // get the kar directory so that the Providers will bundle everything together i.e.
-                // All Kar bundles
-                .setAddress(karBundleFile.getParentFile().getAbsolutePath())
-                .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-        bc.setLibraryEndpoint(karEndpoint);
-        bc.setTerminologyEndpoint(karEndpoint);
-        // Necessary for Cql Evaluation because of CodeSystem Retrieve
-        bc.setDataEndpoint(karEndpoint);
-        bc.setLogicExpression(con.getExpression());
-        bc.setLibraryEvaluationService(libraryEvaluationService);
-        bc.setNormalReportingDuration(null);
-        action.addCondition(bc);
-      } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
-          || con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
-              && (cqlEnabled || fhirpathEnabled)) {
-        Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
-        if (ext == null) {
-          ext =
-              con.getExpression()
-                  .getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
-        }
-        Expression exp = (Expression) ext.getValue();
-        if (exp != null
-            // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
-            // so using
-            // local fromCode for now
-            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_CQL))
-            && cqlEnabled) {
-
-          logger.info(" Found a CQL Expression from an alternative expression extension");
-          BsaCqlCondition bc = new BsaCqlCondition();
-          if (libraryCanonical == null && exp.hasReferenceElement()) {
-            libraryCanonical = new CanonicalType(exp.getReference());
-          }
-          bc.setUrl(libraryCanonical.getValue());
-
-          // Set location of eRSD bundle for loading terminology and library logic
-          Endpoint karEndpoint =
-              new Endpoint()
-                  // get the kar directory so that the Providers will bundle everything together
-                  // i.e. All Kar bundles
-                  .setAddress(karBundleFile.getParentFile().getAbsolutePath())
-                  .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-          bc.setLibraryEndpoint(karEndpoint);
-          bc.setTerminologyEndpoint(karEndpoint);
-          // Necessary for Cql Evaluation because of CodeSystem Retrieve
-          bc.setDataEndpoint(karEndpoint);
-          bc.setLogicExpression(exp);
-          bc.setLibraryEvaluationService(libraryEvaluationService);
-          action.addCondition(bc);
-        } else if (exp != null
-            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-            && fhirpathEnabled) {
-
-          logger.info(" Found a FHIR Path Expression from an alternative expression extension");
-          BsaFhirPathCondition bc = new BsaFhirPathCondition();
-          if (planVariableExpressions != null) {
-            bc.setVariables(planVariableExpressions);
-          }
-          bc.setLogicExpression(exp);
-          bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-          action.addCondition(bc);
-        } else if (con.getExpression() != null
-            && (fromCode(con.getExpression().getLanguage())
-                .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-            && fhirpathEnabled) {
-          logger.info(
-              " Cql disabled and found alternative cql expression therefor using primary fhirpath expression");
-          BsaFhirPathCondition bc = new BsaFhirPathCondition();
-          if (planVariableExpressions != null) {
-            bc.setVariables(planVariableExpressions);
-          }
-          bc.setLogicExpression(con.getExpression());
-          bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-          action.addCondition(bc);
-        } else {
-          logger.error(" Unknown type of Alternative Expression passed, cannot process ");
-        }
-      } else if (con.getExpression() != null
-          && (fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-          && fhirpathEnabled) {
-
-        logger.info(" Found a FHIR Path Expression ");
-        BsaFhirPathCondition bc = new BsaFhirPathCondition();
-        if (planVariableExpressions != null) {
-          bc.setVariables(planVariableExpressions);
-        }
-        bc.setLogicExpression(con.getExpression());
-        bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-        action.addCondition(bc);
-      } else {
-        logger.error(" Unknown type of Expression passed, cannot process ");
-      }
+      processConditionComponent(con, action, libraryCanonical, karBundleFile);
     }
   }
 

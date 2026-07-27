@@ -241,63 +241,72 @@ public class ActionRepo {
     this.directReceiver = directReceiver;
   }
 
+  /** Initializes actionsByTriggers map if not already initialized. */
+  private void ensureActionsByTriggersInitialized() {
+    if (actionsByTriggers == null) {
+      actionsByTriggers = new HashMap<>();
+    }
+  }
+
+  /**
+   * Adds an action to the actionsByTriggers map for a given trigger type.
+   *
+   * @param triggerType the trigger type
+   * @param action the action to add
+   */
+  private void addActionForTrigger(TriggerType triggerType, AbstractAction action) {
+    ensureActionsByTriggersInitialized();
+    actionsByTriggers.computeIfAbsent(triggerType, k -> new HashSet<>()).add(action);
+  }
+
+  /**
+   * Processes trigger data for an action.
+   *
+   * @param action the action
+   */
+  private void processTriggerData(AbstractAction action) {
+    List<ActionData> td = action.getTriggerData();
+    if (td != null && !td.isEmpty()) {
+      for (ActionData ad : td) {
+        addActionForTrigger(ad.getTriggerType(), action);
+      }
+    }
+  }
+
+  /**
+   * Processes timing data for an action.
+   *
+   * @param action the action
+   */
+  private void processTimingData(AbstractAction action) {
+    List<TimingSchedule> ts = action.getTimingData();
+    if (ts != null && !ts.isEmpty()) {
+      for (TimingSchedule tsd : ts) {
+        addActionForTrigger(tsd.getTriggerType(), action);
+      }
+    }
+  }
+
+  /**
+   * Processes a single action by adding its trigger and timing data.
+   *
+   * @param action the action to process
+   */
+  private void processAction(AbstractAction action) {
+    processTriggerData(action);
+    processTimingData(action);
+  }
+
   public void setupTriggerBasedActions() {
+    if (actions == null) {
+      return;
+    }
 
-    if (actions != null) {
-
-      for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
-
-        Set<AbstractAction> aa = ent.getValue();
-
-        if (aa != null) {
-
-          for (AbstractAction a : aa) {
-
-            // if Trigger is populated then we can add it.
-            List<ActionData> td = a.getTriggerData();
-
-            if (td != null && !td.isEmpty()) {
-
-              if (actionsByTriggers == null) actionsByTriggers = new HashMap<>();
-
-              for (ActionData ad : td) {
-
-                if (actionsByTriggers.containsKey(ad.getTriggerType())) {
-
-                  actionsByTriggers.get(ad.getTriggerType()).add(a);
-
-                } else {
-                  Set<AbstractAction> la = new HashSet<>();
-                  la.add(a);
-
-                  actionsByTriggers.put(ad.getTriggerType(), la);
-                }
-              }
-            }
-
-            // Add for Timing data
-            // if Trigger is populated then we can add it.
-            List<TimingSchedule> ts = a.getTimingData();
-
-            if (ts != null && !ts.isEmpty()) {
-
-              if (actionsByTriggers == null) actionsByTriggers = new HashMap<>();
-
-              for (TimingSchedule tsd : ts) {
-
-                if (actionsByTriggers.containsKey(tsd.getTriggerType())) {
-
-                  actionsByTriggers.get(tsd.getTriggerType()).add(a);
-
-                } else {
-                  Set<AbstractAction> la = new HashSet<>();
-                  la.add(a);
-
-                  actionsByTriggers.put(tsd.getTriggerType(), la);
-                }
-              }
-            }
-          }
+    for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
+      Set<AbstractAction> aa = ent.getValue();
+      if (aa != null) {
+        for (AbstractAction a : aa) {
+          processAction(a);
         }
       }
     }

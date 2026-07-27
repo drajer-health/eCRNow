@@ -64,6 +64,140 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
   private final Logger logger = LoggerFactory.getLogger(SubscriptionNotificationReceiverImpl.class);
 
+  /**
+   * Setup notification context with bundle data and throttle context.
+   *
+   * @param nc the notification context
+   * @param notificationBundle the notification bundle
+   * @param launchContext the launch context
+   */
+  private void setupNotificationContext(
+      NotificationContext nc, Bundle notificationBundle, PatientLaunchContext launchContext) {
+    nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
+    if (launchContext != null && launchContext.getThrottleContext() != null) {
+      nc.setThrottleContext(launchContext.getThrottleContext());
+    }
+    ncDao.saveOrUpdate(nc);
+  }
+
+  /**
+   * Process knowledge artifact status.
+   *
+   * @param ks the knowledge artifact status
+   * @param nc the notification context
+   * @param hs the healthcare setting
+   * @param notificationBundle the notification bundle
+   * @param dataList the list to add processing data to
+   */
+  private void processKarStatus(
+      KnowledgeArtifactStatus ks,
+      NotificationContext nc,
+      HealthcareSetting hs,
+      Bundle notificationBundle,
+      List<KarProcessingData> dataList) {
+    if (!ks.getIsActive().booleanValue()) {
+      logger.info(" Skipping processing of KAR as it is inactive. {}", ks.getVersionUniqueKarId());
+      return;
+    }
+
+    logger.info(" Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
+    KnowledgeArtifact kar = knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
+
+    if (kar == null) {
+      logger.error(
+          " Unable to process notification, as the KAR is not found {}",
+          ks.getVersionUniqueKarId());
+      return;
+    }
+
+    logger.info(" Processing KAR since we found the one that we needed. ");
+    KarProcessingData kd = setupKarProcessingData(ks, nc, hs, notificationBundle);
+    addNotifiedResourceToKd(kd, nc);
+    karProcessor.applyKarForNotification(kd);
+    dataList.add(kd);
+  }
+
+  /**
+   * Setup KAR processing data.
+   *
+   * @param ks the knowledge artifact status
+   * @param nc the notification context
+   * @param hs the healthcare setting
+   * @param notificationBundle the notification bundle
+   * @return the kar processing data
+   */
+  private KarProcessingData setupKarProcessingData(
+      KnowledgeArtifactStatus ks,
+      NotificationContext nc,
+      HealthcareSetting hs,
+      Bundle notificationBundle) {
+    KarProcessingData kd = new KarProcessingData();
+    KnowledgeArtifact kar = knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
+    kd.setNotificationContext(nc);
+    kd.setHealthcareSetting(hs);
+    kd.setKar(kar);
+    kd.setNotificationBundle(notificationBundle);
+    kd.setScheduledJobData(null);
+    kd.setKarStatus(ks);
+    kd.setxRequestId(nc.getxRequestId());
+    kd.setxCorrelationId(nc.getxCorrelationId());
+    kd.setTokenRefreshThreshold(tokenRefreshThreshold);
+    return kd;
+  }
+
+  /**
+   * Add notified resource to KAR processing data.
+   *
+   * @param kd the kar processing data
+   * @param nc the notification context
+   */
+  private void addNotifiedResourceToKd(KarProcessingData kd, NotificationContext nc) {
+    if (nc.getNotifiedResource() == null) {
+      return;
+    }
+
+    logger.info("Adding notified resource to the set of inputs ");
+    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
+    Set<Resource> results = new HashSet<>();
+    results.add(nc.getNotifiedResource());
+    res.put(nc.getNotifiedResource().getResourceType(), results);
+    kd.addResourcesByType(res);
+
+    if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
+      kd.setContextEncounter((Encounter) nc.getNotifiedResource());
+    }
+  }
+
+  /**
+   * Process healthcare setting KARs.
+   *
+   * @param hs the healthcare setting
+   * @param nc the notification context
+   * @param notificationBundle the notification bundle
+   * @param dataList the list to add processing data to
+   */
+  private void processHealthcareSettingKars(
+      HealthcareSetting hs,
+      NotificationContext nc,
+      Bundle notificationBundle,
+      List<KarProcessingData> dataList) {
+    if (hs.getKars() == null) {
+      logger.error(
+          " Cannot proceed with the processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.");
+      return;
+    }
+
+    HealthcareSettingOperationalKnowledgeArtifacts arfts = hs.getKars();
+    logger.info(
+        " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
+        arfts.getId());
+
+    Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
+    for (KnowledgeArtifactStatus ks : stat) {
+      processKarStatus(ks, nc, hs, notificationBundle, dataList);
+    }
+  }
+
   /** The method that processes the notification. */
   @Override
   public List<KarProcessingData> processNotification(
@@ -80,116 +214,30 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
         SubscriptionUtils.getNotificationContext(
             notificationBundle, request, response, false, false, launchContext);
 
-    if (nc != null) {
-
-      logger.info(" Notification Context exists for processing the notification ");
-      nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
-
-      if (launchContext != null && launchContext.getThrottleContext() != null)
-        nc.setThrottleContext(launchContext.getThrottleContext());
-
-      ncDao.saveOrUpdate(nc);
-
-      try {
-
-        // Start processing the relaunch notification.
-
-        // Retrieve the settings for the FHIR Server.
-        HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(nc.getFhirServerBaseUrl());
-
-        if (hs != null) {
-
-          logger.info(" Found the Healthcare Settings necessary to process notifications ");
-
-          // Find the KAR's active for the Healthcare Setting.
-          if (hs.getKars() != null) {
-
-            // Get the Active Kars and process it.
-            HealthcareSettingOperationalKnowledgeArtifacts arfts = hs.getKars();
-
-            logger.info(
-                " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
-                arfts.getId());
-
-            Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
-
-            for (KnowledgeArtifactStatus ks : stat) {
-
-              if (ks.getIsActive().booleanValue()) {
-
-                logger.info(
-                    " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
-
-                KnowledgeArtifact kar =
-                    knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
-
-                if (kar != null) {
-
-                  logger.info(" Processing KAR since we found the one that we needed. ");
-
-                  // Setup the initial Kar
-                  KarProcessingData kd = new KarProcessingData();
-                  kd.setNotificationContext(nc);
-                  kd.setHealthcareSetting(hs);
-                  kd.setKar(kar);
-                  kd.setNotificationBundle(notificationBundle);
-                  kd.setScheduledJobData(null);
-                  kd.setKarStatus(ks);
-                  kd.setxRequestId(nc.getxRequestId());
-                  kd.setxCorrelationId(nc.getxCorrelationId());
-                  kd.setTokenRefreshThreshold(tokenRefreshThreshold);
-
-                  if (nc.getNotifiedResource() != null) {
-                    logger.info("Adding notified resource to the set of inputs ");
-                    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
-                    Set<Resource> results = new HashSet<>();
-                    results.add(nc.getNotifiedResource());
-                    res.put(nc.getNotifiedResource().getResourceType(), results);
-                    kd.addResourcesByType(res);
-
-                    if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
-                      kd.setContextEncounter((Encounter) nc.getNotifiedResource());
-                    }
-                  }
-
-                  karProcessor.applyKarForNotification(kd);
-                  dataList.add(kd);
-                } else {
-
-                  logger.error(
-                      " Unable to process notification, as the KAR is not found {}",
-                      ks.getVersionUniqueKarId());
-                }
-
-              } else {
-
-                logger.info(
-                    " Skipping processing of KAR as it is inactive. {}",
-                    ks.getVersionUniqueKarId());
-              }
-            }
-
-          } else {
-            logger.error(
-                " Cannot proceed with the processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.");
-          }
-
-        } else {
-
-          logger.error(
-              " Cannot proceed with the processing because the Healthcare Settings does not exist for {}",
-              nc.getFhirServerBaseUrl());
-        }
-
-      } catch (Exception e) {
-
-        logger.error(" Error during processing of notification.", e);
-      }
-
-    } else {
-
+    if (nc == null) {
       logger.error(
           " Cannot process notification because the Notification context is not derivable. ");
+      return dataList;
+    }
+
+    logger.info(" Notification Context exists for processing the notification ");
+    setupNotificationContext(nc, notificationBundle, launchContext);
+
+    try {
+      HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(nc.getFhirServerBaseUrl());
+
+      if (hs == null) {
+        logger.error(
+            " Cannot proceed with the processing because the Healthcare Settings does not exist for {}",
+            nc.getFhirServerBaseUrl());
+        return dataList;
+      }
+
+      logger.info(" Found the Healthcare Settings necessary to process notifications ");
+      processHealthcareSettingKars(hs, nc, notificationBundle, dataList);
+
+    } catch (Exception e) {
+      logger.error(" Error during processing of notification.", e);
     }
 
     logger.info(" End processing notification ");
@@ -204,139 +252,15 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       PatientLaunchContext launchContext,
       Boolean relaunch)
       throws InvalidLaunchContext, InvalidNotification {
-
-    List<KarProcessingData> dataList = new ArrayList<>();
-    logger.info(" Stating to process notification ");
-
-    NotificationContext nc =
-        SubscriptionUtils.getNotificationContext(
-            notificationBundle, request, response, true, false, launchContext);
-
-    if (nc != null) {
-
-      logger.info(" Notification Context exists for processing the notification ");
-      nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
-      nc.setNotificationProcessingStatus(NotificationProcessingStatusType.RELAUNCHED.toString());
-
-      if (launchContext != null && launchContext.getThrottleContext() != null)
-        nc.setThrottleContext(launchContext.getThrottleContext());
-
-      ncDao.saveOrUpdate(nc);
-
-      try {
-
-        // Start processing the notification.
-
-        // Retrieve the settings for the FHIR Server.
-        HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(nc.getFhirServerBaseUrl());
-
-        if (hs != null) {
-
-          logger.info(" Found the Healthcare Settings necessary to process notifications ");
-
-          // Find the KAR's active for the Healthcare Setting.
-          if (hs.getKars() != null) {
-
-            // Get the Active Kars and process it.
-            HealthcareSettingOperationalKnowledgeArtifacts arfts = hs.getKars();
-
-            logger.info(
-                " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
-                arfts.getId());
-
-            Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
-
-            for (KnowledgeArtifactStatus ks : stat) {
-
-              if (ks.getIsActive().booleanValue()) {
-
-                logger.info(
-                    " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
-
-                KnowledgeArtifact kar =
-                    knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
-
-                if (kar != null) {
-
-                  logger.info(" Processing KAR since we found the one that we needed. ");
-
-                  // Setup the initial Kar
-                  KarProcessingData kd = new KarProcessingData();
-                  kd.setNotificationContext(nc);
-                  kd.setHealthcareSetting(hs);
-                  kd.setKar(kar);
-                  kd.setNotificationBundle(notificationBundle);
-                  kd.setScheduledJobData(null);
-                  kd.setKarStatus(ks);
-                  kd.setxRequestId(nc.getxRequestId());
-                  kd.setxCorrelationId(nc.getxCorrelationId());
-                  kd.setTokenRefreshThreshold(tokenRefreshThreshold);
-
-                  if (nc.getNotifiedResource() != null) {
-                    logger.info("Adding notified resource to the set of inputs ");
-                    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
-                    Set<Resource> results = new HashSet<>();
-                    results.add(nc.getNotifiedResource());
-                    res.put(nc.getNotifiedResource().getResourceType(), results);
-                    kd.addResourcesByType(res);
-
-                    if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
-                      kd.setContextEncounter((Encounter) nc.getNotifiedResource());
-                    }
-                  }
-
-                  karProcessor.applyKarForNotification(kd);
-                  dataList.add(kd);
-                } else {
-
-                  String err =
-                      " Unable to process notification, as the KAR is not found "
-                          + ks.getVersionUniqueKarId();
-                  logger.error(err);
-                  throw new InvalidNotification(err);
-                }
-
-              } else {
-
-                logger.info(
-                    " Skipping processing of KAR as it is inactive. {}",
-                    ks.getVersionUniqueKarId());
-              }
-            }
-
-          } else {
-            String err =
-                " Cannot proceed with the processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.";
-            logger.error(err);
-            throw new InvalidNotification(err);
-          }
-
-        } else {
-
-          String err =
-              " Cannot proceed with the processing because the Healthcare Settings does not exist for "
-                  + nc.getFhirServerBaseUrl();
-          logger.error(err);
-          throw new InvalidNotification(err);
-        }
-
-      } catch (Exception e) {
-
-        logger.error(" Error during processing of notification.", e);
-        throw e;
-      }
-
-    } else {
-
-      logger.error(
-          " Cannot process notification because the Notification context is not derivable. ");
-
-      throw new InvalidNotification(
-          "Cannot process notification because the Notification context is not derivable.");
-    }
-
-    logger.info(" End processing notification ");
-    return dataList;
+    return processNotificationInternal(
+        notificationBundle,
+        request,
+        response,
+        launchContext,
+        true,
+        false,
+        NotificationProcessingStatusType.RELAUNCHED,
+        "process");
   }
 
   @Override
@@ -347,138 +271,179 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       PatientLaunchContext launchContext,
       Boolean relaunch)
       throws InvalidLaunchContext, InvalidNotification {
+    return processNotificationInternal(
+        notificationBundle,
+        request,
+        response,
+        launchContext,
+        false,
+        true,
+        NotificationProcessingStatusType.REPROCESSED,
+        "re-process");
+  }
+
+  private List<KarProcessingData> processNotificationInternal(
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext,
+      Boolean relaunch,
+      Boolean reprocess,
+      NotificationProcessingStatusType processingStatus,
+      String operationType)
+      throws InvalidLaunchContext, InvalidNotification {
 
     List<KarProcessingData> dataList = new ArrayList<>();
-    logger.info(" Stating to re-process notification ");
+    logger.info(" Stating to {} notification ", operationType);
 
     NotificationContext nc =
         SubscriptionUtils.getNotificationContext(
-            notificationBundle, request, response, false, true, launchContext);
+            notificationBundle, request, response, relaunch, reprocess, launchContext);
 
-    if (nc != null) {
-
-      logger.info(" Notification Context exists for re-processing the notification ");
-      nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
-      nc.setNotificationProcessingStatus(NotificationProcessingStatusType.REPROCESSED.toString());
-
-      if (launchContext != null && launchContext.getThrottleContext() != null)
-        nc.setThrottleContext(launchContext.getThrottleContext());
-
-      ncDao.saveOrUpdate(nc);
-
-      try {
-
-        // Start re-processing the notification.
-
-        // Retrieve the settings for the FHIR Server.
-        HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(nc.getFhirServerBaseUrl());
-
-        if (hs != null) {
-
-          logger.info(" Found the Healthcare Settings necessary to re-process notifications ");
-
-          // Find the KAR's active for the Healthcare Setting.
-          if (hs.getKars() != null) {
-
-            // Get the Active Kars and process it.
-            HealthcareSettingOperationalKnowledgeArtifacts arfts = hs.getKars();
-
-            logger.info(
-                " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
-                arfts.getId());
-
-            Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
-
-            for (KnowledgeArtifactStatus ks : stat) {
-
-              if (ks.getIsActive().booleanValue()) {
-
-                logger.info(
-                    " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
-
-                KnowledgeArtifact kar =
-                    knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
-
-                if (kar != null) {
-
-                  logger.info(" Processing KAR since we found the one that we needed. ");
-
-                  // Setup the initial Kar
-                  KarProcessingData kd = new KarProcessingData();
-                  kd.setNotificationContext(nc);
-                  kd.setHealthcareSetting(hs);
-                  kd.setKar(kar);
-                  kd.setNotificationBundle(notificationBundle);
-                  kd.setScheduledJobData(null);
-                  kd.setKarStatus(ks);
-                  kd.setxRequestId(nc.getxRequestId());
-                  kd.setxCorrelationId(nc.getxCorrelationId());
-                  kd.setTokenRefreshThreshold(tokenRefreshThreshold);
-
-                  if (nc.getNotifiedResource() != null) {
-                    logger.info("Adding notified resource to the set of inputs ");
-                    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
-                    Set<Resource> results = new HashSet<>();
-                    results.add(nc.getNotifiedResource());
-                    res.put(nc.getNotifiedResource().getResourceType(), results);
-                    kd.addResourcesByType(res);
-
-                    if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
-                      kd.setContextEncounter((Encounter) nc.getNotifiedResource());
-                    }
-                  }
-
-                  karProcessor.applyKarForNotification(kd);
-                  dataList.add(kd);
-                } else {
-
-                  String err =
-                      " Unable to re-process notification, as the KAR is not found "
-                          + ks.getVersionUniqueKarId();
-                  logger.error(err);
-                  throw new InvalidNotification(err);
-                }
-
-              } else {
-
-                logger.info(
-                    " Skipping processing of KAR as it is inactive. {}",
-                    ks.getVersionUniqueKarId());
-              }
-            }
-
-          } else {
-            String err =
-                " Cannot proceed with the re-processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.";
-            logger.error(err);
-            throw new InvalidNotification(err);
-          }
-
-        } else {
-
-          String err =
-              " Cannot proceed with the re-processing because the Healthcare Settings does not exist for "
-                  + nc.getFhirServerBaseUrl();
-          logger.error(err);
-          throw new InvalidNotification(err);
-        }
-
-      } catch (Exception e) {
-
-        logger.error(" Error during re-processing of notification.", e);
-        throw e;
-      }
-
-    } else {
-
-      logger.error(
-          " Cannot re-process notification because the Notification context is not derivable. ");
-
+    if (!validateNotificationContextExists(nc, operationType)) {
       throw new InvalidNotification(
-          "Cannot re-process notification because the Notification context is not derivable.");
+          String.format(
+              "Cannot %s notification because the Notification context is not derivable.",
+              operationType));
     }
 
-    logger.info(" End re-processing notification ");
+    setupNotificationContext(nc, notificationBundle, processingStatus, launchContext);
+
+    try {
+      processNotificationKars(nc, notificationBundle, dataList);
+    } catch (Exception e) {
+      logger.error(" Error during {} of notification.", operationType, e);
+      throw e;
+    }
+
+    logger.info(" End {} notification ", operationType);
     return dataList;
+  }
+
+  private boolean validateNotificationContextExists(NotificationContext nc, String operationType) {
+    if (nc == null) {
+      logger.error(
+          " Cannot {} notification because the Notification context is not derivable. ",
+          operationType);
+      return false;
+    }
+    return true;
+  }
+
+  private void setupNotificationContext(
+      NotificationContext nc,
+      Bundle notificationBundle,
+      NotificationProcessingStatusType processingStatus,
+      PatientLaunchContext launchContext) {
+    logger.info(
+        " Notification Context exists for {} the notification ",
+        processingStatus.toString().toLowerCase());
+    nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
+    nc.setNotificationProcessingStatus(processingStatus.toString());
+
+    if (launchContext != null && launchContext.getThrottleContext() != null) {
+      nc.setThrottleContext(launchContext.getThrottleContext());
+    }
+
+    ncDao.saveOrUpdate(nc);
+  }
+
+  private void processNotificationKars(
+      NotificationContext nc, Bundle notificationBundle, List<KarProcessingData> dataList)
+      throws InvalidNotification {
+    HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(nc.getFhirServerBaseUrl());
+
+    if (hs == null) {
+      String err =
+          " Cannot proceed with the processing because the Healthcare Settings does not exist for "
+              + nc.getFhirServerBaseUrl();
+      logger.error(err);
+      throw new InvalidNotification(err);
+    }
+
+    logger.info(" Found the Healthcare Settings necessary to process notifications ");
+
+    if (hs.getKars() == null) {
+      String err =
+          " Cannot proceed with the processing because the Healthcare Settings does not contain any Knowledge Artifacts that are operational.";
+      logger.error(err);
+      throw new InvalidNotification(err);
+    }
+
+    HealthcareSettingOperationalKnowledgeArtifacts arfts = hs.getKars();
+    logger.info(
+        " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
+        arfts.getId());
+
+    Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
+    for (KnowledgeArtifactStatus ks : stat) {
+      processKarIfActive(ks, nc, notificationBundle, hs, dataList);
+    }
+  }
+
+  private void processKarIfActive(
+      KnowledgeArtifactStatus ks,
+      NotificationContext nc,
+      Bundle notificationBundle,
+      HealthcareSetting hs,
+      List<KarProcessingData> dataList)
+      throws InvalidNotification {
+    if (!ks.getIsActive().booleanValue()) {
+      logger.info(" Skipping processing of KAR as it is inactive. {}", ks.getVersionUniqueKarId());
+      return;
+    }
+
+    logger.info(" Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
+
+    KnowledgeArtifact kar = knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
+
+    if (kar == null) {
+      String err =
+          " Unable to process notification, as the KAR is not found " + ks.getVersionUniqueKarId();
+      logger.error(err);
+      throw new InvalidNotification(err);
+    }
+
+    logger.info(" Processing KAR since we found the one that we needed. ");
+    KarProcessingData kd = setupKarProcessingData(nc, hs, kar, ks, notificationBundle);
+    addNotifiedResourceToKarData(kd, nc);
+    karProcessor.applyKarForNotification(kd);
+    dataList.add(kd);
+  }
+
+  private KarProcessingData setupKarProcessingData(
+      NotificationContext nc,
+      HealthcareSetting hs,
+      KnowledgeArtifact kar,
+      KnowledgeArtifactStatus ks,
+      Bundle notificationBundle) {
+    KarProcessingData kd = new KarProcessingData();
+    kd.setNotificationContext(nc);
+    kd.setHealthcareSetting(hs);
+    kd.setKar(kar);
+    kd.setNotificationBundle(notificationBundle);
+    kd.setScheduledJobData(null);
+    kd.setKarStatus(ks);
+    kd.setxRequestId(nc.getxRequestId());
+    kd.setxCorrelationId(nc.getxCorrelationId());
+    kd.setTokenRefreshThreshold(tokenRefreshThreshold);
+    return kd;
+  }
+
+  private void addNotifiedResourceToKarData(KarProcessingData kd, NotificationContext nc) {
+    if (nc.getNotifiedResource() == null) {
+      return;
+    }
+
+    logger.info("Adding notified resource to the set of inputs ");
+    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
+    Set<Resource> results = new HashSet<>();
+    results.add(nc.getNotifiedResource());
+    res.put(nc.getNotifiedResource().getResourceType(), results);
+    kd.addResourcesByType(res);
+
+    if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
+      kd.setContextEncounter((Encounter) nc.getNotifiedResource());
+    }
   }
 }

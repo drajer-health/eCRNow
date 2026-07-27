@@ -21,6 +21,8 @@ public class CdaResultGenerator {
 
   private static final List<String> SEE_NOTE_PATTERNS =
       Arrays.asList("see note", "see notes", "see below", "see comments", "comment");
+  private static final String DIAGNOSTIC_REPORT_CODE = "DiagnosticReport.code";
+  private static final String OBSERVATION_VALUE = "Observation.value";
 
   private CdaResultGenerator() {}
 
@@ -271,7 +273,7 @@ public class CdaResultGenerator {
     logger.info("Generating Dynamic Data for Organizer ");
     StringBuilder lrEntry = new StringBuilder(200);
     List<String> paths = new ArrayList<>();
-    paths.add("DiagnosticReport.code");
+    paths.add(DIAGNOSTIC_REPORT_CODE);
     Pair<Boolean, String> obsCodeXml = null;
     if (version.contentEquals("CDA_R31")) {
       obsCodeXml = getObservationCodeXml(details, cd, false, "", paths, version);
@@ -531,6 +533,42 @@ public class CdaResultGenerator {
     return null;
   }
 
+  /**
+   * Gets appropriate CodeableConcept from component or falls back to report code.
+   *
+   * @param component the component to check
+   * @param fallbackCode the fallback code from report
+   * @return the selected CodeableConcept
+   */
+  private static CodeableConcept getCodeFromComponentOrFallback(
+      ObservationComponentComponent component, CodeableConcept fallbackCode) {
+    if (component.hasCode()
+        && component.getCode().hasCoding()
+        && CdaFhirUtilities.isCodingPresentForCodeSystem(
+            component.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+      return component.getCode();
+    }
+    return fallbackCode;
+  }
+
+  /**
+   * Gets appropriate CodeableConcept from observation or falls back to report code.
+   *
+   * @param obs the observation to check
+   * @param fallbackCode the fallback code from report
+   * @return the selected CodeableConcept
+   */
+  private static CodeableConcept getCodeFromObsOrFallback(
+      Observation obs, CodeableConcept fallbackCode) {
+    if (obs.hasCode()
+        && obs.getCode().hasCoding()
+        && CdaFhirUtilities.isCodingPresentForCodeSystem(
+            obs.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+      return obs.getCode();
+    }
+    return fallbackCode;
+  }
+
   public static String getXmlForComponents(
       DiagnosticReport rep,
       HashMap<String, Observation> allObs,
@@ -545,12 +583,9 @@ public class CdaResultGenerator {
     String contentRef = contentId + Integer.toString(row);
 
     Boolean foundComponent = false;
-
     List<Reference> refs = rep.getResult();
 
     for (Reference r : refs) {
-
-      // Create an Observation for each entry.
       Observation obs = allObs.get(r.getReferenceElement().getIdPart());
 
       if (obs != null
@@ -567,28 +602,13 @@ public class CdaResultGenerator {
         int rowNum = 1;
 
         for (ObservationComponentComponent oc : obs.getComponent()) {
-
           logger.debug("Found Observation Components ");
-          if (oc.hasCode()
-              && oc.getCode().hasCoding()
-              && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                  oc.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
-            cc = oc.getCode();
-          } else {
-            // use diagnostic report code instead
-            cc = rep.getCode();
-          }
+          cc = getCodeFromComponentOrFallback(oc, rep.getCode());
 
-          if (oc.getValue() != null) {
-            val = oc.getValue();
-          }
+          if (oc.getValue() != null) val = oc.getValue();
+          if (oc.getInterpretation() != null) interpretation = oc.getInterpretation();
 
-          if (oc.getInterpretation() != null) {
-            interpretation = oc.getInterpretation();
-          }
-
-          id.append("-");
-          id.append(Integer.toBinaryString(rowNum));
+          id.append("-").append(Integer.toBinaryString(rowNum));
 
           String compString =
               getXmlForObservationComponent(
@@ -606,26 +626,14 @@ public class CdaResultGenerator {
                   obs.getReferenceRange());
 
           if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
-
           lrEntry.append(compString);
-
           rowNum++;
         }
       }
 
       if (obs != null && Boolean.FALSE.equals(foundComponent)) {
-
-        CodeableConcept cc = null;
         logger.info("No component found , so directly adding the observation code ");
-        if (obs.hasCode()
-            && obs.getCode().hasCoding()
-            && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                obs.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
-          cc = obs.getCode();
-        } else {
-          // use diagnostic report code instead
-          cc = rep.getCode();
-        }
+        CodeableConcept cc = getCodeFromObsOrFallback(obs, rep.getCode());
 
         lrEntry.append(
             getXmlForObservationComponent(
@@ -645,7 +653,6 @@ public class CdaResultGenerator {
     }
 
     logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
-
     return lrEntry.toString();
   }
 
@@ -681,8 +688,8 @@ public class CdaResultGenerator {
 
     List<String> paths = new ArrayList<>();
     paths.add("Observation.code");
-    paths.add("DiagnosticReport.code");
-    paths.add("Observation.value");
+    paths.add(DIAGNOSTIC_REPORT_CODE);
+    paths.add(OBSERVATION_VALUE);
 
     String contentRef =
         CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
@@ -693,7 +700,7 @@ public class CdaResultGenerator {
     contentRef = CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT + Integer.toString(rowNum);
     if (val instanceof CodeableConcept) {
       paths.clear();
-      paths.add("Observation.value");
+      paths.add(OBSERVATION_VALUE);
       CodeableConcept value = (CodeableConcept) val;
       obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths, version);
     }
@@ -809,8 +816,8 @@ public class CdaResultGenerator {
 
     List<String> paths = new ArrayList<>();
     paths.add("Observation.code");
-    paths.add("DiagnosticReport.code");
-    paths.add("Observation.value");
+    paths.add(DIAGNOSTIC_REPORT_CODE);
+    paths.add(OBSERVATION_VALUE);
 
     Pair<Boolean, String> obsCodeXml =
         getObservationCodeXml(details, cd, false, contentRef, paths, version);
@@ -825,7 +832,7 @@ public class CdaResultGenerator {
     if (val instanceof CodeableConcept) {
 
       paths.clear();
-      paths.add("Observation.value");
+      paths.add(OBSERVATION_VALUE);
       CodeableConcept value = (CodeableConcept) val;
       obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths, version);
     }

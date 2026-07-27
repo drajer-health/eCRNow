@@ -65,7 +65,7 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     tx.commit();
 
     // Setup wireMock and mock FHIR call as per yaml file.
-    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    stubHelper = new WireMockHelper(wireMockServer, WIRE_MOCK_HTTP_PORT);
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
@@ -95,6 +95,9 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
 
   @Test
   public void testNoEicrWhenNoTriggerCode() {
+    assertNotNull("Test case ID should not be null", testCaseId);
+    assertNotNull("Test data should not be null", testData);
+    assertNotNull("System launch payload should not be null", systemLaunchPayload);
 
     /*   ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
@@ -108,6 +111,7 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     validateCreateEICR(JobStatus.COMPLETED, false);
     List<Eicr> allEICRDocuments = getAllEICRDocuments();
     assertEquals(0, allEICRDocuments != null ? allEICRDocuments.size() : ""); */
+
   }
 
   private void getLaunchDetailAndStatus() {

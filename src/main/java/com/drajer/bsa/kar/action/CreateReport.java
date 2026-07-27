@@ -57,103 +57,11 @@ public class CreateReport extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      Set<Resource> resources = new HashSet<>();
-
-      // Get the default queries.
-      Map<String, FhirQueryFilter> queries =
-          BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
-
-      if (queries != null && !queries.isEmpty()) {
-
-        logger.info(" Found Default/Custom Queries for execution ");
-
-        // Try to execute the queries.
-        queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
-
-      } else {
-
-        // Try to Get the Resources that need to be retrieved using Resource Type since queries are
-        // not specified.
-        List<DataRequirement> inputRequirements = getInputData();
-        ehrService.getFilteredData(data, inputRequirements);
-        inputRequirements.stream()
-            .filter(
-                ir ->
-                    data.getResourcesById(ir.getId()) != null
-                        && !data.getResourcesById(ir.getId()).isEmpty())
-            .forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
-      }
+      Set<Resource> resources = processQueryData(data, ehrService);
 
       ehrService.loadJurisdicationData(data);
 
-      // Get the Output Data Requirement to determine the type of bundle to create.
-      for (DataRequirement dr : outputData) {
-
-        if (dr.hasProfile()) {
-
-          List<CanonicalType> profiles = dr.getProfile();
-
-          for (CanonicalType ct : profiles) {
-
-            logger.info("Getting Report Creator for: {}", ct);
-            ReportCreator rc = ReportCreator.getReportCreator(ct.asStringValue());
-
-            if (rc != null) {
-
-              logger.info("Start creating report");
-              Resource output =
-                  rc.createReport(
-                      data, ehrService, resources, dr.getId(), ct.asStringValue(), this);
-              logger.info("Finished creating report");
-
-              if (output != null) {
-
-                logger.info(" Adding Report to output generated {}", output.getId());
-                data.addActionOutput(actionId, output);
-
-                logger.info(" Adding Report to output using id {}", dr.getId());
-
-                data.addActionOutputById(dr.getId(), output);
-
-                if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
-
-                  logger.info("Creating PH message for CDA Data ");
-                  createPublicHealthMessageForCda(
-                      data, BsaTypes.getActionString(type), output, actionId);
-
-                } else {
-
-                  // Save FHIR Data to PH messages
-                  String fileName =
-                      logDirectory
-                          + BsaTypes.getActionString(type)
-                          + "_"
-                          + data.getNotificationContext().getPatientId()
-                          + "_"
-                          + data.getNotificationContext().getNotificationResourceId()
-                          + ".json";
-
-                  saveReportToFile(jsonParser.encodeResourceToString(output), fileName);
-
-                  String xmlFileName =
-                      logDirectory
-                          + BsaTypes.getActionString(type)
-                          + "_"
-                          + data.getNotificationContext().getPatientId()
-                          + "_"
-                          + data.getNotificationContext().getNotificationResourceId()
-                          + ".xml";
-                  saveReportToFile(xmlParser.encodeResourceToString(output), xmlFileName);
-                }
-              } else {
-                logger.error(" No report created, hence nothing do ");
-              }
-            } else {
-              logger.error(" No Report creator for type ", ct.asStringValue());
-            }
-          }
-        }
-      }
+      processOutputDataRequirements(data, ehrService, resources);
 
       if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
         // Execute sub Actions
@@ -172,6 +80,136 @@ public class CreateReport extends BsaAction {
 
     data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     return actStatus;
+  }
+
+  /**
+   * Process query data and retrieve resources.
+   *
+   * @param data the KAR processing data
+   * @param ehrService the EHR query service
+   * @return set of resources retrieved
+   */
+  private Set<Resource> processQueryData(KarProcessingData data, EhrQueryService ehrService) {
+    Set<Resource> resources = new HashSet<>();
+
+    // Get the default queries.
+    Map<String, FhirQueryFilter> queries =
+        BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
+
+    if (queries != null && !queries.isEmpty()) {
+      logger.info(" Found Default/Custom Queries for execution ");
+      // Try to execute the queries.
+      queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+    } else {
+      // Try to Get the Resources that need to be retrieved using Resource Type since queries are
+      // not specified.
+      List<DataRequirement> inputRequirements = getInputData();
+      ehrService.getFilteredData(data, inputRequirements);
+      inputRequirements.stream()
+          .filter(
+              ir ->
+                  data.getResourcesById(ir.getId()) != null
+                      && !data.getResourcesById(ir.getId()).isEmpty())
+          .forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
+    }
+
+    return resources;
+  }
+
+  /**
+   * Process output data requirements and create reports.
+   *
+   * @param data the KAR processing data
+   * @param ehrService the EHR query service
+   * @param resources the resources to include in the report
+   */
+  private void processOutputDataRequirements(
+      KarProcessingData data, EhrQueryService ehrService, Set<Resource> resources) {
+    // Get the Output Data Requirement to determine the type of bundle to create.
+    for (DataRequirement dr : outputData) {
+      if (dr.hasProfile()) {
+        List<CanonicalType> profiles = dr.getProfile();
+        for (CanonicalType ct : profiles) {
+          processReportCreation(data, ehrService, dr, ct, resources);
+        }
+      }
+    }
+  }
+
+  /**
+   * Process report creation for a specific profile.
+   *
+   * @param data the KAR processing data
+   * @param ehrService the EHR query service
+   * @param dr the data requirement
+   * @param ct the canonical type representing the profile
+   * @param resources the resources to include in the report
+   */
+  private void processReportCreation(
+      KarProcessingData data,
+      EhrQueryService ehrService,
+      DataRequirement dr,
+      CanonicalType ct,
+      Set<Resource> resources) {
+    logger.info("Getting Report Creator for: {}", ct);
+    ReportCreator rc = ReportCreator.getReportCreator(ct.asStringValue());
+
+    if (rc != null) {
+      logger.info("Start creating report");
+      Resource output =
+          rc.createReport(data, ehrService, resources, dr.getId(), ct.asStringValue(), this);
+      logger.info("Finished creating report");
+
+      if (output != null) {
+        handleReportOutput(data, dr, output);
+      } else {
+        logger.error(" No report created, hence nothing do ");
+      }
+    } else {
+      logger.error(" No Report creator for type ", ct.asStringValue());
+    }
+  }
+
+  /**
+   * Handle the generated report output.
+   *
+   * @param data the KAR processing data
+   * @param dr the data requirement
+   * @param output the generated report resource
+   */
+  private void handleReportOutput(KarProcessingData data, DataRequirement dr, Resource output) {
+    logger.info(" Adding Report to output generated {}", output.getId());
+    data.addActionOutput(actionId, output);
+
+    logger.info(" Adding Report to output using id {}", dr.getId());
+    data.addActionOutputById(dr.getId(), output);
+
+    if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
+      logger.info("Creating PH message for CDA Data ");
+      createPublicHealthMessageForCda(data, BsaTypes.getActionString(type), output, actionId);
+    } else {
+      // Save FHIR Data to PH messages
+      String fileName =
+          logDirectory
+              + BsaTypes.getActionString(type)
+              + "_"
+              + data.getNotificationContext().getPatientId()
+              + "_"
+              + data.getNotificationContext().getNotificationResourceId()
+              + ".json";
+
+      saveReportToFile(jsonParser.encodeResourceToString(output), fileName);
+
+      String xmlFileName =
+          logDirectory
+              + BsaTypes.getActionString(type)
+              + "_"
+              + data.getNotificationContext().getPatientId()
+              + "_"
+              + data.getNotificationContext().getNotificationResourceId()
+              + ".xml";
+      saveReportToFile(xmlParser.encodeResourceToString(output), xmlFileName);
+    }
   }
 
   public void saveReportToFile(String payload, String fileName) {

@@ -170,6 +170,11 @@ public class BaseGeneratorTest {
             case DiagnosticReport:
               diagnosticReports.add((DiagnosticReport) ent.getResource());
               break;
+
+              // ✅ ADD DEFAULT CASE HERE
+            default:
+              logger.warn("Unsupported ResourceType encountered: {}", resourceType);
+              break;
           }
         });
 

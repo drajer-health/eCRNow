@@ -36,7 +36,7 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
       Predicate criteria =
           cb.and(
               cb.equal(root.get(TASK_NAME), "EICRTask"),
-              cb.like(root.get("task_instance"), queryString));
+              cb.like(root.get(TASK_INSTANCE), queryString));
 
       cq.where(criteria);
 

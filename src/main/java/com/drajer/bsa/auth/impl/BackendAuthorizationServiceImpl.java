@@ -56,6 +56,9 @@ import org.springframework.web.client.RestTemplate;
 public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
+  private static final String RS256 = "RS256";
+  private static final String RS384 = "RS384";
+  private static final String ES384 = "ES384";
   private static final String OAUTH_URIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
   private static final String WELL_KNOWN = ".well-known/smart-configuration";
@@ -235,13 +238,12 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
   }
 
   private Pair<String, SignatureAlgorithm> getSignatureAlgorithm(String backendAuthAlg) {
-
-    if (backendAuthAlg.contentEquals("RS256"))
-      return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
-    else if (backendAuthAlg.contentEquals("RS384"))
-      return new ImmutablePair<>("RS384", SignatureAlgorithm.RS384);
-    else if (backendAuthAlg.contentEquals("ES384"))
-      return new ImmutablePair<>("ES384", SignatureAlgorithm.ES384);
-    else return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
+    if (backendAuthAlg.contentEquals(RS256))
+      return new ImmutablePair<>(RS256, SignatureAlgorithm.RS256);
+    else if (backendAuthAlg.contentEquals(RS384))
+      return new ImmutablePair<>(RS384, SignatureAlgorithm.RS384);
+    else if (backendAuthAlg.contentEquals(ES384))
+      return new ImmutablePair<>(ES384, SignatureAlgorithm.ES384);
+    else return new ImmutablePair<>(RS256, SignatureAlgorithm.RS256);
   }
 }

@@ -560,7 +560,7 @@ public class CdaOdhDataGenerator {
   private static Boolean isCurrentJob(Observation obs) {
 
     return CdaFhirUtilities.getBooleanExtensionValue(
-        obs.getExtension(), CdaGeneratorConstants.OdhCurrentJobExtension);
+        obs.getExtension(), CdaGeneratorConstants.ODH_CURRENT_JOB_EXTENSION);
   }
 
   private static Boolean isEmploymentStatusObservation(Observation obs) {

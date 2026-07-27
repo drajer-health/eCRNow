@@ -8,7 +8,6 @@ import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
-import java.util.List;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
@@ -23,232 +22,232 @@ public class CreateEicrAction extends AbstractAction {
 
   @Override
   public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
-
     logger.info(" **** START Executing Create Eicr Action **** ");
 
-    LaunchDetails details = null;
-    PatientExecutionState state = null;
-
-    if (obj instanceof LaunchDetails) {
-
-      try {
-
-        details = (LaunchDetails) obj;
-
-        state = ApplicationUtils.getDetailStatus(details);
-        state.getCreateEicrStatus().setActionId(getActionId());
-
-        logger.info(
-            " Executing Create Eicr Action , Prior Execution State : = {}", details.getStatus());
-
-        // Handle Conditions
-        Boolean conditionsMet = true;
-        conditionsMet = matchCondition(details);
-
-        // PreConditions Met, then process related actions.
-        Boolean relatedActsDone = true;
-        Boolean validationMode = details.getValidationMode();
-        if (Boolean.TRUE.equals(conditionsMet) || Boolean.TRUE.equals(validationMode)) {
-
-          logger.info(" PreConditions have been Met, evaluating Related Actions. ");
-
-          if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
-
-            List<RelatedAction> racts = getRelatedActions();
-
-            for (RelatedAction act : racts) {
-
-              // Check for all actions AFTER which this action has to be executed for completion.
-              if (act.getRelationship() == ActionRelationshipType.AFTER) {
-
-                // check if the action is completed.
-                String actionId = act.getRelatedAction().getActionId();
-
-                if (Boolean.FALSE.equals(state.hasActionCompleted(actionId))
-                    && Boolean.FALSE.equals(validationMode)) {
-
-                  logger.info(
-                      " Action {} is not completed , hence this action has to wait ", actionId);
-                  relatedActsDone = false;
-                } else {
-
-                  logger.info(" Related Action has been completed : {}", actionId);
-
-                  // Check if there is any timing constraint that needs to be handled.
-                  if (act.getDuration() != null
-                      && state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
-                      && Boolean.FALSE.equals(validationMode)) {
-
-                    // Duration is not null, meaning that the create action has to be delayed by the
-                    // duration.
-                    logger.info(" Schedule the job for Create EICR based on the duration.");
-
-                    WorkflowService.scheduleJob(
-                        details.getId(),
-                        act.getDuration(),
-                        EcrActionTypes.CREATE_EICR,
-                        details.getStartDate(),
-                        taskInstanceId);
-                    state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-                    EcaUtils.updateDetailStatus(details, state);
-
-                    // No need to continue as the job will take over execution.
-                    logger.info(" **** END Executing Create Eicr Action **** ");
-                    return;
-                  } else {
-
-                    logger.info(
-                        " No need to scheuled job as it has already been scheduled or completed. ");
-                  }
-                }
-              } else {
-                logger.info(
-                    " Action {} is related via {}",
-                    act.getRelatedAction().getActionId(),
-                    act.getRelationship());
-              }
-            }
-          }
-
-          // Check Timing Data , No need to check if the state is already scheduled meaning the
-          // job was scheduled already.
-          if (relatedActsDone || validationMode) {
-
-            logger.info(" All Related Actions are completed ");
-
-            // Timing constraints are applicable if this job has not started, once it is started
-            // the State Machine has to manage the execution.
-            if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
-                && Boolean.FALSE.equals(validationMode)) {
-
-              logger.info(" Related Actions Done and this action has not started ");
-
-              if (getTimingData() != null && !getTimingData().isEmpty()) {
-
-                logger.info(" Timing Data is present , so create a job based on timing data.");
-                List<TimingSchedule> tsjobs = getTimingData();
-
-                for (TimingSchedule ts : tsjobs) {
-
-                  // TBD : Setup job using TS Timing after testing so that we can test faster.
-                  // For now setup a default job with 10 seconds.
-                  WorkflowService.scheduleJob(
-                      details.getId(),
-                      ts,
-                      EcrActionTypes.CREATE_EICR,
-                      details.getStartDate(),
-                      taskInstanceId);
-                  state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-                  EcaUtils.updateDetailStatus(details, state);
-                  // No need to continue as the job will take over execution.
-                  logger.info(" **** End Executing Create Eicr Action **** ");
-                }
-              } else {
-                logger.info(" No job to schedule since there is no timing data ");
-              }
-
-            } else if ((state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED
-                    && launchType == WorkflowEvent.SCHEDULED_JOB)
-                || Boolean.TRUE.equals(validationMode)) {
-
-              // Do this only if the job is scheduled.
-              logger.info(" Creating the EICR since the job has been scheduled ");
-
-              // Check Trigger Codes again in case the data has changed.
-              PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
-
-              if (Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())
-                  && newState.getMatchTriggerStatus().getMatchedCodes() != null
-                  && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
-
-                logger.info(
-                    "Creating the EICR for {} action as new trigger code is matched",
-                    EcrActionTypes.CREATE_EICR);
-                // Since the job has started, Execute the job.
-                // Call the Loading Queries and create eICR.
-                Eicr ecr = EcaUtils.createEicr(details);
-                logger.info(
-                    " EICR created successfully for {} with eICRDocID: {} version: {}",
-                    EcrActionTypes.CREATE_EICR,
-                    ecr.getEicrDocId(),
-                    ecr.getDocVersion());
-
-                newState.getCreateEicrStatus().setEicrCreated(true);
-                newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-                newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-                EcaUtils.updateDetailStatus(details, newState);
-
-                logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
-
-                String fileName =
-                    ActionRepo.getInstance().getLogFileDirectory()
-                        + "/"
-                        + details.getLaunchPatientId()
-                        + "_CreateEicrAction"
-                        + LocalDateTime.now().getHour()
-                        + LocalDateTime.now().getMinute()
-                        + LocalDateTime.now().getSecond()
-                        + ".xml";
-                ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
-
-                logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
-              } // Check if Trigger Code Match found
-              else {
-
-                logger.info(" **** Trigger Code did not match, hence not creating EICR **** ");
-
-                newState.getCreateEicrStatus().setEicrCreated(false);
-                newState.getCreateEicrStatus().seteICRId("0");
-                newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-                EcaUtils.updateDetailStatus(details, newState);
-              }
-            } else {
-              logger.info(
-                  "EICR job is in a state of {} , due to which EICR will not be created.",
-                  state.getCreateEicrStatus().getJobStatus());
-            }
-
-          } else {
-            logger.info(" Related Actions are not completed, hence EICR will not be created.");
-          }
-
-        } else {
-
-          logger.info("Conditions not met, hence EICR will not be created.");
-        }
-
-      } catch (Exception e) {
-
-        StringBuilder expMsg = new StringBuilder();
-        if (state != null) {
-
-          expMsg.append("Unable to create Eicr due to exceptions during processing");
-          // Update
-          state.getCreateEicrStatus().setEicrCreated(false);
-          state.getCreateEicrStatus().seteICRId("0");
-          state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-          EcaUtils.updateDetailStatus(details, state);
-        } else {
-          expMsg.append(
-              "Unable to create Eicr due to exceptions during processing. The state is not present hence not updating it ");
-        }
-        ApplicationUtils.handleException(e, expMsg.toString(), LogLevel.ERROR);
-      }
-
-    } else {
-
+    if (!(obj instanceof LaunchDetails)) {
       String msg =
           "Invalid Object passed to Execute method, Launch Details expected, found : "
               + (obj != null ? obj.getClass().getName() : null);
       logger.error(msg);
-
       throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
 
+    PatientExecutionState state = null;
+    try {
+      LaunchDetails details = (LaunchDetails) obj;
+      state = ApplicationUtils.getDetailStatus(details);
+      state.getCreateEicrStatus().setActionId(getActionId());
+
+      logger.info(
+          " Executing Create Eicr Action , Prior Execution State : = {}", details.getStatus());
+
+      Boolean conditionsMet = matchCondition(details);
+      Boolean validationMode = details.getValidationMode();
+
+      if (!Boolean.TRUE.equals(conditionsMet) && !Boolean.TRUE.equals(validationMode)) {
+        logger.info("Conditions not met, hence EICR will not be created.");
+        return;
+      }
+
+      logger.info(" PreConditions have been Met, evaluating Related Actions. ");
+      RelatedActionResult result =
+          processRelatedActions(details, state, launchType, taskInstanceId);
+
+      if (result.jobScheduledFromDuration) {
+        logger.info(" **** END Executing Create Eicr Action **** ");
+        return;
+      }
+
+      if (result.relatedActsDone || Boolean.TRUE.equals(validationMode)) {
+        processTimingDataAndEicrCreation(
+            details, state, launchType, taskInstanceId, validationMode);
+      } else {
+        logger.info(" Related Actions are not completed, hence EICR will not be created.");
+      }
+
+    } catch (Exception e) {
+      handleExecutionException(e, state);
+    }
+
     logger.info("**** END Executing Create Eicr Action after completing normal execution. ****");
+  }
+
+  private static class RelatedActionResult {
+    boolean relatedActsDone;
+    boolean jobScheduledFromDuration;
+
+    RelatedActionResult(boolean relatedActsDone, boolean jobScheduledFromDuration) {
+      this.relatedActsDone = relatedActsDone;
+      this.jobScheduledFromDuration = jobScheduledFromDuration;
+    }
+  }
+
+  private RelatedActionResult processRelatedActions(
+      LaunchDetails details,
+      PatientExecutionState state,
+      WorkflowEvent launchType,
+      String taskInstanceId) {
+    if (getRelatedActions() == null || getRelatedActions().isEmpty()) {
+      return new RelatedActionResult(true, false);
+    }
+
+    boolean relatedActsDone = true;
+    Boolean validationMode = details.getValidationMode();
+
+    for (RelatedAction act : getRelatedActions()) {
+      if (act.getRelationship() != ActionRelationshipType.AFTER) {
+        logger.info(
+            " Action {} is related via {}",
+            act.getRelatedAction().getActionId(),
+            act.getRelationship());
+        continue;
+      }
+
+      String actionId = act.getRelatedAction().getActionId();
+      if (Boolean.FALSE.equals(state.hasActionCompleted(actionId))
+          && Boolean.FALSE.equals(validationMode)) {
+        logger.info(" Action {} is not completed , hence this action has to wait ", actionId);
+        return new RelatedActionResult(false, false);
+      }
+
+      logger.info(" Related Action has been completed : {}", actionId);
+
+      if (shouldScheduleJobForDuration(act, state, validationMode)) {
+        logger.info(" Schedule the job for Create EICR based on the duration.");
+        WorkflowService.scheduleJob(
+            details.getId(),
+            act.getDuration(),
+            EcrActionTypes.CREATE_EICR,
+            details.getStartDate(),
+            taskInstanceId);
+        state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+        EcaUtils.updateDetailStatus(details, state);
+        return new RelatedActionResult(true, true);
+      }
+    }
+
+    return new RelatedActionResult(relatedActsDone, false);
+  }
+
+  private boolean shouldScheduleJobForDuration(
+      RelatedAction act, PatientExecutionState state, Boolean validationMode) {
+    return act.getDuration() != null
+        && state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
+        && Boolean.FALSE.equals(validationMode);
+  }
+
+  private void processTimingDataAndEicrCreation(
+      LaunchDetails details,
+      PatientExecutionState state,
+      WorkflowEvent launchType,
+      String taskInstanceId,
+      Boolean validationMode) {
+    logger.info(" All Related Actions are completed ");
+
+    // Schedule job if not started
+    if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
+        && Boolean.FALSE.equals(validationMode)) {
+      processTimingData(details, state, taskInstanceId);
+      return;
+    }
+
+    // Create EICR if job is scheduled
+    if ((state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED
+            && launchType == WorkflowEvent.SCHEDULED_JOB)
+        || Boolean.TRUE.equals(validationMode)) {
+      createEicrIfTriggered(details, state);
+    } else {
+      logger.info(
+          "EICR job is in a state of {} , due to which EICR will not be created.",
+          state.getCreateEicrStatus().getJobStatus());
+    }
+  }
+
+  private void processTimingData(
+      LaunchDetails details, PatientExecutionState state, String taskInstanceId) {
+    logger.info(" Related Actions Done and this action has not started ");
+
+    if (getTimingData() == null || getTimingData().isEmpty()) {
+      logger.info(" No job to schedule since there is no timing data ");
+      return;
+    }
+
+    logger.info(" Timing Data is present , so create a job based on timing data.");
+    for (TimingSchedule ts : getTimingData()) {
+      WorkflowService.scheduleJob(
+          details.getId(), ts, EcrActionTypes.CREATE_EICR, details.getStartDate(), taskInstanceId);
+      state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+      EcaUtils.updateDetailStatus(details, state);
+    }
+  }
+
+  private void createEicrIfTriggered(LaunchDetails details, PatientExecutionState state) {
+    logger.info(" Creating the EICR since the job has been scheduled ");
+
+    PatientExecutionState newState =
+        EcaUtils.recheckTriggerCodes(details, WorkflowEvent.SCHEDULED_JOB);
+
+    if (!isTriggerCodeMatched(newState)) {
+      logger.info(" **** Trigger Code did not match, hence not creating EICR **** ");
+      newState.getCreateEicrStatus().setEicrCreated(false);
+      newState.getCreateEicrStatus().seteICRId("0");
+      newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+      EcaUtils.updateDetailStatus(details, newState);
+      return;
+    }
+
+    logger.info(
+        "Creating the EICR for {} action as new trigger code is matched",
+        EcrActionTypes.CREATE_EICR);
+
+    Eicr ecr = EcaUtils.createEicr(details);
+    logger.info(
+        " EICR created successfully for {} with eICRDocID: {} version: {}",
+        EcrActionTypes.CREATE_EICR,
+        ecr.getEicrDocId(),
+        ecr.getDocVersion());
+
+    newState.getCreateEicrStatus().setEicrCreated(true);
+    newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
+    newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+    EcaUtils.updateDetailStatus(details, newState);
+
+    saveEicrToFile(details, ecr);
+  }
+
+  private boolean isTriggerCodeMatched(PatientExecutionState state) {
+    return Boolean.TRUE.equals(state.getMatchTriggerStatus().getTriggerMatchStatus())
+        && state.getMatchTriggerStatus().getMatchedCodes() != null
+        && !state.getMatchTriggerStatus().getMatchedCodes().isEmpty();
+  }
+
+  private void saveEicrToFile(LaunchDetails details, Eicr ecr) {
+    logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
+    String fileName =
+        ActionRepo.getInstance().getLogFileDirectory()
+            + "/"
+            + details.getLaunchPatientId()
+            + "_CreateEicrAction"
+            + LocalDateTime.now().getHour()
+            + LocalDateTime.now().getMinute()
+            + LocalDateTime.now().getSecond()
+            + ".xml";
+    ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
+    logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
+  }
+
+  private void handleExecutionException(Exception e, PatientExecutionState state) {
+    StringBuilder expMsg = new StringBuilder();
+    if (state != null) {
+      expMsg.append("Unable to create Eicr due to exceptions during processing");
+      state.getCreateEicrStatus().setEicrCreated(false);
+      state.getCreateEicrStatus().seteICRId("0");
+      state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+    } else {
+      expMsg.append(
+          "Unable to create Eicr due to exceptions during processing. The state is not present hence not updating it");
+    }
+    ApplicationUtils.handleException(e, expMsg.toString(), LogLevel.ERROR);
   }
 
   @Override

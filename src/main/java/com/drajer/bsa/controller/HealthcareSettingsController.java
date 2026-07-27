@@ -38,7 +38,10 @@ public class HealthcareSettingsController {
   private static final String VALUE_URI = "valueUri";
   private static final String EXTENSION = "extension";
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
-
+  private static final String MESSAGE = "message";
+  private static final String STATUS = "status";
+  private static final String ERROR = "error";
+  private static final String EXISTS = "exists";
   @Autowired Authorization authorization;
 
   @Autowired HealthcareSettingsService healthcareSettingsService;
@@ -53,7 +56,8 @@ public class HealthcareSettingsController {
    * user interface for the BSA is expected to use this method when it already knows the id of the
    * HealthcareSetting.
    *
-   * @param hdsId The id to be used to retrieve the HealthcareSetting
+   * <p>//* @param hdsId The id to be used to retrieve the HealthcareSetting
+   *
    * @return The HealthcareSetting object for the id provided
    */
   @CrossOrigin
@@ -118,9 +122,9 @@ public class HealthcareSettingsController {
       logger.error("FHIR Server URL is already registered, suggest modifying the existing record.");
 
       JSONObject responseObject = new JSONObject();
-      responseObject.put("status", "error");
+      responseObject.put(STATUS, ERROR);
       responseObject.put(
-          "message",
+          MESSAGE,
           "FHIR Server URL is already registered, suggest modifying the existing record. is already registered");
       return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -155,9 +159,9 @@ public class HealthcareSettingsController {
           "Healthcare Setting is already registered with a different Id which is {}, contact developer. ",
           existingHsd.getId());
       JSONObject responseObject = new JSONObject();
-      responseObject.put("status", "error");
+      responseObject.put(STATUS, ERROR);
       responseObject.put(
-          "message",
+          MESSAGE,
           "Healthcare Setting is already registered with a different Id, contact developer. ");
       return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -181,7 +185,8 @@ public class HealthcareSettingsController {
    * This method is used to retrieve all existing HealthcareSettings details. The user interface for
    * the BSA is expected to use this method during configuration of the HealthcareSetting.
    *
-   * @param none
+   * <p>// * @param none
+   *
    * @return The existing list of HealthcareSettings.
    */
   @CrossOrigin
@@ -217,9 +222,9 @@ public class HealthcareSettingsController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("HealthcareSetting not found");
 
     } catch (Exception e) {
-      logger.error("Error in processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("Error in processing the request");
+          .body(ERROR_IN_PROCESSING_THE_REQUEST);
     }
   }
 
@@ -238,17 +243,17 @@ public class HealthcareSettingsController {
 
       Map<String, Object> response = new HashMap<>();
       if (healthcareSetting != null) {
-        response.put("message", "HealthcareSetting already exists");
-        response.put("exists", true);
+        response.put(MESSAGE, "HealthcareSetting already exists");
+        response.put(EXISTS, true);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
       }
 
-      response.put("message", "HealthcareSetting does not exists");
-      response.put("exists", false);
+      response.put(MESSAGE, "HealthcareSetting does not exists");
+      response.put(EXISTS, false);
       return ResponseEntity.ok(response);
 
     } catch (Exception e) {
-      logger.error("Error in processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(ERROR_IN_PROCESSING_THE_REQUEST);
     }

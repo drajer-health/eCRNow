@@ -76,7 +76,6 @@ public class SpringConfiguration {
   @Value("${disable.hostname.verifier}")
   private boolean disableHostnameVerifier;
 
-  @Autowired RetryStatusCode retryStatusCode;
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
 
   public static final FhirContext ctx = FhirContext.forR4();
@@ -196,7 +195,7 @@ public class SpringConfiguration {
   }
 
   @Bean(name = "ECRRetryTemplate")
-  public RetryTemplate retryTemplate() {
+  public RetryTemplate retryTemplate(RetryStatusCode retryStatusCode) {
 
     RetryTemplate template = retryStatusCode.configureRetryTemplate();
 
@@ -208,8 +207,7 @@ public class SpringConfiguration {
 
   private Bundle readErsdBundleFromFile() {
     Bundle bundle = new Bundle();
-    try {
-      InputStream in = new FileInputStream(new File(ersdFileLocation));
+    try (InputStream in = new FileInputStream(new File(ersdFileLocation))) { // ← FIXED
       bundle = getEsrdJsonParser().parseResource(Bundle.class, in);
       logger.info("Successfully loaded eRSD bundle from: {}", ersdFileLocation);
     } catch (FileNotFoundException e) {

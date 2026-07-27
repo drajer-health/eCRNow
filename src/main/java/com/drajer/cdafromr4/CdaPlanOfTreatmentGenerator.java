@@ -6,7 +6,6 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,255 +26,344 @@ public class CdaPlanOfTreatmentGenerator {
   public static final String SERVICE_REQUEST_EDUCATION = "409073007";
   public static final String SERVICE_REQUEST_PROCEDURE = " 387713003";
   public static final String COMPLETED = "completed";
+  private static final String DID_NOT_FIND_CODE_IN_MATCHED_CODES_MSG =
+      "Did not find the code value in the matched codes, make it a regular Planned Observation";
+  private static final String CODE_XML_DEBUG_MSG = "Code Xml = {}";
+  private static final String USE_AUTHORED_DATE_MSG = "Use Authored Date";
 
   private CdaPlanOfTreatmentGenerator() {}
 
   public static String generatePlanOfTreatmentSection(
       R4FhirData data, LaunchDetails details, String version) {
 
-    StringBuilder sb = new StringBuilder(2000);
-
     List<Medication> medList = data.getMedicationList();
-    List<MedicationRequest> medReqs = new ArrayList<>();
-    // Only on-hold MedicationRequests (intent=order|plan) belong in Plan of Treatment per eCR
-    // guidance.
-    // active/completed go to the Medications Section; cancelled/stopped/etc. are ignored.\
-    if (version.contentEquals(CdaGeneratorConstants.CDA_EICR_VERSION_R31)) {
-      medReqs = CdaMedicationGenerator.getValidMedicationRequestsForPlanOfTreatment(data, medList);
-    } else {
-      medReqs = CdaMedicationGenerator.getValidMedicationRequests(data, medList);
-    }
-
-    // List<ServiceRequest> sr = getValidServiceRequests(data);
+    List<MedicationRequest> medReqs = getMedicationRequestsForVersion(version, data, medList);
     List<ServiceRequest> obsReqs = new ArrayList<>();
     List<ServiceRequest> procReqs = new ArrayList<>();
-    if (version.contentEquals(CdaGeneratorConstants.CDA_EICR_VERSION_R11)) {
-      obsReqs = data.getServiceRequests();
+    getServiceRequestsForVersion(version, data, obsReqs, procReqs);
+    List<DiagnosticReport> reports = getDiagnosticReportsForVersion(version, data);
+
+    if (isAnyResourceListNonEmpty(obsReqs, reports, procReqs, medReqs)) {
+      return generateNonEmptyPlanOfTreatmentSection(
+          data, details, version, medList, medReqs, obsReqs, procReqs, reports);
+    } else {
+      return generateEmptyPlanOfTreatmentSection();
+    }
+  }
+
+  private static boolean isAnyResourceListNonEmpty(
+      List<ServiceRequest> obsReqs,
+      List<DiagnosticReport> reports,
+      List<ServiceRequest> procReqs,
+      List<MedicationRequest> medReqs) {
+    return (obsReqs != null && !obsReqs.isEmpty())
+        || (reports != null && !reports.isEmpty())
+        || (procReqs != null && !procReqs.isEmpty())
+        || (medReqs != null && !medReqs.isEmpty());
+  }
+
+  private static List<MedicationRequest> getMedicationRequestsForVersion(
+      String version, R4FhirData data, List<Medication> medList) {
+    if (CdaGeneratorConstants.CDA_EICR_VERSION_R31.equals(version)) {
+      return CdaMedicationGenerator.getValidMedicationRequestsForPlanOfTreatment(data, medList);
+    } else {
+      return CdaMedicationGenerator.getValidMedicationRequests(data, medList);
+    }
+  }
+
+  private static void getServiceRequestsForVersion(
+      String version,
+      R4FhirData data,
+      List<ServiceRequest> obsReqs,
+      List<ServiceRequest> procReqs) {
+    if (CdaGeneratorConstants.CDA_EICR_VERSION_R11.equals(version)) {
+      obsReqs.addAll(
+          data.getServiceRequests() != null ? data.getServiceRequests() : new ArrayList<>());
     } else {
       sortServiceRequestsByType(data, obsReqs, procReqs);
     }
+  }
 
-    List<DiagnosticReport> reports = new ArrayList<>();
-
+  private static List<DiagnosticReport> getDiagnosticReportsForVersion(
+      String version, R4FhirData data) {
     if (CdaGeneratorConstants.CDA_EICR_VERSION_R31.equals(version)) {
-      reports.addAll(getValidDiagnosticOrders(data));
+      return getValidDiagnosticOrders(data);
     } else {
-      reports.addAll(data.getDiagReports());
+      return data.getDiagReports() != null ? data.getDiagReports() : new ArrayList<>();
     }
+  }
 
-    if ((obsReqs != null && !obsReqs.isEmpty())
-        || (reports != null && !reports.isEmpty())
-        || procReqs != null && !procReqs.isEmpty()
-        || medReqs != null && !medReqs.isEmpty()) {
+  private static String generateNonEmptyPlanOfTreatmentSection(
+      R4FhirData data,
+      LaunchDetails details,
+      String version,
+      List<Medication> medList,
+      List<MedicationRequest> medReqs,
+      List<ServiceRequest> obsReqs,
+      List<ServiceRequest> procReqs,
+      List<DiagnosticReport> reports) {
 
-      logger.info(
-          "Found {} Observation ServiceRequest, {} Procedure ServiceRequest and {} LabOrder objects to translate to CDA.",
-          obsReqs.size(),
-          procReqs.size(),
-          reports.size());
+    logger.info(
+        "Found {} Observation ServiceRequest, {} Procedure ServiceRequest and {} LabOrder objects to translate to CDA.",
+        obsReqs.size(),
+        procReqs.size(),
+        reports.size());
 
-      // Generate the component and section end tags
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
+    StringBuilder sb = new StringBuilder(2000);
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.CAREPLAN_SEC_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.CAREPLAN_SEC_TEMPLATE_ID,
+            CdaGeneratorConstants.CAREPLAN_SEC_TEMPLATE_ID_EXT));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.CAREPLAN_SEC_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.CAREPLAN_SEC_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.CAREPLAN_SEC_TITLE));
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
-      sb.append(
-          CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.CAREPLAN_SEC_TEMPLATE_ID));
-      sb.append(
-          CdaGeneratorUtils.getXmlForTemplateId(
-              CdaGeneratorConstants.CAREPLAN_SEC_TEMPLATE_ID,
-              CdaGeneratorConstants.CAREPLAN_SEC_TEMPLATE_ID_EXT));
+    List<String> tableHeaders = new ArrayList<>();
+    tableHeaders.add(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_TITLE);
+    tableHeaders.add(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_TITLE);
+    sb.append(
+        CdaGeneratorUtils.getXmlForTableHeader(
+            tableHeaders, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
-      sb.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.CODE_EL_NAME,
-              CdaGeneratorConstants.CAREPLAN_SEC_CODE,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-              CdaGeneratorConstants.CAREPLAN_SEC_NAME));
+    RowCounter rowCounter = new RowCounter();
+    StringBuilder potObsXml = new StringBuilder();
+    StringBuilder drXml = new StringBuilder();
+    StringBuilder procXml = new StringBuilder();
+    StringBuilder medReqXml = new StringBuilder();
 
-      // Add Title
-      sb.append(
-          CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.CAREPLAN_SEC_TITLE));
+    processObservationRequests(obsReqs, data, details, version, sb, potObsXml, rowCounter);
+    processDiagnosticReports(reports, data, details, version, sb, drXml, rowCounter);
+    processProcedureRequests(procReqs, data, details, sb, procXml, rowCounter);
+    processMedicationRequests(medReqs, medList, data, details, version, sb, medReqXml, rowCounter);
 
-      // Add Narrative Text
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
-
-      // Create Table Header.
-      List<String> list = new ArrayList<>();
-      list.add(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_TITLE);
-      list.add(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_TITLE);
-      sb.append(
-          CdaGeneratorUtils.getXmlForTableHeader(
-              list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
-
-      // Add Table Body
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-      int rowNum = 1;
-      StringBuilder potObsXml = new StringBuilder();
-      StringBuilder drXml = new StringBuilder();
-      StringBuilder procXml = new StringBuilder();
-      StringBuilder medReqXml = new StringBuilder();
-      for (ServiceRequest s : obsReqs) {
-
-        String srDisplayName = CdaFhirUtilities.getStringForCodeableConcept(s.getCode());
-
-        String serviceDate = CdaFhirUtilities.getStringForType(s.getOccurrence());
-        logger.debug("Service Date for display {} ", serviceDate);
-
-        if (serviceDate.isEmpty() && s.getAuthoredOnElement() != null) {
-          serviceDate = CdaFhirUtilities.getDisplayStringForDateTimeType(s.getAuthoredOnElement());
-        }
-
-        Map<String, String> bodyvals = new LinkedHashMap<>();
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, srDisplayName);
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, serviceDate);
-
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-
-        String contentRef =
-            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
-
-        rowNum++;
-
-        potObsXml.append(getPlannedObservationXml(s, details, contentRef, data, version));
-      }
-
-      for (DiagnosticReport dr : reports) {
-
-        String drDisplayName = CdaFhirUtilities.getStringForCodeableConcept(dr.getCode());
-
-        String orderDate = CdaFhirUtilities.getStringForType(dr.getEffective());
-        logger.debug("Order Date for display {} ", orderDate);
-
-        if (orderDate.isEmpty() && dr.getIssued() != null) {
-          logger.info("Order Date is empty");
-        }
-
-        Map<String, String> bodyvals = new LinkedHashMap<>();
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, drDisplayName);
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, orderDate);
-
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-
-        String contentRef =
-            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
-
-        rowNum++;
-
-        drXml.append(getDiagnosticReportXml(dr, details, contentRef, data, version));
-      }
-
-      for (ServiceRequest p : procReqs) {
-
-        String drDisplayName = CdaFhirUtilities.getStringForCodeableConcept(p.getCode());
-
-        String serviceDate = CdaFhirUtilities.getStringForType(p.getOccurrence());
-        logger.debug("Service Date for display {} ", serviceDate);
-
-        if (serviceDate.isEmpty() && p.getAuthoredOnElement() != null) {
-          serviceDate = CdaFhirUtilities.getDisplayStringForDateTimeType(p.getAuthoredOnElement());
-        }
-
-        Map<String, String> bodyvals = new LinkedHashMap<>();
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, drDisplayName);
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, serviceDate);
-
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-
-        String contentRef =
-            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
-
-        rowNum++;
-
-        procXml.append(getPlannedProcedureXml(p, details, contentRef, data));
-      }
-
-      for (MedicationRequest mr : medReqs) {
-
-        logger.info(" Adding medication requests ");
-        String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
-
-        if (mr.hasMedication() && mr.getMedication() != null) {
-          medDisplayName = CdaFhirUtilities.getStringForMedicationType(mr, medList);
-        }
-
-        DateTimeType startDate = null;
-        Dosage dosage = null;
-        Quantity dose = null;
-        if (mr.hasDosageInstruction() && mr.getDosageInstructionFirstRep() != null) {
-
-          dosage = mr.getDosageInstructionFirstRep();
-
-          if (dosage.hasTiming() && dosage.getTiming() != null) {
-            Timing t = mr.getDosageInstructionFirstRep().getTiming();
-            if (t != null
-                && t.hasRepeat()
-                && t.getRepeat() != null
-                && t.getRepeat().hasBoundsPeriod()
-                && t.getRepeat().getBoundsPeriod() != null
-                && t.getRepeat().getBoundsPeriod().hasStartElement()) {
-              startDate = t.getRepeat().getBoundsPeriod().getStartElement();
-            }
-          }
-
-          if (dosage.hasDoseAndRate()
-              && dosage.getDoseAndRateFirstRep() != null
-              && dosage.getDoseAndRateFirstRep().hasDoseQuantity()) {
-            dose = dosage.getDoseAndRateFirstRep().getDoseQuantity();
-          }
-        }
-
-        if (startDate == null && mr.hasAuthoredOn() && mr.getAuthoredOnElement() != null) {
-          startDate = mr.getAuthoredOnElement();
-        }
-
-        String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-        if (startDate != null) {
-          dt = CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
-        } else {
-          logger.error(
-              " Dosage field does not have a valid period either due to datetime or timezone being null ");
-        }
-
-        Map<String, String> bodyvals = new HashMap<>();
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, medDisplayName);
-        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, dt);
-
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-
-        String contentRef =
-            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
-
-        ++rowNum;
-
-        medReqXml.append(
-            getPlannedMedicationXml(
-                mr, details, contentRef, data, startDate, dosage, dose, medList, details, version));
-      }
-
-      // Close the Text Element
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
-
-      // Add Entries
-      sb.append(potObsXml);
-      sb.append(drXml);
-      sb.append(procXml);
-      sb.append(medReqXml);
-
-      // Complete the section end tags.
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
-
-    } else {
-
-      sb.append(generateEmptyPlanOfTreatmentSection());
-    }
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
+    sb.append(potObsXml);
+    sb.append(drXml);
+    sb.append(procXml);
+    sb.append(medReqXml);
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
 
     return sb.toString();
+  }
+
+  private static void processObservationRequests(
+      List<ServiceRequest> obsReqs,
+      R4FhirData data,
+      LaunchDetails details,
+      String version,
+      StringBuilder tableRows,
+      StringBuilder xmlEntries,
+      RowCounter rowCounter) {
+
+    for (ServiceRequest sr : obsReqs) {
+      String displayName = CdaFhirUtilities.getStringForCodeableConcept(sr.getCode());
+      String serviceDate = extractServiceRequestDate(sr);
+
+      addPlanOfTreatmentTableRow(tableRows, displayName, serviceDate, rowCounter.getAndIncrement());
+
+      String contentRef = buildContentRef(rowCounter.getCurrent());
+      xmlEntries.append(getPlannedObservationXml(sr, details, contentRef, data, version));
+    }
+  }
+
+  private static void processDiagnosticReports(
+      List<DiagnosticReport> reports,
+      R4FhirData data,
+      LaunchDetails details,
+      String version,
+      StringBuilder tableRows,
+      StringBuilder xmlEntries,
+      RowCounter rowCounter) {
+
+    for (DiagnosticReport dr : reports) {
+      String displayName = CdaFhirUtilities.getStringForCodeableConcept(dr.getCode());
+      String orderDate = extractDiagnosticReportDate(dr);
+
+      addPlanOfTreatmentTableRow(tableRows, displayName, orderDate, rowCounter.getAndIncrement());
+
+      String contentRef = buildContentRef(rowCounter.getCurrent());
+      xmlEntries.append(getDiagnosticReportXml(dr, details, contentRef, data, version));
+    }
+  }
+
+  private static void processProcedureRequests(
+      List<ServiceRequest> procReqs,
+      R4FhirData data,
+      LaunchDetails details,
+      StringBuilder tableRows,
+      StringBuilder xmlEntries,
+      RowCounter rowCounter) {
+
+    for (ServiceRequest sr : procReqs) {
+      String displayName = CdaFhirUtilities.getStringForCodeableConcept(sr.getCode());
+      String serviceDate = extractServiceRequestDate(sr);
+
+      addPlanOfTreatmentTableRow(tableRows, displayName, serviceDate, rowCounter.getAndIncrement());
+
+      String contentRef = buildContentRef(rowCounter.getCurrent());
+      xmlEntries.append(getPlannedProcedureXml(sr, details, contentRef, data));
+    }
+  }
+
+  private static void processMedicationRequests(
+      List<MedicationRequest> medReqs,
+      List<Medication> medList,
+      R4FhirData data,
+      LaunchDetails details,
+      String version,
+      StringBuilder tableRows,
+      StringBuilder xmlEntries,
+      RowCounter rowCounter) {
+
+    for (MedicationRequest mr : medReqs) {
+      logger.info(" Adding medication requests ");
+      String medDisplayName = extractMedicationDisplayName(mr, medList);
+      MedicationDosageInfo dosageInfo = extractMedicationDosageInfo(mr);
+      String startDateStr = extractMedicationStartDateString(dosageInfo.startDate);
+
+      addPlanOfTreatmentTableRow(
+          tableRows, medDisplayName, startDateStr, rowCounter.getAndIncrement());
+
+      String contentRef = buildContentRef(rowCounter.getCurrent());
+      xmlEntries.append(
+          getPlannedMedicationXml(
+              mr,
+              details,
+              contentRef,
+              data,
+              dosageInfo.startDate,
+              dosageInfo.dosage,
+              dosageInfo.dose,
+              medList,
+              details,
+              version));
+    }
+  }
+
+  private static String extractServiceRequestDate(ServiceRequest sr) {
+    String serviceDate = CdaFhirUtilities.getStringForType(sr.getOccurrence());
+    logger.debug("Service Date for display {} ", serviceDate);
+
+    if (serviceDate.isEmpty() && sr.getAuthoredOnElement() != null) {
+      serviceDate = CdaFhirUtilities.getDisplayStringForDateTimeType(sr.getAuthoredOnElement());
+    }
+    return serviceDate;
+  }
+
+  private static String extractDiagnosticReportDate(DiagnosticReport dr) {
+    String orderDate = CdaFhirUtilities.getStringForType(dr.getEffective());
+    logger.debug("Order Date for display {} ", orderDate);
+
+    if (orderDate.isEmpty() && dr.getIssued() != null) {
+      logger.info("Order Date is empty");
+    }
+    return orderDate;
+  }
+
+  private static String extractMedicationDisplayName(
+      MedicationRequest mr, List<Medication> medList) {
+    if (mr.hasMedication() && mr.getMedication() != null) {
+      return CdaFhirUtilities.getStringForMedicationType(mr, medList);
+    }
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  private static MedicationDosageInfo extractMedicationDosageInfo(MedicationRequest mr) {
+    DateTimeType startDate = null;
+    Dosage dosage = null;
+    Quantity dose = null;
+
+    if (mr.hasDosageInstruction() && mr.getDosageInstructionFirstRep() != null) {
+      dosage = mr.getDosageInstructionFirstRep();
+
+      if (dosage.hasTiming() && dosage.getTiming() != null) {
+        Timing t = mr.getDosageInstructionFirstRep().getTiming();
+        if (t != null
+            && t.hasRepeat()
+            && t.getRepeat() != null
+            && t.getRepeat().hasBoundsPeriod()
+            && t.getRepeat().getBoundsPeriod() != null
+            && t.getRepeat().getBoundsPeriod().hasStartElement()) {
+          startDate = t.getRepeat().getBoundsPeriod().getStartElement();
+        }
+      }
+
+      if (dosage.hasDoseAndRate()
+          && dosage.getDoseAndRateFirstRep() != null
+          && dosage.getDoseAndRateFirstRep().hasDoseQuantity()) {
+        dose = dosage.getDoseAndRateFirstRep().getDoseQuantity();
+      }
+    }
+
+    if (startDate == null && mr.hasAuthoredOn() && mr.getAuthoredOnElement() != null) {
+      startDate = mr.getAuthoredOnElement();
+    }
+
+    return new MedicationDosageInfo(startDate, dosage, dose);
+  }
+
+  private static String extractMedicationStartDateString(DateTimeType startDate) {
+    if (startDate != null) {
+      return CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
+    } else {
+      logger.error(
+          " Dosage field does not have a valid period either due to datetime or timezone being null ");
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+  }
+
+  private static void addPlanOfTreatmentTableRow(
+      StringBuilder sb, String displayName, String date, int rowNum) {
+    Map<String, String> bodyvals = new LinkedHashMap<>();
+    bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, displayName);
+    bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, date);
+    sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+  }
+
+  private static String buildContentRef(int rowNum) {
+    return CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+  }
+
+  /** Helper class to track row counter and support pre/post increment patterns */
+  private static class RowCounter {
+    private int current = 1;
+
+    int getAndIncrement() {
+      return current++;
+    }
+
+    int getCurrent() {
+      return current - 1;
+    }
+  }
+
+  /** Helper class to encapsulate medication dosage information */
+  private static class MedicationDosageInfo {
+    final DateTimeType startDate;
+    final Dosage dosage;
+    final Quantity dose;
+
+    MedicationDosageInfo(DateTimeType startDate, Dosage dosage, Quantity dose) {
+      this.startDate = startDate;
+      this.dosage = dosage;
+      this.dose = dose;
+    }
   }
 
   public static String getPlannedMedicationXml(
@@ -502,8 +590,7 @@ public class CdaPlanOfTreatmentGenerator {
                 "",
                 contentRef);
       } else {
-        logger.info(
-            "Did not find the code value in the matched codes, make it a regular Planned Observation");
+        logger.info(DID_NOT_FIND_CODE_IN_MATCHED_CODES_MSG);
       }
     }
 
@@ -525,7 +612,7 @@ public class CdaPlanOfTreatmentGenerator {
                 false,
                 contentRef);
 
-        logger.debug("Code Xml = {}", codeXml);
+        logger.debug(CODE_XML_DEBUG_MSG, codeXml);
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
@@ -556,7 +643,7 @@ public class CdaPlanOfTreatmentGenerator {
 
     Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
     if (effDate.getValue0() == null) {
-      logger.debug("Use Authored Date");
+      logger.debug(USE_AUTHORED_DATE_MSG);
 
       effDate.setAt0(sr.getAuthoredOn());
     }
@@ -639,8 +726,7 @@ public class CdaPlanOfTreatmentGenerator {
                 "",
                 contentRef);
       } else {
-        logger.debug(
-            "Did not find the code value in the matched codes, make it a regular Planned Observation");
+        logger.debug(DID_NOT_FIND_CODE_IN_MATCHED_CODES_MSG);
       }
     }
 
@@ -661,7 +747,7 @@ public class CdaPlanOfTreatmentGenerator {
                 false,
                 contentRef);
 
-        logger.debug("Code Xml = {}", codeXml);
+        logger.debug(CODE_XML_DEBUG_MSG, codeXml);
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
@@ -692,7 +778,7 @@ public class CdaPlanOfTreatmentGenerator {
 
     Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(dr.getEffective());
     if (effDate.getValue0() == null) {
-      logger.debug("Use Authored Date");
+      logger.debug(USE_AUTHORED_DATE_MSG);
 
       effDate.setAt0(dr.getIssued());
     }
@@ -901,8 +987,7 @@ public class CdaPlanOfTreatmentGenerator {
                 "",
                 contentRef);
       } else {
-        logger.info(
-            "Did not find the code value in the matched codes, make it a regular Planned Observation");
+        logger.info(DID_NOT_FIND_CODE_IN_MATCHED_CODES_MSG);
       }
     }
 
@@ -924,7 +1009,7 @@ public class CdaPlanOfTreatmentGenerator {
                 false,
                 contentRef);
 
-        logger.debug("Code Xml = {}", codeXml);
+        logger.debug(CODE_XML_DEBUG_MSG, codeXml);
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
@@ -955,7 +1040,7 @@ public class CdaPlanOfTreatmentGenerator {
 
     Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
     if (effDate.getValue0() == null) {
-      logger.debug("Use Authored Date");
+      logger.debug(USE_AUTHORED_DATE_MSG);
 
       effDate.setAt0(sr.getAuthoredOn());
     }
@@ -1013,7 +1098,7 @@ public class CdaPlanOfTreatmentGenerator {
 
     Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(sa.getOccurrence());
     if (effDate.getValue0() == null) {
-      logger.debug("Use Authored Date");
+      logger.debug(USE_AUTHORED_DATE_MSG);
 
       effDate.setAt0(sa.getAuthoredOn());
     }

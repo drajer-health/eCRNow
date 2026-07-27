@@ -21,6 +21,8 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
   private IGetPage page;
   private IGetPageTyped<IBaseBundle> pageTyped;
   private EcrFhirRetryClient client;
+  private static final String NOT_IMPLEMENTED_MESSAGE =
+      "The requested operation is not implemented";
 
   public EcrFhirRetryablePage(final IGetPage page, final EcrFhirRetryClient client) {
     this.page = page;
@@ -38,38 +40,38 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public IGetPageTyped<IBaseBundle> andLogRequestAndResponse(boolean theLogRequestAndResponse) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> cacheControl(CacheControlDirective theCacheControlDirective) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> elementsSubset(String... theElements) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> encoded(EncodingEnum theEncoding) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> encodedJson() {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> encodedXml() {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> withAdditionalHeader(
       String theHeaderName, String theHeaderValue) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
@@ -91,28 +93,28 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public IGetPageTyped<IBaseBundle> preferResponseType(Class<? extends IBaseResource> theType) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> preferResponseTypes(
       List<Class<? extends IBaseResource>> theTypes) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> prettyPrint() {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> summaryMode(SummaryEnum theSummary) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> accept(String theHeaderValue) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
@@ -123,16 +125,16 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public <T extends IBaseBundle> IGetPageTyped<T> previous(T theBundle) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageUntyped byUrl(String thePageUrl) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> usingMethod(PagingHttpMethodEnum pagingHttpMethodEnum) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 }

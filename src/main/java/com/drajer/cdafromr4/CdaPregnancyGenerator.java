@@ -528,7 +528,7 @@ public class CdaPregnancyGenerator {
 
         if (comp.hasCode()
             && CdaFhirUtilities.isCodeableConceptPresentInValueSet(
-                CdaGeneratorConstants.GestationalAgeEstimatedValueset, comp.getCode())
+                CdaGeneratorConstants.GESTATIONAL_AGE_ESTIMATED_VALUESET, comp.getCode())
             && comp.hasValueQuantity()
             && comp.getValueQuantity().hasCode()) {
 
@@ -894,11 +894,11 @@ public class CdaPregnancyGenerator {
 
         if (comp.hasCode()
             && CdaFhirUtilities.isCodeableConceptPresentInValueSet(
-                CdaGeneratorConstants.EstimatedDateofDeliveryValueset, comp.getCode())) {
+                CdaGeneratorConstants.ESTIMATED_DATEOF_DELIVERY_VALUESET, comp.getCode())) {
 
           estimatedDate =
               CdaFhirUtilities.getDateTimeExtensionValue(
-                  comp.getExtension(), CdaGeneratorConstants.EstimatedDateofDeliveryExtUrl);
+                  comp.getExtension(), CdaGeneratorConstants.ESTIMATED_DATEOF_DELIVERY_EXT_URL);
 
           if (estimatedDate != null) {
             found = true;
