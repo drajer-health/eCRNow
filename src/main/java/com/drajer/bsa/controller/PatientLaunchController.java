@@ -35,7 +35,6 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -51,19 +50,34 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class PatientLaunchController {
 
-  @Autowired HealthcareSettingsService hsService;
-
-  @Autowired EhrQueryService ehrService;
-
-  @Autowired SubscriptionNotificationReceiver notificationReceiver;
-
-  @Autowired SchedulerService schedulerService;
-
   /** The token refresh threshold value for refreshing access tokens */
   @Value("${token.refresh.threshold:25}")
   private Integer tokenRefreshThreshold;
 
   private final Logger logger = LoggerFactory.getLogger(PatientLaunchController.class);
+  private final HealthcareSettingsService hsService;
+  private final EhrQueryService ehrService;
+  private final SubscriptionNotificationReceiver notificationReceiver;
+  private final SchedulerService schedulerService;
+
+  /**
+   * Instantiates a new patient launch controller.
+   *
+   * @param hsService the healthcare settings service
+   * @param ehrService the EHR query service
+   * @param notificationReceiver the subscription notification receiver
+   * @param schedulerService the scheduler service
+   */
+  public PatientLaunchController(
+      HealthcareSettingsService hsService,
+      EhrQueryService ehrService,
+      SubscriptionNotificationReceiver notificationReceiver,
+      SchedulerService schedulerService) {
+    this.hsService = hsService;
+    this.ehrService = ehrService;
+    this.notificationReceiver = notificationReceiver;
+    this.schedulerService = schedulerService;
+  }
 
   private static final String FHIR_VERSION = "fhirVersion";
   private static final String X_REQUEST_ID = "X-Request-ID";

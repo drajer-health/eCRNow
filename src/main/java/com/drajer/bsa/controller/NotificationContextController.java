@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +30,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationContextController {
 
   private final Logger logger = LoggerFactory.getLogger(NotificationContextController.class);
+  private final NotificationContextService notificationContextService;
 
-  @Autowired NotificationContextService notificationContextService;
+  /**
+   * Instantiates a new notification context controller.
+   *
+   * @param notificationContextService the notification context service
+   */
+  public NotificationContextController(NotificationContextService notificationContextService) {
+    this.notificationContextService = notificationContextService;
+  }
 
   @CrossOrigin
   @DeleteMapping(value = "/api/notificationContext")

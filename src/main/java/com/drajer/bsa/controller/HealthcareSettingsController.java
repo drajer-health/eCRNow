@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,14 +41,25 @@ public class HealthcareSettingsController {
   private static final String STATUS = "status";
   private static final String ERROR = "error";
   private static final String EXISTS = "exists";
-  @Autowired Authorization authorization;
-
-  @Autowired HealthcareSettingsService healthcareSettingsService;
 
   @Value("${direct.tls.version}")
   String directSmtpTlsVersion;
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsController.class);
+  private final Authorization authorization;
+  private final HealthcareSettingsService healthcareSettingsService;
+
+  /**
+   * Instantiates a new healthcare settings controller.
+   *
+   * @param authorization the authorization service
+   * @param healthcareSettingsService the healthcare settings service
+   */
+  public HealthcareSettingsController(
+      Authorization authorization, HealthcareSettingsService healthcareSettingsService) {
+    this.authorization = authorization;
+    this.healthcareSettingsService = healthcareSettingsService;
+  }
 
   /**
    * This method is used to retrieve the HealthcareSettings details by primary key of the table. The

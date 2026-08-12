@@ -10,7 +10,6 @@ import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +31,19 @@ public class KnowledgeArtifactRepositoryController {
 
   private final Logger logger =
       LoggerFactory.getLogger(KnowledgeArtifactRepositoryController.class);
+  private final KarService karService;
+  private final KarParser karParser;
 
-  /** The Service class to manage the Knowledge Artifact Repositories */
-  @Autowired KarService karService;
-
-  /** The Service class to manage loading of KARs */
-  @Autowired KarParser karParser;
+  /**
+   * Instantiates a new knowledge artifact repository controller.
+   *
+   * @param karService the KAR service
+   * @param karParser the KAR parser
+   */
+  public KnowledgeArtifactRepositoryController(KarService karService, KarParser karParser) {
+    this.karService = karService;
+    this.karParser = karParser;
+  }
 
   /**
    * Method to retrieve the Knowledge Artifact Repository by Id
