@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -218,7 +219,8 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
     R4FhirData data = new R4FhirData();
 
-    ApplicationUtils ap = new ApplicationUtils();
+    IParser jsonParserMock = Mockito.mock(IParser.class);
+    ApplicationUtils ap = new ApplicationUtils(jsonParserMock);
 
     Bundle bund = ap.readBundleFromFile(absolutePath);
     data.setData(bund);

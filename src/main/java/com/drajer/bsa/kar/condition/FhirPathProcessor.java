@@ -46,7 +46,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       params = resolveInputParameters(act.getInputData(), kd, act);
     }
 
-    logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
+    if (params != null) {
+      logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
+    }
 
     String logicExpression = cond.getLogicExpression().getExpression();
     logger.debug("Logic Expression to be evaluated: {}", logicExpression);
@@ -57,7 +59,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     resolveVariables(cond, params, kd, act, ehrService);
 
-    logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
+    if (params != null) {
+      logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
+    }
 
     Parameters result =
         (Parameters)

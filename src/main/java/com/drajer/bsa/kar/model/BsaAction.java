@@ -339,6 +339,9 @@ public abstract class BsaAction {
             res = new HashSet<>();
             res.add(r.getResource());
           } else if (r.hasResource()) {
+            if (res == null) {
+              res = new HashSet<>();
+            }
             res.add(r.getResource());
           }
         }

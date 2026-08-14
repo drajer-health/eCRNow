@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,10 +24,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReportabilityResponseController {
 
   private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseController.class);
+  private final RrReceiver rrReceieverService;
+  private final PublicHealthMessagesDao phDao;
 
-  @Autowired RrReceiver rrReceieverService;
-
-  @Autowired PublicHealthMessagesDao phDao;
+  /**
+   * Instantiates a new reportability response controller.
+   *
+   * @param rrReceieverService the RR receiver service
+   * @param phDao the public health messages DAO
+   */
+  public ReportabilityResponseController(
+      RrReceiver rrReceieverService, PublicHealthMessagesDao phDao) {
+    this.rrReceieverService = rrReceieverService;
+    this.phDao = phDao;
+  }
 
   @CrossOrigin
   @PostMapping(value = "/api/receiveReportabilityResponse")

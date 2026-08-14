@@ -15,7 +15,15 @@ import org.springframework.stereotype.Repository;
 @Repository("valueSetDaoImpl")
 public class ValueSetDaoImpl extends AbstractDao implements ValueSetDao {
 
-  @Autowired private SessionFactory sessionFactory;
+  /**
+   * Instantiates a new value set DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public ValueSetDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   @Override
   public ValueSetModel getValueSetById(int id) {

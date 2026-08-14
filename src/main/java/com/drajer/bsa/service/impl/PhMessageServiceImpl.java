@@ -14,7 +14,17 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class PhMessageServiceImpl implements PhMessageService {
 
-  @Autowired PhMessageDao phMessageDao;
+  private final PhMessageDao phMessageDao;
+
+  /**
+   * Instantiates a new public health message service implementation.
+   *
+   * @param phMessageDao the public health message DAO
+   */
+  @Autowired
+  public PhMessageServiceImpl(PhMessageDao phMessageDao) {
+    this.phMessageDao = phMessageDao;
+  }
 
   public List<PublicHealthMessage> getPhMessageData(
       Map<String, String> searchParams, boolean summaryFlag) {

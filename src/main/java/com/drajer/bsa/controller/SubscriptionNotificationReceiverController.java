@@ -13,7 +13,6 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -36,12 +35,21 @@ public class SubscriptionNotificationReceiverController {
       LoggerFactory.getLogger(SubscriptionNotificationReceiverController.class);
 
   private static final String X_REQUEST_ID = "X-Request-ID";
+  private final SubscriptionNotificationReceiver subscriptionProcessor;
+  private final IParser jsonParser;
 
-  @Autowired SubscriptionNotificationReceiver subscriptionProcessor;
-
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
+  /**
+   * Instantiates a new subscription notification receiver controller.
+   *
+   * @param subscriptionProcessor the subscription notification receiver
+   * @param jsonParser the JSON parser
+   */
+  public SubscriptionNotificationReceiverController(
+      SubscriptionNotificationReceiver subscriptionProcessor,
+      @Qualifier("jsonParser") IParser jsonParser) {
+    this.subscriptionProcessor = subscriptionProcessor;
+    this.jsonParser = jsonParser;
+  }
 
   /**
    * This method is used to receive event-notifications from subscriptions.

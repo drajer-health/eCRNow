@@ -24,9 +24,22 @@ public class RestfulTransportImpl implements DataTransportInterface {
 
   private static final Logger logger = LoggerFactory.getLogger(RestfulTransportImpl.class);
 
-  @Autowired RestApiAuthorizationHeaderIf authorizationService;
+  private RestApiAuthorizationHeaderIf authorizationService;
 
-  @Autowired private RestTemplate restTemplate;
+  private RestTemplate restTemplate;
+
+  /**
+   * Instantiates a new restful transport impl.
+   *
+   * @param authorizationService the authorization service
+   * @param restTemplate the rest template
+   */
+  @Autowired
+  public RestfulTransportImpl(
+      RestApiAuthorizationHeaderIf authorizationService, RestTemplate restTemplate) {
+    this.authorizationService = authorizationService;
+    this.restTemplate = restTemplate;
+  }
 
   @Override
   public void sendEicrDataUsingDirect(KarProcessingData data) {

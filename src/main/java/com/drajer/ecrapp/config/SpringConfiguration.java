@@ -80,9 +80,15 @@ public class SpringConfiguration {
 
   public static final FhirContext ctx = FhirContext.forR4();
 
-  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+  private final FHIRRetryTemplateConfig fhirRetryTemplateConfig;
 
-  public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
+  /**
+   * Instantiates a new Spring configuration.
+   *
+   * @param fhirRetryTemplateConfig the FHIR retry template configuration
+   */
+  @Autowired
+  public SpringConfiguration(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
     this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
   }
 

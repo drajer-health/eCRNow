@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.ecrapp.config.AppConfig;
+import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
@@ -21,6 +22,7 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.client.RestTemplate;
 
 public class ActionRepoTest {
 
@@ -77,7 +79,9 @@ public class ActionRepoTest {
   @Test
   public void testDirectAndRestTransport() {
     DirectEicrSender direct = new DirectEicrSender();
-    RestApiSender rest = new RestApiSender();
+    AuthorizationService authService = mock(AuthorizationService.class);
+    RestTemplate restTemplate = mock(RestTemplate.class);
+    RestApiSender rest = new RestApiSender(authService, restTemplate);
     repo.setDirectTransport(direct);
     repo.setRestTransport(rest);
     assertSame(direct, repo.getDirectTransport());
@@ -120,7 +124,7 @@ public class ActionRepoTest {
 
   @Test
   public void testWorkflowService() {
-    WorkflowService workflowService = new WorkflowService();
+    WorkflowService workflowService = mock(WorkflowService.class);
     repo.setWorkflowService(workflowService);
     assertEquals(workflowService, repo.getWorkflowService());
   }

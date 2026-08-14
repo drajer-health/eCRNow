@@ -75,7 +75,6 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,21 +145,32 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   private HashMap<String, HashMap<String, String>> customQueries;
 
-  /** The Authorization utils class enables the BSA to get an access token. */
-  @Autowired AuthorizationUtils authUtils;
-
-  /** The HealthcareSettings Dao to save Healthcare Setting state as needed */
-  @Autowired HealthcareSettingsDao hsDao;
-
-  /** The FHIR Context Initializer necessary to retrieve FHIR resources */
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
   /**
    * The attribute contains the directory of custom query files. Each Kar will have its own file
    * with custom queries.
    */
   @Value("${custom-query.directory}")
   String customQueryDirectory;
+
+  private final AuthorizationUtils authUtils;
+  private final HealthcareSettingsDao hsDao;
+  private final FhirContextInitializer fhirContextInitializer;
+
+  /**
+   * Instantiates a new EHR FHIR R4 query service implementation.
+   *
+   * @param authUtils the authorization utilities
+   * @param hsDao the healthcare settings DAO
+   * @param fhirContextInitializer the FHIR context initializer
+   */
+  public EhrFhirR4QueryServiceImpl(
+      AuthorizationUtils authUtils,
+      HealthcareSettingsDao hsDao,
+      FhirContextInitializer fhirContextInitializer) {
+    this.authUtils = authUtils;
+    this.hsDao = hsDao;
+    this.fhirContextInitializer = fhirContextInitializer;
+  }
 
   /**
    * The method is used to load the customized queries from the config file to be used instead of
@@ -1740,7 +1750,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     if (report.hasPerformer()) {
       for (Reference reference : report.getPerformer()) {
         ResourceType type = getResourceType(reference);
-        if ((type == ResourceType.Practitioner || type == ResourceType.Organization)) {
+        if (type != null
+            && (type == ResourceType.Practitioner || type == ResourceType.Organization)) {
           getAndAddSecondaryResource(kd, reference, type, genericClient, context);
         }
       }

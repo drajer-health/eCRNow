@@ -24,8 +24,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class TokenFilter extends OncePerRequestFilter {
 
   private final Logger log = LoggerFactory.getLogger(TokenFilter.class);
+  private final KeyCloakTokenValidationClient cloakTokenValidationClient;
 
-  @Autowired private KeyCloakTokenValidationClient cloakTokenValidationClient;
+  /**
+   * Instantiates a new token filter.
+   *
+   * @param cloakTokenValidationClient the Keycloak token validation client
+   */
+  @Autowired
+  public TokenFilter(KeyCloakTokenValidationClient cloakTokenValidationClient) {
+    this.cloakTokenValidationClient = cloakTokenValidationClient;
+  }
 
   @Override
   protected void doFilterInternal(

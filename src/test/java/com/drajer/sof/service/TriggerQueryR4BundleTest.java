@@ -20,14 +20,13 @@ import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TriggerQueryR4BundleTest {
 
-  @InjectMocks private TriggerQueryR4Bundle triggerQueryR4Bundle;
+  private TriggerQueryR4Bundle triggerQueryR4Bundle;
 
   @Mock private FhirContextInitializer fhirContextInitializer;
 
@@ -41,6 +40,7 @@ public class TriggerQueryR4BundleTest {
 
   @Before
   public void setUp() {
+    triggerQueryR4Bundle = new TriggerQueryR4Bundle(fhirContextInitializer, r4ResourcesData);
     fhirContext = FhirContext.forR4();
 
     launchDetails = new LaunchDetails();

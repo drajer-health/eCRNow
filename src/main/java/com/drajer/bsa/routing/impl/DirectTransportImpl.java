@@ -45,10 +45,20 @@ public class DirectTransportImpl implements DataTransportInterface {
   private static final String IMAP = "imap";
   private static final String INBOX = "Inbox";
 
-  @Autowired RrReceiver rrReceiver;
+  private RrReceiver rrReceiver;
 
   @Value("${bsa.output.directory:bsa-output}")
   String logDirectory;
+
+  /**
+   * Instantiates a new direct transport impl.
+   *
+   * @param rrReceiver the reportability response receiver
+   */
+  @Autowired
+  public DirectTransportImpl(RrReceiver rrReceiver) {
+    this.rrReceiver = rrReceiver;
+  }
 
   @Value("${mail.read.retries}")
   private Integer imapReadRetryLimit;

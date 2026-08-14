@@ -37,8 +37,12 @@ public class DirectResponseReceiver extends RRReceiver {
 
   private static final String IMAP = "imap";
   private static final String INBOX = "Inbox";
+  private final EicrRRService rrService;
 
-  @Autowired EicrRRService rrService;
+  @Autowired
+  public DirectResponseReceiver(EicrRRService rrService) {
+    this.rrService = rrService;
+  }
 
   @Override
   public Object receiveRespone(Object context) {

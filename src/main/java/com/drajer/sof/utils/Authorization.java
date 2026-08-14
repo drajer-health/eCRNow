@@ -24,9 +24,13 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class Authorization {
 
-  @Autowired ClientDetailsService clientDetailService;
-
+  private final ClientDetailsService clientDetailService;
   private final Logger logger = LoggerFactory.getLogger(Authorization.class);
+
+  @Autowired
+  public Authorization(ClientDetailsService clientDetailService) {
+    this.clientDetailService = clientDetailService;
+  }
 
   public JSONObject getMetadata(String serverURL) {
     HttpHeaders headers = new HttpHeaders();

@@ -244,8 +244,9 @@ public class CcrrReportCreator extends ReportCreator {
     HealthcareSetting hs = kd.getHealthcareSetting();
     Organization org = null;
 
-    if (kd.getNotificationContext().getNotificationResourceType()
-        == ResourceType.Encounter.toString()) {
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
 
       org = new Organization();
       org.setId(UUID.randomUUID().toString());
@@ -927,11 +928,7 @@ public class CcrrReportCreator extends ReportCreator {
         }
       } else if (!profilesToIgnore.isEmpty()) {
         // Filter by excluding profiles in ignore list
-        if (!r.hasMeta() || !r.getMeta().hasProfile()) {
-          resToReturn.add(r);
-        } else {
-          resToReturn.add(r);
-        }
+        resToReturn.add(r);
       } else {
         // No filtering needed
         resToReturn.add(r);

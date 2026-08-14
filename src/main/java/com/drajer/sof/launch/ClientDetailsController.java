@@ -20,10 +20,13 @@ import org.springframework.web.bind.annotation.*;
 public class ClientDetailsController {
 
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
-
-  @Autowired ClientDetailsService clientDetailsService;
-
   private final Logger logger = LoggerFactory.getLogger(ClientDetailsController.class);
+  private final ClientDetailsService clientDetailsService;
+
+  @Autowired
+  public ClientDetailsController(ClientDetailsService clientDetailsService) {
+    this.clientDetailsService = clientDetailsService;
+  }
 
   @CrossOrigin
   @GetMapping("/api/clientDetails/{clientId}")

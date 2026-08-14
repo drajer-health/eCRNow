@@ -27,14 +27,16 @@ import org.springframework.stereotype.Service;
 public class ValueSetServiceImpl implements ValueSetService {
 
   private final Logger logger = LoggerFactory.getLogger(ValueSetServiceImpl.class);
+  private final IParser jsonParser;
+  private final ValueSetDao valueSetDao;
 
   @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
-
-  @Autowired
-  @Qualifier("valueSetDaoImpl")
-  ValueSetDao valueSetDao;
+  public ValueSetServiceImpl(
+      @Qualifier("jsonParser") IParser jsonParser,
+      @Qualifier("valueSetDaoImpl") ValueSetDao valueSetDao) {
+    this.jsonParser = jsonParser;
+    this.valueSetDao = valueSetDao;
+  }
 
   @Override
   public void createValueSet(ValueSet valueSet) {

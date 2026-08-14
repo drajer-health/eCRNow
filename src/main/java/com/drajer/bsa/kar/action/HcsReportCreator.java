@@ -188,8 +188,9 @@ public class HcsReportCreator extends ReportCreator {
     HealthcareSetting hs = kd.getHealthcareSetting();
     Organization org = null;
 
-    if (kd.getNotificationContext().getNotificationResourceType()
-        == ResourceType.Encounter.toString()) {
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
 
       org = new Organization();
       org.setId(UUID.randomUUID().toString());

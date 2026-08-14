@@ -32,10 +32,29 @@ import org.springframework.web.client.RestTemplate;
 public class RefreshTokenScheduler {
 
   /** The task scheduler. */
-  @Autowired ThreadPoolTaskScheduler taskScheduler;
+  private final ThreadPoolTaskScheduler taskScheduler;
 
   /** The logger. */
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
+
+  @Autowired
+  public RefreshTokenScheduler(ThreadPoolTaskScheduler taskScheduler) {
+    this.taskScheduler = taskScheduler;
+  }
+
+  /** Default constructor for backward compatibility with direct instantiation. */
+  public RefreshTokenScheduler() {
+    this(createDefaultScheduler());
+  }
+
+  /** Create a default ThreadPoolTaskScheduler for non-Spring contexts. */
+  private static ThreadPoolTaskScheduler createDefaultScheduler() {
+    ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+    scheduler.setPoolSize(10);
+    scheduler.setThreadNamePrefix("refresh-token-");
+    scheduler.initialize();
+    return scheduler;
+  }
 
   /** The Constant GRANT_TYPE. */
   private static final String GRANT_TYPE = "grant_type";

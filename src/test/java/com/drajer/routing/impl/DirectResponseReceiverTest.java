@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
@@ -28,13 +27,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Session.class})
 public class DirectResponseReceiverTest {
-  @InjectMocks DirectResponseReceiver receiver;
+  private DirectResponseReceiver receiver;
   @Mock EicrRRService rrService;
   @Mock LaunchDetails launchDetails;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    receiver = new DirectResponseReceiver(rrService);
   }
 
   @Test

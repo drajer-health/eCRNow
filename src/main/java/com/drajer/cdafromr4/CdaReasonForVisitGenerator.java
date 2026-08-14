@@ -74,7 +74,7 @@ public class CdaReasonForVisitGenerator {
         } else if (coding != null && !StringUtils.isEmpty(coding.getDisplay())) {
           text = coding.getDisplay();
         }
-      } else if (!StringUtils.isEmpty(reasonCode.getText())) {
+      } else if (reasonCode != null && !StringUtils.isEmpty(reasonCode.getText())) {
         text = reasonCode.getText();
       }
     }

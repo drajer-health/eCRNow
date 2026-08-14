@@ -12,13 +12,25 @@ import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
 public class EicrDaoImpl extends AbstractDao implements EicrDao {
+
+  /**
+   * Instantiates a new EICR DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public EicrDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   public static final String FHIR_SERVER_URL = "fhirServerUrl";
   public static final String ENCOUNTER_ID = "encounterId";

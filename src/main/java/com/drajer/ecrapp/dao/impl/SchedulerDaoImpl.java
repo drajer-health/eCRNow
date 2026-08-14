@@ -11,7 +11,9 @@ import jakarta.persistence.criteria.Root;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,16 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   private static final String TASK_INSTANCE = "task_instance";
   private static final String TASK_NAME = "task_name";
+
+  /**
+   * Instantiates a new scheduler DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public SchedulerDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {

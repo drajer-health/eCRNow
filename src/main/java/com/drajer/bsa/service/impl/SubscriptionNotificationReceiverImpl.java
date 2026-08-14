@@ -46,23 +46,40 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SubscriptionNotificationReceiverImpl implements SubscriptionNotificationReceiver {
 
-  @Autowired NotificationContextDao ncDao;
-
-  @Autowired HealthcareSettingsDao hsDao;
-
-  @Autowired KarProcessor karProcessor;
-
-  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
-
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
+  private final NotificationContextDao ncDao;
+  private final HealthcareSettingsDao hsDao;
+  private final KarProcessor karProcessor;
+  private final KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+  private final IParser jsonParser;
 
   /** The token refresh threshold value for refreshing access tokens */
   @Value("${token.refresh.threshold:25}")
   private Integer tokenRefreshThreshold;
 
   private final Logger logger = LoggerFactory.getLogger(SubscriptionNotificationReceiverImpl.class);
+
+  /**
+   * Instantiates a new subscription notification receiver implementation.
+   *
+   * @param ncDao the notification context DAO
+   * @param hsDao the healthcare settings DAO
+   * @param karProcessor the KAR processor
+   * @param knowledgeArtifactRepositorySystem the knowledge artifact repository system
+   * @param jsonParser the JSON parser (qualified as jsonParser)
+   */
+  @Autowired
+  public SubscriptionNotificationReceiverImpl(
+      NotificationContextDao ncDao,
+      HealthcareSettingsDao hsDao,
+      KarProcessor karProcessor,
+      KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem,
+      @Qualifier("jsonParser") IParser jsonParser) {
+    this.ncDao = ncDao;
+    this.hsDao = hsDao;
+    this.karProcessor = karProcessor;
+    this.knowledgeArtifactRepositorySystem = knowledgeArtifactRepositorySystem;
+    this.jsonParser = jsonParser;
+  }
 
   /**
    * Setup notification context with bundle data and throttle context.

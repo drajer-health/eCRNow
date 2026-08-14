@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.ehr.service.impl.EhrFhirR4QueryServiceImpl;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
@@ -19,6 +18,7 @@ import java.util.*;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 public class RespnetReportCreatorTest {
@@ -32,7 +32,7 @@ public class RespnetReportCreatorTest {
   @Before
   public void setUp() {
     respnetReportCreator = new RespnetReportCreator();
-    ehrQueryService = new EhrFhirR4QueryServiceImpl();
+    ehrQueryService = Mockito.mock(EhrQueryService.class);
     karProcessingData = new KarProcessingData();
     karProcessingData.setKarStatus(getKnowledgeArtifactStatus());
     karProcessingData.setPhm(null);

@@ -19,7 +19,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -30,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 @PrepareForTest({StringEscapeUtils.class})
 public class ClientDetailsControllerTest {
 
-  @InjectMocks private ClientDetailsController controller;
+  private ClientDetailsController controller;
 
   @Mock private ClientDetailsService clientDetailsService;
 
@@ -43,6 +42,8 @@ public class ClientDetailsControllerTest {
 
   @Before
   public void setUp() {
+    controller = new ClientDetailsController(clientDetailsService);
+
     clientDetails = new ClientDetails();
     clientDetails.setId(1);
     clientDetails.setFhirServerBaseURL("http://test.com");

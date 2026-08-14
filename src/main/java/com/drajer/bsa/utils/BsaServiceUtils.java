@@ -70,9 +70,9 @@ public class BsaServiceUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(BsaServiceUtils.class);
 
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
+  private final IParser jsonParser;
+  private Map<String, BsaActionStatus> actions;
+  private final QueryReaderConfig queryReaderConfig;
 
   @Value("${bsa.output.directory}")
   String debugDirectory;
@@ -80,15 +80,33 @@ public class BsaServiceUtils {
   @Value("${save.debug.files:true}")
   boolean saveDebugToFiles;
 
-  @Autowired(required = false)
-  Map<String, BsaActionStatus> actions;
-
-  @Autowired private QueryReaderConfig queryReaderConfig;
-
   private static String DEBUG_DIRECTORY;
   private static IParser FHIR_JSON_PARSER;
   private static boolean SAVE_DEBUG_TO_FILES;
   private static String TIMEZONE_QUERY;
+
+  /**
+   * Instantiates a new BSA service utilities.
+   *
+   * @param jsonParser the JSON parser (qualified as jsonParser)
+   * @param queryReaderConfig the query reader configuration
+   */
+  @Autowired
+  public BsaServiceUtils(
+      @Qualifier("jsonParser") IParser jsonParser, QueryReaderConfig queryReaderConfig) {
+    this.jsonParser = jsonParser;
+    this.queryReaderConfig = queryReaderConfig;
+  }
+
+  /**
+   * Sets the action status map (optional dependency).
+   *
+   * @param actions the action status map
+   */
+  @Autowired(required = false)
+  public void setActions(Map<String, BsaActionStatus> actions) {
+    this.actions = actions;
+  }
 
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
   private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
@@ -301,6 +319,101 @@ public class BsaServiceUtils {
       Resource r, DataRequirement.DataRequirementDateFilterComponent drdfc, KarProcessingData kd) {
     logger.info(
         "Resource :{} DataRequirementDateFilterComponent :{} KarProcessingData:{}", r, drdfc, kd);
+
+    // If no filter is specified, allow all resources
+    if (drdfc == null || !drdfc.hasPath()) {
+      return true;
+    }
+
+    // Evaluate the path to extract date values from the resource
+    List<IBase> search = FHIR_PATH.evaluate(r, drdfc.getPath(), IBase.class);
+    if (search == null || search.isEmpty()) {
+      logger.debug("No date values found at path: {}", drdfc.getPath());
+      return false;
+    }
+
+    // If no filter value is specified, allow resources with the path
+    if (!drdfc.hasValue()) {
+      return true;
+    }
+
+    // Check if any extracted date matches the filter criteria
+    for (IBase dateValue : search) {
+      if (matchesDateValue(dateValue, drdfc)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean matchesDateValue(
+      IBase dateValue, DataRequirement.DataRequirementDateFilterComponent filter) {
+    if (dateValue == null) {
+      return false;
+    }
+
+    try {
+      // Handle DateType values
+      if (dateValue instanceof org.hl7.fhir.r4.model.DateType) {
+        org.hl7.fhir.r4.model.DateType resourceDate = (org.hl7.fhir.r4.model.DateType) dateValue;
+        if (filter.hasValueDateTimeType()) {
+          org.hl7.fhir.r4.model.BaseDateTimeType filterDate = filter.getValueDateTimeType();
+          return compareDates(resourceDate.asStringValue(), filterDate.asStringValue());
+        }
+      }
+      // Handle DateTimeType values
+      else if (dateValue instanceof org.hl7.fhir.r4.model.DateTimeType) {
+        org.hl7.fhir.r4.model.DateTimeType resourceDate =
+            (org.hl7.fhir.r4.model.DateTimeType) dateValue;
+        if (filter.hasValueDateTimeType()) {
+          org.hl7.fhir.r4.model.BaseDateTimeType filterDate = filter.getValueDateTimeType();
+          return compareDates(resourceDate.asStringValue(), filterDate.asStringValue());
+        }
+      }
+      // Handle Period values
+      else if (dateValue instanceof org.hl7.fhir.r4.model.Period) {
+        org.hl7.fhir.r4.model.Period resourcePeriod = (org.hl7.fhir.r4.model.Period) dateValue;
+        if (filter.hasValuePeriod()) {
+          org.hl7.fhir.r4.model.Period filterPeriod = filter.getValuePeriod();
+          return comparePeriods(resourcePeriod, filterPeriod);
+        }
+      }
+    } catch (Exception e) {
+      logger.warn("Error comparing date values: {}", e.getMessage());
+      return false;
+    }
+
+    return false;
+  }
+
+  private static boolean compareDates(String resourceDate, String filterDate) {
+    if (resourceDate == null || filterDate == null) {
+      return false;
+    }
+    // Simple string comparison for date matching
+    return resourceDate.startsWith(filterDate) || filterDate.startsWith(resourceDate);
+  }
+
+  private static boolean comparePeriods(
+      org.hl7.fhir.r4.model.Period resourcePeriod, org.hl7.fhir.r4.model.Period filterPeriod) {
+    if (resourcePeriod == null || filterPeriod == null) {
+      return false;
+    }
+
+    // If filter has start date, resource start should be >= filter start
+    if (filterPeriod.hasStart()) {
+      if (!resourcePeriod.hasStart() || resourcePeriod.getStart().before(filterPeriod.getStart())) {
+        return false;
+      }
+    }
+
+    // If filter has end date, resource end should be <= filter end
+    if (filterPeriod.hasEnd()) {
+      if (!resourcePeriod.hasEnd() || resourcePeriod.getEnd().after(filterPeriod.getEnd())) {
+        return false;
+      }
+    }
 
     return true;
   }

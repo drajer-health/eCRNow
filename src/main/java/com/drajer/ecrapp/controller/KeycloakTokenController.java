@@ -13,8 +13,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class KeycloakTokenController {
 
-  @Autowired private KeyCloakTokenValidationClient keyCloakTokenValidationClient;
+  private final KeyCloakTokenValidationClient keyCloakTokenValidationClient;
   private static final String TOKEN_DETAILS_REQUIRED = "Token details are required.";
+
+  /**
+   * Instantiates a new Keycloak token controller.
+   *
+   * @param keyCloakTokenValidationClient the KeyCloak token validation client
+   */
+  @Autowired
+  public KeycloakTokenController(KeyCloakTokenValidationClient keyCloakTokenValidationClient) {
+    this.keyCloakTokenValidationClient = keyCloakTokenValidationClient;
+  }
+
   private static final String TOKEN_VALIDATION_FAILED = "Token validation failed.";
   private static final String IS_SUCCESS = "isSuccess";
   private static final String ERROR_VALIDATING_TOKEN =

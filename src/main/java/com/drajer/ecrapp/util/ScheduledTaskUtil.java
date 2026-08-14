@@ -38,12 +38,18 @@ public class ScheduledTaskUtil {
   private static final String MDC_CONTEXT_KEY = "mdcContext";
   private static final String REQUEST_ID_KEY = "requestId";
   private static final String JOB_TYPE_KEY = "jobType";
-  @Autowired private SchedulerDao schedulerDao;
 
-  @Value("${scheduled.task.file.path}")
-  private String scheduledTaskFilePath;
-
+  private final SchedulerDao schedulerDao;
+  private final String scheduledTaskFilePath;
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Autowired
+  public ScheduledTaskUtil(
+      SchedulerDao schedulerDao,
+      @Value("${scheduled.task.file.path}") String scheduledTaskFilePath) {
+    this.schedulerDao = schedulerDao;
+    this.scheduledTaskFilePath = scheduledTaskFilePath;
+  }
 
   /**
    * Updates scheduled tasks and stores them in JSON format.

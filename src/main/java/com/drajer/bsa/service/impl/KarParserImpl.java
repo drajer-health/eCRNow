@@ -121,7 +121,27 @@ public class KarParserImpl implements KarParser {
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
 
-  @Autowired AutowireCapableBeanFactory beanFactory;
+  private final AutowireCapableBeanFactory beanFactory;
+  private final BsaServiceUtils utils;
+  private final BsaScheduler scheduler;
+  private final KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+  private final R4MeasureService measureService;
+  private final ObjectProvider<R4CqlExecutionService> expressionEvaluators;
+  private final R4LibraryEvaluationService libraryEvaluationService;
+  private final PublicHealthMessagesDao phDao;
+  private final HealthcareSettingsDao hsDao;
+  private final SubscriptionGeneratorService subscriptionGeneratorService;
+  private final EhrQueryService ehrInterface;
+  private final DirectTransportImpl directInterface;
+  private final RestfulTransportImpl restSubmitter;
+  private final AuthorizationUtils authUtils;
+  private final FhirContextInitializer fhirContextInitializer;
+  private final PublicHealthAuthorityService publicHealthAuthorityService;
+  private final TimeZoneDao timezoneDao;
+  private final InMemoryFhirRepository repository;
+  private final KarService karService;
+  private final IParser jsonParser;
+  private final RestTemplate restTemplate;
 
   @Value("${kar.directory:default}")
   String karDirectory;
@@ -159,61 +179,80 @@ public class KarParserImpl implements KarParser {
   @Value("${eicr.R31.schematron.file.location}")
   String eicrCdaR31SchematronPath;
 
-  @Autowired BsaServiceUtils utils;
-
-  // Autowired to pass to action processors.
-  @Autowired BsaScheduler scheduler;
-
-  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
-
-  // TODO: instantiate meassureService, executionService and libraryEvaluationService in class
-  // constructor
-  @Autowired R4MeasureService measureService;
-
-  // @Autowired R4CqlExecutionService executionService;
-
-  @Autowired
-  @Qualifier("R4CqlExecutionEvaluator")
-  ObjectProvider<R4CqlExecutionService> expressionEvaluators;
-
-  @Autowired R4LibraryEvaluationService libraryEvaluationService;
-
-  // Autowired to pass to Actions
-  @Autowired PublicHealthMessagesDao phDao;
-
-  // The healthcare setting data access object
-  @Autowired HealthcareSettingsDao hsDao;
-
-  @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
-
-  // The EHR query interface
-  @Autowired EhrQueryService ehrInterface;
-
-  @Autowired DirectTransportImpl directInterface;
-
-  @Autowired RestfulTransportImpl restSubmitter;
-
-  @Autowired AuthorizationUtils authUtils;
-
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
-  @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
-
-  @Autowired TimeZoneDao timezoneDao;
-
-  @Autowired InMemoryFhirRepository repository;
-
-  // Autowired to update Persistent Kar Repos
-  @Autowired KarService karService;
   HashMap<String, Set<KnowledgeArtifact>> localKars;
   HashMap<String, String> localKarRepoUrlToName;
 
-  // Autowired to pass to actions
+  /**
+   * Instantiates a new KAR parser implementation.
+   *
+   * @param beanFactory the bean factory
+   * @param utils the service utilities
+   * @param scheduler the scheduler
+   * @param knowledgeArtifactRepositorySystem the knowledge artifact repository system
+   * @param measureService the measure service
+   * @param expressionEvaluators the CQL expression evaluators
+   * @param libraryEvaluationService the library evaluation service
+   * @param phDao the public health messages DAO
+   * @param hsDao the healthcare settings DAO
+   * @param subscriptionGeneratorService the subscription generator service
+   * @param ehrInterface the EHR query service
+   * @param directInterface the direct transport
+   * @param restSubmitter the restful transport
+   * @param authUtils the authorization utilities
+   * @param fhirContextInitializer the FHIR context initializer
+   * @param publicHealthAuthorityService the public health authority service
+   * @param timezoneDao the timezone DAO
+   * @param repository the in-memory FHIR repository
+   * @param karService the KAR service
+   * @param jsonParser the JSON parser
+   * @param restTemplate the REST template
+   */
   @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
-
-  @Autowired RestTemplate restTemplate;
+  public KarParserImpl(
+      AutowireCapableBeanFactory beanFactory,
+      BsaServiceUtils utils,
+      BsaScheduler scheduler,
+      KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem,
+      R4MeasureService measureService,
+      @Qualifier("R4CqlExecutionEvaluator")
+          ObjectProvider<R4CqlExecutionService> expressionEvaluators,
+      R4LibraryEvaluationService libraryEvaluationService,
+      PublicHealthMessagesDao phDao,
+      HealthcareSettingsDao hsDao,
+      SubscriptionGeneratorService subscriptionGeneratorService,
+      EhrQueryService ehrInterface,
+      DirectTransportImpl directInterface,
+      RestfulTransportImpl restSubmitter,
+      AuthorizationUtils authUtils,
+      FhirContextInitializer fhirContextInitializer,
+      PublicHealthAuthorityService publicHealthAuthorityService,
+      TimeZoneDao timezoneDao,
+      InMemoryFhirRepository repository,
+      KarService karService,
+      @Qualifier("jsonParser") IParser jsonParser,
+      RestTemplate restTemplate) {
+    this.beanFactory = beanFactory;
+    this.utils = utils;
+    this.scheduler = scheduler;
+    this.knowledgeArtifactRepositorySystem = knowledgeArtifactRepositorySystem;
+    this.measureService = measureService;
+    this.expressionEvaluators = expressionEvaluators;
+    this.libraryEvaluationService = libraryEvaluationService;
+    this.phDao = phDao;
+    this.hsDao = hsDao;
+    this.subscriptionGeneratorService = subscriptionGeneratorService;
+    this.ehrInterface = ehrInterface;
+    this.directInterface = directInterface;
+    this.restSubmitter = restSubmitter;
+    this.authUtils = authUtils;
+    this.fhirContextInitializer = fhirContextInitializer;
+    this.publicHealthAuthorityService = publicHealthAuthorityService;
+    this.timezoneDao = timezoneDao;
+    this.repository = repository;
+    this.karService = karService;
+    this.jsonParser = jsonParser;
+    this.restTemplate = restTemplate;
+  }
 
   @Value("${report-validator.endpoint}")
   private String validatorEndpoint;
@@ -1084,7 +1123,11 @@ public class KarParserImpl implements KarParser {
       if (libraryCanonical == null && exp.hasReferenceElement()) {
         libraryCanonical = new CanonicalType(exp.getReference());
       }
-      handleCqlCondition(action, exp, libraryCanonical, karBundleFile);
+      if (libraryCanonical != null) {
+        handleCqlCondition(action, exp, libraryCanonical, karBundleFile);
+      } else {
+        logger.error(" CQL expression found but library canonical is null, cannot process ");
+      }
     } else if (language.equals(Expression.ExpressionLanguage.TEXT_FHIRPATH) && fhirpathEnabled) {
       logger.info(" Found a FHIR Path Expression from an alternative expression extension");
       handleFhirPathCondition(action, exp);

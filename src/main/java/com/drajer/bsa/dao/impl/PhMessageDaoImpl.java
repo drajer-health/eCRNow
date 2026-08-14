@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   private static final Logger logger = LoggerFactory.getLogger(PhMessageDaoImpl.class);
+
+  /**
+   * Instantiates a new public health message DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public PhMessageDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   public static final String ID = "id";
   public static final String FHIR_SERVER_BASE_URL = "fhirServerBaseUrl";

@@ -51,8 +51,6 @@ public class PatientLaunchControllerTest {
   @Before
   public void setup() {
 
-    MockitoAnnotations.initMocks(this);
-
     launchContext =
         TestUtils.readFileContents(
             PATIENT_LAUNCH_JSON, new TypeReference<PatientLaunchContext>() {});

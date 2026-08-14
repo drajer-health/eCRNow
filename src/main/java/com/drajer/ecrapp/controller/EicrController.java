@@ -24,8 +24,17 @@ public class EicrController {
 
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
   private final Logger logger = LoggerFactory.getLogger(EicrController.class);
+  private final EicrRRService eicrRRService;
 
-  @Autowired EicrRRService eicrRRService;
+  /**
+   * Instantiates a new EICR controller.
+   *
+   * @param eicrRRService the EICR RR service
+   */
+  @Autowired
+  public EicrController(EicrRRService eicrRRService) {
+    this.eicrRRService = eicrRRService;
+  }
 
   @CrossOrigin
   @GetMapping(value = "/api/eicrData", produces = MediaType.APPLICATION_JSON_VALUE)

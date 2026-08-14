@@ -12,20 +12,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class FHIRRetryTemplate implements GenericRetryTemplate, InitializingBean {
 
-  // To make this class more generic, configure this retry template inclass
-  @Autowired
-  @Qualifier("ECRRetryTemplate")
-  private RetryTemplate retryTemplate;
-
-  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
-
-  @Value("${ecr.fhir.retry.enabled:false}")
-  protected Boolean isRetryEnabled;
+  private final RetryTemplate retryTemplate;
+  private final FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+  private final Boolean isRetryEnabled;
 
   private static FHIRRetryTemplate fhirRetryTemplate;
 
-  public FHIRRetryTemplate(RetryTemplate retryTemplate) {
+  /**
+   * Instantiates a new FHIR retry template.
+   *
+   * @param retryTemplate the ECR retry template
+   * @param fhirRetryTemplateConfig the FHIR retry template configuration
+   * @param isRetryEnabled whether retry is enabled from properties
+   */
+  @Autowired
+  public FHIRRetryTemplate(
+      @Qualifier("ECRRetryTemplate") RetryTemplate retryTemplate,
+      FHIRRetryTemplateConfig fhirRetryTemplateConfig,
+      @Value("${ecr.fhir.retry.enabled:false}") Boolean isRetryEnabled) {
     this.retryTemplate = retryTemplate;
+    this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
+    this.isRetryEnabled = isRetryEnabled;
   }
 
   public FHIRRetryTemplateConfig getFhirRetryTemplateConfig() {

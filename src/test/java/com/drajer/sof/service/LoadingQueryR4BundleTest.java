@@ -19,14 +19,13 @@ import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoadingQueryR4BundleTest {
 
-  @InjectMocks private LoadingQueryR4Bundle loadingQueryR4Bundle;
+  private LoadingQueryR4Bundle loadingQueryR4Bundle;
 
   @Mock private FhirContextInitializer fhirContextInitializer;
 
@@ -47,6 +46,8 @@ public class LoadingQueryR4BundleTest {
     launchDetails.setLaunchPatientId("test-patient-id");
 
     r4FhirData = new R4FhirData();
+
+    loadingQueryR4Bundle = new LoadingQueryR4Bundle(fhirContextInitializer, r4ResourcesData);
 
     when(fhirContextInitializer.getFhirContext("R4")).thenReturn(fhirContext);
     when(fhirContextInitializer.createClient(any(), any(), any())).thenReturn(client);

@@ -96,7 +96,8 @@ public class HealthcareSettingsController {
       logger.info("Healthcare Setting does not exist, Saving the Healthcare Settings");
 
       if (hsDetails.getTokenUrl() == null) {
-        JSONObject object = authorization.getMetadata(hsd.getFhirServerBaseURL() + "/metadata");
+        JSONObject object =
+            authorization.getMetadata(hsDetails.getFhirServerBaseURL() + "/metadata");
         if (object != null) {
           logger.info("Reading Metadata information");
           JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);

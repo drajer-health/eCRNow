@@ -54,17 +54,38 @@ public class RrReceiverImpl implements RrReceiver {
 
   private static final String ACCESS_TOKEN = "access_token";
 
-  @Autowired HealthcareSettingsDao hsDao;
+  private final HealthcareSettingsDao hsDao;
+  private final PublicHealthMessagesDao phDao;
+  private final RrParser rrParser;
+  private final EhrQueryService ehrService;
+  private final FhirContextInitializer fhirContextInitializer;
+  private final NotificationContextDao ncDao;
 
-  @Autowired PublicHealthMessagesDao phDao;
-
-  @Autowired RrParser rrParser;
-
-  @Autowired EhrQueryService ehrService;
-
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
-  @Autowired NotificationContextDao ncDao;
+  /**
+   * Instantiates a new RR receiver implementation.
+   *
+   * @param hsDao the healthcare settings DAO
+   * @param phDao the public health messages DAO
+   * @param rrParser the RR parser
+   * @param ehrService the EHR query service
+   * @param fhirContextInitializer the FHIR context initializer
+   * @param ncDao the notification context DAO
+   */
+  @Autowired
+  public RrReceiverImpl(
+      HealthcareSettingsDao hsDao,
+      PublicHealthMessagesDao phDao,
+      RrParser rrParser,
+      EhrQueryService ehrService,
+      FhirContextInitializer fhirContextInitializer,
+      NotificationContextDao ncDao) {
+    this.hsDao = hsDao;
+    this.phDao = phDao;
+    this.rrParser = rrParser;
+    this.ehrService = ehrService;
+    this.fhirContextInitializer = fhirContextInitializer;
+    this.ncDao = ncDao;
+  }
 
   /**
    * The method is used to handle a failure MDN that is received from the Direct channel.
@@ -306,7 +327,7 @@ public class RrReceiverImpl implements RrReceiver {
       if (nc != null) ehrContext = nc.getEhrLaunchContext();
     }
 
-    if (tokenResponse != null) {
+    if (tokenResponse != null && phm != null) {
 
       String accessToken = tokenResponse.getString(ACCESS_TOKEN);
 
@@ -341,9 +362,13 @@ public class RrReceiverImpl implements RrReceiver {
       }
 
     } else {
-
-      throw new ResponseStatusException(
-          HttpStatus.UNAUTHORIZED, "Error in getting Authorization token");
+      if (tokenResponse == null) {
+        throw new ResponseStatusException(
+            HttpStatus.UNAUTHORIZED, "Error in getting Authorization token");
+      } else {
+        logger.error("PublicHealthMessage is null, cannot post document reference to EHR");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "PublicHealthMessage is null");
+      }
     }
   }
 

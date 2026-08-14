@@ -52,29 +52,51 @@ public class EicrServiceImpl implements EicrRRService {
   private static final String ACCESS_TOKEN = "access_token";
   private static final String FHIR_VERSION = "fhirVersion";
 
-  @Autowired EicrDao eicrDao;
+  private final EicrDao eicrDao;
+  private final ClientDetailsService clientDetailservice;
+  private final LaunchService launchDetailsService;
+  private final RefreshTokenScheduler tokenScheduler;
+  private final Authorization authorization;
+  private final FhirContextInitializer fhirContextInitializer;
+  private final R4ResourcesData r4ResourcesData;
+  private final RrParser rrParser;
+  private final RestTemplate restTemplate;
+  private final Boolean processOrphanRr;
 
-  @Autowired ClientDetailsService clientDetailservice;
-
-  @Autowired LaunchService launchDetailsService;
-
-  @Autowired RefreshTokenScheduler tokenScheduler;
-
-  @Autowired Authorization authorization;
-
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
-  @Autowired R4ResourcesData r4ResourcesData;
-
-  RrParser rrParser;
-
-  @Autowired RestTemplate restTemplate;
-
-  @Value("${ecr.rr.processorphanrr:false}")
-  private Boolean processOrphanRr;
-
-  public EicrServiceImpl() {
-    rrParser = new RrParser();
+  /**
+   * Instantiates a new EICR service implementation.
+   *
+   * @param eicrDao the EICR DAO
+   * @param clientDetailservice the client details service
+   * @param launchDetailsService the launch details service
+   * @param tokenScheduler the refresh token scheduler
+   * @param authorization the authorization utility
+   * @param fhirContextInitializer the FHIR context initializer
+   * @param r4ResourcesData the R4 resources data
+   * @param restTemplate the REST template
+   * @param processOrphanRr the process orphan RR flag from properties
+   */
+  @Autowired
+  public EicrServiceImpl(
+      EicrDao eicrDao,
+      ClientDetailsService clientDetailservice,
+      LaunchService launchDetailsService,
+      RefreshTokenScheduler tokenScheduler,
+      Authorization authorization,
+      FhirContextInitializer fhirContextInitializer,
+      R4ResourcesData r4ResourcesData,
+      RestTemplate restTemplate,
+      @Value("${ecr.rr.processorphanrr:false}") Boolean processOrphanRr) {
+    this.eicrDao = eicrDao;
+    this.clientDetailservice = clientDetailservice;
+    this.launchDetailsService = launchDetailsService;
+    this.tokenScheduler = tokenScheduler;
+    this.authorization = authorization;
+    this.fhirContextInitializer = fhirContextInitializer;
+    this.r4ResourcesData = r4ResourcesData;
+    this.rrParser = new RrParser();
+    this.restTemplate = restTemplate;
+    this.processOrphanRr = processOrphanRr;
   }
 
   public Eicr saveOrUpdate(Eicr eicr) {
@@ -101,10 +123,6 @@ public class EicrServiceImpl implements EicrRRService {
 
   public Integer getMaxVersionId(Eicr eicr) {
     return eicrDao.getMaxVersionId(eicr);
-  }
-
-  public void setProcessOrphanRr(Boolean processOrphanRr) {
-    this.processOrphanRr = processOrphanRr;
   }
 
   public void handleFailureMdn(

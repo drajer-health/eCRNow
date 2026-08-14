@@ -713,11 +713,8 @@ public class CdaResultGenerator {
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
-    if (obsCodeXml != null) {
-      lrEntry.append(obsCodeXml.getValue1());
-    } else {
-      logger.warn("Unable to add code as the xml is null");
-    }
+    // Always append the code XML regardless of match status
+    lrEntry.append(obsCodeXml.getValue1());
 
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -857,9 +854,9 @@ public class CdaResultGenerator {
       lrEntry.append(obsCodeXml.getValue1());
     } else if (altObsCodeXml != null && altObsCodeXml.getValue0()) {
       lrEntry.append(altObsCodeXml.getValue1());
-    } else if (obsCodeXml != null) {
+    } else if (obsCodeXml != null && !obsCodeXml.getValue0()) {
       lrEntry.append(obsCodeXml.getValue1());
-    } else if (altObsCodeXml != null) {
+    } else if (altObsCodeXml != null && !altObsCodeXml.getValue0()) {
       lrEntry.append(altObsCodeXml.getValue1());
     }
 

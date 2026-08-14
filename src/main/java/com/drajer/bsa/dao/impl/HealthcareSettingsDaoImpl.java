@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +36,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class HealthcareSettingsDaoImpl extends AbstractDao implements HealthcareSettingsDao {
 
-  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
-
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
+  private final KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
+  /**
+   * Instantiates a new healthcare settings DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   * @param knowledgeArtifactRepositorySystem the knowledge artifact repository system
+   */
+  @Autowired
+  public HealthcareSettingsDaoImpl(
+      SessionFactory sessionFactory,
+      KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem) {
+    super(sessionFactory);
+    this.knowledgeArtifactRepositorySystem = knowledgeArtifactRepositorySystem;
+  }
 
   /**
    * Method to create or update a HealthcareSetting.

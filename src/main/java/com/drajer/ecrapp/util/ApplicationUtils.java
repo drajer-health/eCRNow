@@ -50,24 +50,14 @@ import org.springframework.stereotype.Service;
 public class ApplicationUtils {
 
   public static final String EXCEPTION_READING_FILE = "Exception Reading File";
+  private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
+
+  private final IParser jsonParser;
 
   @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
-
-  /**
-   * Default constructor for Spring framework dependency injection. This no-arg constructor is
-   * required for Spring's component scanning, reflection-based instantiation, and framework
-   * compatibility. The jsonParser dependency is provided through Spring's @Autowired field
-   * injection mechanism.
-   */
-  public ApplicationUtils() {
-    // This constructor is intentionally empty. All dependencies are injected via @Autowired
-    // annotations on class fields, not through constructor parameters. No initialization logic
-    // is required here.
+  public ApplicationUtils(@Qualifier("jsonParser") IParser jsonParser) {
+    this.jsonParser = jsonParser;
   }
-
-  private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
 
   public static List<CanonicalType> getValueSetListFromGrouper(String grouperId) {
 

@@ -6,7 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractDao {
 
-  @Autowired private SessionFactory sessionFactory;
+  protected final SessionFactory sessionFactory;
+
+  /**
+   * Instantiates a new abstract DAO.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public AbstractDao(SessionFactory sessionFactory) {
+    this.sessionFactory = sessionFactory;
+  }
 
   protected Session getSession() {
     return sessionFactory.getCurrentSession();

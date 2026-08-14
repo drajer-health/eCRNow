@@ -11,7 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LaunchServiceImpl implements LaunchService {
 
-  @Autowired LaunchDetailsDao authDetailsDao;
+  private final LaunchDetailsDao authDetailsDao;
+
+  @Autowired
+  public LaunchServiceImpl(LaunchDetailsDao authDetailsDao) {
+    this.authDetailsDao = authDetailsDao;
+  }
 
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
     authDetailsDao.saveOrUpdate(authDetails);

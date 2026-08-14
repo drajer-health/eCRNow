@@ -16,13 +16,11 @@ import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({FileUtils.class})
@@ -30,7 +28,7 @@ public class ScheduledTaskUtilTest {
   @Mock private SchedulerDao schedulerDao;
   @Mock private Logger logger;
   @Mock private ObjectMapper objectMapper;
-  @InjectMocks private ScheduledTaskUtil scheduledTaskUtil;
+  private ScheduledTaskUtil scheduledTaskUtil;
 
   private String MOCK_FILE_PATH = "ecrTestData/ScheduleUtils/schedule.json";
 
@@ -46,7 +44,7 @@ public class ScheduledTaskUtilTest {
   public void setUp() {
 
     MockitoAnnotations.initMocks(this);
-    ReflectionTestUtils.setField(scheduledTaskUtil, "scheduledTaskFilePath", MOCK_FILE_PATH);
+    scheduledTaskUtil = new ScheduledTaskUtil(schedulerDao, MOCK_FILE_PATH);
   }
 
   @Test

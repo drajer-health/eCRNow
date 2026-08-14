@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.gclient.IReadTyped;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.routing.RestApiSender;
 import com.drajer.sof.model.*;
 import com.drajer.sof.service.*;
 import com.drajer.sof.utils.Authorization;
@@ -25,6 +26,7 @@ import com.drajer.sof.utils.RefreshTokenScheduler;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -47,7 +49,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LaunchControllerTest {
-  @Spy @InjectMocks private LaunchController launchController;
+  private LaunchController launchController;
 
   @Mock private LaunchService authDetailsService;
   @Mock private RefreshTokenScheduler tokenScheduler;
@@ -59,6 +61,8 @@ public class LaunchControllerTest {
   @Mock private HttpServletRequest request;
   @Mock private HttpServletResponse response;
   @Mock FhirContextInitializer fhirContextInitializer;
+  @Mock RestApiSender xmlSender;
+  @Mock ObjectMapper mapper;
 
   private LaunchDetails launchDetails;
   private ClientDetails clientDetails;
@@ -66,6 +70,19 @@ public class LaunchControllerTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    launchController =
+        spy(
+            new LaunchController(
+                authDetailsService,
+                tokenScheduler,
+                authorization,
+                triggerQueryService,
+                loadingQueryService,
+                workflowService,
+                clientDetailsService,
+                fhirContextInitializer,
+                xmlSender,
+                mapper));
 
     launchDetails =
         (LaunchDetails)

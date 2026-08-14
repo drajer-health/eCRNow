@@ -20,8 +20,12 @@ public class RRReceiverController {
 
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the request";
   private final Logger logger = LoggerFactory.getLogger(RRReceiverController.class);
+  private final EicrRRService rrReceieverService;
 
-  @Autowired EicrRRService rrReceieverService;
+  @Autowired
+  public RRReceiverController(EicrRRService rrReceieverService) {
+    this.rrReceieverService = rrReceieverService;
+  }
 
   @CrossOrigin
   @PostMapping(value = "/api/rrReceiver")

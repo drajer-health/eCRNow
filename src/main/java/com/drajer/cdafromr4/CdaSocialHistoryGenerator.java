@@ -918,6 +918,10 @@ public class CdaSocialHistoryGenerator {
       StringBuilder sb) {
     if (occObs == null) return;
     for (Observation obs : occObs) {
+      if (obs == null) {
+        continue;
+      }
+
       if (isPastOrPresentOccupation(obs)) {
         generatePastOrPresentEntry(obs, details, sb, data31.occEntries, data31.index++);
       } else if (isUsualOccupation(obs)) {
@@ -1297,6 +1301,11 @@ public class CdaSocialHistoryGenerator {
       StringBuilder table,
       StringBuilder occEntries,
       int rowNum) {
+    if (obs == null) {
+      logger.error("Observation is null, cannot generate Employment Status Observation");
+      return;
+    }
+
     StringBuilder sb = new StringBuilder();
     String display = CdaGeneratorConstants.UNKNOWN_VALUE;
     Map<String, String> bodyvals = new LinkedHashMap<>();

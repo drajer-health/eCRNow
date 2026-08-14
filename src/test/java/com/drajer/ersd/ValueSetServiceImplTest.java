@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -37,11 +36,12 @@ public class ValueSetServiceImplTest {
 
   @Mock private ValueSetDao valueSetDao;
 
-  @InjectMocks private ValueSetServiceImpl valueSetServiceImpl;
+  private ValueSetServiceImpl valueSetServiceImpl;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    valueSetServiceImpl = new ValueSetServiceImpl(jsonParser, valueSetDao);
   }
 
   @Test

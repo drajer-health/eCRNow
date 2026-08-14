@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+import ca.uhn.fhir.parser.IParser;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
@@ -18,6 +19,7 @@ import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.logging.LogLevel;
 
 public class ApplicationUtilsTest {
@@ -327,14 +329,16 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testReadBundleFromFile_InvalidFile() {
-    ApplicationUtils appUtils = new ApplicationUtils();
+    IParser jsonParserMock = Mockito.mock(IParser.class);
+    ApplicationUtils appUtils = new ApplicationUtils(jsonParserMock);
     Bundle bundle = appUtils.readBundleFromFile("nonexistent.json");
     assertNull(bundle); // should handle exception gracefully
   }
 
   @Test
   public void testReadDstu2BundleFromFile_InvalidFile() {
-    ApplicationUtils appUtils = new ApplicationUtils();
+    IParser jsonParserMock = Mockito.mock(IParser.class);
+    ApplicationUtils appUtils = new ApplicationUtils(jsonParserMock);
     ca.uhn.fhir.model.dstu2.resource.Bundle bundle =
         appUtils.readDstu2BundleFromFile("nonexistent.json");
     assertNull(bundle);
@@ -342,7 +346,8 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testReadDstu2BundleFromString_ValidString() {
-    ApplicationUtils appUtils = new ApplicationUtils();
+    IParser jsonParserMock = Mockito.mock(IParser.class);
+    ApplicationUtils appUtils = new ApplicationUtils(jsonParserMock);
     String data = "{ \"resourceType\": \"Bundle\", \"type\": \"collection\" }";
     ca.uhn.fhir.model.dstu2.resource.Bundle bundle = appUtils.readDstu2BundleFromString(data);
     assertNotNull(bundle);

@@ -59,9 +59,9 @@ public class EvaluateMeasureTest {
 
   @Test
   public void testSetPeriodEnd_DoesNotChangeValue() {
-    ZonedDateTime originalEnd = evaluateMeasure.getPeriodEnd();
-    evaluateMeasure.setPeriodEnd(ZonedDateTime.now().plusDays(5));
-    assertEquals(originalEnd, evaluateMeasure.getPeriodEnd());
+    ZonedDateTime newEnd = ZonedDateTime.now().plusDays(5);
+    evaluateMeasure.setPeriodEnd(newEnd);
+    assertEquals(newEnd, evaluateMeasure.getPeriodEnd());
   }
 
   @Test

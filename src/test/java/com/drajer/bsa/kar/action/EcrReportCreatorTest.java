@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.ehr.service.impl.EhrFhirR4QueryServiceImpl;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
@@ -51,7 +50,7 @@ public class EcrReportCreatorTest {
   @Before
   public void setUp() {
     ReflectionTestUtils.setField(AESEncryption.class, "secretKey", "123");
-    ehrQueryService = new EhrFhirR4QueryServiceImpl();
+    ehrQueryService = Mockito.mock(EhrQueryService.class);
     karProcessingData = new KarProcessingData();
     karProcessingData.setPhm(null);
     NotificationContext notificationContext = getNotificationContext();

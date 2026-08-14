@@ -25,7 +25,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NotificationContextServiceImpl implements NotificationContextService {
 
-  @Autowired NotificationContextDao ncDao;
+  private final NotificationContextDao ncDao;
+
+  /**
+   * Instantiates a new notification context service implementation.
+   *
+   * @param ncDao the notification context DAO
+   */
+  @Autowired
+  public NotificationContextServiceImpl(NotificationContextDao ncDao) {
+    this.ncDao = ncDao;
+  }
 
   /**
    * Method to create or update a NotificationContext.

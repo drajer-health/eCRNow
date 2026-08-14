@@ -19,11 +19,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class TriggerQueryR4Bundle {
 
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
-  @Autowired R4ResourcesData r4ResourcesData;
-
+  private final FhirContextInitializer fhirContextInitializer;
+  private final R4ResourcesData r4ResourcesData;
   private static final Logger logger = LoggerFactory.getLogger(TriggerQueryR4Bundle.class);
+
+  @Autowired
+  public TriggerQueryR4Bundle(
+      FhirContextInitializer fhirContextInitializer, R4ResourcesData r4ResourcesData) {
+    this.fhirContextInitializer = fhirContextInitializer;
+    this.r4ResourcesData = r4ResourcesData;
+  }
 
   public Bundle createR4Bundle(
       LaunchDetails launchDetails, R4FhirData r4FhirData, Date start, Date end) {

@@ -40,7 +40,7 @@ public class EvaluateMeasure extends BsaAction {
   }
 
   public void setPeriodEnd(ZonedDateTime ZonedDateTime) {
-    this.periodEnd = periodEnd;
+    this.periodEnd = ZonedDateTime;
   }
 
   public String getMeasureReportId() {
