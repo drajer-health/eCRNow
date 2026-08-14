@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.condition;
 
+import com.drajer.bsa.cache.KarResolvedVariableCache;
 import com.drajer.bsa.kar.model.BsaCondition;
 import java.util.List;
 import java.util.function.Supplier;
@@ -44,5 +45,9 @@ public class BsaFhirPathCondition extends BsaCondition {
 
   public void setExpressionEvaluator(Supplier<R4CqlExecutionService> factory) {
     ((FhirPathProcessor) this.getConditionProcessor()).setExpressionEvaluatorFactory(factory);
+  }
+
+  public void setKarVariableCache(KarResolvedVariableCache karVariableCache) {
+    ((FhirPathProcessor) this.getConditionProcessor()).setKarVariableCache(karVariableCache);
   }
 }
