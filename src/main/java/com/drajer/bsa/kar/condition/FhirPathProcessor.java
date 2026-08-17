@@ -7,7 +7,6 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
-import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
@@ -34,6 +33,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String PARAM = "return";
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
+  private static final String FHIR_PATH_LANGUAGE = "text/fhirpath";
 
   private Supplier<R4CqlExecutionService> evaluatorFactory;
   private final ThreadLocal<R4CqlExecutionService> evaluatorThreadLocal = new ThreadLocal<>();
@@ -69,15 +69,22 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         act.getActionId(),
         logicExpression);
 
+    long varStart = System.nanoTime();
     resolveVariables(cond, params, kd, act, ehrService);
+    logger.info(
+        " Variable resolution for action {} took {} ms", act.getActionId(), elapsedMs(varStart));
 
     logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
 
+    long evalStart = System.nanoTime();
     Parameters result =
-        (Parameters)
-            getEvaluator()
-                .evaluate(
-                    null, logicExpression, params, null, null, null, null, null, null, null, null);
+        getEvaluator()
+            .evaluate(
+                null, logicExpression, params, null, null, null, null, null, null, null, null);
+    logger.info(
+        " FHIRPath condition evaluation for action {} took {} ms",
+        act.getActionId(),
+        elapsedMs(evalStart));
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
@@ -112,118 +119,147 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       BsaAction act,
       EhrQueryService ehrService) {
 
-    if (cond instanceof BsaFhirPathCondition) {
+    if (!(cond instanceof BsaFhirPathCondition fhirPathCondition)) {
+      logger.info(" Not a FhirPath Condition, so ignored ");
+      return;
+    }
 
-      logger.info(" Found a FhirPath Condition for action  {}", act.getActionId());
+    logger.info(" Found a FhirPath Condition for action  {}", act.getActionId());
 
-      // If a prior action for this same patient/KAR has already resolved the merged set of plan
-      // variables (STATIC + CONTEXT), reuse it directly with zero evaluator/context calls.
-      Parameters alreadyResolved = kd.getResolvedPlanVariables();
+    long start = System.nanoTime();
 
-      if (alreadyResolved != null && !alreadyResolved.isEmpty()) {
+    // If a prior action for this same patient/KAR has already resolved the merged set of plan
+    // variables (STATIC + CONTEXT), reuse it directly with zero evaluator/context calls.
+    Parameters alreadyResolved = kd.getResolvedPlanVariables();
 
-        logger.info(" Reusing previously resolved plan variables for this patient/KAR ");
-        alreadyResolved.getParameter().forEach(params::addParameter);
-        return;
-      }
+    if (alreadyResolved != null && !alreadyResolved.isEmpty()) {
 
-      // Resolve conditions that are present at the PlanDefinition level.
-      List<Expression> expressions = ((BsaFhirPathCondition) cond).getVariables();
+      logger.info(" Reusing previously resolved plan variables for this patient/KAR ");
+      alreadyResolved.getParameter().forEach(params::addParameter);
+      logger.info(
+          " resolveVariables reused {} previously resolved variable(s) for action {} in {} ms",
+          alreadyResolved.getParameter().size(),
+          act.getActionId(),
+          elapsedMs(start));
+      return;
+    }
 
-      Parameters resolvedParams = new Parameters();
+    List<Expression> expressions = fhirPathCondition.getVariables();
+    Parameters resolvedParams = new Parameters();
+    String karId = kd.getKar() != null ? kd.getKar().getVersionUniqueId() : null;
 
-      if (expressions != null && !expressions.isEmpty()) {
+    if (expressions == null || expressions.isEmpty()) {
 
-        // Lazily fetched, at most once, and only if a STATIC variable is actually encountered.
-        boolean staticVariablesFetched = false;
-        Optional<ResolvedVariables> staticVariables = Optional.empty();
-
-        for (Expression exp : expressions) {
-
-          if (exp.hasLanguage() && exp.getLanguage().contentEquals("text/fhirpath")) {
-
-            ParametersParameterComponent paramComponent = new ParametersParameterComponent();
-            paramComponent.setName("%" + exp.getName());
-
-            if (KarVariableClassifier.isContextDateVariable(exp.getName())) {
-
-              String expr = resolveContextVariables(exp.getExpression(), ehrService, kd);
-              DateTimeType value = new DateTimeType(expr);
-              paramComponent.setValue(value);
-
-              logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
-
-            } else if (KarVariableClassifier.isContextCodeVariable(exp.getName())) {
-
-              String expr = resolveContextVariables(exp.getExpression(), ehrService, kd);
-              CodeType val = new CodeType(expr);
-              paramComponent.setValue(val);
-
-            } else {
-
-              if (!staticVariablesFetched) {
-                staticVariables = getCachedStaticVariables(kd);
-                staticVariablesFetched = true;
-              }
-
-              Optional<Type> cachedValue =
-                  staticVariables.flatMap(rv -> rv.getVariable(exp.getName()));
-
-              if (cachedValue.isPresent()) {
-
-                paramComponent.setValue(cachedValue.get().copy());
-
-                logger.debug(
-                    " Resolved static plan variable {} from KAR resolved variable cache",
-                    exp.getName());
-
-              } else {
-
-                if (karVariableCache != null) {
-                  karVariableCache.recordFallback();
-                }
-
-                logger.warn(
-                    " Cache miss for static plan variable {} of expression {}, falling back to inline evaluation",
-                    exp.getName(),
-                    exp.getExpression());
-
-                resolveStaticVariableInline(exp, paramComponent, ehrService, kd);
-              }
-            }
-
-            resolvedParams.addParameter(paramComponent.copy());
-            params.addParameter(paramComponent);
-
-          } else {
-            logger.info(" Ignoring non FhirPath Expression ");
-          }
-        }
-
-      } else {
-        logger.info(" No Plan Definition Variables to resolve ");
-      }
-
-      // Cache the merged result so subsequent actions for this same patient/KAR do not need to
-      // resolve any of these variables again.
-      kd.setResolvedPlanVariables(resolvedParams);
+      logger.info(" No Plan Definition Variables to resolve ");
 
     } else {
 
-      logger.info(" Not a FhirPath Condition, so ignored ");
+      for (Expression exp : expressions) {
+
+        if (!exp.hasLanguage() || !FHIR_PATH_LANGUAGE.contentEquals(exp.getLanguage())) {
+          logger.info(" Ignoring non FhirPath Expression ");
+          continue;
+        }
+
+        long varStart = System.nanoTime();
+
+        ParametersParameterComponent paramComponent = resolveVariable(exp, karId, kd, ehrService);
+
+        logger.info(
+            " Resolved plan variable {} for action {} in {} ms",
+            exp.getName(),
+            act.getActionId(),
+            elapsedMs(varStart));
+
+        resolvedParams.addParameter(paramComponent.copy());
+        params.addParameter(paramComponent);
+      }
     }
+
+    // Cache the merged result so subsequent actions for this same patient/KAR do not need to
+    // resolve any of these variables again.
+    kd.setResolvedPlanVariables(resolvedParams);
+
+    logger.info(
+        " resolveVariables freshly resolved {} variable(s) for action {} in {} ms",
+        resolvedParams.getParameter().size(),
+        act.getActionId(),
+        elapsedMs(start));
   }
 
   /**
-   * Resolves a STATIC variable inline via the evaluator. This is only used as a fallback when the
-   * KAR resolved variable cache has not been initialized yet or does not contain the variable, and
-   * matches the behavior used before the cache existed.
+   * Resolves a single plan variable using one of three paths: (1) CONTEXT variables are
+   * patient/encounter specific, so they are substituted directly and never cached; (2) STATIC
+   * variables already present in the KAR resolved variable cache are reused as-is with zero
+   * evaluator calls; (3) STATIC variables missing from the cache are resolved inline via the
+   * evaluator, and the result is written back into the cache so no later action or patient ever
+   * pays this cost again for the same KAR.
    */
-  private void resolveStaticVariableInline(
-      Expression exp,
-      ParametersParameterComponent paramComponent,
-      EhrQueryService ehrService,
-      KarProcessingData kd) {
+  private ParametersParameterComponent resolveVariable(
+      Expression exp, String karId, KarProcessingData kd, EhrQueryService ehrService) {
+
+    ParametersParameterComponent paramComponent = new ParametersParameterComponent();
+    paramComponent.setName("%" + exp.getName());
+
+    if (KarVariableClassifier.isContextVariable(exp)) {
+      paramComponent.setValue(resolveContextVariable(exp, kd, ehrService));
+      return paramComponent;
+    }
+
+    Optional<Type> cachedValue = getCachedStaticVariable(karId, exp.getName());
+
+    if (cachedValue.isPresent()) {
+
+      logger.debug(
+          " Resolved static plan variable {} from KAR resolved variable cache", exp.getName());
+      paramComponent.setValue(cachedValue.get().copy());
+      return paramComponent;
+    }
+
+    if (karVariableCache != null) {
+      karVariableCache.recordFallback();
+    }
+
+    logger.warn(
+        " Cache miss for static plan variable {} of expression {}, resolving inline and caching"
+            + " the result for future reuse",
+        exp.getName(),
+        exp.getExpression());
+
+    Type value = resolveInline(exp, ehrService, kd);
+    paramComponent.setValue(value);
+
+    cacheResolvedStaticVariable(karId, exp.getName(), value);
+
+    return paramComponent;
+  }
+
+  /**
+   * Resolves a CONTEXT (patient/encounter specific) variable. The two well-known simple
+   * substitutions are built directly with no evaluator call; any other {{context.*}} expression
+   * still needs the evaluator, but - unlike STATIC variables - its result must never be written to
+   * the shared KAR cache since the value differs per patient.
+   */
+  private Type resolveContextVariable(
+      Expression exp, KarProcessingData kd, EhrQueryService ehrService) {
+
+    if (KarVariableClassifier.isContextDateVariable(exp.getName())) {
+
+      DateTimeType value =
+          new DateTimeType(resolveContextVariables(exp.getExpression(), ehrService, kd));
+      logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+      return value;
+    }
+
+    if (KarVariableClassifier.isContextCodeVariable(exp.getName())) {
+      return new CodeType(resolveContextVariables(exp.getExpression(), ehrService, kd));
+    }
+
+    return resolveInline(exp, ehrService, kd);
+  }
+
+  /** Resolves a variable's expression via the evaluator, after substituting any context params. */
+  private Type resolveInline(Expression exp, EhrQueryService ehrService, KarProcessingData kd) {
 
     logger.info(" Expression before resolution {}", exp.getExpression());
 
@@ -231,43 +267,67 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     logger.info(" Expression after resolution {}", expr);
 
+    long evalStart = System.nanoTime();
     Parameters variableResult =
-        (Parameters)
-            getEvaluator()
-                .evaluate(null, expr, null, null, null, null, null, null, null, null, null);
+        getEvaluator().evaluate(null, expr, null, null, null, null, null, null, null, null, null);
+    logger.info(
+        " Inline evaluator call for plan variable {} took {} ms",
+        exp.getName(),
+        elapsedMs(evalStart));
 
     if (variableResult.getParameter(PARAM) == null) {
       logger.error(
-          " No parameter returned from FHIR Path Expression Evaluator for variable {} in expression {}, so value is set to null",
+          " No parameter returned from FHIR Path Expression Evaluator for variable {} in expression"
+              + " {}, so value is set to null",
           exp.getName(),
           exp.getExpression());
-      paramComponent.setValue((Type) null);
-    } else {
-      Type value = variableResult.getParameter(PARAM).getValue();
-      paramComponent.setValue(value);
-
-      logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+      return null;
     }
+
+    Type value = variableResult.getParameter(PARAM).getValue();
+    logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+    return value;
   }
 
   /**
-   * Returns the STATIC variables previously resolved and cached for this patient's KAR, if the
-   * cache is wired up and the KAR is known. Never throws - a missing cache or KAR simply results in
-   * every STATIC variable falling back to inline evaluation.
+   * Returns the STATIC variable previously resolved and cached for this KAR, if the cache is wired
+   * up and the KAR/variable are known. Never throws - a missing cache, KAR, or variable simply
+   * results in the variable falling back to inline evaluation.
    */
-  private Optional<ResolvedVariables> getCachedStaticVariables(KarProcessingData kd) {
+  private Optional<Type> getCachedStaticVariable(String karId, String variableName) {
 
-    if (karVariableCache == null) {
+    if (karVariableCache == null || karId == null) {
       return Optional.empty();
     }
 
-    KnowledgeArtifact kar = kd.getKar();
+    return karVariableCache.get(karId).flatMap(rv -> rv.getVariable(variableName));
+  }
 
-    if (kar == null) {
-      return Optional.empty();
+  /**
+   * Backfills the KAR resolved variable cache with a STATIC variable resolved inline due to a cache
+   * miss, so every subsequent patient/action for this KAR reuses it instead of paying the evaluator
+   * cost again. This is a read-modify-write over the existing cache entry (if any); a lost update
+   * under concurrent misses for the same KAR simply means that one fallback is retried later, which
+   * is safe.
+   */
+  private void cacheResolvedStaticVariable(String karId, String variableName, Type value) {
+
+    if (karVariableCache == null || karId == null || value == null) {
+      return;
     }
 
-    return karVariableCache.get(kar.getVersionUniqueId());
+    Map<String, Type> merged =
+        karVariableCache
+            .get(karId)
+            .map(rv -> new HashMap<>(rv.getVariables()))
+            .orElseGet(HashMap::new);
+
+    merged.put(variableName, value);
+    karVariableCache.put(karId, new ResolvedVariables(merged));
+  }
+
+  private static long elapsedMs(long startNanos) {
+    return (System.nanoTime() - startNanos) / 1_000_000;
   }
 
   public String resolveContextVariables(
