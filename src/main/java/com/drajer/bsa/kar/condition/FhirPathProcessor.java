@@ -38,16 +38,35 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   private Supplier<R4CqlExecutionService> evaluatorFactory;
   private final ThreadLocal<R4CqlExecutionService> evaluatorThreadLocal = new ThreadLocal<>();
 
-  /**
-   * The application-local cache of resolved STATIC KAR plan variables. This is set explicitly by
-   * KarParserImpl when the condition is created since FhirPathProcessor instances are plain objects
-   * (not Spring beans) and cannot be autowired directly. May be null (e.g. in unit tests), in which
-   * case static variables are always resolved inline as a fallback.
-   */
-  private KarResolvedVariableCache karVariableCache;
+  private final ThreadLocal<KarResolvedVariableCache> karVariableCacheThreadLocal =
+      new ThreadLocal<>();
 
-  public void setKarVariableCache(KarResolvedVariableCache karVariableCache) {
-    this.karVariableCache = karVariableCache;
+  /**
+   * Supplies the application-local cache of resolved STATIC KAR plan variables. This is set
+   * explicitly by KarParserImpl when the condition is created since FhirPathProcessor instances are
+   * plain objects (not Spring beans) and cannot be autowired directly. The cache reference is
+   * resolved once per thread via {@link #getKarVariableCache()} (mirroring the evaluator pattern)
+   * so the supplier is invoked at most once per thread lifetime rather than on every access. May be
+   * null (e.g. in unit tests), in which case static variables are always resolved inline as a
+   * fallback.
+   */
+  private Supplier<KarResolvedVariableCache> karVariableCacheFactory;
+
+  public void setKarVariableCache(Supplier<KarResolvedVariableCache> karVariableCacheFactory) {
+    this.karVariableCacheFactory = karVariableCacheFactory;
+  }
+
+  /**
+   * Returns the KAR resolved variable cache for the current thread. The supplier is invoked at most
+   * once per thread; subsequent calls return the cached reference directly.
+   */
+  private KarResolvedVariableCache getKarVariableCache() {
+    KarResolvedVariableCache cache = karVariableCacheThreadLocal.get();
+    if (cache == null && karVariableCacheFactory != null) {
+      cache = karVariableCacheFactory.get();
+      karVariableCacheThreadLocal.set(cache);
+    }
+    return cache;
   }
 
   @Override
@@ -198,6 +217,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   private ParametersParameterComponent resolveVariable(
       Expression exp, String karId, KarProcessingData kd, EhrQueryService ehrService) {
 
+    KarResolvedVariableCache cache = getKarVariableCache();
+
     ParametersParameterComponent paramComponent = new ParametersParameterComponent();
     paramComponent.setName("%" + exp.getName());
 
@@ -206,7 +227,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       return paramComponent;
     }
 
-    Optional<Type> cachedValue = getCachedStaticVariable(karId, exp.getName());
+    Optional<Type> cachedValue = getCachedStaticVariable(cache, karId, exp.getName());
 
     if (cachedValue.isPresent()) {
 
@@ -216,8 +237,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       return paramComponent;
     }
 
-    if (karVariableCache != null) {
-      karVariableCache.recordFallback();
+    if (cache != null) {
+      cache.recordFallback();
     }
 
     logger.warn(
@@ -229,7 +250,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     Type value = resolveInline(exp, ehrService, kd);
     paramComponent.setValue(value);
 
-    cacheResolvedStaticVariable(karId, exp.getName(), value);
+    cacheResolvedStaticVariable(cache, karId, exp.getName(), value);
 
     return paramComponent;
   }
@@ -294,13 +315,14 @@ public class FhirPathProcessor implements BsaConditionProcessor {
    * up and the KAR/variable are known. Never throws - a missing cache, KAR, or variable simply
    * results in the variable falling back to inline evaluation.
    */
-  private Optional<Type> getCachedStaticVariable(String karId, String variableName) {
+  private Optional<Type> getCachedStaticVariable(
+      KarResolvedVariableCache cache, String karId, String variableName) {
 
-    if (karVariableCache == null || karId == null) {
+    if (cache == null || karId == null) {
       return Optional.empty();
     }
 
-    return karVariableCache.get(karId).flatMap(rv -> rv.getVariable(variableName));
+    return cache.get(karId).flatMap(rv -> rv.getVariable(variableName));
   }
 
   /**
@@ -310,20 +332,18 @@ public class FhirPathProcessor implements BsaConditionProcessor {
    * under concurrent misses for the same KAR simply means that one fallback is retried later, which
    * is safe.
    */
-  private void cacheResolvedStaticVariable(String karId, String variableName, Type value) {
+  private void cacheResolvedStaticVariable(
+      KarResolvedVariableCache cache, String karId, String variableName, Type value) {
 
-    if (karVariableCache == null || karId == null || value == null) {
+    if (cache == null || karId == null || value == null) {
       return;
     }
 
     Map<String, Type> merged =
-        karVariableCache
-            .get(karId)
-            .map(rv -> new HashMap<>(rv.getVariables()))
-            .orElseGet(HashMap::new);
+        cache.get(karId).map(rv -> new HashMap<>(rv.getVariables())).orElseGet(HashMap::new);
 
     merged.put(variableName, value);
-    karVariableCache.put(karId, new ResolvedVariables(merged));
+    cache.put(karId, new ResolvedVariables(merged));
   }
 
   private static long elapsedMs(long startNanos) {

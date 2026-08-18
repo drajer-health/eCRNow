@@ -47,7 +47,7 @@ public class BsaFhirPathCondition extends BsaCondition {
     ((FhirPathProcessor) this.getConditionProcessor()).setExpressionEvaluatorFactory(factory);
   }
 
-  public void setKarVariableCache(KarResolvedVariableCache karVariableCache) {
-    ((FhirPathProcessor) this.getConditionProcessor()).setKarVariableCache(karVariableCache);
+  public void setKarVariableCache(Supplier<KarResolvedVariableCache> karVariableCacheFactory) {
+    ((FhirPathProcessor) this.getConditionProcessor()).setKarVariableCache(karVariableCacheFactory);
   }
 }

@@ -1034,7 +1034,7 @@ public class KarParserImpl implements KarParser {
           }
           bc.setLogicExpression(exp);
           bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-          bc.setKarVariableCache(karResolvedVariableCache);
+          bc.setKarVariableCache(() -> karResolvedVariableCache);
           action.addCondition(bc);
         } else if (con.getExpression() != null
             && (fromCode(con.getExpression().getLanguage())
@@ -1048,7 +1048,7 @@ public class KarParserImpl implements KarParser {
           }
           bc.setLogicExpression(con.getExpression());
           bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-          bc.setKarVariableCache(karResolvedVariableCache);
+          bc.setKarVariableCache(() -> karResolvedVariableCache);
           action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
@@ -1065,7 +1065,7 @@ public class KarParserImpl implements KarParser {
         }
         bc.setLogicExpression(con.getExpression());
         bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-        bc.setKarVariableCache(karResolvedVariableCache);
+        bc.setKarVariableCache(() -> karResolvedVariableCache);
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
