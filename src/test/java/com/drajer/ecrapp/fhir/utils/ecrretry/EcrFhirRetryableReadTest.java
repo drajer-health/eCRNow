@@ -70,7 +70,9 @@ public class EcrFhirRetryableReadTest {
     fhirRetryTemplateConfig.setMaxRetries(3);
     fhirRetryTemplateConfig.setRetryWaitTimeInMillis(3000);
     RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
-    fhirretryTemplate = new FHIRRetryTemplate(retryStatusCode.configureRetryTemplate());
+    fhirretryTemplate =
+        new FHIRRetryTemplate(
+            retryStatusCode.configureRetryTemplate(), fhirRetryTemplateConfig, true);
     when(retryClient.getRetryTemplate()).thenReturn(fhirretryTemplate);
 
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))

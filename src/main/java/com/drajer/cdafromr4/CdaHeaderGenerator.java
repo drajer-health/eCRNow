@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
@@ -39,15 +38,10 @@ public class CdaHeaderGenerator {
 
   private CdaHeaderGenerator() {}
 
-  private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
   private static final String SW_APP_VERSION = "4.0.3";
   private static String SW_APP_NAME = "ecrNowApp";
-  private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
-  private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
-
-  private static String activeProfile;
 
   // Map to hold Application Properties
   private static HashMap<String, String> appProps = new HashMap<>();
@@ -58,13 +52,6 @@ public class CdaHeaderGenerator {
 
   public static void loadProperties() {
     appProps = (HashMap<String, String>) AppConfig.getAllProperties();
-  }
-
-  private static String getPropertiesFileName() {
-    String activeProfile = System.getProperty(SPRING_PROFILES_ACTIVE);
-    return (activeProfile != null && !activeProfile.isEmpty())
-        ? "application-" + activeProfile + ".properties"
-        : DEFAULT_PROPERTIES_FILE;
   }
 
   public static String createCdaHeader(
@@ -183,13 +170,13 @@ public class CdaHeaderGenerator {
         String msg = "No Fhir Data Bundle retrieved to CREATE EICR.";
         logger.error(msg);
 
-        throw new RuntimeException(msg);
+        throw new IllegalStateException(msg);
       }
     } else {
       String msg = "No existing Fhir Data for Creating EICR.";
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new IllegalStateException(msg);
     }
 
     return eICRHeader.toString();
@@ -300,7 +287,7 @@ public class CdaHeaderGenerator {
       s.append(CdaFhirUtilities.getAddressXml(location.getAddress()));
     }
 
-    appendScopingOrganization(s, location, details, data);
+    appendScopingOrganization(s, location, details);
 
     s.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
@@ -1092,7 +1079,7 @@ public class CdaHeaderGenerator {
   }
 
   private static void appendScopingOrganization(
-      StringBuilder xml, Location location, LaunchDetails details, R4FhirData data) {
+      StringBuilder xml, Location location, LaunchDetails details) {
 
     Organization org = null;
     if (location != null && location.getManagingOrganization() != null) {

@@ -56,7 +56,7 @@ public class SubscriptionUtilsTest {
 
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+            bundle, mockHttpServletRequest, false, false, launchContext);
     assertNotNull(notificationContext);
   }
 
@@ -81,7 +81,7 @@ public class SubscriptionUtilsTest {
 
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+            bundle, mockHttpServletRequest, false, false, launchContext);
     assertNotNull(notificationContext);
   }
 
@@ -94,7 +94,7 @@ public class SubscriptionUtilsTest {
     try {
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+              bundle, mockHttpServletRequest, false, false, launchContext);
     } catch (InvalidNotification e) {
       assertTrue(true);
     }
@@ -115,7 +115,7 @@ public class SubscriptionUtilsTest {
       PatientLaunchContext launchContext = new PatientLaunchContext();
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+              bundle, mockHttpServletRequest, false, false, launchContext);
       mockHttpServletRequest.removeHeader("X-Correlation-ID");
       mockHttpServletRequest.removeHeader("X-Request-ID");
 
@@ -148,7 +148,7 @@ public class SubscriptionUtilsTest {
     try {
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse, false, false, launchContext);
+              bundle, mockHttpServletRequest, false, false, launchContext);
     } catch (InvalidNotification e) {
       assertTrue(true);
     }

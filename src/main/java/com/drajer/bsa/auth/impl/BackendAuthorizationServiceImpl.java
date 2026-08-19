@@ -3,7 +3,6 @@ package com.drajer.bsa.auth.impl;
 import com.drajer.bsa.auth.AuthorizationService;
 import com.drajer.bsa.model.FhirServerDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -80,8 +79,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     RestTemplate resTemplate = new RestTemplate();
     String tokenEndpoint;
 
-    ObjectMapper mapper = new ObjectMapper();
-
     tokenEndpoint = fsd.getTokenUrl();
     if (tokenEndpoint == null || tokenEndpoint.isEmpty()) {
       tokenEndpoint = getTokenEndpoint(url);
@@ -114,7 +111,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
     ResponseEntity<String> response =
         resTemplate.postForEntity(tokenEndpoint, request, String.class);
-    logger.info(" Response Body = ", response.getBody());
+    logger.info(" Response Body = {}", response.getBody());
     String responseObj = (String) Objects.requireNonNull(response.getBody());
 
     return new JSONObject(responseObj);
@@ -188,7 +185,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     try {
       InputStream store = new FileInputStream(jwksLocation);
       ks.load(store, passwordChar);
-      // store.close();
       Key key = ks.getKey(fsd.getBackendAuthKeyAlias(), passwordChar);
 
       X509Certificate cert = (X509Certificate) ks.getCertificate(fsd.getBackendAuthKeyAlias());

@@ -135,7 +135,7 @@ public class RespnetReportCreator extends ReportCreator {
         slogger.error("Properties file {} not found in classpath!", propertiesFileName);
       }
     } catch (IOException e) {
-      slogger.error("Error loading properties file :{} ", e);
+      slogger.error("Error loading properties file!", e);
     }
   }
 
@@ -167,7 +167,7 @@ public class RespnetReportCreator extends ReportCreator {
     logger.info("Respnet Report Resource Count {}", inputData.size());
 
     // Create the Content Bundle.
-    Bundle contentBundle = createContentBundle(kd, ehrService, id, profile);
+    Bundle contentBundle = createContentBundle(kd);
     BundleEntryComponent contentBundlebec = new BundleEntryComponent().setResource(contentBundle);
     contentBundlebec.setFullUrl(
         StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
@@ -236,8 +236,9 @@ public class RespnetReportCreator extends ReportCreator {
     HealthcareSetting hs = kd.getHealthcareSetting();
     Organization org = null;
 
-    if (kd.getNotificationContext().getNotificationResourceType()
-        == ResourceType.Encounter.toString()) {
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
 
       org = new Organization();
       org.setId(UUID.randomUUID().toString());
@@ -344,8 +345,7 @@ public class RespnetReportCreator extends ReportCreator {
     return header;
   }
 
-  public Bundle createContentBundle(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+  public Bundle createContentBundle(KarProcessingData kd) {
 
     Bundle returnBundle = new Bundle();
 
@@ -474,38 +474,38 @@ public class RespnetReportCreator extends ReportCreator {
     SectionComponent sc = null;
 
     // Add Problem section.
-    sc = getSection(SectionTypeEnum.PROBLEM, kd);
+    sc = getSection(SectionTypeEnum.PROBLEM);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.Condition, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Medications Administered section.
-    sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED, kd);
+    sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.MedicationAdministration, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Medications Section
-    sc = getSection(SectionTypeEnum.MEDICATIONS, kd);
+    sc = getSection(SectionTypeEnum.MEDICATIONS);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Results section.
-    sc = getSection(SectionTypeEnum.RESULTS, kd);
+    sc = getSection(SectionTypeEnum.RESULTS);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
     addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Notes section.
-    sc = getSection(SectionTypeEnum.NOTES, kd);
+    sc = getSection(SectionTypeEnum.NOTES);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.DocumentReference, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Plan Of Treatment section.
-    sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd);
+    sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.ServiceRequest, kd, sc, resTobeAdded, "", profilesToIgnore);
@@ -513,31 +513,31 @@ public class RespnetReportCreator extends ReportCreator {
     addEntries(ResourceType.CarePlan, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Immuniztions section.
-    sc = getSection(SectionTypeEnum.IMMUNIZATIONS, kd);
+    sc = getSection(SectionTypeEnum.IMMUNIZATIONS);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.Immunization, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Procedures section.
-    sc = getSection(SectionTypeEnum.PROCEDURES, kd);
+    sc = getSection(SectionTypeEnum.PROCEDURES);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.Procedure, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Vital Signs section.
-    sc = getSection(SectionTypeEnum.VITAL_SIGNS, kd);
+    sc = getSection(SectionTypeEnum.VITAL_SIGNS);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Social History section.
-    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
+    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY);
     if (sc != null) scs.add(sc);
     profilesToIgnore.clear();
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded, "", profilesToIgnore);
 
     // Add Pregnancy section.
-    sc = getSection(SectionTypeEnum.PREGNANCY, kd);
+    sc = getSection(SectionTypeEnum.PREGNANCY);
     if (sc != null) scs.add(sc);
 
     // Finalize the sections.
@@ -582,12 +582,12 @@ public class RespnetReportCreator extends ReportCreator {
     return authors;
   }
 
-  public SectionComponent getSection(SectionTypeEnum st, KarProcessingData kd) {
+  public SectionComponent getSection(SectionTypeEnum st) {
 
-    return getSectionComponent(st, kd);
+    return getSectionComponent(st);
   }
 
-  public SectionComponent getSectionComponent(SectionTypeEnum st, KarProcessingData kd) {
+  public SectionComponent getSectionComponent(SectionTypeEnum st) {
 
     SectionComponent sc = null;
 
@@ -598,7 +598,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.SNOMED_CS_URL,
                 FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE,
                 FhirGeneratorConstants.PRIMARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case SECONDARY_CANCER_CONDITION:
@@ -607,7 +607,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.SNOMED_CS_URL,
                 FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE,
                 FhirGeneratorConstants.SECONDARY_CANCER_CONDITION_SECTION_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case CANCER_STAGE_GROUP:
@@ -616,7 +616,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.CANCER_STAGE_GROUP_SECTION_CODE,
                 FhirGeneratorConstants.CANCER_STAGE_GROUP_SECTION_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case RADIO_THERAPY_COURSE_SUMMARY:
@@ -625,7 +625,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.SNOMED_CS_URL,
                 FhirGeneratorConstants.CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE,
                 FhirGeneratorConstants.CANCER_RADIO_THERAPY_COURSE_SUMMARY_SECTION_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case ODH:
@@ -634,7 +634,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ODH_SECTION_CODE,
                 FhirGeneratorConstants.ODH_SECTION_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case PROBLEM:
@@ -643,7 +643,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case ALLERGIES:
@@ -652,7 +652,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case MEDICATION_ADMINISTERED:
@@ -661,7 +661,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case ADMISSION_MEDICATIONS:
@@ -670,7 +670,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case MEDICATIONS:
@@ -679,7 +679,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case RESULTS:
@@ -688,7 +688,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case PLAN_OF_TREATMENT:
@@ -697,7 +697,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case NOTES:
@@ -706,7 +706,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case PROCEDURES:
@@ -715,7 +715,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case VITAL_SIGNS:
@@ -724,7 +724,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case SOCIAL_HISTORY:
@@ -733,7 +733,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
       case IMMUNIZATIONS:
         sc =
@@ -741,7 +741,7 @@ public class RespnetReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       default:
@@ -787,7 +787,7 @@ public class RespnetReportCreator extends ReportCreator {
     return dev;
   }
 
-  public void populateReasonForVisitNarrative(SectionComponent sc, KarProcessingData kd) {
+  public void populateReasonForVisitNarrative(SectionComponent sc) {
     logger.info(" Generating Reason For Visit Narrative");
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
@@ -795,8 +795,7 @@ public class RespnetReportCreator extends ReportCreator {
     sc.setText(val);
   }
 
-  public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
-    logger.info("KarProcessingData:{}", kd);
+  public void populateDefaultNarrative(SectionComponent sc) {
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
@@ -887,11 +886,7 @@ public class RespnetReportCreator extends ReportCreator {
         }
       } else if (!profilesToIgnore.isEmpty()) {
         // Filter by excluding profiles in ignore list
-        if (!r.hasMeta() || !r.getMeta().hasProfile()) {
-          resToReturn.add(r);
-        } else {
-          resToReturn.add(r);
-        }
+        resToReturn.add(r);
       } else {
         // No filtering needed
         resToReturn.add(r);

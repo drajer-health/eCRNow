@@ -665,9 +665,7 @@ public class CdaMedicationGenerator {
               res,
               medList);
 
-      if (!codeXml.isEmpty()) {
-        codeXml = codeXml;
-      } else {
+      if (codeXml.isEmpty()) {
         codeXml =
             CdaFhirUtilities.getXmlForTypeForCodeSystem(
                 medication,

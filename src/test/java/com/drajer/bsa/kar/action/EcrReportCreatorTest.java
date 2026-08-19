@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.ehr.service.impl.EhrFhirR4QueryServiceImpl;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
@@ -51,7 +50,7 @@ public class EcrReportCreatorTest {
   @Before
   public void setUp() {
     ReflectionTestUtils.setField(AESEncryption.class, "secretKey", "123");
-    ehrQueryService = new EhrFhirR4QueryServiceImpl();
+    ehrQueryService = Mockito.mock(EhrQueryService.class);
     karProcessingData = new KarProcessingData();
     karProcessingData.setPhm(null);
     NotificationContext notificationContext = getNotificationContext();
@@ -357,7 +356,6 @@ public class EcrReportCreatorTest {
   private HashMap<ResourceType, Set<Resource>> getFilteredByType(String filePath) {
     HashMap<ResourceType, Set<Resource>> groupedResources = new HashMap<>();
     try {
-      FhirContext ctx = FhirContext.forR4();
       Bundle bundle = loadBundleFromFile(filePath);
 
       for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -478,15 +476,18 @@ public class EcrReportCreatorTest {
 
   private ScheduledJobData getScheduledJobData() {
     ScheduledJobData jobData =
-        new ScheduledJobData(
-            UUID.randomUUID(),
-            "check-for-immediate-reporting-PlanDefinition/http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
-            BsaTypes.ActionType.EXECUTE_REPORTING_WORKFLOW,
-            Instant.now(),
-            "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification_EXECUTE_REPORTING_WORKFLOW_3a0172db-42e0-4d4c-8d35-29674e3d6108_fe9a6129-f988-49c9-859d-9e86f1b00548%22",
-            "32",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            new HashMap<>());
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(UUID.randomUUID())
+            .actionId(
+                "check-for-immediate-reporting-PlanDefinition/http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification")
+            .actionType(BsaTypes.ActionType.EXECUTE_REPORTING_WORKFLOW)
+            .expirationTime(Instant.now())
+            .jobId(
+                "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification_EXECUTE_REPORTING_WORKFLOW_3a0172db-42e0-4d4c-8d35-29674e3d6108_fe9a6129-f988-49c9-859d-9e86f1b00548%22")
+            .xRequestId("32")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(new HashMap<>())
+            .build();
     Map<String, String> mcContext = new HashMap<>();
     mcContext.put("requestId", "32");
     mcContext.put("correlationId", null);
@@ -497,8 +498,7 @@ public class EcrReportCreatorTest {
   }
 
   private HealthcareSetting getHealthcareSetting() {
-    HealthcareSetting healthcareSetting = new HealthcareSetting();
-    healthcareSetting =
+    HealthcareSetting healthcareSetting =
         (HealthcareSetting)
             TestUtils.getResourceAsObject("Bsa/HealthCareSettings.json", HealthcareSetting.class);
     return healthcareSetting;

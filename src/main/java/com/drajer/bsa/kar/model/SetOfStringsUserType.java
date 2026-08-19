@@ -8,7 +8,6 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
 
 public class SetOfStringsUserType {
 
@@ -28,8 +27,9 @@ public class SetOfStringsUserType {
    *
    * @return Class
    */
-  public Class<Set> returnedClass() {
-    return Set.class;
+  @SuppressWarnings("unchecked")
+  public Class<Set<String>> returnedClass() {
+    return (Class<Set<String>>) (Class<?>) Set.class;
   }
 
   /** Get a hashcode for the instance, consistent with persistence "equality" */
@@ -61,14 +61,11 @@ public class SetOfStringsUserType {
    *
    * @param rs a JDBC result set
    * @param names the column names
-   * @param session
    * @param owner the containing entity @return Object
    * @throws org.hibernate.HibernateException
    * @throws SQLException
    */
-  public Object nullSafeGet(
-      ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
-      throws SQLException {
+  public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws SQLException {
     String stored = rs.getString(names[0]);
     if (stored == null) {
       return null;
@@ -87,13 +84,10 @@ public class SetOfStringsUserType {
    * @param st a JDBC prepared statement
    * @param value the object to write
    * @param index statement parameter index
-   * @param session
    * @throws org.hibernate.HibernateException
    * @throws SQLException
    */
-  public void nullSafeSet(
-      PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
-      throws SQLException {
+  public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException {
     if (!(value instanceof Set)) {
       st.setNull(index, Types.OTHER);
       return;
@@ -145,10 +139,9 @@ public class SetOfStringsUserType {
    * recursively replace component values.
    *
    * @param original the value from the detached entity being merged
-   * @param target the value in the managed entity
    * @return the value to be merged
    */
-  public Object replace(Object original, Object target, Object owner) {
+  public Object replace(Object original) {
     return original;
   }
 

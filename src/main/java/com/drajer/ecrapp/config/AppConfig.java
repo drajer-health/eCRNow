@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppConfig {
 
-  @Autowired Environment environment;
+  private final Environment environment;
 
   @Value("${longencounter.enableSuspend:false}")
   private boolean enableSuspend;
@@ -22,6 +22,16 @@ public class AppConfig {
 
   @Value("${longencounter.suspendThreshold:45}")
   private int suspendThreshold;
+
+  /**
+   * Instantiates a new application configuration.
+   *
+   * @param environment the Spring environment
+   */
+  @Autowired
+  public AppConfig(Environment environment) {
+    this.environment = environment;
+  }
 
   public boolean isEnableSuspend() {
     return enableSuspend;

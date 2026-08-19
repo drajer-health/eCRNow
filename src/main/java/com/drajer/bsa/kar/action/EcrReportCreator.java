@@ -54,13 +54,6 @@ public class EcrReportCreator extends ReportCreator {
   private static final String EICR_INITIATION_TYPE_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-initiation-type-extension";
 
-  // FIX 1: These two live in us/ph-library, not us/ecr
-  private static final String US_PH_INITIATION_REASON_EXT_URL =
-      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-initiation-reason-extension";
-
-  private static final String US_PH_INFO_RECIPIENT_EXT_URL =
-      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-information-recipient-extension";
-
   private static final String DEVICE_NAME = "eCRNow/Backend Service App";
   private static final String TRIGGER_CODE_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-trigger-code-flag-extension";
@@ -115,8 +108,7 @@ public class EcrReportCreator extends ReportCreator {
 
       logger.info(" Creating a FHIR Eicr Report ");
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle =
-          getFhirReport(kd, ehrService, dataRequirementId, EICR_DOCUMENT_BUNDLE, act);
+      Bundle contentBundle = getFhirReport(kd, dataRequirementId, EICR_DOCUMENT_BUNDLE, act);
       MessageHeader mh = createMessageHeader(kd, false, contentBundle);
 
       BundleEntryComponent messageComponent = new BundleEntryComponent();
@@ -143,7 +135,7 @@ public class EcrReportCreator extends ReportCreator {
 
       logger.info(" Creating a CDA R11 Eicr Report ");
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
+      Bundle contentBundle = getCdaR11Report(kd, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       BundleEntryComponent bec = new BundleEntryComponent();
@@ -181,8 +173,8 @@ public class EcrReportCreator extends ReportCreator {
 
       logger.info(" Creating an Eicr for each of the above formats ");
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle1 = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
-      Bundle contentBundle2 = getFhirReport(kd, ehrService, dataRequirementId, profile, act);
+      Bundle contentBundle1 = getCdaR11Report(kd, dataRequirementId, profile, act);
+      Bundle contentBundle2 = getFhirReport(kd, dataRequirementId, profile, act);
       Bundle contentBundle3 = getCdaR31Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle1);
 
@@ -280,11 +272,7 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Bundle getCdaR11Report(
-      KarProcessingData kd,
-      EhrQueryService ehrService,
-      String dataRequirementId,
-      String profile,
-      BsaAction act) {
+      KarProcessingData kd, String dataRequirementId, String profile, BsaAction act) {
 
     Bundle returnBundle = new Bundle();
     returnBundle.setId(UUID.randomUUID().toString());
@@ -436,8 +424,7 @@ public class EcrReportCreator extends ReportCreator {
   // FIX 12: getFhirReport — bundle profile fallback, identifier urn: prefix,
   //         dedupe entries by fullUrl
   // ==========================================================================
-  public Bundle getFhirReport(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act) {
+  public Bundle getFhirReport(KarProcessingData kd, String id, String profile, BsaAction act) {
 
     Bundle returnBundle = new Bundle();
     returnBundle.setId(id);
@@ -502,22 +489,32 @@ public class EcrReportCreator extends ReportCreator {
     Composition comp = new Composition();
     comp.setId(UUID.randomUUID().toString());
 
+    // FIX 8: meta.profile declares eICR Composition canonical URL
     comp.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, EICR_COMPOSITION_PROFILE_URL));
+
+    // Add clinical document version + initiation type extensions
     comp.setExtension(getExtensions());
 
+    // FIX 3: identifier needs system (URN URI scheme) AND value
     Identifier compId = new Identifier();
-    compId.setSystem(FhirGeneratorConstants.DOC_ID_SYSTEM);
+    compId.setSystem(FhirGeneratorConstants.DOC_ID_SYSTEM); // urn:ietf:rfc:3986
     compId.setValue("urn:uuid:" + comp.getId());
     comp.setIdentifier(compId);
 
+    // Status
     comp.setStatus(CompositionStatus.FINAL);
+
+    // Type
     comp.setType(
         FhirGeneratorUtils.getCodeableConcept(
             FhirGeneratorConstants.LOINC_CS_URL,
             FhirGeneratorConstants.ECR_COMP_TYPE_CODE,
             FhirGeneratorConstants.ECR_COMP_TYPE_CODE_DISPLAY));
 
+    // Subject
     setupSubject(comp, kd, resTobeAdded);
+
+    // Encounter
     setupEncounter(comp, kd, resTobeAdded);
 
     comp.setDate(Date.from(Instant.now()));
@@ -596,41 +593,40 @@ public class EcrReportCreator extends ReportCreator {
       KarProcessingData kd, Pair<R4FhirData, LaunchDetails> data, Set<Resource> resTobeAdded) {
     List<SectionComponent> scs = new ArrayList<>();
 
-    addSectionIfPresent(scs, SectionTypeEnum.REASON_FOR_VISIT, kd, data, null, resTobeAdded);
-    addSectionIfPresent(scs, SectionTypeEnum.CHIEF_COMPLAINT, kd, data, null, resTobeAdded);
-    addSectionIfPresent(
-        scs, SectionTypeEnum.HISTORY_OF_PRESENT_ILLNESS, kd, data, null, resTobeAdded);
-    addSectionIfPresent(scs, SectionTypeEnum.REVIEW_OF_SYSTEMS, kd, data, null, resTobeAdded);
+    addSectionIfPresent(scs, SectionTypeEnum.REASON_FOR_VISIT, data);
+    addSectionIfPresent(scs, SectionTypeEnum.CHIEF_COMPLAINT, data);
+    addSectionIfPresent(scs, SectionTypeEnum.HISTORY_OF_PRESENT_ILLNESS, data);
+    addSectionIfPresent(scs, SectionTypeEnum.REVIEW_OF_SYSTEMS, data);
 
-    SectionComponent sc = getSection(SectionTypeEnum.PROBLEM, kd, data);
+    SectionComponent sc = getSection(SectionTypeEnum.PROBLEM, data);
     if (sc != null) {
       addEntries(null, ResourceType.Condition, kd, sc, resTobeAdded);
       scs.add(sc);
     }
 
-    addSectionIfPresent(scs, SectionTypeEnum.MEDICAL_HISTORY, kd, data, null, resTobeAdded);
-    addSectionIfPresent(scs, SectionTypeEnum.ADMISSION_MEDICATIONS, kd, data, null, resTobeAdded);
+    addSectionIfPresent(scs, SectionTypeEnum.MEDICAL_HISTORY, data);
+    addSectionIfPresent(scs, SectionTypeEnum.ADMISSION_MEDICATIONS, data);
 
-    sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED, kd, data);
+    sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED, data);
     if (sc != null) {
       addEntries(null, ResourceType.MedicationAdministration, kd, sc, resTobeAdded);
       scs.add(sc);
     }
 
-    sc = getSection(SectionTypeEnum.MEDICATIONS, kd, data);
+    sc = getSection(SectionTypeEnum.MEDICATIONS, data);
     if (sc != null) {
       addEntries(null, ResourceType.MedicationStatement, kd, sc, resTobeAdded);
       scs.add(sc);
     }
 
-    sc = getSection(SectionTypeEnum.RESULTS, kd, data);
+    sc = getSection(SectionTypeEnum.RESULTS, data);
     if (sc != null) {
       addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
       addEntries(null, ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
       scs.add(sc);
     }
 
-    sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd, data);
+    sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, data);
     if (sc != null) {
       addEntries(data.getValue0(), ResourceType.ServiceRequest, kd, sc, resTobeAdded);
       addEntries(data.getValue0(), ResourceType.MedicationRequest, kd, sc, resTobeAdded);
@@ -640,7 +636,7 @@ public class EcrReportCreator extends ReportCreator {
       }
     }
 
-    sc = getSection(SectionTypeEnum.IMMUNIZATIONS, kd, data);
+    sc = getSection(SectionTypeEnum.IMMUNIZATIONS, data);
     if (sc != null) {
       addEntries(null, ResourceType.Immunization, kd, sc, resTobeAdded);
       if (sc.hasEntry()) {
@@ -648,7 +644,7 @@ public class EcrReportCreator extends ReportCreator {
       }
     }
 
-    sc = getSection(SectionTypeEnum.PROCEDURES, kd, data);
+    sc = getSection(SectionTypeEnum.PROCEDURES, data);
     if (sc != null) {
       addEntries(data.getValue0(), ResourceType.Procedure, kd, sc, resTobeAdded);
       if (sc.hasEntry()) {
@@ -656,19 +652,19 @@ public class EcrReportCreator extends ReportCreator {
       }
     }
 
-    sc = getSection(SectionTypeEnum.VITAL_SIGNS, kd, data);
+    sc = getSection(SectionTypeEnum.VITAL_SIGNS, data);
     if (sc != null) {
       addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
       scs.add(sc);
     }
 
-    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd, data);
+    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, data);
     if (sc != null) {
       addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
       scs.add(sc);
     }
 
-    sc = getSection(SectionTypeEnum.PREGNANCY, kd, data);
+    sc = getSection(SectionTypeEnum.PREGNANCY, data);
     if (sc != null) {
       addEntries(data.getValue0(), ResourceType.Observation, kd, sc, resTobeAdded);
       if (sc.hasEntry()) {
@@ -676,20 +672,14 @@ public class EcrReportCreator extends ReportCreator {
       }
     }
 
-    addSectionIfPresent(
-        scs, SectionTypeEnum.EMERGENCY_OUTBREAK_SECTION, kd, data, null, resTobeAdded);
+    addSectionIfPresent(scs, SectionTypeEnum.EMERGENCY_OUTBREAK_SECTION, data);
 
     return scs;
   }
 
   private void addSectionIfPresent(
-      List<SectionComponent> scs,
-      SectionTypeEnum type,
-      KarProcessingData kd,
-      Pair<R4FhirData, LaunchDetails> data,
-      ResourceType resType,
-      Set<Resource> resTobeAdded) {
-    SectionComponent sc = getSection(type, kd, data);
+      List<SectionComponent> scs, SectionTypeEnum type, Pair<R4FhirData, LaunchDetails> data) {
+    SectionComponent sc = getSection(type, data);
     if (sc != null) {
       scs.add(sc);
     }
@@ -732,13 +722,12 @@ public class EcrReportCreator extends ReportCreator {
     return authors;
   }
 
-  public SectionComponent getSection(
-      SectionTypeEnum st, KarProcessingData kd, Pair<R4FhirData, LaunchDetails> data) {
-    return getSectionComponent(st, kd, data);
+  public SectionComponent getSection(SectionTypeEnum st, Pair<R4FhirData, LaunchDetails> data) {
+    return getSectionComponent(st, data);
   }
 
   public SectionComponent getSectionComponent(
-      SectionTypeEnum st, KarProcessingData kd, Pair<R4FhirData, LaunchDetails> data) {
+      SectionTypeEnum st, Pair<R4FhirData, LaunchDetails> data) {
 
     SectionComponent sc = null;
 
@@ -749,7 +738,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.REASON_FOR_VISIT_CODE,
                 FhirGeneratorConstants.REASON_FOR_VISIT_CODE_DISPLAY);
-        populateReasonForVisitNarrative(sc, kd, data);
+        populateReasonForVisitNarrative(sc, data);
         break;
 
       case CHIEF_COMPLAINT:
@@ -758,7 +747,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.CHIEF_COMPLAINT_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.CHIEF_COMPLAINT_SECTION_LOINC_CODE_DISPLAY);
-        populateChiefComplaintNarrative(sc, kd, data);
+        populateChiefComplaintNarrative(sc);
         break;
 
       case HISTORY_OF_PRESENT_ILLNESS:
@@ -767,7 +756,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case REVIEW_OF_SYSTEMS:
@@ -776,7 +765,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case PROBLEM:
@@ -794,7 +783,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case MEDICATION_ADMINISTERED:
@@ -890,7 +879,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       default:
@@ -941,7 +930,7 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public void populateReasonForVisitNarrative(
-      SectionComponent sc, KarProcessingData kd, Pair<R4FhirData, LaunchDetails> data) {
+      SectionComponent sc, Pair<R4FhirData, LaunchDetails> data) {
     logger.info("Creating Reason for Visit Narrative ");
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
@@ -960,8 +949,7 @@ public class EcrReportCreator extends ReportCreator {
     sc.setText(val);
   }
 
-  public void populateChiefComplaintNarrative(
-      SectionComponent sc, KarProcessingData kd, Pair<R4FhirData, LaunchDetails> data) {
+  public void populateChiefComplaintNarrative(SectionComponent sc) {
     logger.info("Creating Chief Complaint Narrative ");
 
     Narrative val = new Narrative();
@@ -971,7 +959,7 @@ public class EcrReportCreator extends ReportCreator {
     sc.setText(val);
   }
 
-  public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
+  public void populateDefaultNarrative(SectionComponent sc) {
     logger.info("Adding Narrative ");
 
     Narrative val = new Narrative();
@@ -981,18 +969,14 @@ public class EcrReportCreator extends ReportCreator {
     sc.setText(val);
   }
 
-  public void populateTextNarrative(
-      SectionComponent sc, KarProcessingData kd, Set<Resource> resTobeAdded) {
+  public void populateTextNarrative(SectionComponent sc, Set<Resource> resTobeAdded) {
     logger.info("Adding Narrative ");
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
 
     String resultString =
-        resTobeAdded.stream()
-            .map(dres -> (DomainResource) (dres))
-            .collect(Collectors.toList())
-            .stream()
+        resTobeAdded.stream().map(dres -> (DomainResource) (dres)).toList().stream()
             .filter(tdres -> tdres.hasText())
             .map(strres -> strres.getText().getDivAsString())
             .collect(Collectors.joining(", "));
@@ -1059,8 +1043,7 @@ public class EcrReportCreator extends ReportCreator {
         && Boolean.TRUE.equals(isVitalsSection(sc))) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
       if (data != null && data.getVitalObs() != null) {
-        List<Resource> resources =
-            data.getVitalObs().stream().map(obs -> (Resource) obs).collect(Collectors.toList());
+        List<Resource> resources = data.getVitalObs().stream().map(obs -> (Resource) obs).toList();
         res.addAll(resources);
       }
       filteredCategory = ObservationCategory.VITALSIGNS;
@@ -1106,7 +1089,7 @@ public class EcrReportCreator extends ReportCreator {
 
       // FIX 11: only build narrative when we actually have resources
       if (!textResources.isEmpty()) {
-        populateTextNarrative(sc, kd, textResources);
+        populateTextNarrative(sc, textResources);
       }
     }
   }

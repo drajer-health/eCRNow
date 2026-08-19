@@ -128,9 +128,9 @@ public class SubmitReport extends BsaAction {
           data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
 
       if (artStatus != null
-              && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
-                  || artStatus.getOutputFormat() == OutputContentType.CDA_R30)
-          || artStatus.getOutputFormat() == OutputContentType.CDA_R31) {
+          && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
+              || artStatus.getOutputFormat() == OutputContentType.CDA_R30
+              || artStatus.getOutputFormat() == OutputContentType.CDA_R31)) {
 
         logger.info(" Submitting CDA Output ");
         submitCdaOutput(data, actStatus, data.getHealthcareSetting());
@@ -241,60 +241,90 @@ public class SubmitReport extends BsaAction {
     Set<Resource> resourcesToSubmit = new HashSet<>();
 
     if (input != null) {
-
       for (DataRequirement dr : input) {
         Set<Resource> resources =
             data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
-
-        if (resources != null) resourcesToSubmit.addAll(resources);
+        if (resources != null) {
+          resourcesToSubmit.addAll(resources);
+        }
       }
-
     } else {
       logger.info("Input is null");
     }
 
     if (resourcesToSubmit.isEmpty()) {
       logger.info(" No resources to submit");
-    } else {
-      logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
+      return;
+    }
 
-      if (data.getHealthcareSetting() != null
-          && StringUtils.isNotBlank(data.getHealthcareSetting().getPhaUrl())) {
+    logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
+    submitToAppropriateEndpoint(resourcesToSubmit, data, ehrService);
+    actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+  }
+
+  private void submitToAppropriateEndpoint(
+      Set<Resource> resourcesToSubmit, KarProcessingData data, EhrQueryService ehrService) {
+    if (submitToPhaUrlIfAvailable(resourcesToSubmit, data, ehrService)) {
+      return;
+    }
+
+    if (submitToTrustedThirdPartyIfAvailable(resourcesToSubmit, data, ehrService)) {
+      return;
+    }
+
+    if (submissionEndpoint != null && !submissionEndpoint.isEmpty()) {
+      logger.info("Sending to submissionEndpoint {}", submissionEndpoint);
+      submitResources(resourcesToSubmit, data, ehrService, submissionEndpoint);
+      return;
+    }
+
+    submitToReceiverAddresses(resourcesToSubmit, data, ehrService);
+  }
+
+  private boolean submitToPhaUrlIfAvailable(
+      Set<Resource> resourcesToSubmit, KarProcessingData data, EhrQueryService ehrService) {
+    if (data.getHealthcareSetting() != null
+        && StringUtils.isNotBlank(data.getHealthcareSetting().getPhaUrl())) {
+      if (logger.isInfoEnabled()) {
         logger.info(
             "Sending to trusted thrid party {}",
             StringEscapeUtils.escapeJava(data.getHealthcareSetting().getTrustedThirdParty()));
-        submitResources(
-            resourcesToSubmit, data, ehrService, data.getHealthcareSetting().getPhaUrl());
       }
+      submitResources(resourcesToSubmit, data, ehrService, data.getHealthcareSetting().getPhaUrl());
+      return true;
+    }
+    return false;
+  }
 
-      if (data.getHealthcareSetting() != null
-          && StringUtils.isNotBlank(data.getHealthcareSetting().getTrustedThirdParty())) {
+  private boolean submitToTrustedThirdPartyIfAvailable(
+      Set<Resource> resourcesToSubmit, KarProcessingData data, EhrQueryService ehrService) {
+    if (data.getHealthcareSetting() != null
+        && StringUtils.isNotBlank(data.getHealthcareSetting().getTrustedThirdParty())) {
+      if (logger.isInfoEnabled()) {
         logger.info(
             "Sending to trusted thrid party {}",
             StringEscapeUtils.escapeJava(data.getHealthcareSetting().getTrustedThirdParty()));
-        submitResources(
-            resourcesToSubmit,
-            data,
-            ehrService,
-            data.getHealthcareSetting().getTrustedThirdParty());
-      } else if (submissionEndpoint != null && !submissionEndpoint.isEmpty()) {
-        logger.info("Sending to submissionEndpoint {}", submissionEndpoint);
-        submitResources(resourcesToSubmit, data, ehrService, submissionEndpoint);
-      } else {
-        Set<UriType> endpoints = data.getKar().getReceiverAddresses();
-        logger.info("Sending data to endpoints {} ", endpoints);
-        if (!endpoints.isEmpty()) {
-          for (UriType uri : endpoints) {
-            logger.info("Submitting resources to {}", uri);
-            try {
-              submitResources(resourcesToSubmit, data, ehrService, uri.getValueAsString());
-            } catch (Exception th) {
-              logger.error("Error sending data to {} ", uri, th);
-            }
-          }
+      }
+      submitResources(
+          resourcesToSubmit, data, ehrService, data.getHealthcareSetting().getTrustedThirdParty());
+      return true;
+    }
+    return false;
+  }
+
+  private void submitToReceiverAddresses(
+      Set<Resource> resourcesToSubmit, KarProcessingData data, EhrQueryService ehrService) {
+    Set<UriType> endpoints = data.getKar().getReceiverAddresses();
+    logger.info("Sending data to endpoints {} ", endpoints);
+    if (!endpoints.isEmpty()) {
+      for (UriType uri : endpoints) {
+        logger.info("Submitting resources to {}", uri);
+        try {
+          submitResources(resourcesToSubmit, data, ehrService, uri.getValueAsString());
+        } catch (Exception th) {
+          logger.error("Error sending data to {} ", uri, th);
         }
       }
-      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
     }
   }
 
@@ -305,9 +335,11 @@ public class SubmitReport extends BsaAction {
       String submissionEndpoint) {
     logger.info("Ehr Query Service:{}", ehrService);
 
-    logger.info(
-        "SubmitResources called: sending data to {}",
-        StringEscapeUtils.escapeJava(submissionEndpoint));
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "SubmitResources called: sending data to {}",
+          StringEscapeUtils.escapeJava(submissionEndpoint));
+    }
     PublicHealthAuthority pha;
 
     if (submissionEndpoint.endsWith("/")) {
@@ -327,10 +359,12 @@ public class SubmitReport extends BsaAction {
 
     String token = "";
     if (pha != null) {
-      logger.info(
-          "Attempting to retrieve TOKEN from PHA {} or {}",
-          StringEscapeUtils.escapeJava(pha.getTokenUrl()),
-          StringEscapeUtils.escapeJava(pha.getTokenUrl()));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "Attempting to retrieve TOKEN from PHA {} or {}",
+            StringEscapeUtils.escapeJava(pha.getTokenUrl()),
+            StringEscapeUtils.escapeJava(pha.getTokenUrl()));
+      }
 
       JSONObject obj = authorizationUtils.getToken(pha);
 
@@ -338,15 +372,19 @@ public class SubmitReport extends BsaAction {
         token = obj.getString("access_token");
         logger.debug(" Successfully retrieve token {}", token);
       } else {
-        logger.error(
-            " Unable to retrieve access token for PHA: {}",
-            StringEscapeUtils.escapeJava(pha.getFhirServerBaseURL()));
+        if (logger.isErrorEnabled()) {
+          logger.error(
+              " Unable to retrieve access token for PHA: {}",
+              StringEscapeUtils.escapeJava(pha.getFhirServerBaseURL()));
+        }
       }
 
     } else {
-      logger.warn(
-          "No PHA was found with submission endpoint {}",
-          StringEscapeUtils.escapeJava(submissionEndpoint));
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+            "No PHA was found with submission endpoint {}",
+            StringEscapeUtils.escapeJava(submissionEndpoint));
+      }
       logger.warn("Continuing without auth token");
     }
 
@@ -387,11 +425,10 @@ public class SubmitReport extends BsaAction {
         responseBundle = (Bundle) response;
       } catch (InvalidRequestException ex) {
         String myResp = ex.getResponseBody();
-        logger.error(" ResponseBody : ", myResp);
+        logger.error(" ResponseBody : {}", myResp);
         return;
       } catch (RuntimeException re) {
         logger.error("Error calling $process-message endpoint", re);
-        logger.info("Response Object was {}", re);
         return;
       }
 

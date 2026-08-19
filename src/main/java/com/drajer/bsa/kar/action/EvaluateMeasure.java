@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.UUID;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
-import org.opencds.cqf.fhir.utility.Constants;
 import org.opencds.cqf.fhir.utility.monad.Eithers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class EvaluateMeasure extends BsaAction {
   }
 
   public void setPeriodEnd(ZonedDateTime ZonedDateTime) {
-    this.periodEnd = periodEnd;
+    this.periodEnd = ZonedDateTime;
   }
 
   public String getMeasureReportId() {
@@ -87,11 +86,6 @@ public class EvaluateMeasure extends BsaAction {
       HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
       // Get the Resources that need to be retrieved.
       ehrService.getFilteredData(data, resourceTypes);
-
-      Endpoint endpoint =
-          new Endpoint()
-              .setAddress(data.getKar().getKarPath())
-              .setConnectionType(new Coding().setCode(Constants.HL7_FHIR_FILES));
 
       String measureUri = getMeasureUri();
       String patientId = data.getNotificationContext().getPatientId();

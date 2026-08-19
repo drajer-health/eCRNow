@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
@@ -237,7 +238,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   @Test
   public void testReSubmitRR_OrphanRR() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
-    eicrService.setProcessOrphanRr(true);
+    ReflectionTestUtils.setField(eicrService, "processOrphanRr", true);
     // Setting different DocID then in DB
     if (rr != null) {
       String rrXml =
@@ -323,7 +324,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   @Test
   public void testRRReceiver_OrphanRR_WithSetId() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
-    eicrService.setProcessOrphanRr(true);
+    ReflectionTestUtils.setField(eicrService, "processOrphanRr", true);
     // Setting different DocID then in DB
     if (rr != null) {
       String rrXml =
@@ -340,7 +341,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   @Test
   public void testRRReceiver_OrphanRR_WithoutSetId() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
-    eicrService.setProcessOrphanRr(true);
+    ReflectionTestUtils.setField(eicrService, "processOrphanRr", true);
     // Setting different DocID then in DB
     if (rr != null) {
       String rrXml =

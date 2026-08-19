@@ -12,7 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClientDetailsServiceImpl implements ClientDetailsService {
 
-  @Autowired ClientDetailsDao clientDetailsDao;
+  private final ClientDetailsDao clientDetailsDao;
+
+  @Autowired
+  public ClientDetailsServiceImpl(ClientDetailsDao clientDetailsDao) {
+    this.clientDetailsDao = clientDetailsDao;
+  }
 
   public ClientDetails saveOrUpdate(ClientDetails clientDetails) {
     clientDetailsDao.saveOrUpdate(clientDetails);

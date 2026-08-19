@@ -46,23 +46,40 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SubscriptionNotificationReceiverImpl implements SubscriptionNotificationReceiver {
 
-  @Autowired NotificationContextDao ncDao;
-
-  @Autowired HealthcareSettingsDao hsDao;
-
-  @Autowired KarProcessor karProcessor;
-
-  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
-
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
+  private final NotificationContextDao ncDao;
+  private final HealthcareSettingsDao hsDao;
+  private final KarProcessor karProcessor;
+  private final KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+  private final IParser jsonParser;
 
   /** The token refresh threshold value for refreshing access tokens */
   @Value("${token.refresh.threshold:25}")
   private Integer tokenRefreshThreshold;
 
   private final Logger logger = LoggerFactory.getLogger(SubscriptionNotificationReceiverImpl.class);
+
+  /**
+   * Instantiates a new subscription notification receiver implementation.
+   *
+   * @param ncDao the notification context DAO
+   * @param hsDao the healthcare settings DAO
+   * @param karProcessor the KAR processor
+   * @param knowledgeArtifactRepositorySystem the knowledge artifact repository system
+   * @param jsonParser the JSON parser (qualified as jsonParser)
+   */
+  @Autowired
+  public SubscriptionNotificationReceiverImpl(
+      NotificationContextDao ncDao,
+      HealthcareSettingsDao hsDao,
+      KarProcessor karProcessor,
+      KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem,
+      @Qualifier("jsonParser") IParser jsonParser) {
+    this.ncDao = ncDao;
+    this.hsDao = hsDao;
+    this.karProcessor = karProcessor;
+    this.knowledgeArtifactRepositorySystem = knowledgeArtifactRepositorySystem;
+    this.jsonParser = jsonParser;
+  }
 
   /**
    * Setup notification context with bundle data and throttle context.
@@ -212,7 +229,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
     NotificationContext nc =
         SubscriptionUtils.getNotificationContext(
-            notificationBundle, request, response, false, false, launchContext);
+            notificationBundle, request, false, false, launchContext);
 
     if (nc == null) {
       logger.error(
@@ -255,7 +272,6 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
     return processNotificationInternal(
         notificationBundle,
         request,
-        response,
         launchContext,
         true,
         false,
@@ -274,7 +290,6 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
     return processNotificationInternal(
         notificationBundle,
         request,
-        response,
         launchContext,
         false,
         true,
@@ -285,7 +300,6 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
   private List<KarProcessingData> processNotificationInternal(
       Bundle notificationBundle,
       HttpServletRequest request,
-      HttpServletResponse response,
       PatientLaunchContext launchContext,
       Boolean relaunch,
       Boolean reprocess,
@@ -298,7 +312,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
     NotificationContext nc =
         SubscriptionUtils.getNotificationContext(
-            notificationBundle, request, response, relaunch, reprocess, launchContext);
+            notificationBundle, request, relaunch, reprocess, launchContext);
 
     if (!validateNotificationContextExists(nc, operationType)) {
       throw new InvalidNotification(
@@ -406,7 +420,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
     logger.info(" Processing KAR since we found the one that we needed. ");
     KarProcessingData kd = setupKarProcessingData(nc, hs, kar, ks, notificationBundle);
-    addNotifiedResourceToKarData(kd, nc);
+    addNotifiedResourceToKd(kd, nc);
     karProcessor.applyKarForNotification(kd);
     dataList.add(kd);
   }
@@ -428,22 +442,5 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
     kd.setxCorrelationId(nc.getxCorrelationId());
     kd.setTokenRefreshThreshold(tokenRefreshThreshold);
     return kd;
-  }
-
-  private void addNotifiedResourceToKarData(KarProcessingData kd, NotificationContext nc) {
-    if (nc.getNotifiedResource() == null) {
-      return;
-    }
-
-    logger.info("Adding notified resource to the set of inputs ");
-    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
-    Set<Resource> results = new HashSet<>();
-    results.add(nc.getNotifiedResource());
-    res.put(nc.getNotifiedResource().getResourceType(), results);
-    kd.addResourcesByType(res);
-
-    if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
-      kd.setContextEncounter((Encounter) nc.getNotifiedResource());
-    }
   }
 }

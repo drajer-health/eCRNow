@@ -51,10 +51,21 @@ public class KeyCloakTokenValidationClient {
   private String clientId;
   private String clientSecret;
 
-  @Autowired OkHttpClient client;
-
-  @Autowired private Environment environment;
+  private final OkHttpClient client;
+  private final Environment environment;
   private boolean credentialsFetched = false;
+
+  /**
+   * Instantiates a new Keycloak token validation client.
+   *
+   * @param client the OkHttp client for making HTTP requests
+   * @param environment the Spring environment for property access
+   */
+  @Autowired
+  public KeyCloakTokenValidationClient(OkHttpClient client, Environment environment) {
+    this.client = client;
+    this.environment = environment;
+  }
 
   public boolean validateToken(HttpServletRequest request) {
     LOGGER.info(ENTRY_VALIDATE_TOKEN);

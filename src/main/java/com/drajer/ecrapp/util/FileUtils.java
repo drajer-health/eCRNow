@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 
 public class FileUtils {
 
+  private FileUtils() {
+    // Utility class - private constructor to hide the implicit public one
+  }
+
   private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
   private static final ObjectMapper mapper = new ObjectMapper();

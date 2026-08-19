@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   private static final Logger logger = LoggerFactory.getLogger(PhMessageDaoImpl.class);
+
+  /**
+   * Instantiates a new public health message DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public PhMessageDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   public static final String ID = "id";
   public static final String FHIR_SERVER_BASE_URL = "fhirServerBaseUrl";
@@ -271,37 +283,6 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   @Override
   public void delete(PublicHealthMessage message) {
     getSession().delete(message);
-  }
-
-  private CompoundSelection<Object[]> getSelectedProperties(
-      CriteriaBuilder cb, Root<PublicHealthMessage> root) {
-    return cb.array(
-        root.get(ID),
-        root.get(FHIR_SERVER_BASE_URL),
-        root.get(PATIENT_ID),
-        root.get(ENCOUNTER_ID),
-        root.get(NOTIFIED_RESOURCE_ID),
-        root.get(NOTIFIED_RESOURCE_TYPE),
-        root.get(KAR_UNIQUE_ID),
-        root.get(NOTIFICATION_ID),
-        root.get(X_CORRELATION_ID),
-        root.get(X_REQUEST_ID),
-        root.get("submittedMessageType"),
-        root.get(SUBMITTED_DATA_ID),
-        root.get(SUBMITTED_VERSION_NUMBER),
-        root.get("submittedMessageId"),
-        root.get("submissionMessageStatus"),
-        root.get(SUBMISSION_TIME),
-        root.get("responseMessageType"),
-        root.get(RESPONSE_DATA_ID),
-        root.get("responseMessageId"),
-        root.get(RESPONSE_PROCESSING_INSTRUCTION),
-        root.get("responseProcessingStatus"),
-        root.get(RESPONSE_RECEIVED_TIME),
-        root.get("responseEhrDocRefId"),
-        root.get("initiatingAction"),
-        root.get("patientLinkerId"),
-        root.get("lastUpdated"));
   }
 
   /*private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {

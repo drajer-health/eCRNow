@@ -14,11 +14,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -35,10 +37,11 @@ public class AuthorizationServiceImplTest {
   protected static final ObjectMapper mapper = new ObjectMapper();
 
   @InjectMocks AuthorizationServiceImpl authorizationService;
+  @Mock private Environment environment;
 
   @Before
   public void setUp() {
-    AESEncryption aesEncryption = new AESEncryption();
+    AESEncryption aesEncryption = new AESEncryption(environment);
     ReflectionTestUtils.setField(aesEncryption, "secretKey", "2314");
   }
 

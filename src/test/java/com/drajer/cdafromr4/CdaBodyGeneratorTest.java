@@ -77,7 +77,7 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
         .thenReturn("<problem/>");
 
     PowerMockito.mockStatic(CdaEncounterGenerator.class);
-    PowerMockito.when(CdaEncounterGenerator.generateEncounterSection(data, details, version))
+    PowerMockito.when(CdaEncounterGenerator.generateEncounterSection(data, details))
         .thenReturn("<encounter/>");
 
     PowerMockito.mockStatic(CdaMedicationGenerator.class);
@@ -97,8 +97,7 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
         .thenReturn("<results/>");
 
     PowerMockito.mockStatic(CdaChiefComplaintGenerator.class);
-    PowerMockito.when(
-            CdaChiefComplaintGenerator.generateChiefComplaintSection(data, details, version))
+    PowerMockito.when(CdaChiefComplaintGenerator.generateChiefComplaintSection())
         .thenReturn("<chiefComplaint/>");
 
     PowerMockito.mockStatic(CdaPlanOfTreatmentGenerator.class);
@@ -128,7 +127,7 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
                 data, version))
         .thenReturn("<history/>");
     PowerMockito.mockStatic(CdaReasonForVisitGenerator.class);
-    PowerMockito.when(CdaReasonForVisitGenerator.generateReasonForVisitSection(data, version))
+    PowerMockito.when(CdaReasonForVisitGenerator.generateReasonForVisitSection(data))
         .thenReturn("<reason/>");
     String xml = CdaBodyGenerator.generateCdaBody(data, details, version);
     assertTrue(xml.contains("<problem/>"));

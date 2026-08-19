@@ -396,10 +396,8 @@ public class KarProcessingData {
 
   public Resource getResourceById(String id, ResourceType type) {
 
-    if (resourcesById.containsKey(type)) {
-      if (resourcesById.get(type).containsKey(id)) {
-        return resourcesById.get(type).get(id);
-      }
+    if (resourcesById.containsKey(type) && resourcesById.get(type).containsKey(id)) {
+      return resourcesById.get(type).get(id);
     }
 
     return null;
@@ -821,7 +819,7 @@ public class KarProcessingData {
     } else if (currentTriggerMatchStatus == null && previousTriggerMatchStatus != null) {
       logger.info(" No New Matches Found where as there were matches previously");
       retVal = false;
-    } else if (currentTriggerMatchStatus == null && previousTriggerMatchStatus == null) {
+    } else if (currentTriggerMatchStatus == null) {
       logger.info(" No New or Old Matches");
       retVal = false;
     } else {
@@ -829,10 +827,12 @@ public class KarProcessingData {
       // Check if each of the new matches are present in the old ones.
       retVal = previousTriggerMatchStatus.compareCodes(currentTriggerMatchStatus);
 
-      logger.info(
-          ((retVal == true)
-              ? "New Matches Found compared to old matches"
-              : "No New Matches when compared to old Matches"));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            retVal
+                ? "New Matches Found compared to old matches"
+                : "No New Matches when compared to old Matches");
+      }
     }
 
     return retVal;
@@ -870,11 +870,9 @@ public class KarProcessingData {
 
   public boolean containsResourceWithId(String resourceId, ResourceType type) {
 
-    if (resourcesById.containsKey(type)) {
-      if (resourcesById.get(type).containsKey(resourceId)) {
-        logger.debug(" Found resource Id for type {} and id {}", type, resourceId);
-        return true;
-      }
+    if (resourcesById.containsKey(type) && resourcesById.get(type).containsKey(resourceId)) {
+      logger.debug(" Found resource Id for type {} and id {}", type, resourceId);
+      return true;
     }
 
     return false;

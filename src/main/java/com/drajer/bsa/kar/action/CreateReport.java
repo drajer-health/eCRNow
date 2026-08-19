@@ -166,7 +166,9 @@ public class CreateReport extends BsaAction {
         logger.error(" No report created, hence nothing do ");
       }
     } else {
-      logger.error(" No Report creator for type ", ct.asStringValue());
+      if (logger.isErrorEnabled()) {
+        logger.error(" No Report creator for type: {}", ct.asStringValue());
+      }
     }
   }
 
@@ -287,7 +289,7 @@ public class CreateReport extends BsaAction {
           }
           msg.setTriggerMatchStatus(
               BsaServiceUtils.getEncodedTriggerMatchStatus(
-                  kd.getCurrentTriggerMatchStatus(), kd, docRef.getId(), actionType, actionId));
+                  kd.getCurrentTriggerMatchStatus(), docRef.getId(), actionType, actionId));
 
           // Create BitSet for MessageStatus and add attribute.
           logger.debug("Saving data to file {}", fileName);
@@ -297,7 +299,6 @@ public class CreateReport extends BsaAction {
           kd.setSubmittedCdaData(payload);
 
           // Do not save the data in the table here to better handle exceptions
-          // PublicHealthMessage phm = phDao.saveOrUpdate(msg);
           kd.setPhm(msg);
           MDCUtils.addEicrDocId(msg.getSubmittedDataId());
           logger.info(

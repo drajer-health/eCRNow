@@ -28,10 +28,24 @@ public class BsaScheduler {
 
   private final Logger logger = LoggerFactory.getLogger(BsaScheduler.class);
 
-  @Autowired ScheduleJobConfiguration schedulerConfig;
+  private final ScheduleJobConfiguration schedulerConfig;
+  private final Scheduler scheduler;
+  private final KarProcessor karProcessor;
 
-  @Autowired Scheduler scheduler;
-  @Autowired KarProcessor karProcessor;
+  /**
+   * Instantiates a new BSA scheduler.
+   *
+   * @param schedulerConfig the scheduler configuration
+   * @param scheduler the scheduler
+   * @param karProcessor the KAR processor
+   */
+  @Autowired
+  public BsaScheduler(
+      ScheduleJobConfiguration schedulerConfig, Scheduler scheduler, KarProcessor karProcessor) {
+    this.schedulerConfig = schedulerConfig;
+    this.scheduler = scheduler;
+    this.karProcessor = karProcessor;
+  }
 
   public void scheduleJob(
       UUID karExecId,
@@ -58,7 +72,16 @@ public class BsaScheduler {
             .sampleOneTimeJob(karProcessor)
             .instance(
                 jobId,
-                new ScheduledJobData(karExecId, actionId, type, t, jobId, xReqId, jobtype, mdc)),
+                new ScheduledJobData.Builder()
+                    .karExecutionStateId(karExecId)
+                    .actionId(actionId)
+                    .actionType(type)
+                    .expirationTime(t)
+                    .jobId(jobId)
+                    .xRequestId(xReqId)
+                    .jobType(jobtype)
+                    .mdcContext(mdc)
+                    .build()),
         t);
   }
 }

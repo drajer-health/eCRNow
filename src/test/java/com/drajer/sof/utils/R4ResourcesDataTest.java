@@ -122,7 +122,7 @@ public class R4ResourcesDataTest {
   @Test
   public void getPregnancyObservationData_whenBundleNull_returnsEmpty() throws Exception {
     R4ResourcesData dataObject = new R4ResourcesData();
-    injectField(dataObject, "resourceData", resourceDataMock);
+    injectField(dataObject, "fhirContextInitializer", resourceDataMock);
 
     FhirContext context = mock(FhirContext.class);
     IGenericClient client = mock(IGenericClient.class);
@@ -155,7 +155,7 @@ public class R4ResourcesDataTest {
       getPregnancyObservationData_whenBundleHasObservations_returnsFilteredList_withoutCallingPrivateMethods()
           throws Exception {
     R4ResourcesData dataObject = new R4ResourcesData();
-    injectField(dataObject, "resourceData", resourceDataMock);
+    injectField(dataObject, "fhirContextInitializer", resourceDataMock);
 
     FhirContext context = mock(FhirContext.class);
     IGenericClient client = mock(IGenericClient.class);

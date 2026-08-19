@@ -2,7 +2,6 @@ package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
-import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
@@ -13,6 +12,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +35,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class HealthcareSettingsDaoImpl extends AbstractDao implements HealthcareSettingsDao {
 
-  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
-
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
+
+  /**
+   * Instantiates a new healthcare settings DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public HealthcareSettingsDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   /**
    * Method to create or update a HealthcareSetting.

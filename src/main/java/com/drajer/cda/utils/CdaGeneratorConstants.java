@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorConstants {
 
+  private CdaGeneratorConstants() {
+    // Utility class - private constructor to hide the implicit public one
+  }
+
   public static final String REFERENCE_RANGE_EL_NAME = "referenceRange";
   public static final String OBSERVATION_RANGE_EL_NAME = "observationRange";
   public static final String VITAL_SIGNS_ORG_CODE_LOINC_NAME =

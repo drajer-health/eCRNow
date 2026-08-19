@@ -226,7 +226,7 @@ public final class BsaTypes {
     else if (t == OutputContentType.CDA_R11) return "CDA_R11";
     else if (t == OutputContentType.CDA_R30) return "CDA_R30";
     else if (t == OutputContentType.CDA_R31) return "CDA_R31";
-    else if (t == OutputContentType.BOTH || t == OutputContentType.BOTH) return "Both";
+    else if (t == OutputContentType.BOTH) return "Both";
     else return UNKNOWN;
   }
 

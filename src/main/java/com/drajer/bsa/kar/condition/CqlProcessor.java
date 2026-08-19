@@ -67,7 +67,7 @@ public class CqlProcessor implements BsaConditionProcessor {
   }
 
   public void setLibraryEvaluationService(R4LibraryEvaluationService libraryEvaluationService) {
-    this.libraryExecutionService = libraryExecutionService;
+    this.libraryExecutionService = libraryEvaluationService;
   }
 
   @Override

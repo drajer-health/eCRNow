@@ -31,8 +31,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
   private static final String NULL_FHIR_PATH_EVALUATION =
       " Null Value returned from FHIR Path Expression Evaluator : So condition not met";
-  private static final String MED_HIERARCHY_TODO =
-      " To be done, to navigate the Med Hiearachy to get the code ";
 
   private Supplier<R4CqlExecutionService> evaluatorFactory;
 
@@ -46,7 +44,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       params = resolveInputParameters(act.getInputData(), kd, act);
     }
 
-    logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
+    if (params != null) {
+      logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
+    }
 
     String logicExpression = cond.getLogicExpression().getExpression();
     logger.debug("Logic Expression to be evaluated: {}", logicExpression);
@@ -57,7 +57,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     resolveVariables(cond, params, kd, act, ehrService);
 
-    logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
+    if (params != null) {
+      logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
+    }
 
     Parameters result =
         (Parameters)
@@ -72,9 +74,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     } else {
       if (!(ppc.getValue() instanceof BooleanType)) {
         logger.error(
-            " Not BooleanType Value returned from FHIR Path Expression Evaluator in "
-                + cond.getLogicExpression().getExpression());
-        throw new RuntimeException("Unexpected FHIR Path Expression return type");
+            " Not BooleanType Value returned from FHIR Path Expression Evaluator in {}",
+            cond.getLogicExpression().getExpression());
+        throw new IllegalStateException("Unexpected FHIR Path Expression return type");
       }
     }
 
@@ -506,7 +508,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             } else {
               logger.debug(" No match found for path {}", matchPath);
               // Set the trigger match status to be false
-              notFound = true;
               // Also clear the resources that were added if possible..
             }
           } else {
@@ -676,9 +677,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     } else {
       if (!(ppc.getValue() instanceof BooleanType)) {
         logger.error(
-            " Not BooleanType Value returned from FHIR Path Expression Evaluator in "
-                + cond.getLogicExpression().getExpression());
-        throw new RuntimeException("Unexpected FHIR Path Expression return type");
+            " Not BooleanType Value returned from FHIR Path Expression Evaluator in {}",
+            cond.getLogicExpression().getExpression());
+        throw new IllegalStateException("Unexpected FHIR Path Expression return type");
       }
     }
 
@@ -699,7 +700,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
   R4CqlExecutionService newEvaluator() {
     R4CqlExecutionService ev = evaluatorFactory.get();
-    logger.info("Evaluator instance: " + System.identityHashCode(ev));
+    if (logger.isInfoEnabled()) {
+      logger.info("Evaluator instance: {}", System.identityHashCode(ev));
+    }
     return ev;
   }
 

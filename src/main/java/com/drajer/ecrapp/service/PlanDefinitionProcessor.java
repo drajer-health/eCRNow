@@ -69,22 +69,31 @@ public class PlanDefinitionProcessor {
 
   public static final String ERSD_BUNDLE_ID_STRING = "rctc";
 
-  @Autowired
-  @Qualifier("esrdGenericClient")
-  private IGenericClient esrdClient;
-
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
-
-  @Autowired
-  @Qualifier("valueSetServiceImpl")
-  ValueSetService valueSetService;
-
-  @Value("${ersd.file.location:default.json}")
-  String ersdFileLocation;
-
+  private final IGenericClient esrdClient;
+  private final IParser jsonParser;
+  private final ValueSetService valueSetService;
+  private final String ersdFileLocation;
   private final Logger logger = LoggerFactory.getLogger(PlanDefinitionProcessor.class);
+
+  /**
+   * Instantiates a new plan definition processor.
+   *
+   * @param esrdClient the ESRD generic FHIR client
+   * @param jsonParser the JSON parser
+   * @param valueSetService the value set service
+   * @param ersdFileLocation the ERSD file location from properties
+   */
+  @Autowired
+  public PlanDefinitionProcessor(
+      @Qualifier("esrdGenericClient") IGenericClient esrdClient,
+      @Qualifier("jsonParser") IParser jsonParser,
+      @Qualifier("valueSetServiceImpl") ValueSetService valueSetService,
+      @Value("${ersd.file.location:default.json}") String ersdFileLocation) {
+    this.esrdClient = esrdClient;
+    this.jsonParser = jsonParser;
+    this.valueSetService = valueSetService;
+    this.ersdFileLocation = ersdFileLocation;
+  }
 
   /** Helper class to hold collections of bundle resources. */
   private static class BundleResourceCollections {

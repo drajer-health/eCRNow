@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +13,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class PublicHealthAuthorityController {
   private final Logger logger = LoggerFactory.getLogger(PublicHealthAuthorityController.class);
+  private final PublicHealthAuthorityService publicHealthAuthorityService;
 
-  @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
+  /**
+   * Instantiates a new public health authority controller.
+   *
+   * @param publicHealthAuthorityService the public health authority service
+   */
+  public PublicHealthAuthorityController(
+      PublicHealthAuthorityService publicHealthAuthorityService) {
+    this.publicHealthAuthorityService = publicHealthAuthorityService;
+  }
 
   @CrossOrigin
   @GetMapping("/api/publicHealthAuthority/{phaId}")

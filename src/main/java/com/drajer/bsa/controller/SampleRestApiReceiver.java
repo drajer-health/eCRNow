@@ -29,14 +29,16 @@ public class SampleRestApiReceiver {
   public ResponseEntity<Object> receiveEicr(
       @RequestBody RestApiBody body, HttpServletRequest request, HttpServletResponse response) {
 
-    logger.info(
-        "Payload received for fhirServerUrl: {}, patientId: {}, encounterId: {}, versionId: {}, requestId: {}, authorizationHeader: {}",
-        StringEscapeUtils.escapeJava(body.getFhirServerURL()),
-        StringEscapeUtils.escapeJava(body.getPatientId()),
-        StringEscapeUtils.escapeJava(body.getEncounterId()),
-        body.getSubmittedVersionId(),
-        request.getHeader("X-Request-ID"),
-        StringEscapeUtils.escapeJava(request.getHeader("Authorization")));
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "Payload received for fhirServerUrl: {}, patientId: {}, encounterId: {}, versionId: {}, requestId: {}, authorizationHeader: {}",
+          StringEscapeUtils.escapeJava(body.getFhirServerURL()),
+          StringEscapeUtils.escapeJava(body.getPatientId()),
+          StringEscapeUtils.escapeJava(body.getEncounterId()),
+          body.getSubmittedVersionId(),
+          request.getHeader("X-Request-ID"),
+          StringEscapeUtils.escapeJava(request.getHeader("Authorization")));
+    }
 
     logger.debug(" Payload is : {}", body.getPayload());
 

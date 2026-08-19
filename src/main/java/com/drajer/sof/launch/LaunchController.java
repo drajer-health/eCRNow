@@ -68,27 +68,41 @@ public class LaunchController {
   private static final String EXTENSION = "extension";
   private static final String PROVIDER_UUID = "uuid";
 
-  @Autowired LaunchService authDetailsService;
-
-  @Autowired RefreshTokenScheduler tokenScheduler;
-
-  @Autowired Authorization authorization;
-
-  @Autowired TriggerQueryService triggerQueryService;
-
-  @Autowired LoadingQueryService loadingQueryService;
-
-  @Autowired WorkflowService workflowService;
-
-  @Autowired ClientDetailsService clientDetailsService;
-
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
-  @Autowired RestApiSender xmlSender;
-
-  @Autowired ObjectMapper mapper;
-
+  private final LaunchService authDetailsService;
+  private final RefreshTokenScheduler tokenScheduler;
+  private final Authorization authorization;
+  private final TriggerQueryService triggerQueryService;
+  private final LoadingQueryService loadingQueryService;
+  private final WorkflowService workflowService;
+  private final ClientDetailsService clientDetailsService;
+  private final FhirContextInitializer fhirContextInitializer;
+  private final RestApiSender xmlSender;
+  private final ObjectMapper mapper;
   private final SecureRandom random = new SecureRandom();
+
+  @Autowired
+  public LaunchController(
+      LaunchService authDetailsService,
+      RefreshTokenScheduler tokenScheduler,
+      Authorization authorization,
+      TriggerQueryService triggerQueryService,
+      LoadingQueryService loadingQueryService,
+      WorkflowService workflowService,
+      ClientDetailsService clientDetailsService,
+      FhirContextInitializer fhirContextInitializer,
+      RestApiSender xmlSender,
+      ObjectMapper mapper) {
+    this.authDetailsService = authDetailsService;
+    this.tokenScheduler = tokenScheduler;
+    this.authorization = authorization;
+    this.triggerQueryService = triggerQueryService;
+    this.loadingQueryService = loadingQueryService;
+    this.workflowService = workflowService;
+    this.clientDetailsService = clientDetailsService;
+    this.fhirContextInitializer = fhirContextInitializer;
+    this.xmlSender = xmlSender;
+    this.mapper = mapper;
+  }
 
   @CrossOrigin
   @GetMapping("/api/launchDetails/{tokenId}")

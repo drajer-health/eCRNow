@@ -1,6 +1,6 @@
 package com.drajer.cdafromr4;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import org.junit.Before;
@@ -53,6 +53,7 @@ public class CdaR31GenerationTest extends BaseGeneratorTest {
     //  File file = ResourceUtils.getFile(this.getClass().getResource(SCENARIO_DIRECTORY));
     //   System.out.println(file.getAbsolutePath());
 
-    assertEquals(true, true);
+    // TODO: Implement scenario testing
+    assertTrue("Test scenarios not yet implemented", true);
   }
 }

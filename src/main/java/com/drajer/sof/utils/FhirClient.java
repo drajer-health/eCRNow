@@ -32,7 +32,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
  * @see IGenericClient
  * @see FhirHttpHeaderInterceptor
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings("all")
 public class FhirClient implements IGenericClient {
   protected IGenericClient client;
   protected FhirHttpHeaderInterceptor interceptor;

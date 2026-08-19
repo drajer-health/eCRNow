@@ -9,7 +9,6 @@ import com.drajer.ecrapp.service.EicrRRService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -19,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RunWith(MockitoJUnitRunner.class)
 public class RRReceiverControllerTest {
 
-  @InjectMocks private RRReceiverController rrReceiverController;
+  private RRReceiverController rrReceiverController;
 
   @Mock private EicrRRService rrReceieverService;
 
@@ -28,6 +27,7 @@ public class RRReceiverControllerTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    rrReceiverController = new RRReceiverController(rrReceieverService);
 
     rrResponse = new ReportabilityResponse();
     rrResponse.setResponseType("RR");

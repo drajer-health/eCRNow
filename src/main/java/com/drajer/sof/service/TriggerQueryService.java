@@ -15,9 +15,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class TriggerQueryService implements AbstractQueryService {
 
-  @Autowired TriggerQueryR4Bundle generateR4Bundles;
-
+  private final TriggerQueryR4Bundle generateR4Bundles;
   private final Logger logger = LoggerFactory.getLogger(TriggerQueryService.class);
+
+  @Autowired
+  public TriggerQueryService(TriggerQueryR4Bundle generateR4Bundles) {
+    this.generateR4Bundles = generateR4Bundles;
+  }
 
   @Override
   public FhirData getData(LaunchDetails launchDetails, Date start, Date end) {

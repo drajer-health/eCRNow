@@ -8,7 +8,6 @@ import com.drajer.bsa.model.PatientLaunchContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -92,7 +91,6 @@ public class SubscriptionUtils {
   public static NotificationContext getNotificationContext(
       Bundle bundle,
       HttpServletRequest request,
-      HttpServletResponse response,
       Boolean relaunch,
       Boolean reprocess,
       PatientLaunchContext launchContext)

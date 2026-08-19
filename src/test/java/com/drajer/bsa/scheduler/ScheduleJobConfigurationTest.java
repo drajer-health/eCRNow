@@ -62,15 +62,16 @@ public class ScheduleJobConfigurationTest {
 
     UUID jobId = UUID.randomUUID();
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "create-eicr",
-            BsaTypes.ActionType.CREATE_REPORT,
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-001",
-            "request-id-123",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            null);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("create-eicr")
+            .actionType(BsaTypes.ActionType.CREATE_REPORT)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-001")
+            .xRequestId("request-id-123")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(null)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-001", data);
     Execution execution =
@@ -108,15 +109,16 @@ public class ScheduleJobConfigurationTest {
     mdcContext.put("requestId", "req-456");
 
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "validate-eicr",
-            BsaTypes.ActionType.VALIDATE_REPORT,
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-002",
-            "request-id-456",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            mdcContext);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("validate-eicr")
+            .actionType(BsaTypes.ActionType.VALIDATE_REPORT)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-002")
+            .xRequestId("request-id-456")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(mdcContext)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-002", data);
     Execution execution = new Execution(Instant.now(), taskInstance);
@@ -144,16 +146,16 @@ public class ScheduleJobConfigurationTest {
     // Arrange
     UUID jobId = UUID.randomUUID();
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "submit-eicr",
-            BsaTypes.ActionType.SUBMIT_REPORT, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-003",
-            "request-id-789",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            null // MDC context is null
-            );
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("submit-eicr")
+            .actionType(BsaTypes.ActionType.SUBMIT_REPORT)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-003")
+            .xRequestId("request-id-789")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(null)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-003", data);
     Execution execution = new Execution(Instant.now(), taskInstance);
@@ -182,15 +184,16 @@ public class ScheduleJobConfigurationTest {
     // Arrange
     UUID jobId = UUID.randomUUID();
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "delete-kar-ref",
-            BsaTypes.ActionType.COMPLETE_REPORTING, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-004",
-            "request-id-deleted",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            null);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("delete-kar-ref")
+            .actionType(BsaTypes.ActionType.COMPLETE_REPORTING)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-004")
+            .xRequestId("request-id-deleted")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(null)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-004", data);
     Execution execution = new Execution(Instant.now(), taskInstance);
@@ -234,15 +237,16 @@ public class ScheduleJobConfigurationTest {
     // Arrange
     UUID jobId = UUID.randomUUID();
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "process-action",
-            BsaTypes.ActionType.EVALUATE_CONDITION, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-005",
-            "request-id-retry",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            null);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("process-action")
+            .actionType(BsaTypes.ActionType.EVALUATE_CONDITION)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-005")
+            .xRequestId("request-id-retry")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(null)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-005", data);
 
@@ -298,15 +302,16 @@ public class ScheduleJobConfigurationTest {
     // Arrange
     UUID jobId = UUID.randomUUID();
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "final-action",
-            BsaTypes.ActionType.TERMINATE_REPORTING_WORKFLOW, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-006",
-            "request-id-exhausted",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            null);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("final-action")
+            .actionType(BsaTypes.ActionType.TERMINATE_REPORTING_WORKFLOW)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-006")
+            .xRequestId("request-id-exhausted")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(null)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-006", data);
 
@@ -356,15 +361,16 @@ public class ScheduleJobConfigurationTest {
     mdcContext.put("correlationId", "corr-999");
 
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "error-action",
-            BsaTypes.ActionType.EVALUATE_MEASURE, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-007",
-            "request-id-final",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            mdcContext);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("error-action")
+            .actionType(BsaTypes.ActionType.EVALUATE_MEASURE)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-007")
+            .xRequestId("request-id-final")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(mdcContext)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-007", data);
 
@@ -415,15 +421,16 @@ public class ScheduleJobConfigurationTest {
     // Arrange
     UUID jobId = UUID.randomUUID();
     ScheduledJobData data =
-        new ScheduledJobData(
-            jobId,
-            "threshold-action",
-            BsaTypes.ActionType.CHECK_TRIGGER_CODES, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "scheduled-job-008",
-            "request-id-threshold",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            null);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId)
+            .actionId("threshold-action")
+            .actionType(BsaTypes.ActionType.CHECK_TRIGGER_CODES)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("scheduled-job-008")
+            .xRequestId("request-id-threshold")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(null)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance = task.instance("instance-008", data);
 
@@ -479,27 +486,29 @@ public class ScheduleJobConfigurationTest {
     // Arrange - Create two separate job executions
     UUID jobId1 = UUID.randomUUID();
     ScheduledJobData data1 =
-        new ScheduledJobData(
-            jobId1,
-            "action-1",
-            BsaTypes.ActionType.CHECK_PARTICIPANT_REGISTRATION, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "job-1",
-            "request-1",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            null);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId1)
+            .actionId("action-1")
+            .actionType(BsaTypes.ActionType.CHECK_PARTICIPANT_REGISTRATION)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("job-1")
+            .xRequestId("request-1")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(null)
+            .build();
 
     UUID jobId2 = UUID.randomUUID();
     ScheduledJobData data2 =
-        new ScheduledJobData(
-            jobId2,
-            "action-2",
-            BsaTypes.ActionType.EXECUTE_REPORTING_WORKFLOW, // ✅ FIXED: Use actual enum value
-            Instant.now().plusSeconds(3600),
-            "job-2",
-            "request-2",
-            BsaTypes.BsaJobType.DELAYED_REPORTING, // ✅ FIXED: Use actual enum value
-            null);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(jobId2)
+            .actionId("action-2")
+            .actionType(BsaTypes.ActionType.EXECUTE_REPORTING_WORKFLOW)
+            .expirationTime(Instant.now().plusSeconds(3600))
+            .jobId("job-2")
+            .xRequestId("request-2")
+            .jobType(BsaTypes.BsaJobType.DELAYED_REPORTING)
+            .mdcContext(null)
+            .build();
 
     TaskInstance<ScheduledJobData> taskInstance1 = task.instance("instance-1", data1);
     TaskInstance<ScheduledJobData> taskInstance2 = task.instance("instance-2", data2);

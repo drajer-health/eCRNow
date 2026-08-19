@@ -26,8 +26,7 @@ public class CdaEncounterGenerator {
 
   private CdaEncounterGenerator() {}
 
-  public static String generateEncounterSection(
-      R4FhirData data, LaunchDetails details, String version) {
+  public static String generateEncounterSection(R4FhirData data, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(2000);
     Encounter encounter = data.getEncounter();
@@ -121,7 +120,7 @@ public class CdaEncounterGenerator {
         "Adding Encounter Diagnosis to the Encounter Section");
     appendOptionalXmlEntry(
         sb,
-        generateEncounterReasonXml(data, details, encounter),
+        generateEncounterReasonXml(details, encounter),
         "Adding Encounter Reason Code Xml to the Encounter Section");
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENC_ACT_EL_NAME));
@@ -315,8 +314,7 @@ public class CdaEncounterGenerator {
     return sb.toString();
   }
 
-  public static String generateEncounterReasonXml(
-      R4FhirData data, LaunchDetails details, Encounter encounter) {
+  public static String generateEncounterReasonXml(LaunchDetails details, Encounter encounter) {
 
     StringBuilder sb = new StringBuilder();
     CodeableConcept primaryCd = null;
@@ -580,8 +578,7 @@ public class CdaEncounterGenerator {
     return codeXml;
   }
 
-  public static Object generate31EncounterSection(
-      R4FhirData data, LaunchDetails details, String version) {
+  public static Object generate31EncounterSection() {
     // TODO Auto-generated method stub
     return null;
   }

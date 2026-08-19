@@ -32,11 +32,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class R4ResourcesData {
 
-  @Autowired FhirContextInitializer resourceData;
-
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
+  private final FhirContextInitializer fhirContextInitializer;
   private final Logger logger = LoggerFactory.getLogger(R4ResourcesData.class);
+
+  @Autowired
+  public R4ResourcesData(FhirContextInitializer fhirContextInitializer) {
+    this.fhirContextInitializer = fhirContextInitializer;
+  }
+
+  /** Default constructor for backward compatibility with direct instantiation. */
+  public R4ResourcesData() {
+    this(null);
+  }
 
   private static final String OBSERVATION = "Observation";
   private static final String CONDITION = "Condition";
@@ -238,7 +245,7 @@ public class R4ResourcesData {
     Encounter encounter = null;
     String encounterID = launchDetails.getEncounterId();
 
-    if (resourceData.checkSkipResource(ENCOUNTER, (FhirClient) client)) {
+    if (fhirContextInitializer.checkSkipResource(ENCOUNTER, (FhirClient) client)) {
       return encounter;
     }
     // If Encounter Id is present in Launch Details
@@ -264,7 +271,9 @@ public class R4ResourcesData {
 
     } else {
       Bundle bundle =
-          (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, ENCOUNTER);
+          (Bundle)
+              fhirContextInitializer.getResourceByPatientId(
+                  launchDetails, client, context, ENCOUNTER);
       List<Encounter> encounters = filterByDateRange(bundle, start, end, Encounter.class);
       if (!encounters.isEmpty()) {
         encounter =
@@ -320,7 +329,9 @@ public class R4ResourcesData {
 
     logger.trace("Getting Conditions Data");
     Bundle bundle =
-        (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, CONDITION);
+        (Bundle)
+            fhirContextInitializer.getResourceByPatientId(
+                launchDetails, client, context, CONDITION);
     List<Condition> allConditions = new ArrayList<>();
     List<Condition> problemConditions = new ArrayList<>();
     List<Condition> encounterDiagnosisConditions = new ArrayList<>();
@@ -445,7 +456,7 @@ public class R4ResourcesData {
     logger.trace("Get Observation Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getObservationByPatientId(
+            fhirContextInitializer.getObservationByPatientId(
                 launchDetails, client, context, OBSERVATION, "laboratory");
     List<Observation> observations = new ArrayList<>();
     List<Observation> valueObservations = new ArrayList<>();
@@ -551,7 +562,7 @@ public class R4ResourcesData {
     logger.trace("Get Pregnancy Observation Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getResourceByPatientIdAndCode(
+            fhirContextInitializer.getResourceByPatientIdAndCode(
                 launchDetails,
                 client,
                 context,
@@ -730,7 +741,7 @@ public class R4ResourcesData {
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
       Bundle pregnancyCodesbundle =
           (Bundle)
-              resourceData.getResourceByPatientIdAndCode(
+              fhirContextInitializer.getResourceByPatientIdAndCode(
                   launchDetails,
                   client,
                   context,
@@ -777,7 +788,8 @@ public class R4ResourcesData {
       String medicationId) {
     logger.info("R4FhirData :{} in getMedicationData. ", r4FhirData);
     return (Medication)
-        resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
+        fhirContextInitializer.getResouceById(
+            launchDetails, client, context, "Medication", medicationId);
   }
 
   public List<MedicationAdministration> getMedicationAdministrationData(
@@ -791,7 +803,7 @@ public class R4ResourcesData {
     logger.trace("Get MedicationAdministration Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getResourceByPatientId(
+            fhirContextInitializer.getResourceByPatientId(
                 launchDetails, client, context, "MedicationAdministration");
     List<MedicationAdministration> medAdministrations = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<>();
@@ -840,7 +852,7 @@ public class R4ResourcesData {
     logger.trace("Get MedicationRequest Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getResourceByPatientId(
+            fhirContextInitializer.getResourceByPatientId(
                 launchDetails, client, context, "MedicationRequest");
     List<MedicationRequest> medRequests = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<>();
@@ -889,7 +901,7 @@ public class R4ResourcesData {
     logger.trace("Get MedicationStatement Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getResourceByPatientId(
+            fhirContextInitializer.getResourceByPatientId(
                 launchDetails, client, context, "MedicationStatement");
     List<MedicationStatement> medStatements = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<>();
@@ -932,7 +944,8 @@ public class R4ResourcesData {
     logger.trace("Get DiagnosticReport Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getResourceByPatientId(launchDetails, client, context, "DiagnosticReport");
+            fhirContextInitializer.getResourceByPatientId(
+                launchDetails, client, context, "DiagnosticReport");
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
     List<CodeableConcept> diagnosticReportCodes = new ArrayList<>();
 
@@ -976,7 +989,8 @@ public class R4ResourcesData {
     logger.trace("Get Immunization Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getResourceByPatientId(launchDetails, client, context, "Immunization");
+            fhirContextInitializer.getResourceByPatientId(
+                launchDetails, client, context, "Immunization");
     List<Immunization> immunizations = new ArrayList<>();
     List<CodeableConcept> immunizationCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
@@ -1058,7 +1072,8 @@ public class R4ResourcesData {
     logger.trace("Get ServiceRequest Data");
     Bundle bundle =
         (Bundle)
-            resourceData.getResourceByPatientId(launchDetails, client, context, "ServiceRequest");
+            fhirContextInitializer.getResourceByPatientId(
+                launchDetails, client, context, "ServiceRequest");
     List<ServiceRequest> serviceRequests = new ArrayList<>();
     List<CodeableConcept> serviceRequestCodes = new ArrayList<>();
 

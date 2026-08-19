@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.TimeZone;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Medication;
@@ -78,7 +77,6 @@ public class ContentDataSimulator {
     R4FhirData r4Data = new R4FhirData();
     List<Observation> observations = new ArrayList<>();
     List<MedicationStatement> medicationStatements = new ArrayList<>();
-    List<Condition> conditions = new ArrayList<>();
     List<MedicationRequest> mrs = new ArrayList<>();
     List<Medication> medications = new ArrayList<>();
 

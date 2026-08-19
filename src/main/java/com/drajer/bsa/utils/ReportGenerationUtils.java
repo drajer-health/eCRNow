@@ -33,58 +33,6 @@ public class ReportGenerationUtils {
           "82810-3" // Pregnancy Status - LOINC
           );
 
-  private static final List<Map<String, String>> SOCIAL_HISTORY_CODES =
-      List.of(
-
-          // Section code
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, CODE_KEY, SOCIAL_HISTORY_SECTION_CODE),
-
-          // Tobacco / Smoking
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", SMOKING_STATUS_CODE),
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11367-0"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "229819007"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "365980008"),
-
-          // Alcohol use
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "74013-4"),
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11343-1"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "228273003"),
-
-          // Substance / Drug use
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11344-9"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "228366006"),
-
-          // Occupational Data for Health (ODH)
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "11341-5"),
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "21843-8"),
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "87510-4"),
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "74165-2"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "364703007"),
-
-          // Travel History
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "8691-8"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "420008001"),
-
-          // Home Environment
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "71802-3"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "224229001"),
-
-          // Disability Status
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "69858-6"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "363787002"),
-
-          // Country / Residence / Nationality
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "77983-5"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "186034007"),
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "46463-6"),
-
-          // Exposure / Contact Information
-          Map.of(SYSTEM_KEY, LOINC_SYSTEM, "code", "85657-3"),
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "418038007"),
-
-          // General social context
-          Map.of(SYSTEM_KEY, SNOMED_SYSTEM, "code", "365508006"));
-
   private ReportGenerationUtils() {}
 
   public static Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
@@ -245,14 +193,12 @@ public class ReportGenerationUtils {
 
   public static Boolean hasCode(String csUrl, String code, Coding coding) {
 
-    if (coding != null) {
-
-      if (coding.hasSystem()
-          && coding.getSystem().contentEquals(csUrl)
-          && coding.hasCode()
-          && coding.getCode().contentEquals(code)) {
-        return true;
-      }
+    if (coding != null
+        && coding.hasSystem()
+        && coding.getSystem().contentEquals(csUrl)
+        && coding.hasCode()
+        && coding.getCode().contentEquals(code)) {
+      return true;
     }
     return false;
   }

@@ -59,25 +59,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class KarProcessorImpl implements KarProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(KarProcessorImpl.class);
-  private static final String SUBMISSION_MESSAGE_STATUS_FAILED = "FAILED";
 
-  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
-
-  @Autowired EhrQueryService ehrInterface;
-
-  @Autowired BsaServiceUtils serviceUtils;
-
-  @Autowired KarExecutionStateService karExecutionStateService;
-
-  @Autowired NotificationContextService ncService;
-
-  @Autowired NotificationContextDao ncDao;
-
-  @Autowired HealthcareSettingsService hsService;
-
-  @Autowired PublicHealthMessagesDaoImpl phDao;
-
-  @Autowired InfrastructureLoadManagerInterface loadManager;
+  private final KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+  private final EhrQueryService ehrInterface;
+  private final BsaServiceUtils serviceUtils;
+  private final KarExecutionStateService karExecutionStateService;
+  private final NotificationContextService ncService;
+  private final NotificationContextDao ncDao;
+  private final HealthcareSettingsService hsService;
+  private final PublicHealthMessagesDaoImpl phDao;
+  private final InfrastructureLoadManagerInterface loadManager;
+  private final IParser jsonParser;
 
   @Value("${enable.throttling:false}")
   Boolean throttlingEnabled;
@@ -88,13 +80,47 @@ public class KarProcessorImpl implements KarProcessor {
   @Value("${timer.retries:3}")
   private Integer timerRetries;
 
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
-
   /** The token refresh threshold value for refreshing access tokens */
   @Value("${token.refresh.threshold:25}")
   private Integer tokenRefreshThreshold;
+
+  /**
+   * Instantiates a new KAR processor implementation.
+   *
+   * @param knowledgeArtifactRepositorySystem the knowledge artifact repository system
+   * @param ehrInterface the EHR query service
+   * @param serviceUtils the BSA service utilities
+   * @param karExecutionStateService the KAR execution state service
+   * @param ncService the notification context service
+   * @param ncDao the notification context DAO
+   * @param hsService the healthcare settings service
+   * @param phDao the public health messages DAO
+   * @param loadManager the infrastructure load manager
+   * @param jsonParser the JSON parser (qualified as jsonParser)
+   */
+  @Autowired
+  public KarProcessorImpl(
+      KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem,
+      EhrQueryService ehrInterface,
+      BsaServiceUtils serviceUtils,
+      KarExecutionStateService karExecutionStateService,
+      NotificationContextService ncService,
+      NotificationContextDao ncDao,
+      HealthcareSettingsService hsService,
+      PublicHealthMessagesDaoImpl phDao,
+      InfrastructureLoadManagerInterface loadManager,
+      @Qualifier("jsonParser") IParser jsonParser) {
+    this.knowledgeArtifactRepositorySystem = knowledgeArtifactRepositorySystem;
+    this.ehrInterface = ehrInterface;
+    this.serviceUtils = serviceUtils;
+    this.karExecutionStateService = karExecutionStateService;
+    this.ncService = ncService;
+    this.ncDao = ncDao;
+    this.hsService = hsService;
+    this.phDao = phDao;
+    this.loadManager = loadManager;
+    this.jsonParser = jsonParser;
+  }
 
   /**
    * The method that applies a KAR to a specific notification context.
@@ -131,7 +157,6 @@ public class KarProcessorImpl implements KarProcessor {
       try {
         action.process(data, ehrInterface);
       } catch (Exception e) {
-        logger.error(e.getMessage());
         throw e;
       }
 
@@ -218,7 +243,7 @@ public class KarProcessorImpl implements KarProcessor {
       try {
         processScheduledAction(action, kd, nc, state, data);
       } catch (Exception e) {
-        publicHealthMessage = handleProcessingException(e, kd);
+        publicHealthMessage = handleProcessingException(kd);
         throw e;
       }
 
@@ -399,7 +424,7 @@ public class KarProcessorImpl implements KarProcessor {
         data.getMdcContext());
   }
 
-  private PublicHealthMessage handleProcessingException(Exception e, KarProcessingData kd) {
+  private PublicHealthMessage handleProcessingException(KarProcessingData kd) {
     logger.error("Exception encountered during processing of the scheduled job ");
     if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
       return createPublicHealthMessage(kd, kd.getSubmittedCdaData());

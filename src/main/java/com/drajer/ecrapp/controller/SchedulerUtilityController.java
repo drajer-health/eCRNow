@@ -13,7 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/scheduled-tasks")
 public class SchedulerUtilityController {
 
-  @Autowired private ScheduledTaskUtil scheduledTaskUtil;
+  private final ScheduledTaskUtil scheduledTaskUtil;
+
+  /**
+   * Instantiates a new scheduler utility controller.
+   *
+   * @param scheduledTaskUtil the scheduled task utility
+   */
+  @Autowired
+  public SchedulerUtilityController(ScheduledTaskUtil scheduledTaskUtil) {
+    this.scheduledTaskUtil = scheduledTaskUtil;
+  }
 
   @PostMapping("/export")
   public ResponseEntity<String> exportScheduledTasks() {

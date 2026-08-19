@@ -15,7 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,10 +29,11 @@ public class BackendAuthorizationServiceImplTest {
   private static final String KEYSTORE_FILE = "src/test/resources/mockKeystore.jks";
 
   @InjectMocks BackendAuthorizationServiceImpl backendAuthorizationService;
+  @Mock private Environment environment;
 
   @Before
   public void setUp() {
-    AESEncryption aesEncryption = new AESEncryption();
+    AESEncryption aesEncryption = new AESEncryption(environment);
     ReflectionTestUtils.setField(aesEncryption, "secretKey", "2314");
     backendAuthorizationService.jwksLocation = KEYSTORE_FILE;
     backendAuthorizationService.password = KEY_STORE_PASSWORD;

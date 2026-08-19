@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,10 +24,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReportabilityResponseController {
 
   private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseController.class);
+  private final RrReceiver rrReceieverService;
+  private final PublicHealthMessagesDao phDao;
 
-  @Autowired RrReceiver rrReceieverService;
-
-  @Autowired PublicHealthMessagesDao phDao;
+  /**
+   * Instantiates a new reportability response controller.
+   *
+   * @param rrReceieverService the RR receiver service
+   * @param phDao the public health messages DAO
+   */
+  public ReportabilityResponseController(
+      RrReceiver rrReceieverService, PublicHealthMessagesDao phDao) {
+    this.rrReceieverService = rrReceieverService;
+    this.phDao = phDao;
+  }
 
   @CrossOrigin
   @PostMapping(value = "/api/receiveReportabilityResponse")
@@ -41,10 +50,12 @@ public class ReportabilityResponseController {
       HttpServletResponse response) {
     try {
 
-      logger.info(
-          " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
-          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue),
-          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
+            StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue),
+            StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue));
+      }
 
       if (data.getResponseType().contentEquals(ReportabilityResponse.MDN_RESPONSE_TYPE)) {
 
@@ -68,10 +79,8 @@ public class ReportabilityResponseController {
       }
 
     } catch (IllegalArgumentException e) {
-      logger.error("Error in processing the request ", e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
-      logger.error("Error in processing the request ", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
@@ -84,10 +93,12 @@ public class ReportabilityResponseController {
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
     try {
-      logger.info(
-          "Received EicrId:: {}, EicrDocId:: {} in the request",
-          StringEscapeUtils.escapeJava(eicrId),
-          StringEscapeUtils.escapeJava(eicrDocId));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "Received EicrId:: {}, EicrDocId:: {} in the request",
+            StringEscapeUtils.escapeJava(eicrId),
+            StringEscapeUtils.escapeJava(eicrDocId));
+      }
       PublicHealthMessage phm = null;
       if (eicrId != null) {
         phm = phDao.getBySubmittedMessageId(eicrId);
@@ -109,10 +120,8 @@ public class ReportabilityResponseController {
       }
 
     } catch (IllegalArgumentException e) {
-      logger.error("Error in processing the request", e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
-      logger.error("Error in processing the request", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 

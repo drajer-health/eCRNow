@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +38,6 @@ public class HealthcareSettingsControllerTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
     ReflectionTestUtils.setField(healthcareSettingsController, "directSmtpTlsVersion", "TLSv1.2");
   }
 

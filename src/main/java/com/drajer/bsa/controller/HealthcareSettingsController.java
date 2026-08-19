@@ -91,52 +91,71 @@ public class HealthcareSettingsController {
     HealthcareSetting hsd =
         healthcareSettingsService.getHealthcareSettingByUrl(hsDetails.getFhirServerBaseURL());
 
-    if (hsd == null) {
+    if (hsd != null) {
+      return buildAlreadyExistsResponse();
+    }
 
-      logger.info("Healthcare Setting does not exist, Saving the Healthcare Settings");
+    logger.info("Healthcare Setting does not exist, Saving the Healthcare Settings");
 
-      if (hsDetails.getTokenUrl() == null) {
-        JSONObject object = authorization.getMetadata(hsd.getFhirServerBaseURL() + "/metadata");
-        if (object != null) {
-          logger.info("Reading Metadata information");
-          JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
-          JSONObject sec = security.getJSONObject("security");
-          JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
-          JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-          if (object.getString(FHIR_VERSION).startsWith("1.")) {
-            hsDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
-          }
-          if (object.getString(FHIR_VERSION).startsWith("4.")) {
-            hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
-          }
+    if (hsDetails.getTokenUrl() == null) {
+      processMetadataIfNeeded(hsDetails);
+    }
 
-          if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
-            hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
-          }
+    healthcareSettingsService.saveOrUpdate(hsDetails);
+    return new ResponseEntity<>(hsDetails, HttpStatus.OK);
+  }
 
-          for (int i = 0; i < innerExtension.length(); i++) {
-            JSONObject urlExtension = innerExtension.getJSONObject(i);
-            if (urlExtension.getString("url").equals("token")) {
-              logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
-              hsDetails.setTokenUrl(urlExtension.getString(VALUE_URI));
-            }
-          }
+  private ResponseEntity<Object> buildAlreadyExistsResponse() {
+    logger.error("FHIR Server URL is already registered, suggest modifying the existing record.");
+    JSONObject responseObject = new JSONObject();
+    responseObject.put(STATUS, ERROR);
+    responseObject.put(
+        MESSAGE,
+        "FHIR Server URL is already registered, suggest modifying the existing record. is already registered");
+    return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private void processMetadataIfNeeded(HealthcareSetting hsDetails) {
+    JSONObject object = authorization.getMetadata(hsDetails.getFhirServerBaseURL() + "/metadata");
+    if (object == null) {
+      return;
+    }
+
+    logger.info("Reading Metadata information");
+    JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
+    JSONObject sec = security.getJSONObject("security");
+    JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
+    JSONArray innerExtension = extension.getJSONArray(EXTENSION);
+
+    setFhirVersion(hsDetails, object);
+    setDirectTlsVersionIfEmpty(hsDetails);
+    extractTokenUrlFromMetadata(hsDetails, innerExtension);
+  }
+
+  private void setFhirVersion(HealthcareSetting hsDetails, JSONObject object) {
+    String fhirVersion = object.getString(FHIR_VERSION);
+    if (fhirVersion.startsWith("1.")) {
+      hsDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
+    } else if (fhirVersion.startsWith("4.")) {
+      hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
+    }
+  }
+
+  private void setDirectTlsVersionIfEmpty(HealthcareSetting hsDetails) {
+    if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+      hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+    }
+  }
+
+  private void extractTokenUrlFromMetadata(HealthcareSetting hsDetails, JSONArray innerExtension) {
+    for (int i = 0; i < innerExtension.length(); i++) {
+      JSONObject urlExtension = innerExtension.getJSONObject(i);
+      if (urlExtension.getString("url").equals("token")) {
+        if (logger.isInfoEnabled()) {
+          logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
         }
+        hsDetails.setTokenUrl(urlExtension.getString(VALUE_URI));
       }
-      healthcareSettingsService.saveOrUpdate(hsDetails);
-
-      return new ResponseEntity<>(hsDetails, HttpStatus.OK);
-
-    } else {
-
-      logger.error("FHIR Server URL is already registered, suggest modifying the existing record.");
-
-      JSONObject responseObject = new JSONObject();
-      responseObject.put(STATUS, ERROR);
-      responseObject.put(
-          MESSAGE,
-          "FHIR Server URL is already registered, suggest modifying the existing record. is already registered");
-      return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

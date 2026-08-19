@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,7 +41,6 @@ public class BsaSchedulerTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
     karExecId = UUID.randomUUID();
     actionId = "action123";
     actionType = BsaTypes.ActionType.CREATE_REPORT;

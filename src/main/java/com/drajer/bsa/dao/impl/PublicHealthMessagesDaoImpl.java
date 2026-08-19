@@ -9,13 +9,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
 public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHealthMessagesDao {
+
+  /**
+   * Instantiates a new public health messages DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public PublicHealthMessagesDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   public static final String SUBMITTED_DATA_ID = "submittedDataId";
   public static final String SUBMITTED_VERSION_NUMBER = "submittedVersionNumber";

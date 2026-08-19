@@ -3,10 +3,12 @@ package com.drajer.routing.impl;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -83,7 +85,8 @@ public class DataRoutingTest {
   @Test
   public void receiveResponseTest() throws JsonParseException, JsonMappingException, IOException {
 
-    DirectResponseReceiver directReceiver = new DirectResponseReceiver();
+    EicrRRService rrService = mock(EicrRRService.class);
+    DirectResponseReceiver directReceiver = new DirectResponseReceiver(rrService);
     DirectResponseReceiver directResponseReceiverSpy = Mockito.spy(directReceiver);
 
     // Setup

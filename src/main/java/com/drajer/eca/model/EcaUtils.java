@@ -175,7 +175,7 @@ public class EcaUtils {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);
 
-        throw new RuntimeException(msg);
+        throw new IllegalStateException(msg);
       }
 
       if (eICR != null && !eICR.isEmpty()) {
@@ -195,7 +195,7 @@ public class EcaUtils {
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);
-        throw new RuntimeException(msg);
+        throw new IllegalStateException(msg);
       }
 
     } else {
@@ -204,7 +204,7 @@ public class EcaUtils {
           "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new IllegalStateException(msg);
     }
 
     return ecr;
@@ -217,9 +217,7 @@ public class EcaUtils {
 
     } catch (JsonProcessingException e) {
 
-      String msg = "Unable to update execution state.";
-      logger.error(msg, e);
-      throw new RuntimeException(msg, e);
+      throw new IllegalStateException("Unable to update execution state.", e);
     }
   }
 
@@ -435,10 +433,12 @@ public class EcaUtils {
     if (appConfig.isEnableSuspend()) {
       Date thresholdDate = DateUtils.addDays(new Date(), -appConfig.getSuspendThreshold());
       if (details.getStartDate() != null && details.getStartDate().before(thresholdDate)) {
-        logger.info(
-            " Suspending encounter {} as it is running more than {} days",
-            StringEscapeUtils.escapeJava(details.getEncounterId()),
-            appConfig.getSuspendThreshold());
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              " Suspending encounter {} as it is running more than {} days",
+              StringEscapeUtils.escapeJava(details.getEncounterId()),
+              appConfig.getSuspendThreshold());
+        }
         return true;
       }
     }

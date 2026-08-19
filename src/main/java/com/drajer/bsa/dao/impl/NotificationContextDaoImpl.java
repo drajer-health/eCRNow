@@ -12,7 +12,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,17 @@ import org.springframework.web.server.ResponseStatusException;
 @Repository
 @Transactional
 public class NotificationContextDaoImpl extends AbstractDao implements NotificationContextDao {
+
+  /**
+   * Instantiates a new notification context DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public NotificationContextDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
+
   private static final String FHIR_SERVER_BASE_URL = "fhirServerBaseURL";
   private static final String FHIR_SERVER_BASE_URL_LOWERCASE = "fhirServerBaseUrl";
   private static final String PATIENT_ID = "patientId";
@@ -299,7 +312,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
         .map(java.util.Map.Entry::getKey)
         .sorted(java.util.Comparator.comparing(NotificationContext::getLastUpdated))
         .limit(limit)
-        .collect(java.util.stream.Collectors.toList());
+        .toList();
   }
 
   @Override

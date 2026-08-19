@@ -38,12 +38,18 @@ public class ScheduledTaskUtil {
   private static final String MDC_CONTEXT_KEY = "mdcContext";
   private static final String REQUEST_ID_KEY = "requestId";
   private static final String JOB_TYPE_KEY = "jobType";
-  @Autowired private SchedulerDao schedulerDao;
 
-  @Value("${scheduled.task.file.path}")
-  private String scheduledTaskFilePath;
-
+  private final SchedulerDao schedulerDao;
+  private final String scheduledTaskFilePath;
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Autowired
+  public ScheduledTaskUtil(
+      SchedulerDao schedulerDao,
+      @Value("${scheduled.task.file.path}") String scheduledTaskFilePath) {
+    this.schedulerDao = schedulerDao;
+    this.scheduledTaskFilePath = scheduledTaskFilePath;
+  }
 
   /**
    * Updates scheduled tasks and stores them in JSON format.
@@ -205,14 +211,15 @@ public class ScheduledTaskUtil {
 
     BsaTypes.BsaJobType jobType = BsaTypes.BsaJobType.valueOf((String) map.get(JOB_TYPE_KEY));
 
-    return new ScheduledJobData(
-        karExecutionStateId,
-        actionId,
-        BsaTypes.ActionType.valueOf(actionType),
-        expirationTime,
-        jobId,
-        xRequestId,
-        jobType,
-        mdcContext);
+    return new ScheduledJobData.Builder()
+        .karExecutionStateId(karExecutionStateId)
+        .actionId(actionId)
+        .actionType(BsaTypes.ActionType.valueOf(actionType))
+        .expirationTime(expirationTime)
+        .jobId(jobId)
+        .xRequestId(xRequestId)
+        .jobType(jobType)
+        .mdcContext(mdcContext)
+        .build();
   }
 }

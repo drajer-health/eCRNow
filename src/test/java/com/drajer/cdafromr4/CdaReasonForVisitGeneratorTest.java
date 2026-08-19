@@ -2,7 +2,6 @@ package com.drajer.cdafromr4;
 
 import static org.junit.Assert.*;
 
-import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.test.util.TestUtils;
 import org.hl7.fhir.r4.model.Encounter;
 import org.junit.Test;
@@ -33,9 +32,7 @@ public class CdaReasonForVisitGeneratorTest extends BaseGeneratorTest {
         (Encounter) loadResourceDataFromFile(Encounter.class, REASON_FOR_VISIT_FILENAME);
     r4FhirData.setEncounter(encounter);
     String expectedXml = TestUtils.getFileContentAsString(REASON_FOR_VISIT_CDA_FILE);
-    String actualXml =
-        CdaReasonForVisitGenerator.generateReasonForVisitSection(
-            r4FhirData, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+    String actualXml = CdaReasonForVisitGenerator.generateReasonForVisitSection(r4FhirData);
     assertNotNull(actualXml);
 
     assertXmlEquals(expectedXml, actualXml);
@@ -48,9 +45,7 @@ public class CdaReasonForVisitGeneratorTest extends BaseGeneratorTest {
         (Encounter) loadResourceDataFromFile(Encounter.class, ENCOUNTER_WITH_TEXT_FILE);
     r4FhirData.setEncounter(encounter);
     String expectedXml = TestUtils.getFileContentAsString(REASON_FOR_VISIT_WITH_TEXT_CDA_FILE);
-    String actualXml =
-        CdaReasonForVisitGenerator.generateReasonForVisitSection(
-            r4FhirData, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+    String actualXml = CdaReasonForVisitGenerator.generateReasonForVisitSection(r4FhirData);
     assertNotNull(actualXml);
     assertXmlEquals(expectedXml, actualXml);
   }

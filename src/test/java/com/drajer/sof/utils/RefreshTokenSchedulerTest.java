@@ -40,12 +40,15 @@ public class RefreshTokenSchedulerTest {
   @Rule public WireMockClassRule mockServer = wireMockRule;
 
   private ClientDetails clientDetails;
-  private RefreshTokenScheduler token = new RefreshTokenScheduler();
+  private RefreshTokenScheduler token;
   private LaunchDetails launchDetails;
   private int wireMockPort = wireMockRule.port();
+  private ThreadPoolTaskScheduler mockScheduler;
 
   @Before
   public void setup() {
+    mockScheduler = mock(ThreadPoolTaskScheduler.class);
+    token = new RefreshTokenScheduler(mockScheduler);
 
     clientDetails =
         (ClientDetails)
@@ -61,8 +64,6 @@ public class RefreshTokenSchedulerTest {
     launchDetails.setIsSystem(true);
     launchDetails.setIsUserAccountLaunch(false);
     launchDetails.setIsMultiTenantSystemLaunch(false);
-
-    token = new RefreshTokenScheduler();
   }
 
   @Test
@@ -119,12 +120,12 @@ public class RefreshTokenSchedulerTest {
   @Test
   public void testScheduleJob_CronTrigger() {
 
-    ThreadPoolTaskScheduler mockScheduler = mock(ThreadPoolTaskScheduler.class);
-    token.taskScheduler = mockScheduler;
-    when(mockScheduler.schedule(any(Runnable.class), any(CronTrigger.class))).thenReturn(null);
-    token.scheduleJob(launchDetails);
+    ThreadPoolTaskScheduler testMockScheduler = mock(ThreadPoolTaskScheduler.class);
+    RefreshTokenScheduler testToken = new RefreshTokenScheduler(testMockScheduler);
+    when(testMockScheduler.schedule(any(Runnable.class), any(CronTrigger.class))).thenReturn(null);
+    testToken.scheduleJob(launchDetails);
     ArgumentCaptor<CronTrigger> cronCaptor = ArgumentCaptor.forClass(CronTrigger.class);
-    verify(mockScheduler).schedule(any(Runnable.class), cronCaptor.capture());
+    verify(testMockScheduler).schedule(any(Runnable.class), cronCaptor.capture());
     String cronExp = cronCaptor.getValue().getExpression();
     assertTrue("Cron expression should include 2 minutes", cronExp.contains("0/2"));
   }
@@ -196,10 +197,11 @@ public class RefreshTokenSchedulerTest {
     realLaunch.setScope("system/Patient.read");
     realLaunch.setIsSystem(true);
     realLaunch.setExpiry(120);
-    RefreshTokenScheduler.RunnableTask task =
-        new RefreshTokenScheduler().new RunnableTask(realLaunch);
+    ThreadPoolTaskScheduler tempScheduler = mock(ThreadPoolTaskScheduler.class);
+    RefreshTokenScheduler tempToken = new RefreshTokenScheduler(tempScheduler);
+    RefreshTokenScheduler.RunnableTask task = tempToken.new RunnableTask(realLaunch);
     task.run();
-    JSONObject response = new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(realLaunch);
+    JSONObject response = token.getAccessTokenUsingLaunchDetails(realLaunch);
     assertNotNull(response);
     assertEquals("real-token", response.getString("access_token"));
     assertEquals(300, response.getInt("expires_in"));

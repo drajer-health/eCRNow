@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.ehr.service.impl.EhrFhirR4QueryServiceImpl;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
@@ -19,6 +18,7 @@ import java.util.*;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 public class HcsReportCreatorTest {
@@ -33,7 +33,7 @@ public class HcsReportCreatorTest {
   @Before
   public void setUp() {
     hcsReportCreator = new HcsReportCreator();
-    ehrQueryService = new EhrFhirR4QueryServiceImpl();
+    ehrQueryService = Mockito.mock(EhrQueryService.class);
     karProcessingData = new KarProcessingData();
     karProcessingData.setKarStatus(getKnowledgeArtifactStatus());
     karProcessingData.setPhm(null);
@@ -83,7 +83,7 @@ public class HcsReportCreatorTest {
   public void testpopulateReasonForVisitNarrative() {
     Composition.SectionComponent sectionComponent = new Composition.SectionComponent();
     sectionComponent.fhirType();
-    hcsReportCreator.populateReasonForVisitNarrative(sectionComponent, karProcessingData);
+    hcsReportCreator.populateReasonForVisitNarrative(sectionComponent);
     assertNotNull("Section component should be populated after method call", sectionComponent);
   }
 
@@ -122,7 +122,6 @@ public class HcsReportCreatorTest {
   private HashMap<ResourceType, Set<Resource>> getFilteredByType(String filePath) {
     HashMap<ResourceType, Set<Resource>> groupedResources = new HashMap<>();
     try {
-      FhirContext ctx = FhirContext.forR4();
       Bundle bundle = loadBundleFromFile(filePath);
 
       for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -163,8 +162,7 @@ public class HcsReportCreatorTest {
   }
 
   private HealthcareSetting getHealthcareSetting() {
-    HealthcareSetting healthcareSetting = new HealthcareSetting();
-    healthcareSetting =
+    HealthcareSetting healthcareSetting =
         (HealthcareSetting)
             TestUtils.getResourceAsObject("Bsa/HealthCareSettings.json", HealthcareSetting.class);
     return healthcareSetting;

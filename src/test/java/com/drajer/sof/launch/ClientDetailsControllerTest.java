@@ -19,7 +19,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -30,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 @PrepareForTest({StringEscapeUtils.class})
 public class ClientDetailsControllerTest {
 
-  @InjectMocks private ClientDetailsController controller;
+  private ClientDetailsController controller;
 
   @Mock private ClientDetailsService clientDetailsService;
 
@@ -43,6 +42,8 @@ public class ClientDetailsControllerTest {
 
   @Before
   public void setUp() {
+    controller = new ClientDetailsController(clientDetailsService);
+
     clientDetails = new ClientDetails();
     clientDetails.setId(1);
     clientDetails.setFhirServerBaseURL("http://test.com");
@@ -67,10 +68,10 @@ public class ClientDetailsControllerTest {
   public void testCreateClientDetails_NewClient_Success() {
     when(clientDetailsService.getClientDetailsByUrl("http://test.com")).thenReturn(null);
 
-    ResponseEntity<Object> response = controller.createClientDetails(clientDetailsDTO);
+    ResponseEntity<Object> apiResponse = controller.createClientDetails(clientDetailsDTO);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertTrue(response.getBody() instanceof ClientDetailsDTO);
+    assertEquals(HttpStatus.OK, apiResponse.getStatusCode());
+    assertTrue(apiResponse.getBody() instanceof ClientDetailsDTO);
     verify(clientDetailsService, times(1)).saveOrUpdate(any(ClientDetails.class));
   }
 
@@ -78,10 +79,10 @@ public class ClientDetailsControllerTest {
   public void testCreateClientDetails_UrlAlreadyRegistered() throws JSONException {
     when(clientDetailsService.getClientDetailsByUrl("http://test.com")).thenReturn(clientDetails);
 
-    ResponseEntity<Object> response = controller.createClientDetails(clientDetailsDTO);
+    ResponseEntity<Object> apiResponse = controller.createClientDetails(clientDetailsDTO);
 
-    assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-    JSONObject body = new JSONObject(response.getBody().toString());
+    assertEquals(HttpStatus.CONFLICT, apiResponse.getStatusCode());
+    JSONObject body = new JSONObject(apiResponse.getBody().toString());
     assertEquals("error", body.get("status"));
     verify(clientDetailsService, never()).saveOrUpdate(any(ClientDetails.class));
   }
@@ -90,10 +91,10 @@ public class ClientDetailsControllerTest {
   public void testUpdateClientDetails_NewClient_Success() {
     when(clientDetailsService.getClientDetailsByUrl("http://test.com")).thenReturn(null);
 
-    ResponseEntity<Object> response = controller.updateClientDetails(clientDetailsDTO);
+    ResponseEntity<Object> apiResponse = controller.updateClientDetails(clientDetailsDTO);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertTrue(response.getBody() instanceof ClientDetailsDTO);
+    assertEquals(HttpStatus.OK, apiResponse.getStatusCode());
+    assertTrue(apiResponse.getBody() instanceof ClientDetailsDTO);
     verify(clientDetailsService, times(1)).saveOrUpdate(any(ClientDetails.class));
   }
 
@@ -101,9 +102,9 @@ public class ClientDetailsControllerTest {
   public void testUpdateClientDetails_SameId_Success() {
     when(clientDetailsService.getClientDetailsByUrl("http://test.com")).thenReturn(clientDetails);
 
-    ResponseEntity<Object> response = controller.updateClientDetails(clientDetailsDTO);
+    ResponseEntity<Object> apiResponse = controller.updateClientDetails(clientDetailsDTO);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, apiResponse.getStatusCode());
     verify(clientDetailsService, times(1)).saveOrUpdate(any(ClientDetails.class));
   }
 
@@ -115,10 +116,10 @@ public class ClientDetailsControllerTest {
 
     when(clientDetailsService.getClientDetailsByUrl("http://test.com")).thenReturn(otherClient);
 
-    ResponseEntity<Object> response = controller.updateClientDetails(clientDetailsDTO);
+    ResponseEntity<Object> apiResponse = controller.updateClientDetails(clientDetailsDTO);
 
-    assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-    JSONObject body = new JSONObject(response.getBody().toString());
+    assertEquals(HttpStatus.CONFLICT, apiResponse.getStatusCode());
+    JSONObject body = new JSONObject(apiResponse.getBody().toString());
     assertEquals("error", body.get("status"));
     verify(clientDetailsService, never()).saveOrUpdate(any(ClientDetails.class));
   }

@@ -815,7 +815,8 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("82810-3") && c.getSystem().contains(LOINC_URL)))) {
+            && c.getCode().contentEquals("82810-3")
+            && c.getSystem().contains(LOINC_URL)) {
           return true;
         }
       }
@@ -834,8 +835,8 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals(CdaGeneratorConstants.PREGNANCY_INTENTION_CODE)
-                && c.getSystem().contains(LOINC_URL)))) {
+            && c.getCode().contentEquals(CdaGeneratorConstants.PREGNANCY_INTENTION_CODE)
+            && c.getSystem().contains(LOINC_URL)) {
           return true;
         }
       }
@@ -854,8 +855,8 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals(CdaGeneratorConstants.LMP_CODE)
-                && c.getSystem().contains(LOINC_URL)))) {
+            && c.getCode().contentEquals(CdaGeneratorConstants.LMP_CODE)
+            && c.getSystem().contains(LOINC_URL)) {
           return true;
         }
       }
@@ -874,8 +875,8 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("249197004")
-                && c.getSystem().contains(SNOMED_INFO_SCT_URL)))) {
+            && c.getCode().contentEquals("249197004")
+            && c.getSystem().contains(SNOMED_INFO_SCT_URL)) {
           return true;
         }
       }
@@ -895,11 +896,11 @@ public class R3ToR2DataConverterUtils {
         if (c.hasCode()
             && c.hasSystem()
             && c.getSystem().contains(SNOMED_INFO_SCT_URL)
-            && ((c.getCode().contentEquals("17369002")
+            && (c.getCode().contentEquals("17369002")
                 || c.getCode().contentEquals("21243004")
                 || c.getCode().contentEquals(SNOMED_CODE_237364002)
                 || c.getCode().contentEquals(SNOMED_CODE_237364002)
-                || c.getCode().contentEquals(SNOMED_CODE_237364002)))) {
+                || c.getCode().contentEquals(SNOMED_CODE_237364002))) {
           return true;
         }
       }

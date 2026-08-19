@@ -79,7 +79,6 @@ public class PatientLaunchController {
     this.schedulerService = schedulerService;
   }
 
-  private static final String FHIR_VERSION = "fhirVersion";
   private static final String X_REQUEST_ID = "X-Request-ID";
   private static final String NO_REQUEST_ID_ERROR =
       "No Request Id set in the header. Add X-Request-ID parameter for request tracking.";
@@ -119,14 +118,16 @@ public class PatientLaunchController {
       HttpServletRequest request,
       HttpServletResponse response) {
 
-    logger.info(
-        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, ehrLaunchContext: {}, requestId: {},  throttleContext: {}",
-        StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
-        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-        launchContext.getEhrLaunchContext().size(),
-        StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
-        launchContext.getThrottleContext());
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, ehrLaunchContext: {}, requestId: {},  throttleContext: {}",
+          StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
+          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+          launchContext.getEhrLaunchContext().size(),
+          StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
+          launchContext.getThrottleContext());
+    }
 
     if (StartupUtils.hasAppStarted()) {
       try {
@@ -154,11 +155,13 @@ public class PatientLaunchController {
           return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
               .body(OperationOutcomeUtil.createErrorOperationOutcome(UNRECOGNIZED_FHIR_URL_ERROR));
         }
-        logger.info(
-            " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
-            StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-            StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-            StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+              StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+              StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+              StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
+        }
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(
@@ -225,13 +228,15 @@ public class PatientLaunchController {
       HttpServletRequest request,
       HttpServletResponse response) {
 
-    logger.info(
-        "Patient reLaunchPatient request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
-        StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
-        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-        StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
-        launchContext.getThrottleContext());
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "Patient reLaunchPatient request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
+          StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
+          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+          StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
+          launchContext.getThrottleContext());
+    }
 
     if (StartupUtils.hasAppStarted()) {
       try {
@@ -274,11 +279,13 @@ public class PatientLaunchController {
                     LAUNCH_PATIENT_ERROR + e.getMessage()));
       }
 
-      logger.info(
-          " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
-          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-          StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+            StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+            StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+            StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
+      }
 
       return ResponseEntity.status(HttpStatus.OK)
           .body(
@@ -327,13 +334,15 @@ public class PatientLaunchController {
       HttpServletRequest request,
       HttpServletResponse response) {
 
-    logger.info(
-        "Patient reProcessPatient request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
-        StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
-        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-        StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
-        launchContext.getThrottleContext());
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "Patient reProcessPatient request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
+          StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
+          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+          StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
+          launchContext.getThrottleContext());
+    }
 
     if (StartupUtils.hasAppStarted()) {
       try {
@@ -375,11 +384,13 @@ public class PatientLaunchController {
                     REPROCESS_PATIENT_ERROR + e.getMessage()));
       }
 
-      logger.info(
-          " Patient reProcess was successful for patientId: {}, encounterId: {}, requestId: {}",
-          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-          StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Patient reProcess was successful for patientId: {}, encounterId: {}, requestId: {}",
+            StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+            StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+            StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)));
+      }
 
       return ResponseEntity.status(HttpStatus.OK)
           .body(
@@ -514,13 +525,14 @@ public class PatientLaunchController {
       @RequestParam(required = false) String encounterId)
       throws IOException {
 
-    logger.info(
-        " Delete Scheduled Tasks request received for fhirServerUrl: {}, patientId: {}, encounterId: {}",
-        StringEscapeUtils.escapeJava(fhirServerBaseUrl),
-        StringEscapeUtils.escapeJava(patientId),
-        StringEscapeUtils.escapeJava(encounterId));
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          " Delete Scheduled Tasks request received for fhirServerUrl: {}, patientId: {}, encounterId: {}",
+          StringEscapeUtils.escapeJava(fhirServerBaseUrl),
+          StringEscapeUtils.escapeJava(patientId),
+          StringEscapeUtils.escapeJava(encounterId));
+    }
 
-    Map<String, Object> response = new HashMap<>();
     if (StringUtils.isBlank(patientId)
         || StringUtils.isBlank(encounterId)
         || StringUtils.isBlank(fhirServerBaseUrl)) {

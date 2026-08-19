@@ -75,7 +75,6 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,21 +145,32 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   private HashMap<String, HashMap<String, String>> customQueries;
 
-  /** The Authorization utils class enables the BSA to get an access token. */
-  @Autowired AuthorizationUtils authUtils;
-
-  /** The HealthcareSettings Dao to save Healthcare Setting state as needed */
-  @Autowired HealthcareSettingsDao hsDao;
-
-  /** The FHIR Context Initializer necessary to retrieve FHIR resources */
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
   /**
    * The attribute contains the directory of custom query files. Each Kar will have its own file
    * with custom queries.
    */
   @Value("${custom-query.directory}")
   String customQueryDirectory;
+
+  private final AuthorizationUtils authUtils;
+  private final HealthcareSettingsDao hsDao;
+  private final FhirContextInitializer fhirContextInitializer;
+
+  /**
+   * Instantiates a new EHR FHIR R4 query service implementation.
+   *
+   * @param authUtils the authorization utilities
+   * @param hsDao the healthcare settings DAO
+   * @param fhirContextInitializer the FHIR context initializer
+   */
+  public EhrFhirR4QueryServiceImpl(
+      AuthorizationUtils authUtils,
+      HealthcareSettingsDao hsDao,
+      FhirContextInitializer fhirContextInitializer) {
+    this.authUtils = authUtils;
+    this.hsDao = hsDao;
+    this.fhirContextInitializer = fhirContextInitializer;
+  }
 
   /**
    * The method is used to load the customized queries from the config file to be used instead of
@@ -428,19 +438,23 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     if (kd.hasValidAccessToken()) {
 
       accessToken = kd.getAccessToken();
-      logger.debug(
-          " Reusing Valid Access Token: {}, Expiration Time: {}",
-          StringEscapeUtils.escapeJava(accessToken),
-          kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
+      if (logger.isDebugEnabled()) {
+        logger.debug(
+            " Reusing Valid Access Token: {}, Expiration Time: {}",
+            StringEscapeUtils.escapeJava(accessToken),
+            kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
+      }
 
     } else {
 
       retrieveAndUpdateAccessToken(kd);
       accessToken = kd.getAccessToken();
-      logger.debug(
-          " Generated New Access Token: {}, Expiration Time: {}",
-          StringEscapeUtils.escapeJava(accessToken),
-          kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
+      if (logger.isDebugEnabled()) {
+        logger.debug(
+            " Generated New Access Token: {}, Expiration Time: {}",
+            StringEscapeUtils.escapeJava(accessToken),
+            kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
+      }
     }
 
     return fhirContextInitializer.createClient(
@@ -1063,7 +1077,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
 
       getAllR4RecordsUsingPagination(genericClient, bundle);
-      if (bundle != null && bundle.hasEntry() && bundle.getEntry().size() > 0) {
+      if (!bundle.getEntry().isEmpty()) {
 
         logger.info(
             "Total No of Entries when searching for ResourceType: {} retrieved was: {}",
@@ -1157,10 +1171,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             || obs.getStatus() == ObservationStatus.ENTEREDINERROR
             || obs.getStatus() == ObservationStatus.UNKNOWN)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.Observation.toString(),
-          obs.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.Observation.toString(),
+            obs.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1177,10 +1193,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 CONDITION_CLINICAL_STATUS_SYSTEM_URL, "remission", cond.getClinicalStatus())
             || doesCodeableConceptContain(
                 CONDITION_CLINICAL_STATUS_SYSTEM_URL, "unknown", cond.getClinicalStatus()))) {
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.Condition.toString(),
-          cond.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.Condition.toString(),
+            cond.getIdElement().getIdPart());
+      }
       return false;
     }
 
@@ -1192,10 +1210,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 CONDITION_VERIFICATION_STATUS_SYSTEM_URL,
                 "entered-in-error",
                 cond.getVerificationStatus()))) {
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.Condition.toString(),
-          cond.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.Condition.toString(),
+            cond.getIdElement().getIdPart());
+      }
       return false;
     }
 
@@ -1210,10 +1230,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             || sr.getStatus() == ServiceRequestStatus.ONHOLD
             || sr.getStatus() == ServiceRequestStatus.UNKNOWN)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.ServiceRequest.toString(),
-          sr.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.ServiceRequest.toString(),
+            sr.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1227,10 +1249,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             || mr.getStatus() == MedicationRequestStatus.DRAFT
             || mr.getStatus() == MedicationRequestStatus.UNKNOWN)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.MedicationRequest.toString(),
-          mr.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.MedicationRequest.toString(),
+            mr.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1243,10 +1267,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             || ma.getStatus() == MedicationAdministrationStatus.NOTDONE
             || ma.getStatus() == MedicationAdministrationStatus.UNKNOWN)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.MedicationAdministration.toString(),
-          ma.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.MedicationAdministration.toString(),
+            ma.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1259,10 +1285,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             || ms.getStatus() == MedicationStatementStatus.NOTTAKEN
             || ms.getStatus() == MedicationStatementStatus.UNKNOWN)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.MedicationStatement.toString(),
-          ms.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.MedicationStatement.toString(),
+            ms.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1274,10 +1302,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             || dr.getStatus() == DiagnosticReportStatus.CANCELLED
             || dr.getStatus() == DiagnosticReportStatus.UNKNOWN)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.DiagnosticReport.toString(),
-          dr.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.DiagnosticReport.toString(),
+            dr.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1288,10 +1318,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         && (imm.getStatus() == ImmunizationStatus.ENTEREDINERROR
             || imm.getStatus() == ImmunizationStatus.NOTDONE)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.Immunization.toString(),
-          imm.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.Immunization.toString(),
+            imm.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1303,10 +1335,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             || pr.getStatus() == ProcedureStatus.STOPPED
             || pr.getStatus() == ProcedureStatus.UNKNOWN)) {
 
-      logger.info(
-          IGNORING_RESOURCE_LOG_MSG,
-          ResourceType.Procedure.toString(),
-          pr.getIdElement().getIdPart());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            IGNORING_RESOURCE_LOG_MSG,
+            ResourceType.Procedure.toString(),
+            pr.getIdElement().getIdPart());
+      }
       return false;
     }
     return true;
@@ -1740,7 +1774,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     if (report.hasPerformer()) {
       for (Reference reference : report.getPerformer()) {
         ResourceType type = getResourceType(reference);
-        if ((type == ResourceType.Practitioner || type == ResourceType.Organization)) {
+        if (type != null
+            && (type == ResourceType.Practitioner || type == ResourceType.Organization)) {
           getAndAddSecondaryResource(kd, reference, type, genericClient, context);
         }
       }

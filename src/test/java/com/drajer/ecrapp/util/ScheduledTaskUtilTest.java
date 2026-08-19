@@ -16,13 +16,11 @@ import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({FileUtils.class})
@@ -30,7 +28,7 @@ public class ScheduledTaskUtilTest {
   @Mock private SchedulerDao schedulerDao;
   @Mock private Logger logger;
   @Mock private ObjectMapper objectMapper;
-  @InjectMocks private ScheduledTaskUtil scheduledTaskUtil;
+  private ScheduledTaskUtil scheduledTaskUtil;
 
   private String MOCK_FILE_PATH = "ecrTestData/ScheduleUtils/schedule.json";
 
@@ -46,7 +44,7 @@ public class ScheduledTaskUtilTest {
   public void setUp() {
 
     MockitoAnnotations.initMocks(this);
-    ReflectionTestUtils.setField(scheduledTaskUtil, "scheduledTaskFilePath", MOCK_FILE_PATH);
+    scheduledTaskUtil = new ScheduledTaskUtil(schedulerDao, MOCK_FILE_PATH);
   }
 
   @Test
@@ -66,15 +64,16 @@ public class ScheduledTaskUtilTest {
   }
 
   private ScheduledJobData createMockJobData() {
-    return new ScheduledJobData(
-        UUID.randomUUID(),
-        "action123",
-        BsaTypes.ActionType.EVALUATE_MEASURE,
-        null,
-        "job456",
-        "req-789",
-        BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-        new HashMap<>());
+    return new ScheduledJobData.Builder()
+        .karExecutionStateId(UUID.randomUUID())
+        .actionId("action123")
+        .actionType(BsaTypes.ActionType.EVALUATE_MEASURE)
+        .expirationTime(null)
+        .jobId("job456")
+        .xRequestId("req-789")
+        .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+        .mdcContext(new HashMap<>())
+        .build();
   }
 
   @Test
@@ -103,15 +102,16 @@ public class ScheduledTaskUtilTest {
   public void testSerialize_Success() throws IOException {
 
     ScheduledJobData jobData =
-        new ScheduledJobData(
-            UUID.randomUUID(),
-            "action123",
-            BsaTypes.ActionType.EVALUATE_MEASURE,
-            null,
-            "job456",
-            "req-789",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            new HashMap<>());
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(UUID.randomUUID())
+            .actionId("action123")
+            .actionType(BsaTypes.ActionType.EVALUATE_MEASURE)
+            .expirationTime(null)
+            .jobId("job456")
+            .xRequestId("req-789")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(new HashMap<>())
+            .build();
 
     byte[] serializedData = scheduledTaskUtil.serialize(jobData);
 
@@ -126,15 +126,16 @@ public class ScheduledTaskUtilTest {
     mdcContext.put("requestId", "req-789");
 
     ScheduledJobData jobData =
-        new ScheduledJobData(
-            UUID.randomUUID(),
-            "action123",
-            BsaTypes.ActionType.EVALUATE_MEASURE,
-            null,
-            "job456",
-            "req-789",
-            BsaTypes.BsaJobType.IMMEDIATE_REPORTING,
-            mdcContext);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(UUID.randomUUID())
+            .actionId("action123")
+            .actionType(BsaTypes.ActionType.EVALUATE_MEASURE)
+            .expirationTime(null)
+            .jobId("job456")
+            .xRequestId("req-789")
+            .jobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(mdcContext)
+            .build();
 
     byte[] serializedData = scheduledTaskUtil.serialize(jobData);
 

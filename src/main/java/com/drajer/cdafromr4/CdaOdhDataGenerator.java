@@ -49,6 +49,9 @@ public class CdaOdhDataGenerator {
       int rowNum = 0;
       StringBuilder occEntries = new StringBuilder();
       for (Observation obs : occObs) {
+        if (obs == null) {
+          continue;
+        }
 
         if (isPastOrPresentOccupation(obs)) {
 
@@ -93,6 +96,11 @@ public class CdaOdhDataGenerator {
       StringBuilder table,
       StringBuilder occEntries,
       int rowNum) {
+    if (obs == null) {
+      logger.error("Observation is null, cannot generate Employment Status Observation");
+      return;
+    }
+
     StringBuilder sb = new StringBuilder();
     String display = CdaGeneratorConstants.UNKNOWN_VALUE;
     Map<String, String> bodyvals = new LinkedHashMap<>();

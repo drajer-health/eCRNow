@@ -1,6 +1,5 @@
 package com.drajer.cdafromr4;
 
-import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import org.junit.Test;
 
@@ -13,10 +12,8 @@ public class CdaChiefComplaintGeneratorTest extends BaseGeneratorTest {
 
   @Test
   public void testGenerateChiefComplaintSection() {
-    R4FhirData data = new R4FhirData();
     String expectedXml = TestUtils.getFileContentAsString(CHEIF_COMPLAINT_CDA_FILE);
-    String actualXml =
-        CdaChiefComplaintGenerator.generateChiefComplaintSection(data, launchDetails, "3.1");
+    String actualXml = CdaChiefComplaintGenerator.generateChiefComplaintSection();
 
     assertXmlEquals(expectedXml, actualXml);
   }

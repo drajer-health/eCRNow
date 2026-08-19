@@ -349,7 +349,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForNFCDWithText(String cdName, String code, String text) {
 
-    String retVal = new String();
+    String retVal;
 
     if (text != null && !text.isEmpty()) {
 
