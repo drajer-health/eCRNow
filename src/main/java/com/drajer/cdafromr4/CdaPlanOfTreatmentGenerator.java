@@ -482,8 +482,7 @@ public class CdaPlanOfTreatmentGenerator {
 
     String codeXml = "";
     Pair<Boolean, String> codeXmlPair =
-        CdaFhirUtilities.getMedicationCodeXml(
-            launchDetails, medicationConcept, false, "", paths, version);
+        CdaFhirUtilities.getMedicationCodeXml(launchDetails, medicationConcept, false, "", paths);
 
     if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
       sb.append(
@@ -1169,7 +1168,6 @@ public class CdaPlanOfTreatmentGenerator {
     }
 
     StringBuilder sb = new StringBuilder();
-    String functionCode = "";
 
     for (Reference reference : performerRefs) {
       if (reference.hasReferenceElement() && reference.getReferenceElement().hasIdPart()) {
@@ -1178,12 +1176,12 @@ public class CdaPlanOfTreatmentGenerator {
         if (CdaFhirUtilities.isResourceOfType(reference, ResourceType.Practitioner)) {
           Practitioner practitioner = data.getPractitionerById(idPart);
           if (practitioner != null) {
-            sb.append(CdaFhirUtilities.getPerformerXml(practitioner, functionCode, null));
+            sb.append(CdaFhirUtilities.getPerformerXml(practitioner, null));
           }
         } else if (CdaFhirUtilities.isResourceOfType(reference, ResourceType.Organization)) {
           Organization organization = data.getOrganizationForId(idPart);
           if (organization != null) {
-            sb.append(CdaFhirUtilities.getPerformerXml(null, functionCode, organization));
+            sb.append(CdaFhirUtilities.getPerformerXml(null, organization));
           }
         }
       }

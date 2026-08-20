@@ -1466,7 +1466,7 @@ public class CdaFhirUtilities {
                 CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                     cdName, mappedCd, csd.getValue0(), csd.getValue1(), c.getDisplay()));
           }
-        } else if (Boolean.TRUE.equals(cdStarted)) {
+        } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
           String mappedCode =
@@ -1582,11 +1582,7 @@ public class CdaFhirUtilities {
   }
 
   public static String getCodeableConceptXmlForValueWithValueSetAndVersion(
-      CodeableConcept cd,
-      String cdName,
-      String contentRef,
-      String valueset,
-      String valuesetversion) {
+      CodeableConcept cd, String cdName, String contentRef) {
     String sb = "";
     if (cd != null && cd.hasCoding()) {
       sb += getCodingXmlForValue(cd.getCoding(), cdName, contentRef);
@@ -1677,7 +1673,7 @@ public class CdaFhirUtilities {
                 CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
                     mappedCode, csd.getValue0(), csd.getValue1(), c.getDisplay()));
           }
-        } else if (Boolean.TRUE.equals(cdStarted)) {
+        } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
           String mappedCode =
@@ -1882,11 +1878,7 @@ public class CdaFhirUtilities {
 
     String s = "";
 
-    s =
-        getSingleCodingXml(
-            cd,
-            CdaGeneratorConstants.RELIGION_CODE_EL_NAME,
-            CdaGeneratorConstants.FHIR_RELIGIOUS_AFFILIATION_URL);
+    s = getSingleCodingXml(cd, CdaGeneratorConstants.RELIGION_CODE_EL_NAME);
 
     return s;
   }
@@ -1902,7 +1894,7 @@ public class CdaFhirUtilities {
 
       if (c != null && c.hasSystem()) {
 
-        s = getSingleCodingXml(c, elName, csUrl);
+        s = getSingleCodingXml(c, elName);
       }
     }
     return s;
@@ -1923,7 +1915,7 @@ public class CdaFhirUtilities {
     return null;
   }
 
-  public static String getSingleCodingXml(Coding c, String elName, String csUrl) {
+  public static String getSingleCodingXml(Coding c, String elName) {
 
     String s = "";
 
@@ -2085,7 +2077,7 @@ public class CdaFhirUtilities {
 
     List<HumanName> names = filterActiveNames(allNames);
 
-    if (names != null && !names.isEmpty()) {
+    if (!names.isEmpty()) {
       Optional<HumanName> hName = names.stream().findFirst();
       if (hName.isPresent()) {
         HumanName name = hName.get();
@@ -3096,7 +3088,6 @@ public class CdaFhirUtilities {
    * Processes matching coding and builds XML.
    *
    * @param code the code to match
-   * @param csUrl the code system URL
    * @param elementName the element name
    * @param codeSystem the code system
    * @param codeSystemName the code system name
@@ -3110,7 +3101,6 @@ public class CdaFhirUtilities {
    */
   private static String processMatchingCoding(
       String code,
-      String csUrl,
       String elementName,
       String codeSystem,
       String codeSystemName,
@@ -3237,7 +3227,6 @@ public class CdaFhirUtilities {
           dispName =
               processMatchingCoding(
                   code,
-                  csUrl,
                   elementName,
                   codeSystem,
                   codeSystemName,
@@ -3352,14 +3341,10 @@ public class CdaFhirUtilities {
     Boolean foundCodings = false;
 
     if (cc != null && cc.hasCoding()) {
-      String dispName = cc.getText();
       List<Coding> cds = cc.getCoding();
 
       for (Coding cd : cds) {
         if (cd.hasCode() && isCodeContained(matchedCodes, cd.getCode()) && !foundCodings) {
-          if (cd.hasDisplay()) {
-            dispName = cd.getDisplay();
-          }
           if (processMatchedCodingForValueSet(
               cd, elementName, valueSet, valuesetVersion, contentRef, valueElem, retval)) {
             foundCodings = true;
@@ -3374,11 +3359,6 @@ public class CdaFhirUtilities {
       retval.append(translations.toString());
       retval.append(CdaGeneratorUtils.getXmlForEndElement(elementName));
     } else {
-      String dispName = "";
-      if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) {
-        dispName = cc.getText();
-      }
-
       if (Boolean.FALSE.equals(valueElem)) {
         retval.append(
             CdaFhirUtilities.getCodeableConceptXml(
@@ -3541,13 +3521,11 @@ public class CdaFhirUtilities {
 
     StringBuilder addrString = new StringBuilder(200);
 
-    StringBuilder altXml = new StringBuilder(200);
-
     if (coding != null && !coding.isEmpty()) {
 
       for (Coding c : coding) {
 
-        String xml = getSingleCodingXml(c, elName, "");
+        String xml = getSingleCodingXml(c, elName);
 
         if (!xml.isEmpty()) {
           addrString.append(xml);
@@ -3559,7 +3537,7 @@ public class CdaFhirUtilities {
     return addrString.toString();
   }
 
-  public static Object getPerformerXml(Practitioner pract, String functionCode, Organization org) {
+  public static Object getPerformerXml(Practitioner pract, Organization org) {
 
     StringBuilder s = new StringBuilder(200);
 
@@ -4066,8 +4044,7 @@ public class CdaFhirUtilities {
       CodeableConcept code,
       Boolean valElement,
       String contentRef,
-      List<String> paths,
-      String version) {
+      List<String> paths) {
 
     String elementType =
         valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;

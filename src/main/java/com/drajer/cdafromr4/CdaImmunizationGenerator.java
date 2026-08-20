@@ -124,7 +124,6 @@ public class CdaImmunizationGenerator {
       List<ImmunizationPerformerComponent> izcs, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(400);
-    String functionCode = "";
 
     if (izcs != null && data != null) {
       for (ImmunizationPerformerComponent perf : izcs) {
@@ -139,7 +138,7 @@ public class CdaImmunizationGenerator {
           Practitioner pract = data.getPractitionerById(actor.getReferenceElement().getIdPart());
 
           if (pract != null) {
-            sb.append(CdaFhirUtilities.getPerformerXml(pract, functionCode, null));
+            sb.append(CdaFhirUtilities.getPerformerXml(pract, null));
             return sb.toString();
           }
         }

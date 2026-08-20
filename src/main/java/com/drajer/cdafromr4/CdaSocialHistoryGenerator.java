@@ -774,7 +774,7 @@ public class CdaSocialHistoryGenerator {
     sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
     String contentRef =
         CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(data31.index);
-    data31.genderIdentityXml = generateGenderIdentityEntry(genderIdentity, display, contentRef);
+    data31.genderIdentityXml = generateGenderIdentityEntry(genderIdentity, contentRef);
     data31.index++;
   }
 
@@ -793,8 +793,7 @@ public class CdaSocialHistoryGenerator {
     sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
     String contentRef =
         CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(data31.index);
-    data31.tribalAffiliationXml =
-        generateTribalAffiliationEntry(tribalAffiliation, display, contentRef);
+    data31.tribalAffiliationXml = generateTribalAffiliationEntry(tribalAffiliation, contentRef);
     data31.index++;
   }
 
@@ -836,7 +835,7 @@ public class CdaSocialHistoryGenerator {
       String contentRef =
           CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
               + Integer.toString(data31.index);
-      data31.nationalityDataXml.append(generateNationalityEntry(obs, display, details, contentRef));
+      data31.nationalityDataXml.append(generateNationalityEntry(obs, details, contentRef));
       data31.index++;
     }
   }
@@ -859,7 +858,7 @@ public class CdaSocialHistoryGenerator {
       String contentRef =
           CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
               + Integer.toString(data31.index);
-      data31.residencyDataXml.append(generateResidencyEntry(obs, display, details, contentRef));
+      data31.residencyDataXml.append(generateResidencyEntry(obs, details, contentRef));
       data31.index++;
     }
   }
@@ -882,7 +881,7 @@ public class CdaSocialHistoryGenerator {
       String contentRef =
           CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
               + Integer.toString(data31.index);
-      data31.homelessDataXml.append(generateHomelessEntry(obs, display, details, contentRef));
+      data31.homelessDataXml.append(generateHomelessEntry(obs, details, contentRef));
       data31.index++;
     }
   }
@@ -906,7 +905,7 @@ public class CdaSocialHistoryGenerator {
       String contentRef =
           CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
               + Integer.toString(data31.index);
-      data31.disabilityDataXml.append(generateDisabilityEntry(obs, display, details, contentRef));
+      data31.disabilityDataXml.append(generateDisabilityEntry(obs, details, contentRef));
       data31.index++;
     }
   }
@@ -949,7 +948,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static String generateDisabilityEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
     StringBuilder sb = new StringBuilder();
 
     // Generate the entry
@@ -991,7 +990,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static String generateHomelessEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1041,7 +1040,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static Object generateResidencyEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
     StringBuilder sb = new StringBuilder();
 
     // Generate the entry
@@ -1092,7 +1091,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static Object generateNationalityEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1144,7 +1143,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   public static String generateTribalAffiliationEntry(
-      Extension tribalAffiliation, String display, String contentRef) {
+      Extension tribalAffiliation, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1209,7 +1208,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   public static String generateGenderIdentityEntry(
-      CodeableConcept genderIdentity, String display, String contentRef) {
+      CodeableConcept genderIdentity, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 

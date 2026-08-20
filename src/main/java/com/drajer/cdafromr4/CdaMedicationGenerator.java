@@ -19,22 +19,6 @@ public class CdaMedicationGenerator {
   public static final String COMPLETED = "completed";
   private static final String UNKNOWN_VALUE = CdaGeneratorConstants.UNKNOWN_VALUE;
   private static final String MEDICATIONS_FOUND_LOG_MSG = "Medications found for processing ";
-  private static final String FOUND_CONTAINED_REFERENCE_MSG = " Found a Contained Reference ";
-  private static final String EXAMINE_CONTAINED_MEDS_MSG = "starting to examine contained meds ";
-  private static final String ADDING_MED_REQ_DUE_TO_CODE_MSG = "Adding Med Req - due to code ";
-  private static final String EXAMINE_CONTAINED_INGREDIENTS_MSG =
-      "starting to examine contained ingredients ";
-  private static final String ADDING_MED_REQ_DUE_TO_INGREDIENT_MSG =
-      "Adding Med Req due to ingredient ";
-  private static final String FOUND_EXTERNAL_MED_REF_MSG =
-      " Found an External Medication Reference ";
-  private static final String ADDING_MED_AND_MED_REQ_DUE_TO_CODE_MSG =
-      "Adding Medication and MedicationRequest - due to code ";
-  private static final String NO_CMEDS_TO_COMPARE_MSG =
-      " No cmeds to compare and extract medications ";
-  private static final String FOUND_MED_CONCEPT_MSG = " Found a medication codeable concept ";
-  private static final String FOUND_MED_REQ_WITH_RXNORM_CODE_MSG =
-      "Found a Medication Request with a RxNorm code";
   private static final String NO_VALID_MED_REQUESTS_MSG =
       "No Valid Medication Requests in the bundle to process";
 
@@ -431,7 +415,7 @@ public class CdaMedicationGenerator {
 
     if ((meds != null && !meds.isEmpty())
         || (medAdms != null && !medAdms.isEmpty())
-        || (medReqs != null && !medReqs.isEmpty())) {
+        || !medReqs.isEmpty()) {
 
       logger.info(MEDICATIONS_FOUND_LOG_MSG);
       // Generate the component and section end tags
@@ -644,8 +628,7 @@ public class CdaMedicationGenerator {
         CdaFhirUtilities.getMedicationCodeableConcept(medication, medList);
     String codeXml = "";
     Pair<Boolean, String> codeXmlPair =
-        CdaFhirUtilities.getMedicationCodeXml(
-            details, medicationConcept, false, "", paths, version);
+        CdaFhirUtilities.getMedicationCodeXml(details, medicationConcept, false, "", paths);
 
     if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
       sb.append(
@@ -1076,7 +1059,7 @@ public class CdaMedicationGenerator {
     List<MedicationStatement> meds = getValidMedicationStatements(data, medList);
     List<MedicationRequest> medReqs = getValidMedicationRequestsForMedSection(data, medList);
 
-    if (meds != null && !meds.isEmpty() || medReqs != null && !medReqs.isEmpty()) {
+    if (!meds.isEmpty() || !medReqs.isEmpty()) {
 
       logger.info(MEDICATIONS_FOUND_LOG_MSG);
       // Generate the component and section end tags

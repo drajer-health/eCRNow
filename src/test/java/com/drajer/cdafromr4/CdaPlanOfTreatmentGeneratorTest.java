@@ -801,7 +801,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     List<Medication> medList = new ArrayList<>();
     Pair<Boolean, String> pair = new Pair<>(true, "<codeXml>test</codeXml>");
     mockStatic(CdaFhirUtilities.class);
-    when(CdaFhirUtilities.getMedicationCodeXml(any(), any(), anyBoolean(), any(), anyList(), any()))
+    when(CdaFhirUtilities.getMedicationCodeXml(any(), any(), anyBoolean(), any(), anyList()))
         .thenReturn(pair);
     when(CdaFhirUtilities.getMedicationCodeableConcept(any(), any())).thenCallRealMethod();
 
@@ -825,7 +825,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     List<Medication> medList = new ArrayList<>();
     mockStatic(CdaFhirUtilities.class);
-    when(CdaFhirUtilities.getMedicationCodeXml(any(), any(), anyBoolean(), any(), anyList(), any()))
+    when(CdaFhirUtilities.getMedicationCodeXml(any(), any(), anyBoolean(), any(), anyList()))
         .thenReturn(new Pair<>(false, ""));
     when(CdaFhirUtilities.getXmlForMedicationTypeForCodeSystem(
             any(), any(), anyBoolean(), anyString(), anyBoolean(), any(), any()))
@@ -851,7 +851,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     List<Medication> medList = new ArrayList<>();
     mockStatic(CdaFhirUtilities.class);
-    when(CdaFhirUtilities.getMedicationCodeXml(any(), any(), anyBoolean(), any(), anyList(), any()))
+    when(CdaFhirUtilities.getMedicationCodeXml(any(), any(), anyBoolean(), any(), anyList()))
         .thenReturn(new Pair<>(false, ""));
     when(CdaFhirUtilities.getXmlForMedicationTypeForCodeSystem(
             any(), any(), anyBoolean(), anyString(), anyBoolean(), any(), any()))

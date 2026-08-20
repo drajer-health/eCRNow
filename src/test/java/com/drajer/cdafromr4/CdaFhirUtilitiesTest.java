@@ -3092,7 +3092,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         (Organization)
             loadResourceDataFromFile(Organization.class, "R4/Organization/Organization.json");
 
-    String actualXml = CdaFhirUtilities.getPerformerXml(null, "", organization).toString();
+    String actualXml = CdaFhirUtilities.getPerformerXml(null, organization).toString();
 
     assertNotNull(actualXml);
   }
@@ -3290,7 +3290,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String result =
         CdaFhirUtilities.getCodeableConceptXmlForValueWithValueSetAndVersion(
-            concept, "testCd", "#contentRef", "testVS", "1.0");
+            concept, "testCd", "#contentRef");
 
     assertNotNull(result);
     Assert.assertEquals("<testCd xsi:type=\"CD\" nullFlavor=\"NI\"/>".trim(), result.trim());
@@ -3304,7 +3304,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String result =
         CdaFhirUtilities.getCodeableConceptXmlForValueWithValueSetAndVersion(
-            concept, "testCd", "#contentRef", "testVS", "1.0");
+            concept, "testCd", "#contentRef");
 
     assertNotNull(result);
     assertFalse(result.isEmpty());
@@ -3315,7 +3315,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   public void testWithNullCodeableConcept() {
     String result =
         CdaFhirUtilities.getCodeableConceptXmlForValueWithValueSetAndVersion(
-            null, "testCd", "#contentRef", "testVS", "1.0");
+            null, "testCd", "#contentRef");
     assertNotNull(result);
     assertFalse(result.isEmpty());
     assertTrue(result.contains(CdaGeneratorConstants.NF_NI));
@@ -3756,7 +3756,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     Pair<Boolean, String> resultMatch =
         CdaFhirUtilities.getMedicationCodeXml(
-            launchDetails, codeableConcept, false, "content/12", paths, "V.3.0");
+            launchDetails, codeableConcept, false, "content/12", paths);
     assertNotNull(resultMatch);
     assertNotNull(resultMatch.getValue1());
   }

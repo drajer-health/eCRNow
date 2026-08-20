@@ -91,7 +91,6 @@ public class CdaProcedureGenerator {
       int rowNum) {
 
     StringBuilder sb = new StringBuilder();
-    String display = CdaGeneratorConstants.UNKNOWN_VALUE;
     Map<String, String> bodyvals = new LinkedHashMap<>();
 
     // Generate the entry
@@ -113,7 +112,7 @@ public class CdaProcedureGenerator {
         CdaGeneratorUtils.getXmlForII(
             details.getAssigningAuthorityId(), proc.getIdElement().getIdPart()));
 
-    display = CdaFhirUtilities.getDisplayStringForCodeableConcept(proc.getCode());
+    String display = CdaFhirUtilities.getDisplayStringForCodeableConcept(proc.getCode());
     bodyvals.put(CdaGeneratorConstants.PROC_TABLE_COL_1_BODY_CONTENT, display);
     sb.append(
         CdaFhirUtilities.getCodeableConceptXml(
