@@ -1,9 +1,9 @@
 package com.drajer.ecrapp.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -13,14 +13,17 @@ import com.drajer.cda.parser.CdaRrModel;
 import com.drajer.cda.parser.RrParser;
 import com.drajer.ecrapp.dao.EicrDao;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.R4ResourcesData;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.Utility;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -87,12 +90,18 @@ public class EicrServiceImplTest {
 
   private ClientDetails clientDetails;
 
+  private LaunchDetails launchDetails;
+
   private DocumentReference documentReference;
 
   @Before
   public void setUp() throws Exception {
     ObjectMapper objectMapper = new ObjectMapper();
     eicr = objectMapper.readValue(new File("src/test/resources/R4/Misc/eicr.json"), Eicr.class);
+    launchDetails =
+        objectMapper.readValue(
+            new File("src/test/resources/R4/Misc/LaunchDetails/LaunchDetails.json"),
+            LaunchDetails.class);
     clientDetails =
         objectMapper.readValue(
             new File("src/test/resources/R4/Misc/ClientDetails/ClientDetails1.json"),
@@ -101,6 +110,10 @@ public class EicrServiceImplTest {
         objectMapper.readValue(
             new File("src/test/resources/R4/Misc/reportabilityResponse.json"),
             ReportabilityResponse.class);
+    launchDetails =
+        (LaunchDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/LaunchDetails/LaunchDetails.json", LaunchDetails.class);
     FhirContext fhirContext = FhirContext.forR4();
     documentReference =
         fhirContext
@@ -169,24 +182,28 @@ public class EicrServiceImplTest {
     Mockito.lenient().doReturn(eicr).when(eicrDao).getEicrByCorrelationId(Mockito.anyString());
     eicrServiceImpl.handleFailureMdn(
         reportabilityResponse, "ecrUnitTestCorrelationID", "ecrunittest_id");
+    assertEquals(EicrTypes.RrType.FAILURE_MDN.toString(), eicr.getResponseType());
+    assertEquals("ecrunittest_id", eicr.getResponseXRequestId());
+    Mockito.verify(eicrDao).saveOrUpdate(eicr);
   }
 
   @Test
   public void constructDocumentReference() {
-    Eicr emptyEicr = new Eicr();
+    Eicr testEicr = new Eicr();
     DocumentReference actualDocumentReference =
-        eicrServiceImpl.constructDocumentReference(reportabilityResponse, emptyEicr, "");
+        eicrServiceImpl.constructDocumentReference(reportabilityResponse, testEicr, "");
     assertNull(actualDocumentReference);
   }
 
   @Test
   public void submitDocRefToEhrWithoutCustomerDetails() {
-    DocumentReference emptyDocumentReference = new DocumentReference();
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> {
-          eicrServiceImpl.submitDocRefToEhr(emptyDocumentReference, eicr);
-        });
+    DocumentReference testDocumentReference = new DocumentReference();
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              eicrServiceImpl.submitDocRefToEhr(testDocumentReference, eicr);
+            });
   }
 
   @Test
@@ -234,55 +251,62 @@ public class EicrServiceImplTest {
     Mockito.lenient().doReturn(true).when(outcome).getCreated();
 
     Mockito.lenient().doReturn(eicr).when(eicrDao).saveOrUpdate(eicr);
-    assertThrows(
-        UnclassifiedServerFailureException.class,
-        () -> {
-          eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
-        });
+    UnclassifiedServerFailureException exception =
+        assertThrows(
+            UnclassifiedServerFailureException.class,
+            () -> {
+              eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
+            });
   }
 
   @Test
   public void submitDocRefToEhrByException() {
+    RefreshTokenScheduler testTokenScheduler = mock(RefreshTokenScheduler.class);
     Mockito.lenient()
         .doReturn(clientDetails)
         .when(clientDetailsService)
         .getClientDetailsByUrl(Mockito.any());
 
-    assertThrows(
-        ResponseStatusException.class,
-        () -> {
-          eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
-        });
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> {
+              eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
+            });
   }
 
   @Test
   public void handleReportabilityWithroutReportabilityResponse() {
-    ReportabilityResponse emptyReportabilityResponse = new ReportabilityResponse();
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> {
-          eicrServiceImpl.handleReportabilityResponse(
-              emptyReportabilityResponse, "ecrunittest_id", true);
-        });
+    ReportabilityResponse testReportabilityResponse = new ReportabilityResponse();
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              eicrServiceImpl.handleReportabilityResponse(
+                  testReportabilityResponse, "ecrunittest_id", true);
+            });
   }
 
   @Test
   public void handleFailureMdnForException() {
-    ReportabilityResponse emptyReportabilityResponse = new ReportabilityResponse();
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> {
-          eicrServiceImpl.handleFailureMdn(
-              emptyReportabilityResponse, "ecrUnitTestCorrelationID", "ecrunittest_id");
-        });
+    ReportabilityResponse testReportabilityResponse = new ReportabilityResponse();
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              eicrServiceImpl.handleFailureMdn(
+                  testReportabilityResponse, "ecrUnitTestCorrelationID", "ecrunittest_id");
+            });
   }
 
   @Test
   public void handleReportabilityResponseWithSuccessful() throws Exception {
     try {
       eicrServiceImpl.handleReportabilityResponse(reportabilityResponse, "ecrunittest_id", true);
+      assertNotNull(reportabilityResponse.getRrXml());
     } catch (NullPointerException e) {
       // Expected - reportabilityResponse may not be fully initialized
+      assertNotNull(e);
     }
   }
 
@@ -363,6 +387,7 @@ public class EicrServiceImplTest {
   public void deleteEicr() {
     Mockito.doNothing().when(eicrDao).deleteEicr(Mockito.any());
     eicrServiceImpl.deleteEicr(eicr);
+    Mockito.verify(eicrDao).deleteEicr(eicr);
   }
 
   @Test
@@ -394,11 +419,12 @@ public class EicrServiceImplTest {
         .thenReturn(null);
     Mockito.lenient().doReturn(eicr).when(eicrDao).saveOrUpdate(eicr);
 
-    assertThrows(
-        Exception.class,
-        () -> {
-          eicrServiceImpl.handleReportabilityResponse(
-              reportabilityResponse, "ecrunittest_id", true);
-        });
+    Exception exception =
+        assertThrows(
+            Exception.class,
+            () -> {
+              eicrServiceImpl.handleReportabilityResponse(
+                  reportabilityResponse, "ecrunittest_id", true);
+            });
   }
 }

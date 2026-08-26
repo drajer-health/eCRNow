@@ -14,8 +14,6 @@ import java.util.Date;
 import org.hl7.fhir.r4.model.Bundle;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -205,14 +203,10 @@ public class SubscriptionNotificationReceiverControllerTest {
             .contains("Unable to process notification since the app has not started yet"));
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "\"{ \\\"invalid\\\": \\\"bundle\\\" }\"",
-    "null",
-    "\"{ \\\"invalid\\\": \\\"bundle\\\" }\""
-  })
-  public void testProcessNotification_InvalidBundle(String notificationBundle)
-      throws InvalidLaunchContext {
+  @Test
+  public void testProcessNotification_InvalidFHIRBundle() throws InvalidLaunchContext {
+    String notificationBundle = "{ \"invalid\": \"bundle\" }";
+
     when(jsonParser.parseResource(notificationBundle)).thenReturn(null);
 
     request.addHeader("X-Request-ID", "12345");
@@ -222,6 +216,49 @@ public class SubscriptionNotificationReceiverControllerTest {
             notificationBundle, request, response, null);
 
     assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, responseEntity.getStatusCode());
+    assertTrue(
+        responseEntity
+            .getBody()
+            .toString()
+            .contains(
+                "Unable to parse Resource Param in request body (Has to be a Notification FHIR R4 Bundle)"));
+  }
+
+  @Test
+  public void testProcessNotification_InvalidFHIRBundleParsing() throws InvalidLaunchContext {
+    String notificationBundle = null;
+
+    when(jsonParser.parseResource(notificationBundle)).thenReturn(null);
+
+    request.addHeader("X-Request-ID", "12345");
+
+    ResponseEntity<Object> responseEntity =
+        subscriptionNotificationReceiverController.processNotification(
+            notificationBundle, request, response, null);
+
+    assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, responseEntity.getStatusCode());
+
+    assertTrue(
+        responseEntity
+            .getBody()
+            .toString()
+            .contains(
+                "Unable to parse Resource Param in request body (Has to be a Notification FHIR R4 Bundle)"));
+  }
+
+  @Test
+  public void testProcessNotification_InvalidResourceParsing() throws InvalidLaunchContext {
+    String notificationBundle = "{ \"invalid\": \"bundle\" }";
+    when(jsonParser.parseResource(notificationBundle)).thenReturn(null);
+
+    request.addHeader("X-Request-ID", "12345");
+
+    ResponseEntity<Object> responseEntity =
+        subscriptionNotificationReceiverController.processNotification(
+            notificationBundle, request, response, null);
+
+    assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, responseEntity.getStatusCode());
+
     assertTrue(
         responseEntity
             .getBody()
