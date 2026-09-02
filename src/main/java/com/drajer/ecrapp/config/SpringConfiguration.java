@@ -87,7 +87,6 @@ public class SpringConfiguration {
     this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
   }
 
-
   @Bean
   @Primary
   FederatedRepository getEcrRepository(InMemoryFhirRepository artifactRepository) {
