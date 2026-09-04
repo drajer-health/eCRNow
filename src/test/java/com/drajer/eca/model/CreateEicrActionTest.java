@@ -3,6 +3,7 @@ package com.drajer.eca.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -292,5 +293,65 @@ public class CreateEicrActionTest {
     // SetUp CreateEicrAction
     createtEicrAction.addRelatedAction(mockRelActn);
     createtEicrAction.setActionId("123");
+  }
+
+  @Test
+  public void testExecute_ConditionsNotMet() throws Exception {
+    PatientExecutionState state = new PatientExecutionState();
+    when(mockDetails.getValidationMode()).thenReturn(false);
+
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(state);
+
+    CreateEicrAction action = new CreateEicrAction();
+    action.execute(mockDetails, launchType, "taskId");
+
+    assertNotNull(state);
+  }
+
+  @Test
+  public void testExecute_JobScheduledWithScheduledJobEvent() throws Exception {
+    CreateEicrStatus status = new CreateEicrStatus();
+    status.setJobStatus(JobStatus.SCHEDULED);
+    when(mockState.getCreateEicrStatus()).thenReturn(status);
+    when(mockDetails.getValidationMode()).thenReturn(false);
+
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+
+    PowerMockito.mockStatic(EcaUtils.class);
+    when(EcaUtils.recheckTriggerCodes(any(), any())).thenReturn(mockState);
+
+    CreateEicrAction action = new CreateEicrAction();
+    action.execute(mockDetails, WorkflowEvent.SCHEDULED_JOB, "taskId");
+
+    // After createEicrIfTriggered, status is COMPLETED
+    assertNotNull(mockState.getCreateEicrStatus().getJobStatus());
+  }
+
+  @Test
+  public void testExecute_ValidationModeTrue() throws Exception {
+    CreateEicrStatus status = new CreateEicrStatus();
+    status.setJobStatus(JobStatus.NOT_STARTED);
+    when(mockState.getCreateEicrStatus()).thenReturn(status);
+    when(mockDetails.getValidationMode()).thenReturn(true);
+
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+
+    PowerMockito.mockStatic(EcaUtils.class);
+    when(EcaUtils.recheckTriggerCodes(any(), any())).thenReturn(mockState);
+
+    CreateEicrAction action = new CreateEicrAction();
+    action.execute(mockDetails, launchType, "taskId");
+
+    assertNotNull(mockState.getCreateEicrStatus());
+  }
+
+  @Test
+  public void testPrint() {
+    CreateEicrAction action = new CreateEicrAction();
+    action.print();
+    assertTrue(true);
   }
 }

@@ -1,664 +1,560 @@
-// package com.drajer.bsa.routing.impl;
-//
-// import static org.junit.Assert.*;
-// import static org.mockito.ArgumentMatchers.*;
-// import static org.mockito.Mockito.*;
-//
-// import com.drajer.bsa.model.HealthcareSetting;
-// import com.drajer.bsa.model.KarProcessingData;
-// import com.drajer.bsa.service.RrReceiver;
-// import java.io.ByteArrayInputStream;
-// import java.io.InputStream;
-// import java.nio.charset.StandardCharsets;
-// import java.util.*;
-// import javax.mail.*;
-// import javax.mail.internet.InternetAddress;
-// import javax.mail.internet.MimeMessage;
-// import javax.mail.search.FlagTerm;
-// import org.apache.commons.io.IOUtils;
-// import org.json.JSONObject;
-// import org.junit.Before;
-// import org.junit.Ignore;
-// import org.junit.Test;
-// import org.junit.runner.RunWith;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.MockitoAnnotations;
-// import org.powermock.api.mockito.PowerMockito;
-// import org.powermock.core.classloader.annotations.PowerMockIgnore;
-// import org.powermock.core.classloader.annotations.PrepareForTest;
-// import org.powermock.modules.junit4.PowerMockRunner;
-// import org.powermock.reflect.Whitebox;
-// import org.springframework.test.util.ReflectionTestUtils;
-//
-// @RunWith(PowerMockRunner.class)
-// @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*",
-// "javax.management.*"})
-// @PrepareForTest({
-//  Session.class,
-//  Transport.class,
-//  Store.class,
-//  IOUtils.class,
-//  UUID.class,
-//  DirectTransportImpl.class,
-// })
-//
-// public class DirectTransportImplTest {
-//
-//  @InjectMocks private DirectTransportImpl directTransport;
-//
-//  @Mock private KarProcessingData data;
-//
-//  @Mock private Session session;
-//
-//  @Mock private Store store;
-//
-//  @Mock private Folder folder;
-//
-//  @Mock private RrReceiver rrReceiver;
-//  @Mock private Session mailSession;
-//  @Mock private Transport mailTransport;
-//  @Mock private Store mailStore;
-//  @Mock private Folder inboxFolder;
-//  @Mock private Message emailMessage;
-//  @Mock private Multipart multipart;
-//  @Mock private BodyPart bodyPart;
-//  @Mock private Header messageHeader;
-//  @Mock private Enumeration<Header> headersEnumeration;
-//
-//  private KarProcessingData karProcessingData;
-//  private HealthcareSetting healthcareSetting;
-//
-//  @Before
-//  public void setUp() throws Exception {
-//    MockitoAnnotations.initMocks(this);
-//
-//    healthcareSetting = new HealthcareSetting();
-//    healthcareSetting.setDirectUser("test@user.com");
-//    healthcareSetting.setDirectRecipientAddress("recipient@test.com");
-//    healthcareSetting.setDirectPwd("password");
-//    healthcareSetting.setSmtpUrl("smtp.test.com");
-//    healthcareSetting.setSmtpPort("587");
-//    healthcareSetting.setImapUrl("imap.test.com");
-//    healthcareSetting.setImapPort("993");
-//    healthcareSetting.setDirectHost("direct.test.com");
-//    healthcareSetting.setDirectTlsVersion("TLSv1.2");
-//    karProcessingData = new KarProcessingData();
-//    karProcessingData.setHealthcareSetting(healthcareSetting);
-//    karProcessingData.setSubmittedCdaData("<ClinicalDocument>Test CDA</ClinicalDocument>");
-//    karProcessingData.setxCorrelationId("test-correlation-id");
-//    PowerMockito.mockStatic(Session.class);
-//    when(Session.getInstance(any(Properties.class), isNull())).thenReturn(mailSession);
-//    when(mailSession.getTransport("smtp")).thenReturn(mailTransport);
-//    when(mailSession.getStore("imap")).thenReturn(mailStore);
-//    when(mailStore.getFolder("Inbox")).thenReturn(inboxFolder);
-//    ReflectionTestUtils.setField(directTransport, "logDirectory", "test-logs");
-//    ReflectionTestUtils.setField(directTransport, "imapReadRetryLimit", 1);
-//  }
-//
-//  @Test
-//  public void testReadMail_withMocksForPrivateMethods() throws Exception {
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    PowerMockito.mockStatic(Session.class);
-//    when(Session.getInstance(any(Properties.class), isNull())).thenReturn(mailSession);
-//    when(mailSession.getStore(anyString())).thenReturn(mailStore);
-//    when(mailStore.getFolder(anyString())).thenReturn(inboxFolder);
-//    doNothing().when(mailStore).connect(anyString(), anyInt(), anyString(), anyString());
-//    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
-//    doNothing().when(inboxFolder).close(true);
-//    doNothing().when(mailStore).close();
-//    PowerMockito.doNothing().when(spy, "processMessages", inboxFolder);
-//    PowerMockito.doNothing().when(spy, "deleteReadMessages", inboxFolder);
-//    Whitebox.invokeMethod(spy, "readMail", "host", "user", "pwd", "993", "corrId", "TLSv1.2");
-//    PowerMockito.verifyPrivate(spy, times(1)).invoke("processMessages", inboxFolder);
-//    PowerMockito.verifyPrivate(spy, times(1)).invoke("deleteReadMessages", inboxFolder);
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  public void testReadMailUsingImap_success() throws Exception {
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    PowerMockito.doNothing()
-//        .when(
-//            spy,
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//
-//    Whitebox.invokeMethod(spy, "readMailUsingImap", "host", "user", "pwd", "25", "corr", "TLS");
-//
-//    assertTrue(true);
-//  }
-//
-//  @Test(expected = RuntimeException.class)
-//  public void testSendEicrDataUsingDirect_ThrowsExceptionWhenNoHost() {
-//    healthcareSetting.setSmtpUrl(null);
-//    healthcareSetting.setDirectHost(null);
-//    directTransport.sendEicrDataUsingDirect(karProcessingData);
-//  }
-//
-//  @Test
-//  public void testSendEicrDataUsingDirect_ExceptionDuringSend() throws Exception {
-//    doThrow(new MessagingException("Connection failed"))
-//        .when(mailTransport)
-//        .connect(anyString(), anyInt(), anyString(), anyString());
-//    try {
-//      directTransport.sendEicrDataUsingDirect(karProcessingData);
-//      fail("Expected RuntimeException");
-//    } catch (RuntimeException e) {
-//      assertTrue(e.getMessage().contains("Unable to send Direct Message"));
-//    }
-//  }
-//
-//  @Test
-//  public void testReadMailUsingImap_folderClosedException() throws Exception {
-//
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    ReflectionTestUtils.setField(spy, "imapReadRetryLimit", 1);
-//
-//    PowerMockito.doThrow(new FolderClosedException(null))
-//        .when(
-//            spy,
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//
-//    Whitebox.invokeMethod(spy, "readMailUsingImap", "host", "user", "pwd", "25", "corr", "TLS");
-//
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  public void testReadMailUsingImap_genericException() throws Exception {
-//
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    ReflectionTestUtils.setField(spy, "imapReadRetryLimit", 1);
-//
-//    PowerMockito.doThrow(new RuntimeException("fail"))
-//        .when(
-//            spy,
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//
-//    Whitebox.invokeMethod(spy, "readMailUsingImap", "host", "user", "pwd", "25", "corr", "TLS");
-//
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  public void testReceiveRrDataUsingDirect_NoHostConfigured() throws Exception {
-//    healthcareSetting.setImapUrl(null);
-//    healthcareSetting.setDirectHost(null);
-//    directTransport.receiveRrDataUsingDirect(karProcessingData);
-//    verify(mailStore, never()).connect(anyString(), anyInt(), anyString(), anyString());
-//  }
-//
-//  @Test
-//  public void testGetMessageId_NotFound() throws Exception {
-//    when(emailMessage.getAllHeaders()).thenReturn(headersEnumeration);
-//    when(headersEnumeration.hasMoreElements()).thenReturn(true, false);
-//    when(headersEnumeration.nextElement()).thenReturn(messageHeader);
-//    when(messageHeader.getName()).thenReturn("Subject");
-//    when(messageHeader.getValue()).thenReturn("Test Subject");
-//    String messageId = directTransport.getMessageId(emailMessage);
-//    assertNull(messageId);
-//  }
-//
-//  @Test
-//  public void testGetMessageId_MessagingException() throws Exception {
-//    when(emailMessage.getAllHeaders()).thenThrow(new MessagingException("Header error"));
-//    String messageId = directTransport.getMessageId(emailMessage);
-//    assertNull(messageId);
-//  }
-//
-//  @Test
-//  public void testSendEicrDataUsingRestfulApi() {
-//    Object result = directTransport.sendEicrDataUsingRestfulApi(karProcessingData);
-//    assertNull(result);
-//  }
-//
-//  @Test
-//  public void testDirectMimeMessageConstructor() throws Exception {
-//    Session testSession = Session.getInstance(new Properties());
-//    String messageId = "test-id";
-//    String domain = "test-domain";
-//    DirectTransportImpl.DirectMimeMessage directMessage =
-//        directTransport.new DirectMimeMessage(testSession, messageId, domain);
-//    assertNotNull(directMessage);
-//    assertEquals(testSession, directMessage.sessions);
-//    assertEquals(messageId, directMessage.messageId);
-//    assertEquals(domain, directMessage.domain);
-//  }
-//
-//  @Test
-//  public void testDirectMimeMessage_updateMessageID() throws Exception {
-//    // Arrange
-//    Properties props = new Properties();
-//    Session session = Session.getInstance(props);
-//    DirectTransportImpl outer = new DirectTransportImpl();
-//    DirectTransportImpl.DirectMimeMessage message =
-//        outer.new DirectMimeMessage(session, "corr-123", "example.com");
-//    message.updateMessageID();
-//    String[] headers = message.getHeader("Message-ID");
-//    assertNotNull("Message-ID header should be set", headers);
-//    assertEquals(1, headers.length);
-//    assertEquals("<corr-123@example.com>", headers[0]);
-//  }
-//
-//  @Test
-//  public void testUpdateMessageID_protectedMethod() throws Exception {
-//
-//    class TestMimeMessage extends DirectTransportImpl.DirectMimeMessage {
-//      TestMimeMessage(Session s, String id, String domain) throws MessagingException {
-//        new DirectTransportImpl().super(s, id, domain);
-//      }
-//
-//      void callUpdateMessageID() throws MessagingException {
-//        updateMessageID(); // allowed here
-//      }
-//    }
-//    Session session = Session.getDefaultInstance(new Properties());
-//    TestMimeMessage msg = new TestMimeMessage(session, "corr-123", "example.com");
-//    msg.callUpdateMessageID();
-//    String[] header = msg.getHeader("Message-ID");
-//    assertNotNull(header);
-//    assertEquals("<corr-123@example.com>", header[0]);
-//  }
-//
-//  @Test
-//  public void testReadMailUsingImap_firstAttemptSuccess() throws Exception {
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    ReflectionTestUtils.setField(spy, "imapReadRetryLimit", 3);
-//    PowerMockito.doNothing()
-//        .when(
-//            spy,
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//    Whitebox.invokeMethod(
-//        spy, "readMailUsingImap", "host.com", "user", "pwd", "25", "corr-123", "TLSv1.2");
-//    PowerMockito.verifyPrivate(spy, times(1))
-//        .invoke(
-//            "readMail",
-//            new Object[] {
-//              anyString(), anyString(), anyString(), anyString(), anyString(), anyString()
-//            });
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  public void testProcessMessages_nonMultipartMessage() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    Message mockMessage = PowerMockito.mock(Message.class);
-//    when(mockFolder.search(any(FlagTerm.class))).thenReturn(new Message[] {mockMessage});
-//    when(mockMessage.getContent()).thenReturn("plain text content");
-//    DirectTransportImpl spyTransport = PowerMockito.spy(directTransport);
-//    PowerMockito.doReturn("msg-123").when(spyTransport, "getMessageId", mockMessage);
-//    Whitebox.invokeMethod(spyTransport, "processMessages", mockFolder);
-//    verify(mockMessage, never()).setFlag(eq(Flags.Flag.SEEN), anyBoolean());
-//  }
-//
-//  @Test
-//  public void testProcessMessages_multipartXmlMessage() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    Message mockMessage = mock(Message.class);
-//    Multipart mockMultipart = mock(Multipart.class);
-//    BodyPart mockBodyPart = mock(BodyPart.class);
-//
-//    when(mockFolder.search(any(FlagTerm.class))).thenReturn(new Message[] {mockMessage});
-//    when(mockMessage.getContent()).thenReturn(mockMultipart);
-//    when(mockMultipart.getCount()).thenReturn(1);
-//    when(mockMultipart.getBodyPart(0)).thenReturn(mockBodyPart);
-//    when(mockBodyPart.getFileName()).thenReturn("file.xml");
-//    when(mockBodyPart.getInputStream())
-//        .thenReturn(new ByteArrayInputStream("<xml></xml>".getBytes(StandardCharsets.UTF_8)));
-//    RrReceiver rrReceiverSpy = spy(rrReceiver);
-//    ReflectionTestUtils.setField(directTransport, "rrReceiver", rrReceiverSpy);
-//    DirectTransportImpl spyTransport = PowerMockito.spy(directTransport);
-//    PowerMockito.doReturn("msg-123").when(spyTransport, "getMessageId", mockMessage);
-//    Whitebox.invokeMethod(spyTransport, "processMessages", mockFolder);
-//    verify(mockMessage, times(1)).setFlag(Flags.Flag.SEEN, true);
-//    verify(rrReceiverSpy, times(1)).handleReportabilityResponse(any(), eq("msg-123"));
-//  }
-//
-//  @Test
-//  public void testDeleteReadMessages_inboxNull() throws Exception {
-//    Whitebox.invokeMethod(directTransport, "deleteReadMessages", (Folder) null);
-//    assertTrue("Inbox is null, nothing to delete", true);
-//  }
-//
-//  @Test
-//  public void testDeleteReadMessages_inboxClosed() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    when(mockFolder.isOpen()).thenReturn(false);
-//    Whitebox.invokeMethod(directTransport, "deleteReadMessages", mockFolder);
-//    verify(mockFolder, never()).search(any(FlagTerm.class));
-//  }
-//
-//  @Test
-//  public void testDeleteReadMessages_withMessages() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    Message mockMessage1 = mock(Message.class);
-//    Message mockMessage2 = mock(Message.class);
-//    when(mockFolder.isOpen()).thenReturn(true);
-//    when(mockFolder.search(any(FlagTerm.class)))
-//        .thenReturn(new Message[] {mockMessage1, mockMessage2});
-//    DirectTransportImpl spyTransport = PowerMockito.spy(directTransport);
-//    PowerMockito.doReturn("msg-1").when(spyTransport, "getMessageId", mockMessage1);
-//    PowerMockito.doReturn("msg-2").when(spyTransport, "getMessageId", mockMessage2);
-//    Whitebox.invokeMethod(spyTransport, "deleteReadMessages", mockFolder);
-//    verify(mockFolder, times(1)).search(any(FlagTerm.class));
-//    verify(mockMessage1, times(1)).setFlag(Flags.Flag.DELETED, true);
-//    verify(mockMessage2, times(1)).setFlag(Flags.Flag.DELETED, true);
-//  }
-//
-//  @Test
-//  public void testProcessMessages_noMessages() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    Message[] emptyMessages = new Message[] {};
-//    when(mockFolder.search(any(FlagTerm.class))).thenReturn(emptyMessages);
-//    Whitebox.invokeMethod(directTransport, "processMessages", mockFolder);
-//    verify(mockFolder, times(1)).search(any(FlagTerm.class));
-//    assertNotNull("Messages array should not be null", emptyMessages);
-//    assertEquals("Messages array should be empty", 0, emptyMessages.length);
-//  }
-//
-//  @Test
-//  public void testProcessMessages_nonXmlMultipart() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    Message mockMessage = mock(Message.class);
-//    Multipart mockMultipart = mock(Multipart.class);
-//    BodyPart mockBodyPart = mock(BodyPart.class);
-//    when(mockFolder.search(any(FlagTerm.class))).thenReturn(new Message[] {mockMessage});
-//    when(mockMessage.getContent()).thenReturn(mockMultipart);
-//    when(mockMultipart.getCount()).thenReturn(1);
-//    when(mockMultipart.getBodyPart(0)).thenReturn(mockBodyPart);
-//    when(mockBodyPart.getFileName()).thenReturn("document.pdf");
-//    when(mockMessage.getFrom()).thenReturn(null);
-//    when(mockMessage.getFlags()).thenReturn(new Flags());
-//    DirectTransportImpl spyTransport = PowerMockito.spy(directTransport);
-//    PowerMockito.doReturn("msg-123").when(spyTransport, "getMessageId", mockMessage);
-//    Whitebox.invokeMethod(spyTransport, "processMessages", mockFolder);
-//    verify(mockMessage, times(1)).setFlag(Flags.Flag.SEEN, true);
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  public void testDeleteReadMessages_inboxNullOrClosed() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    when(mockFolder.isOpen()).thenReturn(false);
-//    Whitebox.invokeMethod(directTransport, "deleteReadMessages", mockFolder);
-//    Whitebox.invokeMethod(directTransport, "deleteReadMessages", (Folder) null);
-//    assertTrue("deleteReadMessages handled null and closed inbox", true);
-//  }
-//
-//  @Test
-//  public void testDeleteReadMessages_normalFlow() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    Message mockMessage1 = mock(Message.class);
-//    Message mockMessage2 = mock(Message.class);
-//    when(mockFolder.isOpen()).thenReturn(true);
-//    when(mockFolder.search(any(FlagTerm.class)))
-//        .thenReturn(new Message[] {mockMessage1, mockMessage2});
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    PowerMockito.doReturn("msg1").when(spy, "getMessageId", mockMessage1);
-//    PowerMockito.doReturn("msg2").when(spy, "getMessageId", mockMessage2);
-//    Whitebox.invokeMethod(spy, "deleteReadMessages", mockFolder);
-//    verify(mockFolder, times(1)).isOpen();
-//    verify(mockFolder, times(1)).search(any(FlagTerm.class));
-//    verify(mockMessage1, times(1)).setFlag(Flags.Flag.DELETED, true);
-//    verify(mockMessage2, times(1)).setFlag(Flags.Flag.DELETED, true);
-//    assertEquals("msg1", spy.getMessageId(mockMessage1));
-//    assertEquals("msg2", spy.getMessageId(mockMessage2));
-//  }
-//
-//  @Test
-//  public void testDeleteReadMessages_searchThrowsException() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    when(mockFolder.isOpen()).thenReturn(true);
-//    when(mockFolder.search(any(FlagTerm.class))).thenThrow(new RuntimeException("fail"));
-//    Whitebox.invokeMethod(directTransport, "deleteReadMessages", mockFolder);
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  public void cover_messageId_header() throws Exception {
-//    MimeMessage msg = mock(MimeMessage.class);
-//    Header header = new Header("Message-ID", "<123@test>");
-//    when(msg.getAllHeaders()).thenReturn(Collections.enumeration(List.of(header)));
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    String id = Whitebox.invokeMethod(spy, "getMessageId", msg);
-//    assertEquals("<123@test>", id);
-//  }
-//
-//  @Test
-//  public void cover_readMailUsingImap_folderClosedException() throws Exception {
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    ReflectionTestUtils.setField(spy, "imapReadRetryLimit", 1);
-//    PowerMockito.doThrow(mock(FolderClosedException.class))
-//        .when(
-//            spy,
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//    Whitebox.invokeMethod(spy, "readMailUsingImap", "host", "u", "p", "993", "corr", "TLSv1.2");
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  public void testSendEicrDataUsingDirect_directHostPath() throws Exception {
-//    KarProcessingData data = mock(KarProcessingData.class);
-//    HealthcareSetting hs = mock(HealthcareSetting.class);
-//    when(data.getSubmittedCdaData()).thenReturn("<xml/>");
-//    when(data.getHealthcareSetting()).thenReturn(hs);
-//    when(data.getxCorrelationId()).thenReturn("corr-1");
-//    when(hs.getSmtpUrl()).thenReturn("");
-//    when(hs.getDirectHost()).thenReturn("direct");
-//    when(hs.getDirectUser()).thenReturn("user");
-//    when(hs.getDirectPwd()).thenReturn("pwd");
-//    when(hs.getSmtpPort()).thenReturn("25");
-//    when(hs.getDirectRecipientAddress()).thenReturn("to@test.com");
-//    when(hs.getDirectTlsVersion()).thenReturn("TLSv1.2");
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    PowerMockito.doNothing()
-//        .when(spy)
-//        .sendMail(
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            any(InputStream.class),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//
-//    spy.sendEicrDataUsingDirect(data);
-//    PowerMockito.verifyPrivate(spy, times(1))
-//        .invoke(
-//            "sendMail",
-//            eq("direct"),
-//            eq("user"),
-//            eq("pwd"),
-//            eq("25"),
-//            eq("to@test.com"),
-//            any(InputStream.class),
-//            eq("eICR_Report"),
-//            eq("corr-1"),
-//            eq("TLSv1.2"));
-//
-//    assertTrue(true);
-//  }
-//
-//  @Test
-//  @Ignore
-//  public void testProcessMessages_withXmlAttachment() throws Exception {
-//    Folder mockFolder = mock(Folder.class);
-//    Message mockMessage = mock(Message.class);
-//    Multipart mockMultipart = mock(Multipart.class);
-//    BodyPart mockBodyPart = mock(BodyPart.class);
-//
-//    when(mockFolder.search(any(FlagTerm.class))).thenReturn(new Message[] {mockMessage});
-//    when(mockMessage.getContent()).thenReturn(mockMultipart);
-//    when(mockMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("from@test.com")});
-//    when(mockMultipart.getCount()).thenReturn(1);
-//    when(mockMultipart.getBodyPart(0)).thenReturn(mockBodyPart);
-//    when(mockBodyPart.getFileName()).thenReturn("report.xml");
-//    when(mockBodyPart.getInputStream())
-//        .thenReturn(new ByteArrayInputStream("<xml>RR</xml>".getBytes(StandardCharsets.UTF_8)));
-//
-//    DirectTransportImpl spyTransport = PowerMockito.spy(directTransport);
-//    PowerMockito.doReturn("msg-123").when(spyTransport, "getMessageId", mockMessage);
-//
-//    ReflectionTestUtils.setField(spyTransport, "rrReceiver", rrReceiver);
-//    Whitebox.invokeMethod(spyTransport, "processMessages", mockFolder);
-//
-//    verify(mockMessage, times(1)).setFlag(Flags.Flag.SEEN, true);
-//    verify(rrReceiver, times(1)).handleReportabilityResponse(any(), eq("msg-123"));
-//  }
-//
-//  @Test
-//  @Ignore
-//  public void testReadMailUsingImap_withTlsProperties() throws Exception {
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    ReflectionTestUtils.setField(spy, "imapReadRetryLimit", 1);
-//
-//    PowerMockito.doNothing()
-//        .when(
-//            spy,
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//
-//    Whitebox.invokeMethod(
-//        spy, "readMailUsingImap", "host.com", "user", "pwd", "993", "corr-123", "TLSv1.2");
-//
-//    PowerMockito.verifyPrivate(spy, times(1))
-//        .invoke("readMail", "host.com", "user", "pwd", "993", "corr-123", "TLSv1.2");
-//  }
-//
-//  @Test
-//  @Ignore
-//  public void testReadMailUsingImap_folderClosedRetry() throws Exception {
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    ReflectionTestUtils.setField(spy, "imapReadRetryLimit", 2);
-//
-//    // Throw FolderClosedException using null folder (for test)
-//    PowerMockito.doThrow(new FolderClosedException(null))
-//        .when(
-//            spy,
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//
-//    // Call the public wrapper
-//    Whitebox.invokeMethod(
-//        spy, "readMailUsingImap", "host", "user", "pwd", "993", "corr", "TLSv1.2");
-//
-//    // Verify retry was attempted twice
-//    PowerMockito.verifyPrivate(spy, times(2))
-//        .invoke(
-//            "readMail",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//  }
-//
-//  @Test
-//  @Ignore
-//  public void testSendEicrDataUsingRestfulApi_logsErrorAndReturnsNull() {
-//    KarProcessingData dataMock = mock(KarProcessingData.class);
-//    JSONObject result = directTransport.sendEicrDataUsingRestfulApi(dataMock);
-//    assertNull(result);
-//  }
-//
-//  @Test
-//  @Ignore
-//  public void testGetMessageId_handlesMessagingException() throws Exception {
-//    Message msg = mock(Message.class);
-//    when(msg.getAllHeaders()).thenThrow(new MessagingException("fail"));
-//    String id = directTransport.getMessageId(msg);
-//    assertNull(id);
-//  }
-//
-//  @Test
-//  @Ignore
-//  public void testGetMessageId_returnsHeaderValue() throws Exception {
-//    MimeMessage msg = mock(MimeMessage.class);
-//    Header header = new Header("Message-ID", "<123@test>");
-//    when(msg.getAllHeaders()).thenReturn(Collections.enumeration(List.of(header)));
-//    String id = directTransport.getMessageId(msg);
-//    assertEquals("<123@test>", id);
-//  }
-//
-//  @Test
-//  @Ignore
-//  public void testReceiveRrDataUsingDirect_logsAndCallsImap() throws Exception {
-//    HealthcareSetting hs = mock(HealthcareSetting.class);
-//    KarProcessingData dataMock = mock(KarProcessingData.class);
-//
-//    when(dataMock.getHealthcareSetting()).thenReturn(hs);
-//    when(hs.getDirectUser()).thenReturn("user@test.com");
-//    when(hs.getDirectPwd()).thenReturn("pwd");
-//    when(hs.getDirectHost()).thenReturn(null);
-//    when(hs.getImapUrl()).thenReturn("imap.test.com");
-//    when(hs.getImapPort()).thenReturn("993");
-//    when(dataMock.getxCorrelationId()).thenReturn("corr");
-//
-//    DirectTransportImpl spy = PowerMockito.spy(directTransport);
-//    PowerMockito.doNothing()
-//        .when(
-//            spy,
-//            "readMailUsingImap",
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString(),
-//            anyString());
-//
-//    spy.receiveRrDataUsingDirect(dataMock);
-//
-//    PowerMockito.verifyPrivate(spy, times(1))
-//        .invoke(
-//            "readMailUsingImap",
-//            eq("imap.test.com"),
-//            eq("user@test.com"),
-//            eq("pwd"),
-//            eq("993"),
-//            eq("corr"),
-//            isNull());
-//  }
-// }
+package com.drajer.bsa.routing.impl;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.service.RrReceiver;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.search.FlagTerm;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
+@PrepareForTest({Session.class, Transport.class, Store.class})
+public class DirectTransportImplTest {
+
+  @InjectMocks private DirectTransportImpl directTransport;
+
+  @Mock private RrReceiver rrReceiver;
+  @Mock private Session mailSession;
+  @Mock private Transport mailTransport;
+  @Mock private Store mailStore;
+  @Mock private Folder inboxFolder;
+  @Mock private Message emailMessage;
+
+  private KarProcessingData karProcessingData;
+  private HealthcareSetting healthcareSetting;
+
+  @Before
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+
+    healthcareSetting = new HealthcareSetting();
+    healthcareSetting.setDirectUser("test@user.com");
+    healthcareSetting.setDirectRecipientAddress("recipient@test.com");
+    healthcareSetting.setDirectPwd("password");
+    healthcareSetting.setSmtpUrl("smtp.test.com");
+    healthcareSetting.setSmtpPort("587");
+    healthcareSetting.setImapUrl("imap.test.com");
+    healthcareSetting.setImapPort("993");
+    healthcareSetting.setDirectHost("direct.test.com");
+    healthcareSetting.setDirectTlsVersion("TLSv1.2");
+
+    karProcessingData = new KarProcessingData();
+    karProcessingData.setHealthcareSetting(healthcareSetting);
+    karProcessingData.setSubmittedCdaData("<ClinicalDocument>Test CDA</ClinicalDocument>");
+    karProcessingData.setxCorrelationId("test-correlation-id");
+
+    // Mock static Session - let production code run
+    PowerMockito.mockStatic(Session.class);
+    when(Session.getInstance(any(Properties.class), isNull())).thenReturn(mailSession);
+    when(mailSession.getTransport("smtp")).thenReturn(mailTransport);
+    when(mailSession.getStore("imap")).thenReturn(mailStore);
+    when(mailStore.getFolder("Inbox")).thenReturn(inboxFolder);
+    when(mailSession.getProperties()).thenReturn(new Properties());
+
+    // Set Spring value fields
+    ReflectionTestUtils.setField(directTransport, "logDirectory", "test-logs");
+    ReflectionTestUtils.setField(directTransport, "imapReadRetryLimit", 1);
+    ReflectionTestUtils.setField(directTransport, "smtpAuth", "true");
+    ReflectionTestUtils.setField(directTransport, "smtpSslEnable", "true");
+    ReflectionTestUtils.setField(directTransport, "smtpStartTlsEnable", "false");
+    ReflectionTestUtils.setField(directTransport, "smtpSslTrust", "*");
+    ReflectionTestUtils.setField(directTransport, "smtpSslProtocols", "");
+    ReflectionTestUtils.setField(directTransport, "imapAuth", "true");
+    ReflectionTestUtils.setField(directTransport, "imapSslEnable", "true");
+    ReflectionTestUtils.setField(directTransport, "imapSslTrust", "*");
+    ReflectionTestUtils.setField(directTransport, "imapConnectionPoolSize", "1");
+    ReflectionTestUtils.setField(directTransport, "imapSslProtocols", "");
+    ReflectionTestUtils.setField(directTransport, "imapBatchSize", 10);
+  }
+
+  // ========== TEST 1: Send EICR with SMTP URL ==========
+  @Test
+  public void test01_SendEicrDataUsingDirect_WithSmtpUrl() throws Exception {
+    // Setup dependencies - let sendMail() execute
+    doNothing()
+        .when(mailTransport)
+        .connect(anyString(), anyInt(), anyString(), nullable(String.class));
+    doNothing().when(mailTransport).sendMessage(any(Message.class), any(Address[].class));
+    doNothing().when(mailTransport).close();
+
+    directTransport.sendEicrDataUsingDirect(karProcessingData);
+
+    // Verify production code executed
+    verify(mailSession, times(1)).getTransport("smtp");
+    verify(mailTransport, times(1))
+        .connect(anyString(), anyInt(), anyString(), nullable(String.class));
+    verify(mailTransport, times(1)).sendMessage(any(Message.class), any(Address[].class));
+    verify(mailTransport, times(1)).close();
+  }
+
+  // ========== TEST 2: Send EICR with Direct Host ==========
+  @Test
+  public void test02_SendEicrDataUsingDirect_WithDirectHost() throws Exception {
+    healthcareSetting.setSmtpUrl(null);
+
+    doNothing()
+        .when(mailTransport)
+        .connect(anyString(), anyInt(), anyString(), nullable(String.class));
+    doNothing().when(mailTransport).sendMessage(any(Message.class), any(Address[].class));
+    doNothing().when(mailTransport).close();
+
+    directTransport.sendEicrDataUsingDirect(karProcessingData);
+
+    verify(mailTransport, times(1))
+        .connect(anyString(), anyInt(), anyString(), nullable(String.class));
+    verify(mailTransport, times(1)).sendMessage(any(Message.class), any(Address[].class));
+  }
+
+  // ========== TEST 3: Send EICR with no host configured ==========
+  @Test(expected = IllegalStateException.class)
+  public void test03_SendEicrDataUsingDirect_NoHostConfigured() throws Exception {
+    healthcareSetting.setSmtpUrl(null);
+    healthcareSetting.setDirectHost(null);
+
+    directTransport.sendEicrDataUsingDirect(karProcessingData);
+  }
+
+  // ========== TEST 4: Receive RR with IMAP URL ==========
+  @Test
+  public void test04_ReceiveRrDataUsingDirect_WithImapUrl() throws Exception {
+    when(inboxFolder.getMessageCount()).thenReturn(0);
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    verify(mailStore, times(1)).getFolder("Inbox");
+    verify(inboxFolder, times(1)).open(Folder.READ_WRITE);
+    verify(inboxFolder, times(1)).close(true);
+  }
+
+  // ========== TEST 5: Receive RR with Direct Host ==========
+  @Test
+  public void test05_ReceiveRrDataUsingDirect_WithDirectHost() throws Exception {
+    healthcareSetting.setImapUrl(null);
+
+    when(inboxFolder.getMessageCount()).thenReturn(0);
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    verify(inboxFolder, times(1)).open(Folder.READ_WRITE);
+  }
+
+  // ========== TEST 6: Receive RR with no host configured ==========
+  @Test
+  public void test06_ReceiveRrDataUsingDirect_NoHostConfigured() throws Exception {
+    healthcareSetting.setImapUrl(null);
+    healthcareSetting.setDirectHost(null);
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    verify(mailStore, never()).connect(anyString(), anyInt(), anyString(), anyString());
+  }
+
+  // ========== TEST 7: Get Message ID from headers ==========
+  @Test
+  public void test07_GetMessageId_FoundInHeaders() throws Exception {
+    Header header = new Header("Message-ID", "<test-123@example.com>");
+
+    when(emailMessage.getAllHeaders()).thenReturn(Collections.enumeration(List.of(header)));
+
+    String messageId = directTransport.getMessageId(emailMessage);
+
+    assertEquals("Should extract message ID", "<test-123@example.com>", messageId);
+  }
+
+  // ========== TEST 8: Get Message ID not found ==========
+  @Test
+  public void test08_GetMessageId_NotFound() throws Exception {
+    Header header = new Header("Subject", "Test Subject");
+
+    when(emailMessage.getAllHeaders()).thenReturn(Collections.enumeration(List.of(header)));
+
+    String messageId = directTransport.getMessageId(emailMessage);
+
+    assertNull("Should return null when Message-ID not found", messageId);
+  }
+
+  // ========== TEST 9: Get Message ID with exception ==========
+  @Test
+  public void test09_GetMessageId_MessagingException() throws Exception {
+    when(emailMessage.getAllHeaders()).thenThrow(new MessagingException("Test error"));
+
+    String messageId = directTransport.getMessageId(emailMessage);
+
+    assertNull("Should return null on exception", messageId);
+  }
+
+  // ========== TEST 10: Send EICR using RESTful API not supported ==========
+  @Test
+  public void test10_SendEicrDataUsingRestfulApi_ReturnsNull() {
+    JSONObject result = directTransport.sendEicrDataUsingRestfulApi(karProcessingData);
+
+    assertNull("RESTful API not supported", result);
+  }
+
+  // ========== TEST 11: DirectMimeMessage constructor ==========
+  @Test
+  public void test11_DirectMimeMessageConstructor() throws Exception {
+    Session testSession = Session.getInstance(new Properties());
+    DirectTransportImpl outer = new DirectTransportImpl(rrReceiver);
+
+    DirectTransportImpl.DirectMimeMessage message =
+        outer.new DirectMimeMessage(testSession, "corr-123", "example.com");
+
+    assertNotNull("Should create DirectMimeMessage", message);
+    assertEquals("Session should be set", testSession, message.sessions);
+    assertEquals("Message ID should be set", "corr-123", message.messageId);
+    assertEquals("Domain should be set", "example.com", message.domain);
+  }
+
+  // ========== TEST 12: DirectMimeMessage updateMessageID ==========
+  @Test
+  public void test12_DirectMimeMessage_UpdateMessageID() throws Exception {
+    Session session = Session.getInstance(new Properties());
+    DirectTransportImpl outer = new DirectTransportImpl(rrReceiver);
+
+    DirectTransportImpl.DirectMimeMessage message =
+        outer.new DirectMimeMessage(session, "corr-456", "test.com");
+    message.updateMessageID();
+
+    String[] headers = message.getHeader("Message-ID");
+    assertNotNull("Header should be set", headers);
+    assertEquals("Should have one header", 1, headers.length);
+    assertEquals("Header should match format", "<corr-456@test.com>", headers[0]);
+  }
+
+  // ========== TEST 13: Send connection timeout error ==========
+  @Test(expected = IllegalStateException.class)
+  public void test13_SendEicrDataUsingDirect_ConnectionError() throws Exception {
+    doThrow(new MessagingException("Connection timeout"))
+        .when(mailTransport)
+        .connect(anyString(), anyInt(), anyString(), nullable(String.class));
+
+    directTransport.sendEicrDataUsingDirect(karProcessingData);
+  }
+
+  // ========== TEST 14: Read mail with no messages ==========
+  @Test
+  public void test14_ReceiveRrDataUsingDirect_NoMessages() throws Exception {
+    when(inboxFolder.getMessageCount()).thenReturn(0);
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    verify(inboxFolder, times(1)).getMessageCount();
+  }
+
+  // ========== TEST 15: Message processing with multiple unread messages ==========
+  @Test
+  public void test15_ReceiveRrDataUsingDirect_MultipleMessages() throws Exception {
+    when(inboxFolder.getMessageCount()).thenReturn(2);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(2);
+    when(inboxFolder.getMessages(1, 2)).thenReturn(new Message[] {emailMessage, emailMessage});
+    when(inboxFolder.search(any(FlagTerm.class), any(Message[].class)))
+        .thenReturn(new Message[] {emailMessage, emailMessage});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    verify(inboxFolder, times(1)).getMessageCount();
+    verify(inboxFolder, times(1)).getUnreadMessageCount();
+  }
+
+  // ========== TEST 16: Process single message with XML attachment ==========
+  @Test
+  public void test16_ProcessMessage_WithXmlAttachment() throws Exception {
+    Multipart multipart = mock(Multipart.class);
+    BodyPart bodyPart = mock(BodyPart.class);
+
+    when(emailMessage.getContent()).thenReturn(multipart);
+    when(emailMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("sender@test.com")});
+    when(multipart.getCount()).thenReturn(1);
+    when(multipart.getBodyPart(0)).thenReturn(bodyPart);
+    when(bodyPart.getFileName()).thenReturn("report.xml");
+    when(bodyPart.getInputStream())
+        .thenReturn(
+            new ByteArrayInputStream("<xml>content</xml>".getBytes(StandardCharsets.UTF_8)));
+    when(emailMessage.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<msg-1>"))));
+
+    when(inboxFolder.getMessageCount()).thenReturn(1);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(1);
+    when(inboxFolder.getMessages(1, 1)).thenReturn(new Message[] {emailMessage});
+    when(inboxFolder.search(any(FlagTerm.class), any(Message[].class)))
+        .thenReturn(new Message[] {emailMessage});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+    doNothing().when(emailMessage).setFlag(Flags.Flag.SEEN, true);
+
+    // Execute and verify method doesn't return null
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    // Assertions
+    assertNotNull("Data should not be null", karProcessingData);
+    assertNotNull(
+        "Healthcare setting should not be null", karProcessingData.getHealthcareSetting());
+    assertNotNull("XML attachment should be processed", emailMessage);
+    assertTrue("Message count should be 1", inboxFolder.getMessageCount() == 1);
+    assertTrue("Unread count should be 1", inboxFolder.getUnreadMessageCount() == 1);
+
+    verify(rrReceiver, times(1)).handleReportabilityResponse(any(), eq("<msg-1>"));
+    verify(emailMessage, times(1)).setFlag(Flags.Flag.SEEN, true);
+    verify(inboxFolder, times(1)).close(true);
+    verify(mailStore, times(1)).close();
+  }
+
+  // ========== TEST 17: Process single message with non-XML attachment ==========
+  @Test
+  public void test17_ProcessMessage_WithNonXmlAttachment() throws Exception {
+    Multipart multipart = mock(Multipart.class);
+    BodyPart bodyPart = mock(BodyPart.class);
+
+    when(emailMessage.getContent()).thenReturn(multipart);
+    when(emailMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("sender@test.com")});
+    when(multipart.getCount()).thenReturn(1);
+    when(multipart.getBodyPart(0)).thenReturn(bodyPart);
+    when(bodyPart.getFileName()).thenReturn("document.pdf");
+    when(emailMessage.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<msg-2>"))));
+
+    when(inboxFolder.getMessageCount()).thenReturn(1);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(1);
+    when(inboxFolder.getMessages(1, 1)).thenReturn(new Message[] {emailMessage});
+    when(inboxFolder.search(any(FlagTerm.class), any(Message[].class)))
+        .thenReturn(new Message[] {emailMessage});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    // Assertions - non-XML attachments should NOT be processed
+    assertNotNull("Message should not be null", emailMessage);
+    assertNotNull("Data should not be null", karProcessingData);
+    assertFalse("PDF should not contain .xml", "document.pdf".toLowerCase().contains(".xml"));
+    assertTrue("Content should be multipart", emailMessage.getContent() instanceof Multipart);
+
+    verify(rrReceiver, never()).handleReportabilityResponse(any(), anyString());
+    verify(emailMessage, never()).setFlag(Flags.Flag.SEEN, true);
+    verify(inboxFolder, times(1)).close(true);
+    verify(mailStore, times(1)).close();
+  }
+
+  // ========== TEST 18: Process non-multipart message ==========
+  @Test
+  public void test18_ProcessMessage_NonMultipartMessage() throws Exception {
+    when(emailMessage.getContent()).thenReturn("plain text content");
+    when(emailMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("sender@test.com")});
+    when(emailMessage.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<msg-3>"))));
+
+    when(inboxFolder.getMessageCount()).thenReturn(1);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(1);
+    when(inboxFolder.getMessages(1, 1)).thenReturn(new Message[] {emailMessage});
+    when(inboxFolder.search(any(FlagTerm.class), any(Message[].class)))
+        .thenReturn(new Message[] {emailMessage});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    // Assertions - non-multipart messages should be logged but not processed
+    assertNotNull("Message should not be null", emailMessage);
+    assertNotNull("Data should not be null", karProcessingData);
+    assertTrue("Content should be plain text String", emailMessage.getContent() instanceof String);
+    assertEquals("Content should match", "plain text content", emailMessage.getContent());
+    assertFalse("Content should NOT be Multipart", emailMessage.getContent() instanceof Multipart);
+
+    verify(rrReceiver, never()).handleReportabilityResponse(any(), anyString());
+    verify(emailMessage, never()).setFlag(Flags.Flag.SEEN, true);
+    verify(inboxFolder, times(1)).close(true);
+  }
+
+  // ========== TEST 19: Delete read messages ==========
+  @Test
+  public void test19_DeleteReadMessages_WithReadMessages() throws Exception {
+    Message readMessage1 = mock(Message.class);
+    Message readMessage2 = mock(Message.class);
+
+    when(inboxFolder.getMessageCount()).thenReturn(2);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(0);
+    when(inboxFolder.isOpen()).thenReturn(true);
+    when(inboxFolder.search(any(FlagTerm.class)))
+        .thenReturn(new Message[] {readMessage1, readMessage2});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+    when(readMessage1.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<read-1>"))));
+    when(readMessage2.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<read-2>"))));
+    doNothing().when(readMessage1).setFlag(Flags.Flag.DELETED, true);
+    doNothing().when(readMessage2).setFlag(Flags.Flag.DELETED, true);
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    // Assertions - both read messages should be marked for deletion
+    assertNotNull("Message 1 should not be null", readMessage1);
+    assertNotNull("Message 2 should not be null", readMessage2);
+    assertNotNull("Data should not be null", karProcessingData);
+    assertTrue("Message count should be 2", inboxFolder.getMessageCount() == 2);
+    assertTrue("Unread count should be 0", inboxFolder.getUnreadMessageCount() == 0);
+    assertTrue("Inbox should be open", inboxFolder.isOpen());
+
+    verify(inboxFolder, times(1)).search(any(FlagTerm.class));
+    verify(readMessage1, times(1)).setFlag(Flags.Flag.DELETED, true);
+    verify(readMessage2, times(1)).setFlag(Flags.Flag.DELETED, true);
+    verify(inboxFolder, times(1)).close(true);
+    verify(mailStore, times(1)).close();
+  }
+
+  // ========== TEST 20: Message with null sender address ==========
+  @Test
+  public void test20_ProcessMessage_NullSenderAddress() throws Exception {
+    Multipart multipart = mock(Multipart.class);
+    BodyPart bodyPart = mock(BodyPart.class);
+
+    when(emailMessage.getContent()).thenReturn(multipart);
+    when(emailMessage.getFrom()).thenReturn(null);
+    when(multipart.getCount()).thenReturn(1);
+    when(multipart.getBodyPart(0)).thenReturn(bodyPart);
+    when(bodyPart.getFileName()).thenReturn("report.xml");
+    when(bodyPart.getInputStream())
+        .thenReturn(
+            new ByteArrayInputStream("<xml>content</xml>".getBytes(StandardCharsets.UTF_8)));
+    when(emailMessage.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<msg-4>"))));
+
+    when(inboxFolder.getMessageCount()).thenReturn(1);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(1);
+    when(inboxFolder.getMessages(1, 1)).thenReturn(new Message[] {emailMessage});
+    when(inboxFolder.search(any(FlagTerm.class), any(Message[].class)))
+        .thenReturn(new Message[] {emailMessage});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+    doNothing().when(emailMessage).setFlag(Flags.Flag.SEEN, true);
+
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    // Assertions - XML should still be processed even with null sender
+    assertNull("Sender address should be null", emailMessage.getFrom());
+    assertNotNull("Message should not be null", emailMessage);
+    assertNotNull("Data should not be null", karProcessingData);
+    assertTrue("Content should be multipart", emailMessage.getContent() instanceof Multipart);
+    assertEquals("Message count should be 1", 1, inboxFolder.getMessageCount());
+    assertEquals("Unread count should be 1", 1, inboxFolder.getUnreadMessageCount());
+
+    verify(rrReceiver, times(1)).handleReportabilityResponse(any(), eq("<msg-4>"));
+    verify(emailMessage, times(1)).setFlag(Flags.Flag.SEEN, true);
+    verify(inboxFolder, times(1)).close(true);
+    verify(mailStore, times(1)).close();
+  }
+
+  // ========== TEST 21: Process message with error - continues processing ==========
+  @Test
+  public void test21_ProcessMessage_WithErrorContinuesProcessing() throws Exception {
+    Multipart multipart = mock(Multipart.class);
+    BodyPart bodyPart = mock(BodyPart.class);
+
+    when(emailMessage.getContent()).thenReturn(multipart);
+    when(emailMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("sender@test.com")});
+    when(multipart.getCount()).thenReturn(1);
+    // Throw exception when processing body part
+    when(multipart.getBodyPart(0)).thenThrow(new MessagingException("Error reading attachment"));
+    when(emailMessage.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<msg-5>"))));
+
+    when(inboxFolder.getMessageCount()).thenReturn(1);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(1);
+    when(inboxFolder.getMessages(1, 1)).thenReturn(new Message[] {emailMessage});
+    when(inboxFolder.search(any(FlagTerm.class), any(Message[].class)))
+        .thenReturn(new Message[] {emailMessage});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    // Method should complete successfully despite error
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    // Assertions - method should complete and close folder
+    assertNotNull("Message should not be null", emailMessage);
+    assertNotNull("Data should not be null", karProcessingData);
+    assertTrue("Message count should be 1", inboxFolder.getMessageCount() == 1);
+    assertTrue("Content should be multipart", emailMessage.getContent() instanceof Multipart);
+
+    verify(inboxFolder, times(1)).close(true);
+    verify(mailStore, times(1)).close();
+    // Handler should not be called due to error
+    verify(rrReceiver, never()).handleReportabilityResponse(any(), anyString());
+  }
+
+  // ========== TEST 22: Process message with generic exception ==========
+  @Test
+  public void test22_ProcessMessage_GenericException() throws Exception {
+    Multipart multipart = mock(Multipart.class);
+    BodyPart bodyPart = mock(BodyPart.class);
+
+    when(emailMessage.getContent()).thenReturn(multipart);
+    when(emailMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("sender@test.com")});
+    when(multipart.getCount()).thenReturn(1);
+    when(multipart.getBodyPart(0)).thenThrow(new RuntimeException("Processing error"));
+    when(emailMessage.getAllHeaders())
+        .thenReturn(Collections.enumeration(List.of(new Header("Message-ID", "<msg-6>"))));
+
+    when(inboxFolder.getMessageCount()).thenReturn(1);
+    when(inboxFolder.getUnreadMessageCount()).thenReturn(1);
+    when(inboxFolder.getMessages(1, 1)).thenReturn(new Message[] {emailMessage});
+    when(inboxFolder.search(any(FlagTerm.class), any(Message[].class)))
+        .thenReturn(new Message[] {emailMessage});
+    doNothing().when(inboxFolder).open(Folder.READ_WRITE);
+    doNothing().when(inboxFolder).close(true);
+    doNothing().when(mailStore).close();
+
+    // Generic exception should be caught and logged, not rethrown
+    directTransport.receiveRrDataUsingDirect(karProcessingData);
+
+    // Assertions - generic exception should NOT be rethrown
+    assertNotNull("Message should not be null", emailMessage);
+    assertNotNull("Data should not be null", karProcessingData);
+    assertTrue("Message count should be 1", inboxFolder.getMessageCount() == 1);
+    assertTrue("Unread count should be 1", inboxFolder.getUnreadMessageCount() == 1);
+
+    // Verify folder operations completed despite exception
+    verify(inboxFolder, times(1)).close(true);
+    verify(mailStore, times(1)).close();
+    // RR handler should not be called due to exception
+    verify(rrReceiver, never()).handleReportabilityResponse(any(), anyString());
+  }
+}

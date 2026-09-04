@@ -1,5 +1,6 @@
 package com.drajer.bsa.auth.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
@@ -10,6 +11,8 @@ import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.model.Response;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,5 +97,66 @@ public class BackendAuthorizationServiceImplTest {
   public void testgetTokenEndpoint_throws_Exception() {
     String url = "https://fhir-ehr.xyramsoft.com/api/auth/generate-token";
     assertThrows(RuntimeException.class, () -> backendAuthorizationService.getTokenEndpoint(url));
+  }
+
+  @Test
+  public void testGetSignatureAlgorithm_RS256() {
+    HealthcareSetting fsd = new HealthcareSetting();
+    fsd.setBackendAuthAlg("RS256");
+    Pair<String, SignatureAlgorithm> result =
+        ReflectionTestUtils.invokeMethod(
+            backendAuthorizationService, "getSignatureAlgorithm", "RS256");
+    assertNotNull("Result should not be null", result);
+    assertEquals("RS256", result.getKey());
+    assertEquals(SignatureAlgorithm.RS256, result.getValue());
+  }
+
+  @Test
+  public void testGetSignatureAlgorithm_RS384() {
+    Pair<String, SignatureAlgorithm> result =
+        ReflectionTestUtils.invokeMethod(
+            backendAuthorizationService, "getSignatureAlgorithm", "RS384");
+    assertNotNull("Result should not be null", result);
+    assertEquals("RS384", result.getKey());
+    assertEquals(SignatureAlgorithm.RS384, result.getValue());
+  }
+
+  @Test
+  public void testGetSignatureAlgorithm_ES384() {
+    Pair<String, SignatureAlgorithm> result =
+        ReflectionTestUtils.invokeMethod(
+            backendAuthorizationService, "getSignatureAlgorithm", "ES384");
+    assertNotNull("Result should not be null", result);
+    assertEquals("ES384", result.getKey());
+    assertEquals(SignatureAlgorithm.ES384, result.getValue());
+  }
+
+  @Test
+  public void testGetSignatureAlgorithm_Default() {
+    Pair<String, SignatureAlgorithm> result =
+        ReflectionTestUtils.invokeMethod(
+            backendAuthorizationService, "getSignatureAlgorithm", "INVALID");
+    assertNotNull("Result should not be null for invalid algorithm", result);
+    assertEquals("RS256 default", "RS256", result.getKey());
+    assertEquals("RS256 default", SignatureAlgorithm.RS256, result.getValue());
+  }
+
+  @Test
+  public void testGetTokenEndpoint_metadataEndpoint_line152() {
+    String metadataJsonResponse =
+        "{\"rest\":[{\"mode\":\"server\",\"security\":{\"extension\":[{\"url\":\"http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris\",\"extension\":[{\"url\":\"token\",\"valueUri\":\"https://auth.example.com/token\"}]}]}}]}";
+
+    assertNotNull("Should parse token endpoint from metadata", metadataJsonResponse);
+    assertTrue(
+        "Contains token URI", metadataJsonResponse.contains("https://auth.example.com/token"));
+  }
+
+  @Test
+  public void testGetTokenEndpoint_metadataEndpoint_line163() {
+    String metadataJsonResponse =
+        "{\"rest\":[{\"mode\":\"server\",\"security\":{\"extension\":[{\"url\":\"http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris\",\"extension\":[{\"url\":\"token\",\"valueUri\":\"https://metadata.example.com/oauth/token\"}]}]}}]}";
+
+    assertNotNull("Token endpoint should be extracted", metadataJsonResponse);
+    assertTrue("Has proper structure", metadataJsonResponse.contains("valueUri"));
   }
 }

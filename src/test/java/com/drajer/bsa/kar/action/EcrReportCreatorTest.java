@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.time.Instant;
 import java.util.*;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
 import org.javatuples.Pair;
 import org.junit.Assert;
@@ -576,5 +577,267 @@ public class EcrReportCreatorTest {
       }
     }
     return null;
+  }
+
+  // ========== NEW TEST CASES FOR MEASURE REPORTS AND CDA R30/R31 ==========
+
+  @Test
+  public void testGetMeasureReports_FromResourcesByType() {
+    // Test when measure reports are found in resources by type
+    MeasureReport mr1 = new MeasureReport();
+    mr1.setId("mr-1");
+    MeasureReport mr2 = new MeasureReport();
+    mr2.setId("mr-2");
+
+    Set<Resource> measureReports = new HashSet<>();
+    measureReports.add(mr1);
+    measureReports.add(mr2);
+
+    karProcessingData.addResourcesByType(ResourceType.MeasureReport, measureReports);
+
+    Set<Resource> result = ecrReportCreator.getMeasureReports(karProcessingData);
+
+    assertNotNull("Measure reports should not be null", result);
+    assertEquals("Should find 2 measure reports", 2, result.size());
+    assertTrue(
+        "Should contain mr-1",
+        result.stream().anyMatch(r -> "mr-1".equals(r.getIdElement().getIdPart())));
+    assertTrue(
+        "Should contain mr-2",
+        result.stream().anyMatch(r -> "mr-2".equals(r.getIdElement().getIdPart())));
+  }
+
+  @Test
+  public void testGetMeasureReports_FromOutputDataByIdUpperCase() {
+    // Test when measure reports are found in output data by ID (uppercase)
+    MeasureReport mr1 = new MeasureReport();
+    mr1.setId("output-mr-1");
+
+    karProcessingData.addActionOutputById("MeasureReport", mr1);
+
+    Set<Resource> result = ecrReportCreator.getMeasureReports(karProcessingData);
+
+    assertNotNull("Measure reports should not be null", result);
+    assertEquals("Should find 1 measure report", 1, result.size());
+    assertTrue(
+        "Should contain output-mr-1",
+        result.stream().anyMatch(r -> "output-mr-1".equals(r.getIdElement().getIdPart())));
+  }
+
+  @Test
+  public void testGetMeasureReports_FromOutputDataByIdLowerCase() {
+    // Test when measure reports are found in output data by ID (lowercase)
+    MeasureReport mr1 = new MeasureReport();
+    mr1.setId("output-mr-lowercase");
+
+    karProcessingData.addActionOutputById("measurereport", mr1);
+
+    Set<Resource> result = ecrReportCreator.getMeasureReports(karProcessingData);
+
+    assertNotNull("Measure reports should not be null", result);
+    assertEquals("Should find 1 measure report", 1, result.size());
+    assertTrue(
+        "Should contain output-mr-lowercase",
+        result.stream().anyMatch(r -> "output-mr-lowercase".equals(r.getIdElement().getIdPart())));
+  }
+
+  @Test
+  public void testGetMeasureReports_EmptyWhenNoneFound() {
+    // Test when no measure reports are found
+    Set<Resource> result = ecrReportCreator.getMeasureReports(karProcessingData);
+
+    assertNotNull("Result should not be null", result);
+    assertTrue("Result should be empty", result.isEmpty());
+  }
+
+  @Test
+  public void testGetMeasureReports_PreferResourcesByType() {
+    // Test that resources by type are preferred over output data
+    MeasureReport mrByType = new MeasureReport();
+    mrByType.setId("by-type");
+    Set<Resource> resourcesByType = new HashSet<>();
+    resourcesByType.add(mrByType);
+
+    MeasureReport mrByOutput = new MeasureReport();
+    mrByOutput.setId("by-output");
+
+    karProcessingData.addResourcesByType(ResourceType.MeasureReport, resourcesByType);
+    karProcessingData.addActionOutputById("MeasureReport", mrByOutput);
+
+    Set<Resource> result = ecrReportCreator.getMeasureReports(karProcessingData);
+
+    assertEquals("Should find 1 measure report from resources", 1, result.size());
+    assertTrue(
+        "Should only contain by-type",
+        result.stream().anyMatch(r -> "by-type".equals(r.getIdElement().getIdPart())));
+    assertFalse(
+        "Should NOT contain by-output",
+        result.stream().anyMatch(r -> "by-output".equals(r.getIdElement().getIdPart())));
+  }
+
+  @Test
+  public void testCreateReport_CDA_R30() {
+    // Test CDA R30 report creation
+    CheckTriggerCodeStatus bsaActionStatus = new CheckTriggerCodeStatus();
+    bsaActionStatus.setActionId("action1");
+    bsaActionStatus.setActionType(CHECK_TRIGGER_CODES);
+    List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();
+    MatchedTriggerCodes matchedTriggerCodes = new MatchedTriggerCodes();
+    matchedTriggerCodes.setMatchedPath("Condition");
+    matchedTriggerCodes.addCode("Condition");
+    matchedCodes.add(matchedTriggerCodes);
+    bsaActionStatus.setMatchedCodes(matchedCodes);
+    List<BsaActionStatus> actionStatuses = new ArrayList<>();
+    actionStatuses.add(bsaActionStatus);
+    HashMap<String, List<BsaActionStatus>> actionStatus = new HashMap<>();
+    actionStatus.put("trigger", actionStatuses);
+    karProcessingData.setActionStatus(actionStatus);
+    karProcessingData.setKarStatus(getKnowledgeArtifactStatus_CDA_R30());
+    Set<Resource> inputData = new HashSet<>();
+    Resource resource =
+        TestUtils.loadResourceDataFromFile(Patient.class, "R4/Patient/Patient.json");
+    inputData.add(resource);
+    BsaAction bsaAction = getBsaAction();
+
+    Bundle actualReport =
+        (Bundle)
+            ecrReportCreator.createReport(
+                karProcessingData, ehrQueryService, inputData, "example", PROFILE, bsaAction);
+
+    assertNotNull("Report should not be null", actualReport);
+    assertEquals("Report type should be MESSAGE", BundleType.MESSAGE, actualReport.getType());
+    assertTrue("Report should have entries", actualReport.getEntry().size() > 0);
+    assertTrue(
+        "Report should contain MessageHeader",
+        actualReport.getEntry().stream()
+            .map(Bundle.BundleEntryComponent::getResource)
+            .anyMatch(r -> r instanceof MessageHeader));
+  }
+
+  @Test
+  public void testCreateReport_CDA_R31() {
+    // Test CDA R31 report creation (uses CDA_R31 format)
+    CheckTriggerCodeStatus bsaActionStatus = new CheckTriggerCodeStatus();
+    bsaActionStatus.setActionId("action1");
+    bsaActionStatus.setActionType(CHECK_TRIGGER_CODES);
+    List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();
+    MatchedTriggerCodes matchedTriggerCodes = new MatchedTriggerCodes();
+    matchedTriggerCodes.setMatchedPath("Condition");
+    matchedTriggerCodes.addCode("Condition");
+    matchedCodes.add(matchedTriggerCodes);
+    bsaActionStatus.setMatchedCodes(matchedCodes);
+    List<BsaActionStatus> actionStatuses = new ArrayList<>();
+    actionStatuses.add(bsaActionStatus);
+    HashMap<String, List<BsaActionStatus>> actionStatus = new HashMap<>();
+    actionStatus.put("trigger", actionStatuses);
+    karProcessingData.setActionStatus(actionStatus);
+    karProcessingData.setKarStatus(getKnowledgeArtifactStatus_CDA_R31());
+    Set<Resource> inputData = new HashSet<>();
+    Resource resource =
+        TestUtils.loadResourceDataFromFile(Patient.class, "R4/Patient/Patient.json");
+    inputData.add(resource);
+    BsaAction bsaAction = getBsaAction();
+
+    Bundle actualReport =
+        (Bundle)
+            ecrReportCreator.createReport(
+                karProcessingData, ehrQueryService, inputData, "example", PROFILE, bsaAction);
+
+    assertNotNull("Report should not be null", actualReport);
+    assertEquals("Report type should be MESSAGE", BundleType.MESSAGE, actualReport.getType());
+    assertTrue("Report should have entries", actualReport.getEntry().size() > 0);
+  }
+
+  @Test
+  public void testGetCdaR31Report_WithEhrService() {
+    // Test getCdaR31Report with EhrQueryService
+    karProcessingData.setKarStatus(getKnowledgeArtifactStatus_CDA_R31());
+    BsaAction bsaAction = getBsaAction();
+
+    Bundle documentBundle =
+        ecrReportCreator.getCdaR31Report(
+            karProcessingData, ehrQueryService, "dataReq-1", PROFILE, bsaAction);
+
+    assertNotNull("Document bundle should not be null", documentBundle);
+    assertEquals("Bundle type should be DOCUMENT", BundleType.DOCUMENT, documentBundle.getType());
+    assertTrue("Bundle should have entries", documentBundle.getEntry().size() > 0);
+    assertTrue(
+        "Bundle should contain DocumentReference",
+        documentBundle.getEntry().stream()
+            .map(Bundle.BundleEntryComponent::getResource)
+            .anyMatch(r -> r instanceof DocumentReference));
+  }
+
+  @Test
+  public void testCreateMessageHeader_WithCdaFlag() {
+    // Test createMessageHeader with CDA flag set to true
+    Set<UriType> receivers = new HashSet<>();
+    receivers.add(new UriType("http://test-receiver.com"));
+    karProcessingData.getKar().setReceiverAddresses(receivers);
+
+    Bundle contentBundle = new Bundle();
+    contentBundle.setId("bundle-123");
+
+    MessageHeader mh = ecrReportCreator.createMessageHeader(karProcessingData, true, contentBundle);
+
+    assertNotNull("MessageHeader should not be null", mh);
+    assertNotNull("MessageHeader should have ID", mh.getId());
+    assertNotNull("MessageHeader should have event", mh.getEvent());
+    assertEquals(
+        "Event code should indicate CDA message",
+        BsaTypes.getMessageTypeString(BsaTypes.MessageType.CDA_EICR_MESSAGE),
+        mh.getEvent() instanceof Coding
+            ? ((Coding) mh.getEvent()).getCode()
+            : mh.getEvent().toString());
+  }
+
+  @Test
+  public void testCreateMessageHeader_WithoutCdaFlag() {
+    // Test createMessageHeader with CDA flag set to false
+    Set<UriType> receivers = new HashSet<>();
+    receivers.add(new UriType("http://test-receiver.com"));
+    karProcessingData.getKar().setReceiverAddresses(receivers);
+
+    Bundle contentBundle = new Bundle();
+    contentBundle.setId("bundle-456");
+
+    MessageHeader mh =
+        ecrReportCreator.createMessageHeader(karProcessingData, false, contentBundle);
+
+    assertNotNull("MessageHeader should not be null", mh);
+    assertNotNull("MessageHeader should have event", mh.getEvent());
+    assertEquals(
+        "Event code should indicate EICR message",
+        BsaTypes.getMessageTypeString(BsaTypes.MessageType.EICR_CASE_REPORT_MESSAGE),
+        mh.getEvent() instanceof Coding
+            ? ((Coding) mh.getEvent()).getCode()
+            : mh.getEvent().toString());
+  }
+
+  @Test
+  public void testCreateReportingBundle() {
+    // Test createReportingBundle
+    String profile = "http://test.profile";
+
+    Bundle reportingBundle = ecrReportCreator.createReportingBundle(profile);
+
+    assertNotNull("Bundle should not be null", reportingBundle);
+    assertEquals("Bundle type should be MESSAGE", BundleType.MESSAGE, reportingBundle.getType());
+    assertNotNull("Bundle should have ID", reportingBundle.getId());
+    assertNotNull("Bundle should have timestamp", reportingBundle.getTimestamp());
+    assertNotNull("Bundle should have meta", reportingBundle.getMeta());
+  }
+
+  // Helper methods for new tests
+  private KnowledgeArtifactStatus getKnowledgeArtifactStatus_CDA_R30() {
+    KnowledgeArtifactStatus status = getKnowledgeArtifactStatus();
+    status.setOutputFormat(BsaTypes.OutputContentType.CDA_R30);
+    return status;
+  }
+
+  private KnowledgeArtifactStatus getKnowledgeArtifactStatus_CDA_R31() {
+    KnowledgeArtifactStatus status = getKnowledgeArtifactStatus();
+    status.setOutputFormat(BsaTypes.OutputContentType.CDA_R31);
+    return status;
   }
 }

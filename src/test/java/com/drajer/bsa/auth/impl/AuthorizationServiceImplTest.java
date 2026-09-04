@@ -80,4 +80,30 @@ public class AuthorizationServiceImplTest {
     JSONObject result = authorizationService.getAuthorizationToken(hcs);
     assertNull(result);
   }
+
+  @Test
+  public void testGetAuthorizationToken_wrongAuthType_returnsNull() {
+    HealthcareSetting hcs = new HealthcareSetting();
+    hcs.setFhirServerBaseURL("https://fhir.example.com");
+    hcs.setClientId("client-789");
+    hcs.setClientSecret("secret-789");
+    hcs.setTokenUrl("https://auth.example.com/token");
+    hcs.setAuthType("INVALID_AUTH_TYPE");
+
+    JSONObject result = authorizationService.getAuthorizationToken(hcs);
+    assertNull("Token with wrong authType should be null", result);
+  }
+
+  @Test
+  public void testGetAuthorizationToken_nullAuthType_returnsNull() {
+    HealthcareSetting hcs = new HealthcareSetting();
+    hcs.setFhirServerBaseURL("https://fhir.example.com");
+    hcs.setClientId("client-000");
+    hcs.setClientSecret("secret-000");
+    hcs.setTokenUrl("https://auth.example.com/token");
+    hcs.setAuthType(null);
+
+    JSONObject result = authorizationService.getAuthorizationToken(hcs);
+    assertNull("Token with null authType should be null", result);
+  }
 }

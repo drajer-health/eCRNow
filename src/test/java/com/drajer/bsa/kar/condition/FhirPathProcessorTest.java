@@ -665,4 +665,121 @@ public class FhirPathProcessorTest {
     condition.setLogicExpression(expression);
     return condition;
   }
+
+  @Test
+  public void filterByCode_MedicationRequest_WithReferenceMedication_ProcessesReference() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-med-ref");
+    dr.setType("MedicationRequest");
+
+    MedicationRequest medicationRequest = new MedicationRequest();
+    medicationRequest.setId("MedicationRequest/2");
+    medicationRequest.setMedication(new Reference("Medication/med-1"));
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Medication medication = new Medication();
+    medication.setCode(new CodeableConcept());
+    Mockito.lenient()
+        .when(kd.getResourceById("med-1", ResourceType.Medication))
+        .thenReturn(medication);
+
+    Set<Resource> candidates = new HashSet<>();
+    candidates.add(medicationRequest);
+
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    processor.filterByCode(dr, kd, new CheckTriggerCodeStatus(), candidates, resources);
+
+    assertNotNull(medicationRequest);
+    assertNotNull(candidates);
+    assertEquals(1, candidates.size());
+    verify(kd).getResourceById("med-1", ResourceType.Medication);
+  }
+
+  @Test
+  public void filterByCode_MedicationStatement_WithReferenceMedication_ProcessesReference() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-med-stmt-ref");
+    dr.setType("MedicationStatement");
+
+    MedicationStatement medicationStatement = new MedicationStatement();
+    medicationStatement.setId("MedicationStatement/2");
+    medicationStatement.setMedication(new Reference("Medication/med-2"));
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Medication medication = new Medication();
+    medication.setCode(new CodeableConcept());
+    Mockito.lenient()
+        .when(kd.getResourceById("med-2", ResourceType.Medication))
+        .thenReturn(medication);
+
+    Set<Resource> candidates = new HashSet<>();
+    candidates.add(medicationStatement);
+
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    processor.filterByCode(dr, kd, new CheckTriggerCodeStatus(), candidates, resources);
+
+    verify(kd).getResourceById("med-2", ResourceType.Medication);
+    assertNotNull(resources);
+  }
+
+  @Test
+  public void filterByCode_MedicationAdministration_WithReferenceMedication_ProcessesReference() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-med-admin-ref");
+    dr.setType("MedicationAdministration");
+
+    MedicationAdministration medicationAdmin = new MedicationAdministration();
+    medicationAdmin.setId("MedicationAdministration/2");
+    medicationAdmin.setMedication(new Reference("Medication/med-3"));
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Medication medication = new Medication();
+    medication.setCode(new CodeableConcept());
+    Mockito.lenient()
+        .when(kd.getResourceById("med-3", ResourceType.Medication))
+        .thenReturn(medication);
+
+    Set<Resource> candidates = new HashSet<>();
+    candidates.add(medicationAdmin);
+
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    processor.filterByCode(dr, kd, new CheckTriggerCodeStatus(), candidates, resources);
+
+    verify(kd).getResourceById("med-3", ResourceType.Medication);
+    assertNotNull(resources);
+  }
+
+  @Test
+  public void filterByCode_WithCodeFilter_NoMatchFound_ResourceNotAdded() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-no-match");
+    dr.setType("Condition");
+    DataRequirement.DataRequirementCodeFilterComponent codeFilter = dr.addCodeFilter();
+    codeFilter.setPath("code");
+    codeFilter.setValueSet("ValueSet/vs-empty");
+
+    Condition condition = new Condition();
+    condition.setId("Condition/nomatch");
+    CodeableConcept code = new CodeableConcept();
+    condition.setCode(code);
+
+    ValueSet valueSet = new ValueSet();
+    valueSet.setId("ValueSet/vs-empty");
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Mockito.lenient()
+        .when(kd.getResourceById("vs-empty", ResourceType.ValueSet))
+        .thenReturn(valueSet);
+    Mockito.lenient()
+        .when(kd.getKar())
+        .thenReturn(mock(com.drajer.bsa.kar.model.KnowledgeArtifact.class));
+
+    CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
+    Map<String, Set<Resource>> resources = new HashMap<>();
+
+    processor.filterByCode(dr, code, kd, ctc, resources, condition, false);
+
+    assertNotNull(resources);
+    assertFalse(resources.containsKey("dr-no-match"));
+  }
 }

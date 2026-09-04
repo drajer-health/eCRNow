@@ -1,6 +1,8 @@
 package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -8,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,9 +22,12 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.junit.Before;
 import org.junit.Test;
@@ -247,5 +253,112 @@ public class CloseOutEicrActionTest {
     } catch (Exception e) {
       fail("Print method threw an exception: " + e.getMessage());
     }
+  }
+
+  @Test
+  public void testScheduleJob_Success() throws JsonProcessingException {
+    CloseOutEicrStatus closeOutStatus = new CloseOutEicrStatus();
+    when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutStatus);
+    when(mockDetails.getId()).thenReturn(1);
+    when(mockDetails.getStartDate()).thenReturn(new Date());
+
+    ObjectMapper mockMapper = mock(ObjectMapper.class);
+    when(mockMapper.writeValueAsString(any())).thenReturn("{}");
+
+    CloseOutEicrAction action = new CloseOutEicrAction();
+    action.scheduleJob(mockDetails, mockState, mockRelActn, mockMapper, "taskId");
+
+    assertNotNull(closeOutStatus.getJobStatus());
+  }
+
+  @Test
+  public void testScheduleJob_WithDuration() throws JsonProcessingException {
+    CloseOutEicrStatus closeOutStatus = new CloseOutEicrStatus();
+    when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutStatus);
+    when(mockDetails.getId()).thenReturn(1);
+    when(mockDetails.getStartDate()).thenReturn(new Date());
+
+    ObjectMapper mockMapper = mock(ObjectMapper.class);
+    when(mockMapper.writeValueAsString(any())).thenReturn("{}");
+
+    CloseOutEicrAction action = new CloseOutEicrAction();
+    action.scheduleJob(mockDetails, mockState, mockRelActn, mockMapper, "taskId");
+
+    assertNotNull(closeOutStatus.getJobStatus());
+  }
+
+  @Test
+  public void testScheduleJob_WithTimingSchedules() throws JsonProcessingException {
+    CloseOutEicrStatus closeOutStatus = new CloseOutEicrStatus();
+    when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutStatus);
+    when(mockDetails.getId()).thenReturn(1);
+    when(mockDetails.getStartDate()).thenReturn(new Date());
+
+    ObjectMapper mockMapper = mock(ObjectMapper.class);
+    when(mockMapper.writeValueAsString(any())).thenReturn("{}");
+
+    CloseOutEicrAction action = new CloseOutEicrAction();
+    TimingSchedule ts = new TimingSchedule();
+    action.addTimingData(ts);
+
+    PowerMockito.mockStatic(WorkflowService.class);
+    action.scheduleJob(mockDetails, mockState, mockRelActn, mockMapper, "taskId");
+
+    PowerMockito.verifyStatic(WorkflowService.class, times(1));
+    WorkflowService.scheduleJob(
+        eq(1),
+        any(TimingSchedule.class),
+        eq(EcrActionTypes.CLOSE_OUT_EICR),
+        any(Date.class),
+        anyString());
+
+    assertNotNull(closeOutStatus.getJobStatus());
+  }
+
+  @Test
+  public void testScheduleJob_JsonError() throws JsonProcessingException {
+    CloseOutEicrStatus closeOutStatus = new CloseOutEicrStatus();
+    when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutStatus);
+    when(mockDetails.getId()).thenReturn(1);
+
+    ObjectMapper mockMapper = mock(ObjectMapper.class);
+    when(mockMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("error") {});
+
+    CloseOutEicrAction action = new CloseOutEicrAction();
+
+    assertThrows(
+        RuntimeException.class,
+        () -> action.scheduleJob(mockDetails, mockState, mockRelActn, mockMapper, "taskId"));
+  }
+
+  @Test
+  public void testExecute_InvalidObject() {
+    String invalidObj = "invalid";
+
+    assertThrows(
+        ObjectDeletedException.class,
+        () -> closeOutEicrAction.execute(invalidObj, launchType, "taskId"));
+  }
+
+  @Test
+  public void testExecute_NullObject() {
+    assertThrows(
+        ObjectDeletedException.class, () -> closeOutEicrAction.execute(null, launchType, "taskId"));
+  }
+
+  @Test
+  public void testExecute_EncounterNotClosed() throws Exception {
+    CloseOutEicrStatus closeOutStatus = new CloseOutEicrStatus();
+    closeOutStatus.setJobStatus(JobStatus.NOT_STARTED);
+    when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutStatus);
+    when(mockState.hasActionCompleted(any())).thenReturn(false);
+
+    setupMockData();
+    PowerMockito.mockStatic(EcaUtils.class);
+    when(EcaUtils.checkEncounterClose(mockDetails)).thenReturn(false);
+
+    closeOutEicrAction.execute(mockDetails, launchType, "taskId");
+
+    assertEquals(JobStatus.NOT_STARTED, closeOutStatus.getJobStatus());
   }
 }
