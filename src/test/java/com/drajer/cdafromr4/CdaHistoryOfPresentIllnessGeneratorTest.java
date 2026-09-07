@@ -1,7 +1,6 @@
 package com.drajer.cdafromr4;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
-import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
@@ -35,9 +34,7 @@ public class CdaHistoryOfPresentIllnessGeneratorTest extends BaseGeneratorTest {
 
     r4FhirData.setEncounterDiagnosisConditions(r4FhirData.getConditions());
     String expectedXml = TestUtils.getFileContentAsString(HISTORY_OF_PATIENT_ILLNESS_CDA_FILE);
-    String actualXml =
-        CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(
-            r4FhirData, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+    String actualXml = CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection();
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -106,9 +103,7 @@ public class CdaHistoryOfPresentIllnessGeneratorTest extends BaseGeneratorTest {
             + "</section>\r\n"
             + "</component>";
 
-    String actualXml =
-        CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(
-            new R4FhirData(), CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+    String actualXml = CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection();
 
     assertXmlEquals(expectedXml, actualXml);
   }

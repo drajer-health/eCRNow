@@ -3,7 +3,6 @@ package com.drajer.ecrapp.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -90,6 +89,7 @@ public class EicrServiceImplTest {
 
   private ClientDetails clientDetails;
 
+  @SuppressWarnings("unused")
   private LaunchDetails launchDetails;
 
   private DocumentReference documentReference;
@@ -198,12 +198,11 @@ public class EicrServiceImplTest {
   @Test
   public void submitDocRefToEhrWithoutCustomerDetails() {
     DocumentReference testDocumentReference = new DocumentReference();
-    IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              eicrServiceImpl.submitDocRefToEhr(testDocumentReference, eicr);
-            });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          eicrServiceImpl.submitDocRefToEhr(testDocumentReference, eicr);
+        });
   }
 
   @Test
@@ -251,52 +250,47 @@ public class EicrServiceImplTest {
     Mockito.lenient().doReturn(true).when(outcome).getCreated();
 
     Mockito.lenient().doReturn(eicr).when(eicrDao).saveOrUpdate(eicr);
-    UnclassifiedServerFailureException exception =
-        assertThrows(
-            UnclassifiedServerFailureException.class,
-            () -> {
-              eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
-            });
+    assertThrows(
+        UnclassifiedServerFailureException.class,
+        () -> {
+          eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
+        });
   }
 
   @Test
   public void submitDocRefToEhrByException() {
-    RefreshTokenScheduler testTokenScheduler = mock(RefreshTokenScheduler.class);
     Mockito.lenient()
         .doReturn(clientDetails)
         .when(clientDetailsService)
         .getClientDetailsByUrl(Mockito.any());
 
-    ResponseStatusException exception =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> {
-              eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
-            });
+    assertThrows(
+        ResponseStatusException.class,
+        () -> {
+          eicrServiceImpl.submitDocRefToEhr(documentReference, eicr);
+        });
   }
 
   @Test
   public void handleReportabilityWithroutReportabilityResponse() {
     ReportabilityResponse testReportabilityResponse = new ReportabilityResponse();
-    IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              eicrServiceImpl.handleReportabilityResponse(
-                  testReportabilityResponse, "ecrunittest_id", true);
-            });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          eicrServiceImpl.handleReportabilityResponse(
+              testReportabilityResponse, "ecrunittest_id", true);
+        });
   }
 
   @Test
   public void handleFailureMdnForException() {
     ReportabilityResponse testReportabilityResponse = new ReportabilityResponse();
-    IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              eicrServiceImpl.handleFailureMdn(
-                  testReportabilityResponse, "ecrUnitTestCorrelationID", "ecrunittest_id");
-            });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          eicrServiceImpl.handleFailureMdn(
+              testReportabilityResponse, "ecrUnitTestCorrelationID", "ecrunittest_id");
+        });
   }
 
   @Test
@@ -419,12 +413,11 @@ public class EicrServiceImplTest {
         .thenReturn(null);
     Mockito.lenient().doReturn(eicr).when(eicrDao).saveOrUpdate(eicr);
 
-    Exception exception =
-        assertThrows(
-            Exception.class,
-            () -> {
-              eicrServiceImpl.handleReportabilityResponse(
-                  reportabilityResponse, "ecrunittest_id", true);
-            });
+    assertThrows(
+        Exception.class,
+        () -> {
+          eicrServiceImpl.handleReportabilityResponse(
+              reportabilityResponse, "ecrunittest_id", true);
+        });
   }
 }

@@ -327,7 +327,6 @@ public class HcsReportCreatorTest {
 
   @Test
   public void testRemoveExtensions_RemoveDuplicatePerformerFunction() {
-    Reference perfRef = new Reference();
     List<Extension> existingExts = new ArrayList<>();
 
     // Add duplicate performer function extensions
@@ -365,7 +364,6 @@ public class HcsReportCreatorTest {
 
   @Test
   public void testRemoveExtensions_PreserveOtherExtensions() {
-    Reference perfRef = new Reference();
     List<Extension> existingExts = new ArrayList<>();
 
     Extension ext1 = new Extension();
@@ -391,7 +389,6 @@ public class HcsReportCreatorTest {
 
   @Test
   public void testRemoveExtensions_NoPerformerFunction() {
-    Reference perfRef = new Reference();
     List<Extension> existingExts = new ArrayList<>();
 
     Extension ext1 = new Extension();

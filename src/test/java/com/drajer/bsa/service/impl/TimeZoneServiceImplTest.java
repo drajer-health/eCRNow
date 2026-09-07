@@ -83,8 +83,6 @@ public class TimeZoneServiceImplTest {
 
   @Test(expected = ResponseStatusException.class)
   public void testSetDatabaseTimezone_InvalidTimeZone() {
-    String expectedQuery = "UPDATE settings SET timezone = ";
-
     timeZoneService.setDatabaseTimezone(null);
   }
 }

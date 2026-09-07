@@ -225,14 +225,6 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     }
   }
 
-  /*private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
-    ProjectionList projectionList = Projections.projectionList();
-    for (String propertyName : selectedProperties) {
-      projectionList.add(Projections.property(propertyName), propertyName);
-    }
-    return projectionList;
-  }*/
-
   @Override
   public List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData) {

@@ -486,8 +486,7 @@ public class EhrFhirR4QueryServiceImplTest {
     Encounter encoounter =
         TestUtils.loadResourceDataFromFile(Encounter.class, ENCOUNTER_CONTEXT_JSON);
     Mockito.lenient().when(karProcessingData.getContextEncounter()).thenReturn(encoounter);
-    String actual =
-        ehrFhirR4QueryService.substituteContextParams(karProcessingData, queryToExecute, true);
+    ehrFhirR4QueryService.substituteContextParams(karProcessingData, queryToExecute, true);
     verify(karProcessingData, times(2)).getContextEncounter();
     //        assertTrue(actual.contains("ge2025-09-08"));
 
@@ -858,7 +857,6 @@ public class EhrFhirR4QueryServiceImplTest {
       if (customQueries != null) {
         if (!customQueries.containsKey(filenameWithoutExt)) {
           customQueries.put(filenameWithoutExt, queries);
-        } else {
         }
       } else {
         customQueries = new HashMap<>();
@@ -866,7 +864,7 @@ public class EhrFhirR4QueryServiceImplTest {
       }
 
     } catch (Exception e) {
-
+      // Ignore file read/parse failures in this test helper; return whatever was loaded so far
     }
     return customQueries;
   }

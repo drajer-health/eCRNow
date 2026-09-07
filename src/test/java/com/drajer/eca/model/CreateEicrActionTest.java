@@ -265,8 +265,7 @@ public class CreateEicrActionTest {
 
   @Test()
   public void testHasEicrCreated() throws Exception {
-    PatientExecutionState patientExecutionState = new PatientExecutionState();
-    patientExecutionState =
+    PatientExecutionState patientExecutionState =
         (PatientExecutionState)
             TestUtils.getResourceAsObject(
                 "R4/Misc/EcaUtils/NewState.json", PatientExecutionState.class);

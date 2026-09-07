@@ -75,7 +75,7 @@ public class CdaSocialHistoryGenerator {
 
     processBirthSex(birthSex, shData, bodyvals);
     processPregnancyConditions(pregCond, details, shData, bodyvals);
-    processPregnancyObservations(pregObs, shData);
+    processPregnancyObservations(pregObs);
     processOccupationHistory(occHistory, details, shData, bodyvals);
     processTravelHistory(travelHistory, details, shData, bodyvals);
 
@@ -150,8 +150,7 @@ public class CdaSocialHistoryGenerator {
     }
   }
 
-  private static void processPregnancyObservations(
-      List<Observation> pregObs, SocialHistoryData shData) {
+  private static void processPregnancyObservations(List<Observation> pregObs) {
     if (pregObs == null || pregObs.isEmpty()) return;
     logger.info("Pregnancy Status Observation Found - Will be added as needed.");
   }
@@ -1432,7 +1431,7 @@ public class CdaSocialHistoryGenerator {
     }
 
     // Add Usual Industry
-    sb.append(addUsualIndustryObservation(obs, details));
+    sb.append(addUsualIndustryObservation(obs));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -1442,7 +1441,7 @@ public class CdaSocialHistoryGenerator {
     occEntries.append(sb.toString());
   }
 
-  private static String addUsualIndustryObservation(Observation obs, LaunchDetails details) {
+  private static String addUsualIndustryObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1602,8 +1601,8 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
 
-    sb.append(addPastOrPresentIndustryObservation(obs, details));
-    sb.append(addOccupationHazardObservation(obs, details));
+    sb.append(addPastOrPresentIndustryObservation(obs));
+    sb.append(addOccupationHazardObservation(obs));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -1613,7 +1612,7 @@ public class CdaSocialHistoryGenerator {
     occEntries.append(sb.toString());
   }
 
-  private static String addOccupationHazardObservation(Observation obs, LaunchDetails details) {
+  private static String addOccupationHazardObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1690,7 +1689,7 @@ public class CdaSocialHistoryGenerator {
     return false;
   }
 
-  public static String addPastOrPresentIndustryObservation(Observation obs, LaunchDetails details) {
+  public static String addPastOrPresentIndustryObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 

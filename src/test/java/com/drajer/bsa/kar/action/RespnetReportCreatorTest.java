@@ -124,7 +124,6 @@ public class RespnetReportCreatorTest {
   private HashMap<ResourceType, Set<Resource>> getFilteredByType(String filePath) {
     HashMap<ResourceType, Set<Resource>> groupedResources = new HashMap<>();
     try {
-      FhirContext ctx = FhirContext.forR4();
       Bundle bundle = loadBundleFromFile(filePath);
 
       for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -165,8 +164,7 @@ public class RespnetReportCreatorTest {
   }
 
   private HealthcareSetting getHealthcareSetting() {
-    HealthcareSetting healthcareSetting = new HealthcareSetting();
-    healthcareSetting =
+    HealthcareSetting healthcareSetting =
         (HealthcareSetting)
             TestUtils.getResourceAsObject("Bsa/HealthCareSettings.json", HealthcareSetting.class);
     return healthcareSetting;

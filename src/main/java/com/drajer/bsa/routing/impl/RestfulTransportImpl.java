@@ -128,7 +128,7 @@ public class RestfulTransportImpl implements DataTransportInterface {
         }
       }
 
-      throw new RuntimeException(e.getMessage());
+      throw new IllegalStateException(e.getMessage());
     }
 
     return bundleResponse;

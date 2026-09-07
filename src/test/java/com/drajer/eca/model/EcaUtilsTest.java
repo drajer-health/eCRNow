@@ -76,6 +76,8 @@ public class EcaUtilsTest {
   private Set<String> codesToMatchAgainst;
   private MatchTriggerStatus matchTriggerStatus;
   private AppConfig mockAppConfig;
+
+  @SuppressWarnings("unused")
   private RelatedAction mockRelatedAction;
 
   @Before
@@ -307,7 +309,6 @@ public class EcaUtilsTest {
     when(mockClient.read().resource("Encounter").withId(mockDetails.getEncounterId()).execute())
         .thenReturn(mockr4Encounter);
     when(mockr4Encounter.getPeriod()).thenReturn(period);
-    boolean checkEncounterClose = EcaUtils.checkEncounterClose(mockDetails);
     assertTrue(mockr4Encounter.getPeriod().getStart() == null);
     assertTrue(mockDetails.getStartDate() != null);
   }

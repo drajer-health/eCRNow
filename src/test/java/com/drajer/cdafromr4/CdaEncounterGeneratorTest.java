@@ -94,9 +94,6 @@ public class CdaEncounterGeneratorTest extends BaseGeneratorTest {
     enClass1.setSystem(CdaGeneratorConstants.FHIR_ENCOUNTER_CLASS_URL);
     en1.setClass_(enClass1);
 
-    expectedCodeXml =
-        "<code code=\"AMB\" codeSystem=\"2.16.840.1.113883.5.4\" codeSystemName=\"v3-ActCode\"><originalText><reference value=\"#test\"/></originalText></code>";
-
     actualCodeXml = CdaEncounterGenerator.getEncounterCodeXml(en1, contentRef);
     assertEquals(actualCodeXml.trim(), actualCodeXml.trim());
 
@@ -109,9 +106,6 @@ public class CdaEncounterGeneratorTest extends BaseGeneratorTest {
     codeableConcept2.addCoding(coding2);
     cds2.add(codeableConcept2);
     en2.setType(cds2);
-
-    expectedCodeXml =
-        "<code code=\"456\" codeSystem=\"2.16.840.1.113883.6.12\" codeSystemName=\"CPT\"><originalText><reference value=\"#test\"/></originalText></code>";
 
     actualCodeXml = CdaEncounterGenerator.getEncounterCodeXml(en2, contentRef);
     assertEquals(actualCodeXml.trim(), actualCodeXml.trim());

@@ -24,9 +24,6 @@ public class CdaPregnancyGeneratorTest extends BaseGeneratorTest {
 
   private static final String PREGNANCY_CDA_FILE = "CdaTestData/Cda/Pregnancy/pregnancy.xml";
 
-  private static final String EMPTY_PREGNANCY_CDA_FILE =
-      "CdaTestData/Cda/Pregnancy/emptyPregnancy.xml";
-
   @Test
   public void testGeneratePregnancySection() {
 
@@ -80,7 +77,7 @@ public class CdaPregnancyGeneratorTest extends BaseGeneratorTest {
         .thenReturn(
             "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"5e70e24f-4d8b-4989-8453-dcc15b427f71\"/>");
 
-    String actualXml = CdaPregnancyGenerator.generatePregnancySection(data, launchDetails, "");
+    String actualXml = CdaPregnancyGenerator.generatePregnancySection(data, launchDetails);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -90,13 +87,12 @@ public class CdaPregnancyGeneratorTest extends BaseGeneratorTest {
 
     R4FhirData data = new R4FhirData();
 
-    String expectedXml = TestUtils.getFileContentAsString(EMPTY_PREGNANCY_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     PowerMockito.when(CdaGeneratorUtils.getXmlForII(any())).thenReturn(XML_FOR_II_USING_GUID);
 
-    String actualXml = CdaPregnancyGenerator.generatePregnancySection(data, launchDetails, "");
+    String actualXml = CdaPregnancyGenerator.generatePregnancySection(data, launchDetails);
 
     Assertions.assertThat(actualXml).isEmpty();
   }

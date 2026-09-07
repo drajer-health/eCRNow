@@ -55,12 +55,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
   // Constants
-  private static final String R4_BUNDLE_FILE =
-      "SampleTestData/r4-loading-query-bundle-sample1.json";
   private static final String R4_DUPLICATE_SOC_HISTORY_ENTRIES_FILE =
       "SampleTestData/LoadingQueryBundle_DuplicateSocialHistory.json";
   private static final String PATIENT_SAMPLE_CDA_FILE = "CdaTestData/Cda/sample/PatientSample.xml";
-  private static final String EICR_CDA_FILE = "CdaTestData/Eicr/eicr.xml";
 
   private static final String LAB_SECTION_FILE = "CdaTestData/cda/Result/result-section.xml";
 
@@ -94,7 +91,6 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
 
-    String expectedXml = TestUtils.getFileContentAsString(EICR_CDA_FILE);
     String labSection = TestUtils.getFileContentAsString(LAB_SECTION_FILE);
 
     PowerMockito.mockStatic(ActionRepo.class);

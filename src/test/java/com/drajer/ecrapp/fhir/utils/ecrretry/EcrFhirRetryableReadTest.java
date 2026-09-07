@@ -33,6 +33,8 @@ import org.mockito.MockitoAnnotations;
 public class EcrFhirRetryableReadTest {
 
   private LaunchDetails currentStateDetails;
+
+  @SuppressWarnings("unused")
   private ClientDetails clientDetails;
 
   @InjectMocks FHIRRetryTemplate fhirretryTemplate;

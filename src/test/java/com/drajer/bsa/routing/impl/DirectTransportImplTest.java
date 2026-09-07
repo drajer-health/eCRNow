@@ -486,7 +486,6 @@ public class DirectTransportImplTest {
   @Test
   public void test21_ProcessMessage_WithErrorContinuesProcessing() throws Exception {
     Multipart multipart = mock(Multipart.class);
-    BodyPart bodyPart = mock(BodyPart.class);
 
     when(emailMessage.getContent()).thenReturn(multipart);
     when(emailMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("sender@test.com")});
@@ -524,7 +523,6 @@ public class DirectTransportImplTest {
   @Test
   public void test22_ProcessMessage_GenericException() throws Exception {
     Multipart multipart = mock(Multipart.class);
-    BodyPart bodyPart = mock(BodyPart.class);
 
     when(emailMessage.getContent()).thenReturn(multipart);
     when(emailMessage.getFrom()).thenReturn(new Address[] {new InternetAddress("sender@test.com")});

@@ -12,11 +12,9 @@ public class ReportCreatorTest {
   private static final String HCS_PROFILE =
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-reporting-bundle";
 
-  private ReportCreator creator;
-
   @Before
   public void setUp() {
-    creator = ReportCreator.getReportCreator(HCS_PROFILE);
+    ReportCreator.getReportCreator(HCS_PROFILE);
   }
 
   @Test

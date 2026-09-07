@@ -19,9 +19,6 @@ public class CdaReasonForVisitGeneratorTest extends BaseGeneratorTest {
   private static final String REASON_FOR_VISIT_CDA_FILE =
       "CdaTestData/Cda/Encounter/ReasonForVisit.xml";
 
-  private static final String REASON_FOR_VISIT_WITH_DISPLAY_CDA_FILE =
-      "CdaTestData/Cda/Encounter/ReasonForVisitWithDisplay.xml";
-
   private static final String REASON_FOR_VISIT_WITH_TEXT_CDA_FILE =
       "CdaTestData/Cda/Encounter/ReasonForVisitWithText.xml";
 

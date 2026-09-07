@@ -154,10 +154,7 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testCalculateNewTimeForTimer_CurrentBefore() {
-    Duration d = new Duration();
-    d.setValue(1d);
-    Instant result =
-        ApplicationUtils.calculateNewTimeForTimer(10, 0, 12, 0, "UTC", d, Instant.now());
+    Instant result = ApplicationUtils.calculateNewTimeForTimer(10, 0, 12, 0, "UTC", Instant.now());
     assertNotNull(result);
   }
 
@@ -391,9 +388,6 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testCalculateNewTimeForTimer_CurrentAfter() {
-    Duration d = new Duration();
-    d.setValue(1d);
-    d.setUnit("h");
     Instant now = Instant.now();
     int startHour = 0;
     int startMin = 0;
@@ -402,7 +396,7 @@ public class ApplicationUtilsTest {
     String timeZone = "UTC";
     Instant result =
         ApplicationUtils.calculateNewTimeForTimer(
-            startHour, startMin, endHour, endMin, timeZone, d, now);
+            startHour, startMin, endHour, endMin, timeZone, now);
     result.isAfter(now);
     // ============ ASSERTIONS ============
     assertNotNull("Result should not be null", result);
@@ -453,13 +447,11 @@ public class ApplicationUtilsTest {
   @Test
   public void testCalculateNewTimeForTimer_NullDurationAndBoundaryHours() {
     Instant now = Instant.now();
-    Instant res1 = ApplicationUtils.calculateNewTimeForTimer(9, 0, 17, 0, "UTC", null, now);
+    Instant res1 = ApplicationUtils.calculateNewTimeForTimer(9, 0, 17, 0, "UTC", now);
     assertNotNull(res1);
-    Duration d = new Duration();
-    d.setValue(1d);
-    Instant res2 = ApplicationUtils.calculateNewTimeForTimer(18, 0, 9, 0, "UTC", d, now);
+    Instant res2 = ApplicationUtils.calculateNewTimeForTimer(18, 0, 9, 0, "UTC", now);
     assertNotNull(res2);
-    Instant res3 = ApplicationUtils.calculateNewTimeForTimer(0, 0, 23, 59, "Asia/Kolkata", d, now);
+    Instant res3 = ApplicationUtils.calculateNewTimeForTimer(0, 0, 23, 59, "Asia/Kolkata", now);
     assertNotNull(res3);
   }
 

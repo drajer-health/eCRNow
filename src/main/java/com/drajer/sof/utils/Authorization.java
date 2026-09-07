@@ -24,12 +24,11 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class Authorization {
 
-  private final ClientDetailsService clientDetailService;
   private final Logger logger = LoggerFactory.getLogger(Authorization.class);
 
   @Autowired
   public Authorization(ClientDetailsService clientDetailService) {
-    this.clientDetailService = clientDetailService;
+    // ClientDetailsService is injected but not currently used by this class
   }
 
   public JSONObject getMetadata(String serverURL) {

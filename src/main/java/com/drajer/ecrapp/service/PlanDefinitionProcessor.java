@@ -69,7 +69,6 @@ public class PlanDefinitionProcessor {
 
   public static final String ERSD_BUNDLE_ID_STRING = "rctc";
 
-  private final IGenericClient esrdClient;
   private final IParser jsonParser;
   private final ValueSetService valueSetService;
   private final String ersdFileLocation;
@@ -89,7 +88,6 @@ public class PlanDefinitionProcessor {
       @Qualifier("jsonParser") IParser jsonParser,
       @Qualifier("valueSetServiceImpl") ValueSetService valueSetService,
       @Value("${ersd.file.location:default.json}") String ersdFileLocation) {
-    this.esrdClient = esrdClient;
     this.jsonParser = jsonParser;
     this.valueSetService = valueSetService;
     this.ersdFileLocation = ersdFileLocation;
@@ -122,14 +120,12 @@ public class PlanDefinitionProcessor {
     Bundle actualErsdBundle = extractInnerErsdBundle(ersdBundle);
     List<BundleEntryComponent> bundleEntries = getBundleEntries(actualErsdBundle, ersdBundle);
 
-    BundleResourceCollections collections = processValueSetsAndLibraries(bundleEntries);
+    processValueSetsAndLibraries(bundleEntries);
     Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts = new HashMap<>();
-    processPlanDefinitionAndActions(bundleEntries, collections, acts);
+    processPlanDefinitionAndActions(bundleEntries, acts);
 
-    if (acts != null) {
-      ActionRepo.getInstance().setActions(acts);
-      ActionRepo.getInstance().setupTriggerBasedActions();
-    }
+    ActionRepo.getInstance().setActions(acts);
+    ActionRepo.getInstance().setupTriggerBasedActions();
   }
 
   private Bundle extractInnerErsdBundle(Bundle ersdBundle) {
@@ -214,7 +210,6 @@ public class PlanDefinitionProcessor {
 
   private void processPlanDefinitionAndActions(
       List<BundleEntryComponent> bundleEntries,
-      BundleResourceCollections collections,
       Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts) {
     for (BundleEntryComponent bundleEntry : bundleEntries) {
       if (Optional.ofNullable(bundleEntry).isPresent()) {

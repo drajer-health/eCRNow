@@ -273,7 +273,7 @@ public class NotificationContextDaoImplTest {
     when(hibernateCriteriaBuilder.asc(jpaPath)).thenReturn(jpaOrder);
     when(jpaCriteriaQuery.where(any(JpaExpression.class))).thenReturn(jpaCriteriaQuery);
     when(jpaCriteriaQuery.orderBy(any(JpaOrder.class))).thenReturn(jpaCriteriaQuery);
-    List<NotificationContext> result = dao.getAllNotificationContext(null, searchParams);
+    dao.getAllNotificationContext(null, searchParams);
 
     verify(session).getCriteriaBuilder();
     verify(jpaCriteriaQuery).select(jpaRoot);

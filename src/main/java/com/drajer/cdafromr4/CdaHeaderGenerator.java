@@ -163,8 +163,7 @@ public class CdaHeaderGenerator {
         eICRHeader.append(getCustodianXml(details, data));
 
         eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
-        eICRHeader.append(
-            getServiceDiscoveryLocationParticipantXml(details, data.getLocation(), data));
+        eICRHeader.append(getServiceDiscoveryLocationParticipantXml(details, data.getLocation()));
         eICRHeader.append(getEncompassingEncounter(data.getEncounter(), prs, details, data));
       } else {
         String msg = "No Fhir Data Bundle retrieved to CREATE EICR.";
@@ -256,7 +255,7 @@ public class CdaHeaderGenerator {
   }
 
   public static String getServiceDiscoveryLocationParticipantXml(
-      LaunchDetails details, Location location, R4FhirData data) {
+      LaunchDetails details, Location location) {
 
     StringBuilder s = new StringBuilder(200);
     if (location == null) {

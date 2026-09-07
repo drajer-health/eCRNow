@@ -110,7 +110,6 @@ public class RrReceiverImpl implements RrReceiver {
             " Found the Eicr for correlation Id: {}", StringEscapeUtils.escapeJava(xCorrelationId));
       }
       phm.setResponseMessageType(EicrTypes.RrType.FAILURE_MDN.toString());
-      // phm.setxRequestId(xRequestId);
       phm.setFailureResponseData(data.getRrXml());
 
       phDao.saveOrUpdate(phm);

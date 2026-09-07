@@ -176,9 +176,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
               mock(HttpServletResponse.class),
               launchContext);
 
-      Boolean reportBundleGenerated =
-          this.reportBundleGenerated(
-              dataList, this.testCaseInfo.getName(), this.testCaseInfo.getPlanDefUrl());
+      Boolean reportBundleGenerated = this.reportBundleGenerated(dataList);
       if (!reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == REPORTED) {
         throw new RuntimeException(
             String.format(
@@ -221,7 +219,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
       // If this is an eCSD test, ensure the Bundle has a MeasureReport
       if (this.testCaseInfo.getExpectedOutcome() == REPORTED) {
-        Bundle eICR = this.getEicrBundle(this.testCaseInfo.getPlanDef());
+        Bundle eICR = this.getEicrBundle();
         validateBundle(eICR, this.testCaseInfo.getInitialPopulation() != null);
       }
     } catch (Exception e) {
@@ -238,8 +236,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
         "Test {}/{} succeeded", this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
   }
 
-  protected Boolean reportBundleGenerated(
-      List<KarProcessingData> dataList, String patientId, String planDefUrl) {
+  protected Boolean reportBundleGenerated(List<KarProcessingData> dataList) {
     if (dataList == null || dataList.isEmpty()) {
       return false;
     }
@@ -256,7 +253,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
     return false;
   }
 
-  Bundle getEicrBundle(String planDef) {
+  Bundle getEicrBundle() {
     String processMessageUrl = "/fhir/$process-message";
     List<LoggedRequest> requests =
         wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));

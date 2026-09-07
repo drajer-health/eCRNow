@@ -468,11 +468,9 @@ public class WorkflowServiceTest {
     TimingSchedule ts = null; // null input
     Date timeRef = new Date();
     EventTypes.EcrActionTypes actionType = EventTypes.EcrActionTypes.PERIODIC_UPDATE_EICR;
-    boolean threwException = false;
     try {
       WorkflowService.scheduleJob(launchId, ts, actionType, timeRef, "task3");
     } catch (NullPointerException npe) {
-      threwException = true;
     }
 
     Assert.assertTrue("Method should process input", true);

@@ -202,10 +202,12 @@ public class EicrController {
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue) {
     try {
-      logger.info(
-          "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
-          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
-          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
+            StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+            StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      }
 
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         logger.error("Eicr Doc Id is null ");

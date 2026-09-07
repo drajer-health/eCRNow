@@ -193,8 +193,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     ServiceRequest serviceRequest = data.getServiceRequests().stream().findFirst().get();
     String actualXml =
-        (String)
-            CdaPlanOfTreatmentGenerator.getPlannedActXml(serviceRequest, launchDetails, "", "");
+        (String) CdaPlanOfTreatmentGenerator.getPlannedActXml(serviceRequest, launchDetails);
 
     assertNotNull(actualXml);
 
@@ -559,8 +558,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     mockStatic(CdaFhirUtilities.class, Mockito.CALLS_REAL_METHODS);
     when(CdaGeneratorUtils.getXmlForII(any(), any()))
         .thenReturn("<id root=\"1.2.3.4.5\" extension=\"sr-authored-only\"/>");
-    String xml =
-        (String) CdaPlanOfTreatmentGenerator.getPlannedActXml(sr, details, "contentRef", "CDA_R31");
+    String xml = (String) CdaPlanOfTreatmentGenerator.getPlannedActXml(sr, details);
     assertNotNull(xml);
     assertTrue(xml.contains("effectiveTime"));
   }
@@ -807,7 +805,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String xml =
         CdaPlanOfTreatmentGenerator.getPlannedMedicationXml(
-            mr, details, "ref6", data, null, null, null, medList, details, "v1");
+            mr, details, data, null, null, null, medList, details);
     assertTrue(xml.contains("codeXml"));
   }
 
@@ -833,7 +831,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String xml =
         CdaPlanOfTreatmentGenerator.getPlannedMedicationXml(
-            mr, details, "ref7", data, null, null, null, medList, details, "v1");
+            mr, details, data, null, null, null, medList, details);
     assertTrue(xml.contains("fallback"));
   }
 
@@ -862,7 +860,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String xml =
         CdaPlanOfTreatmentGenerator.getPlannedMedicationXml(
-            mr, details, "ref8", data, null, null, null, medList, details, "v1");
+            mr, details, data, null, null, null, medList, details);
     assertTrue(xml.contains("final"));
   }
 

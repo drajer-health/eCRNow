@@ -76,7 +76,6 @@ public class LaunchController {
   private final WorkflowService workflowService;
   private final ClientDetailsService clientDetailsService;
   private final FhirContextInitializer fhirContextInitializer;
-  private final RestApiSender xmlSender;
   private final ObjectMapper mapper;
   private final SecureRandom random = new SecureRandom();
 
@@ -100,7 +99,6 @@ public class LaunchController {
     this.workflowService = workflowService;
     this.clientDetailsService = clientDetailsService;
     this.fhirContextInitializer = fhirContextInitializer;
-    this.xmlSender = xmlSender;
     this.mapper = mapper;
   }
 

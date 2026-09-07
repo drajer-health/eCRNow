@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 public class ResourceUtils {
   private static final Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
 
+  private ResourceUtils() {}
+
   public static <T extends IBaseResource> List<T> deduplicate(Collection<T> resources) {
     Map<String, List<T>> groupedById =
         resources.stream()

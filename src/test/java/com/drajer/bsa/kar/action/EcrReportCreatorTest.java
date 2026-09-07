@@ -106,7 +106,6 @@ public class EcrReportCreatorTest {
   @Test
   public void testCreateReport_R11() {
     CheckTriggerCodeStatus bsaActionStatus = new CheckTriggerCodeStatus();
-    Bundle exceptedReport = TestUtils.loadBundleFromFile("Bsa/report/ecr-report/ecir_r11.xml");
     bsaActionStatus.setActionId("action1");
     bsaActionStatus.setActionType(CHECK_TRIGGER_CODES);
     List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();
@@ -160,7 +159,6 @@ public class EcrReportCreatorTest {
   @Test
   public void testCreateReport_R31() {
     CheckTriggerCodeStatus bsaActionStatus = new CheckTriggerCodeStatus();
-    Bundle exceptedReport = TestUtils.loadBundleFromFile("Bsa/report/ecr-report/ecir_r11.xml");
     bsaActionStatus.setActionId("action1");
     bsaActionStatus.setActionType(CHECK_TRIGGER_CODES);
     List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();
@@ -214,7 +212,6 @@ public class EcrReportCreatorTest {
   @Test
   public void testCreateReport_Both() {
     CheckTriggerCodeStatus bsaActionStatus = new CheckTriggerCodeStatus();
-    Bundle exceptedReport = TestUtils.loadBundleFromFile("Bsa/report/ecr-report/ecir_r11.xml");
     bsaActionStatus.setActionId("action1");
     bsaActionStatus.setActionType(CHECK_TRIGGER_CODES);
     List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();

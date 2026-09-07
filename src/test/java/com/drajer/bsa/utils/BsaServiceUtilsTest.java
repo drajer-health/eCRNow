@@ -130,7 +130,6 @@ public class BsaServiceUtilsTest {
             (e) -> {
               resources.add(e.getResource());
             });
-    InputStream inputStreamMock = Mockito.mock(InputStream.class);
     Mockito.lenient()
         .when(iParser.parseResource(Mockito.eq(Bundle.class), Mockito.any(InputStream.class)))
         .thenReturn(bundle);
@@ -213,7 +212,6 @@ public class BsaServiceUtilsTest {
 
   @Test
   public void getEncodedTriggerMatchStatus() throws Exception {
-    KarProcessingData kd = Utility.karProcessingData();
     CheckTriggerCodeStatusList expectedcheckTriggerList = Utility.getCheckTriggerCodeStatusList();
     String actualcheckTriggerList =
         bsaServiceUtils.getEncodedTriggerMatchStatus(
@@ -230,7 +228,6 @@ public class BsaServiceUtilsTest {
     Parameters params = new Parameters();
     ParametersParameterComponent parametersParameterComponent = new ParametersParameterComponent();
     parametersParameterComponent.setName("%Jon%4656");
-    List<ParametersParameterComponent> parameterList = params.getParameter();
     bsaServiceUtils.convertDataToParameters("4656", "R4", "10", resources, params);
     assertNotNull(params);
     assertNotNull(params.getParameter());
@@ -244,7 +241,6 @@ public class BsaServiceUtilsTest {
     Parameters params = new Parameters();
     ParametersParameterComponent parametersParameterComponent = new ParametersParameterComponent();
     parametersParameterComponent.setName("%Jon%4656");
-    List<ParametersParameterComponent> parameterList = params.getParameter();
     bsaServiceUtils.convertDataToParameters("4656", "R4", "10", resource, params);
     assertNotNull(params);
     assertTrue(resource.isEmpty());

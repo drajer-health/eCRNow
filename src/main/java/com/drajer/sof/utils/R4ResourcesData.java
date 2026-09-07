@@ -1013,7 +1013,7 @@ public class R4ResourcesData {
         }
         // If Encounter Id is not present using start and end dates to filter
         // Immunizations
-      } else if (bundle != null) {
+      } else {
 
         populateImmunizationsWithoutEncounters(
             bundle, immunizations, immunizationCodes, start, end);

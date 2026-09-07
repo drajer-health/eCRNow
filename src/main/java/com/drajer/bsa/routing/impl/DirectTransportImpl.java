@@ -425,7 +425,7 @@ public class DirectTransportImpl implements DataTransportInterface {
       String port,
       String correlationId,
       String directTlsVersion)
-      throws Exception {
+      throws MessagingException {
 
     logger.info(
         "readMail: start — user={}, correlationId={}, host={}, port={}",

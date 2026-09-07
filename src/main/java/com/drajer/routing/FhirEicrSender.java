@@ -21,8 +21,6 @@ import org.springframework.web.client.RestTemplate;
 public class FhirEicrSender {
 
   private final Logger logger = LoggerFactory.getLogger(FhirEicrSender.class);
-  private final FhirContextInitializer contextInitializer;
-  private final Authorization authorization;
   private final String fhirServerURL;
 
   @Autowired
@@ -30,8 +28,6 @@ public class FhirEicrSender {
       FhirContextInitializer contextInitializer,
       Authorization authorization,
       @Value("${eicr.fhir.server.url}") String fhirServerURL) {
-    this.contextInitializer = contextInitializer;
-    this.authorization = authorization;
     this.fhirServerURL = fhirServerURL;
   }
 

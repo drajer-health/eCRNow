@@ -53,16 +53,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class R3ToR2DataConverterUtilsTest {
 
   @Spy @InjectMocks R3ToR2DataConverterUtils r3ToR2DataConverterUtils;
-
-  private static final Logger logger = LoggerFactory.getLogger(R3ToR2DataConverterUtilsTest.class);
 
   ClassLoader classLoader = R3ToR2DataConverterUtilsTest.class.getClassLoader();
 
@@ -235,9 +231,8 @@ public class R3ToR2DataConverterUtilsTest {
     codeStatus.setTriggerMatchStatus(true);
     bsaActionStatusList.add(codeStatus);
 
-    Observation socialHistory = new Observation();
     FhirContext fhirContext = FhirContext.forR4();
-    socialHistory =
+    Observation socialHistory =
         fhirContext
             .newJsonParser()
             .parseResource(
@@ -245,8 +240,7 @@ public class R3ToR2DataConverterUtilsTest {
                 R3ToR2DataConverterUtilsTest.class.getResourceAsStream(
                     "/R4/Observation/SocialHistory.json"));
 
-    Observation vitalSigns = new Observation();
-    vitalSigns =
+    Observation vitalSigns =
         fhirContext
             .newJsonParser()
             .parseResource(
@@ -324,7 +318,7 @@ public class R3ToR2DataConverterUtilsTest {
 
     Iterator<Coding> iterator = codingList.iterator();
     while (iterator.hasNext()) {
-      Coding coding = iterator.next();
+      iterator.next();
       codeableConcept.setCoding(codingList);
       Boolean isTravelObservation =
           r3ToR2DataConverterUtils.isOccupationObservation(codeableConcept);
@@ -348,7 +342,7 @@ public class R3ToR2DataConverterUtilsTest {
 
     Iterator<Coding> iterator = codingList.iterator();
     while (iterator.hasNext()) {
-      Coding coding = iterator.next();
+      iterator.next();
       codeableConcept.setCoding(codingList);
       Boolean isTravelObservation = r3ToR2DataConverterUtils.isTravelObservation(codeableConcept);
       assertTrue(isTravelObservation);

@@ -250,12 +250,6 @@ public class KeyCloakTokenValidationClient {
     return environment.getProperty(propertyKey, "");
   }
 
-  private RequestBody buildRequestBody(String token, String clientId, String clientSecret) {
-    String formBody =
-        String.format("token=%s&client_id=%s&client_secret=%s", token, clientId, clientSecret);
-    return RequestBody.create(MediaType.parse(APPLICATION_URL_FORM_ENCODED), formBody);
-  }
-
   public void fetchAndValidateKeyCredentials() {
     if (credentialsFetched) {
       LOGGER.info("Keycloak credentials have already been fetched and validated.");

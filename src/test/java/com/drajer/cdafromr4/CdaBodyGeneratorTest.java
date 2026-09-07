@@ -111,20 +111,18 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
         .thenReturn("<socialHistory/>");
 
     PowerMockito.mockStatic(CdaPregnancyGenerator.class);
-    PowerMockito.when(CdaPregnancyGenerator.generatePregnancySection(data, details, version))
+    PowerMockito.when(CdaPregnancyGenerator.generatePregnancySection(data, details))
         .thenReturn("<pregnancy/>");
 
     PowerMockito.mockStatic(CdaProcedureGenerator.class);
-    PowerMockito.when(CdaProcedureGenerator.generateProcedureSection(data, details, version))
+    PowerMockito.when(CdaProcedureGenerator.generateProcedureSection(data, details))
         .thenReturn("<procedure/>");
 
     PowerMockito.mockStatic(CdaVitalSignsGenerator.class);
-    PowerMockito.when(CdaVitalSignsGenerator.generateVitalsSection(data, details, version))
+    PowerMockito.when(CdaVitalSignsGenerator.generateVitalsSection(data, details))
         .thenReturn("<vitals/>");
     PowerMockito.mockStatic(CdaHistoryOfPresentIllnessGenerator.class);
-    PowerMockito.when(
-            CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(
-                data, version))
+    PowerMockito.when(CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection())
         .thenReturn("<history/>");
     PowerMockito.mockStatic(CdaReasonForVisitGenerator.class);
     PowerMockito.when(CdaReasonForVisitGenerator.generateReasonForVisitSection(data))

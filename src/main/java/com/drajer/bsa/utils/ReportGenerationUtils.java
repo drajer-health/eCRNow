@@ -20,7 +20,6 @@ public class ReportGenerationUtils {
 
   // System URL constants
   private static final String LOINC_SYSTEM = "http://loinc.org";
-  private static final String SNOMED_SYSTEM = "http://snomed.info/sct";
 
   // Code constants (for section methods)
   private static final String PREGNANCY_SECTION_CODE = "90767-5";

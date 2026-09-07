@@ -69,7 +69,7 @@ public class cdaVitalSignGeneratorTest extends BaseGeneratorTest {
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
-    String actualXml = CdaVitalSignsGenerator.generateVitalsSection(data, launchDetails, "");
+    String actualXml = CdaVitalSignsGenerator.generateVitalsSection(data, launchDetails);
 
     assertXmlEquals(expectedXml, actualXml);
   }

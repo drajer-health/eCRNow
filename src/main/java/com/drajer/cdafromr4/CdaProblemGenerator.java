@@ -107,8 +107,7 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
         // Get Concern Act and Observation
-        probObsXml.append(
-            getProblemActEntryXml(prob, details, version, probStatus.getValue1(), rowNum));
+        probObsXml.append(getProblemActEntryXml(prob, details, probStatus.getValue1(), rowNum));
         ++rowNum;
       }
 
@@ -334,7 +333,7 @@ public class CdaProblemGenerator {
   }
 
   public static String getProblemActEntryXml(
-      Condition cond, LaunchDetails details, String version, String probStatus, int rowNum) {
+      Condition cond, LaunchDetails details, String probStatus, int rowNum) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -366,7 +365,6 @@ public class CdaProblemGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, probStatus));
 
-    Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(cond.getOnset());
     Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(cond.getAbatement());
     Pair<Date, TimeZone> recordedDate =
         CdaFhirUtilities.getActualDate(cond.getRecordedDateElement());
@@ -402,7 +400,7 @@ public class CdaProblemGenerator {
 
     // Find if there is a match
     String valCodeXml = "";
-    if (matchedCodesFromCc != null && !matchedCodesFromCc.isEmpty()) {
+    if (!matchedCodesFromCc.isEmpty()) {
 
       sb.append(
           CdaGeneratorUtils.getXmlForActWithNegationInd(
@@ -454,9 +452,7 @@ public class CdaProblemGenerator {
       urls.add(CdaGeneratorConstants.FHIR_ICD10_CM_URL);
       urls.add(CdaGeneratorConstants.FHIR_ICD9_CM_URL);
 
-      valCodeXml =
-          getCodeableConceptXml(
-              cond.getCode(), CdaGeneratorConstants.VAL_EL_NAME, true, details, urls, rowNum);
+      valCodeXml = getCodeableConceptXml(cond.getCode(), urls, rowNum);
     }
 
     sb.append(
@@ -500,7 +496,7 @@ public class CdaProblemGenerator {
   }
 
   public static String getValueCodeXmlFromMatchedCode(
-      Set<String> matchedCodes, LaunchDetails details, int rowNum, CodeableConcept cd) {
+      Set<String> matchedCodes, LaunchDetails details, int rowNum) {
 
     StringBuilder sb = new StringBuilder();
     if (matchedCodes != null && !matchedCodes.isEmpty()) {
@@ -567,13 +563,7 @@ public class CdaProblemGenerator {
     return matchedCodesFromCc;
   }
 
-  public static String getCodeableConceptXml(
-      CodeableConcept cd,
-      String elName,
-      Boolean valElem,
-      LaunchDetails details,
-      List<String> urls,
-      int rowNum) {
+  public static String getCodeableConceptXml(CodeableConcept cd, List<String> urls, int rowNum) {
 
     String s = "";
 

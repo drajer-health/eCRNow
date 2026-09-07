@@ -821,8 +821,7 @@ public class CdaResultGenerator {
       obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths);
     }
 
-    if ((obsCodeXml != null && obsCodeXml.getValue0())
-        || (obsValueXml != null && obsValueXml.getValue0())) {
+    if (obsCodeXml.getValue0() || (obsValueXml != null && obsValueXml.getValue0())) {
 
       lrEntry.append(getTriggerCodeTemplateXml(version));
 
@@ -837,11 +836,11 @@ public class CdaResultGenerator {
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
-    if (obsCodeXml != null && obsCodeXml.getValue0()) {
+    if (obsCodeXml.getValue0()) {
       lrEntry.append(obsCodeXml.getValue1());
     } else if (altObsCodeXml != null && altObsCodeXml.getValue0()) {
       lrEntry.append(altObsCodeXml.getValue1());
-    } else if (obsCodeXml != null && !obsCodeXml.getValue0()) {
+    } else if (!obsCodeXml.getValue0()) {
       lrEntry.append(obsCodeXml.getValue1());
     } else if (altObsCodeXml != null && !altObsCodeXml.getValue0()) {
       lrEntry.append(altObsCodeXml.getValue1());

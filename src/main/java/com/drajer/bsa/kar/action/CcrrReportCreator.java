@@ -250,7 +250,6 @@ public class CcrrReportCreator extends ReportCreator {
 
       org = new Organization();
       org.setId(UUID.randomUUID().toString());
-      // org.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, SENDER_ORG_PROFILE));
       org.setName(hs.getOrgName());
       org.setActive(true);
 

@@ -328,7 +328,6 @@ public class ApplicationUtils {
             offhourEnd,
             offhoursEndMin,
             tz,
-            d,
             (new Date().toInstant()));
 
     return t;
@@ -340,7 +339,6 @@ public class ApplicationUtils {
       Integer highHours,
       Integer highMin,
       String tz,
-      Duration d,
       Instant currentTime) {
 
     if (lowHours != null && lowMin != null && highHours != null && highMin != null && tz != null) {

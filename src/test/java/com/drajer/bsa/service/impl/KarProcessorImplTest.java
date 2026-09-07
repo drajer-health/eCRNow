@@ -362,7 +362,7 @@ public class KarProcessorImplTest {
             .actionId("missing-action")
             .build();
 
-    KarExecutionState state = setUpMatchingKarStatusState(stateId, ncId, "kar-1|1.0");
+    setUpMatchingKarStatusState(stateId, ncId, "kar-1|1.0");
 
     NotificationContext nc = buildNotificationContext("trigger-1");
     nc.setNotificationData("{}");

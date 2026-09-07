@@ -54,7 +54,6 @@ public class EicrServiceImpl implements EicrRRService {
 
   private final EicrDao eicrDao;
   private final ClientDetailsService clientDetailservice;
-  private final LaunchService launchDetailsService;
   private final RefreshTokenScheduler tokenScheduler;
   private final Authorization authorization;
   private final FhirContextInitializer fhirContextInitializer;
@@ -89,7 +88,6 @@ public class EicrServiceImpl implements EicrRRService {
       @Value("${ecr.rr.processorphanrr:false}") Boolean processOrphanRr) {
     this.eicrDao = eicrDao;
     this.clientDetailservice = clientDetailservice;
-    this.launchDetailsService = launchDetailsService;
     this.tokenScheduler = tokenScheduler;
     this.authorization = authorization;
     this.fhirContextInitializer = fhirContextInitializer;

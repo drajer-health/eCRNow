@@ -4,6 +4,8 @@ import java.net.URI;
 
 public final class SecurityValidationUtils {
 
+  private SecurityValidationUtils() {}
+
   public static boolean validateUrl(String url) {
 
     if (url == null || url.isBlank()) {

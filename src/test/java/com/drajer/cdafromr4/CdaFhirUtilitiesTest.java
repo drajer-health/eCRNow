@@ -1853,8 +1853,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   public void testGetXmlForTypeForValueIvlTsEffectiveTime() {
 
     DateTimeType dt = new DateTimeType("2023-04-19T12:30:00-07:00");
-    String expected =
-        "<effectiveTime xsi:type=\"IVL_TS\"><low value=\"20230419123000-0700\"/><high nullFlavor=\"NI\"/></effectiveTime>";
 
     String result = CdaFhirUtilities.getXmlForTypeForValueIvlTsEffectiveTime("effectiveTime", dt);
 

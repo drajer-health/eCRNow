@@ -6,8 +6,6 @@ import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.Date;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Component;
 public class LoadingQueryService implements AbstractQueryService {
 
   private final LoadingQueryR4Bundle generateR4Bundle;
-  private final Logger logger = LoggerFactory.getLogger(LoadingQueryService.class);
 
   @Autowired
   public LoadingQueryService(LoadingQueryR4Bundle generateR4Bundle) {

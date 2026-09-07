@@ -147,7 +147,7 @@ public class CdaPlanOfTreatmentGenerator {
     processObservationRequests(obsReqs, data, details, version, sb, potObsXml, rowCounter);
     processDiagnosticReports(reports, data, details, version, sb, drXml, rowCounter);
     processProcedureRequests(procReqs, data, details, sb, procXml, rowCounter);
-    processMedicationRequests(medReqs, medList, data, details, version, sb, medReqXml, rowCounter);
+    processMedicationRequests(medReqs, medList, data, details, sb, medReqXml, rowCounter);
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
@@ -226,7 +226,6 @@ public class CdaPlanOfTreatmentGenerator {
       List<Medication> medList,
       R4FhirData data,
       LaunchDetails details,
-      String version,
       StringBuilder tableRows,
       StringBuilder xmlEntries,
       RowCounter rowCounter) {
@@ -240,19 +239,16 @@ public class CdaPlanOfTreatmentGenerator {
       addPlanOfTreatmentTableRow(
           tableRows, medDisplayName, startDateStr, rowCounter.getAndIncrement());
 
-      String contentRef = buildContentRef(rowCounter.getCurrent());
       xmlEntries.append(
           getPlannedMedicationXml(
               mr,
               details,
-              contentRef,
               data,
               dosageInfo.startDate,
               dosageInfo.dosage,
               dosageInfo.dose,
               medList,
-              details,
-              version));
+              details));
     }
   }
 
@@ -369,14 +365,12 @@ public class CdaPlanOfTreatmentGenerator {
   public static String getPlannedMedicationXml(
       MedicationRequest mr,
       LaunchDetails details,
-      String contentRef,
       R4FhirData data,
       DateTimeType startDate,
       Dosage dosage,
       Quantity dose,
       List<Medication> medList,
-      LaunchDetails launchDetails,
-      String version) {
+      LaunchDetails launchDetails) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -898,8 +892,6 @@ public class CdaPlanOfTreatmentGenerator {
   public static void sortServiceRequestsByType(
       R4FhirData data, List<ServiceRequest> obsRequests, List<ServiceRequest> procRequests) {
 
-    List<ServiceRequest> prs = new ArrayList<>();
-
     if (data.getServiceRequests() != null && !data.getServiceRequests().isEmpty()) {
 
       logger.info(
@@ -1059,8 +1051,7 @@ public class CdaPlanOfTreatmentGenerator {
     return sb.toString();
   }
 
-  public static Object getPlannedActXml(
-      ServiceRequest sa, LaunchDetails details, String contentRef, String version) {
+  public static Object getPlannedActXml(ServiceRequest sa, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder();
 

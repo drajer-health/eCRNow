@@ -189,8 +189,7 @@ public class CdaImmunizationGenerator {
     return sb.toString();
   }
 
-  public static Object generateR31ImmunizationSection(
-      R4FhirData data, LaunchDetails details, String version) {
+  public static Object generateR31ImmunizationSection() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -200,8 +199,7 @@ public class CdaImmunizationGenerator {
       CodeableConcept code,
       Boolean valElement,
       String contentRef,
-      List<String> paths,
-      String version) {
+      List<String> paths) {
 
     String elementType =
         valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
@@ -380,7 +378,7 @@ public class CdaImmunizationGenerator {
     List<CodeableConcept> cds = new ArrayList<>();
     cds.add(imm.getVaccineCode());
 
-    Pair<String, Boolean> codeXmlResult = generateVaccineCodeXml(imm, details, version, cds);
+    Pair<String, Boolean> codeXmlResult = generateVaccineCodeXml(imm, details, version);
     String codeXml = codeXmlResult.getValue0();
     Boolean isR31Match = codeXmlResult.getValue1();
 
@@ -421,7 +419,7 @@ public class CdaImmunizationGenerator {
   }
 
   private static Pair<String, Boolean> generateVaccineCodeXml(
-      Immunization imm, LaunchDetails details, String version, List<CodeableConcept> cds) {
+      Immunization imm, LaunchDetails details, String version) {
     String codeXml = "";
     Boolean isR31Match = false;
 
@@ -431,7 +429,7 @@ public class CdaImmunizationGenerator {
       paths.add("Immunization.vaccineCode");
 
       Pair<Boolean, String> codeXmlPair =
-          getImmunizationCodeXml(details, imm.getVaccineCode(), false, "", paths, version);
+          getImmunizationCodeXml(details, imm.getVaccineCode(), false, "", paths);
 
       if (codeXmlPair.getValue0() && !StringUtils.isEmpty(codeXmlPair.getValue1())) {
         codeXml = codeXmlPair.getValue1();
