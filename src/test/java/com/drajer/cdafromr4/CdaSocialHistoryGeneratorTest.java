@@ -1,6 +1,5 @@
 package com.drajer.cdafromr4;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
@@ -122,7 +121,6 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
                 data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     assertNotNull(actualXml);
-
 
     assertXmlEquals(expectedXml, actualXml);
   }
