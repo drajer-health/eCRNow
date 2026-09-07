@@ -1532,7 +1532,7 @@ public class CdaResultGenerator {
    * <p><tr> <td colspan="20"> <list styleCode="none"><item>
    *
    * <table>
-   *         <thead> Test | Outcome | Interpretation | Date(s) | Reference Range | Specimen Collection Date </thead>
+   *         <thead> Test | Outcome | Date(s) | Interpretation | Reference Range | Specimen Collection Date </thead>
    *         <tbody> one <tr> per component </tbody>
    *       </table>
    *
@@ -1576,11 +1576,11 @@ public class CdaResultGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
-            CdaGeneratorConstants.INNER_COL_INTERP));
+            CdaGeneratorConstants.INNER_COL_DATE));
     sb.append(
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
-            CdaGeneratorConstants.INNER_COL_DATE));
+            CdaGeneratorConstants.INNER_COL_INTERP));
     sb.append(
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
