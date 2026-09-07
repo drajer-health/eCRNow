@@ -728,7 +728,7 @@ public class CdaHeaderGenerator {
     Location location = filterLocation(data.getLocationList());
 
     if (location != null) {
-      sb.append(getLocationXml(data.getLocation(), data.getOrganization(), details));
+      sb.append(getLocationXml(location, data.getOrganization(), details));
     } else {
       sb.append(getLocationXml(null, data.getOrganization(), details));
     }

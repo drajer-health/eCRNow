@@ -1,5 +1,6 @@
 package com.drajer.cdafromr4;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;

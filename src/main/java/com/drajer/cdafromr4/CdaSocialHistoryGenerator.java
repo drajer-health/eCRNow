@@ -6,18 +6,8 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.*;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.Type;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1490,15 +1480,17 @@ public class CdaSocialHistoryGenerator {
     ObservationComponentComponent oc = getUsualIndustryComponent(obs);
 
     if (oc != null && oc.hasValueCodeableConcept()) {
+      List<CodeableConcept> valueElements = new ArrayList<>();
+      valueElements.add(oc.getValueCodeableConcept());
+
       sb.append(
-          CdaFhirUtilities.getXmlForType(
-              oc.getValueCodeableConcept(), CdaGeneratorConstants.VAL_EL_NAME, true));
+          CdaFhirUtilities.getCodeableConceptXml(
+              valueElements, CdaGeneratorConstants.VAL_EL_NAME, true));
     } else {
       sb.append(
           CdaGeneratorUtils.getXmlForNullValueCD(
               CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
-
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
