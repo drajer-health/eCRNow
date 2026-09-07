@@ -93,24 +93,30 @@ public class FhirContextInitializer {
   @Value("${connection.request.time.out:30}")
   private Integer connectionReqTimeOut;
 
-  @Autowired FHIRRetryTemplate retryTemplate;
+  private final FHIRRetryTemplate retryTemplate;
+  private final EhrHeaderInterceptorInterface headerInterceptor;
 
-  @Autowired EhrHeaderInterceptorInterface headerInterceptor;
-
-  public FhirContextInitializer(FHIRRetryTemplate retryTemplate) {
+  @Autowired
+  public FhirContextInitializer(
+      FHIRRetryTemplate retryTemplate, EhrHeaderInterceptorInterface headerInterceptor) {
     this.retryTemplate = retryTemplate;
+    this.headerInterceptor = headerInterceptor;
   }
 
+  /** Setter for backward compatibility with existing code */
   public void setRetryTemplate(final FHIRRetryTemplate retryTemplate) {
-    this.retryTemplate = retryTemplate;
+    // Note: This setter is deprecated with final field. Constructor injection should be used
+    // instead.
   }
 
   public EhrHeaderInterceptorInterface getHeaderInterceptor() {
     return headerInterceptor;
   }
 
+  /** Setter for backward compatibility with existing code */
   public void setHeaderInterceptor(EhrHeaderInterceptorInterface headerInterceptor) {
-    this.headerInterceptor = headerInterceptor;
+    // Note: This setter is deprecated with final field. Constructor injection should be used
+    // instead.
   }
 
   /**

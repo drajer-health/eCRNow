@@ -52,7 +52,7 @@ public class OperationOutcomeUtil {
       String json = parser.encodeResourceToString(operationOutcome);
       return objectMapper.readTree(json); // Convert JSON string to JsonNode
     } catch (Exception e) {
-      logger.error("Parsing error: " + e.getMessage());
+      logger.error("Parsing error: {}", e.getMessage());
     }
     return null;
   }

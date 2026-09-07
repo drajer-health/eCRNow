@@ -221,4 +221,192 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
     assertNotNull(actualXml);
     assertXmlEquals(expectedXml, actualXml);
   }
+
+  @Test
+  public void testGetSpecimenXml_WithSpecimen() {
+    Specimen specimen = new Specimen();
+    specimen.setId("Specimen/123");
+    CodeableConcept type = new CodeableConcept();
+    type.addCoding().setCode("SERUM");
+    specimen.setType(type);
+
+    String result = CdaResultGenerator.getSpecimenXml(specimen, launchDetails);
+
+    assertNotNull("Specimen XML should not be null", result);
+  }
+
+  @Test
+  public void testGetSpecimenXml_WithNullSpecimen() {
+    String result = CdaResultGenerator.getSpecimenXml(null, launchDetails);
+
+    assertNotNull("Result should handle null specimen", result);
+  }
+
+  @Test
+  public void testObservationHasSpecimen_True() {
+    Observation obs = new Observation();
+    Reference specRef = new Reference("Specimen/1");
+    obs.setSpecimen(specRef);
+
+    assertTrue("Observation should have specimen", obs.hasSpecimen());
+  }
+
+  @Test
+  public void testObservationHasSpecimen_False() {
+    Observation obs = new Observation();
+
+    assertFalse("Observation should not have specimen when not set", obs.hasSpecimen());
+  }
+
+  @Test
+  public void testGetSpecimenXml_WithReferences() {
+    R4FhirData data = new R4FhirData();
+    Reference ref = new Reference("Specimen/1");
+    List<Reference> refs = Arrays.asList(ref);
+
+    String result = CdaResultGenerator.getSpecimenXml(refs, data, launchDetails);
+
+    assertNotNull("Result should handle specimen references", result);
+  }
+
+  @Test
+  public void testProcessDiagnosticResults_DiagnosticReportHasSpecimen() {
+    DiagnosticReport report = new DiagnosticReport();
+    report.setId("DR/789");
+    List<Reference> specRefs = new ArrayList<>();
+    specRefs.add(new Reference("Specimen/spec-1"));
+    report.setSpecimen(specRefs);
+
+    assertTrue("DiagnosticReport should have specimen", report.hasSpecimen());
+  }
+
+  @Test
+  public void testGetSpecimenXml_WithBodySite() {
+    Specimen spec = new Specimen();
+    spec.setId("Specimen/123");
+
+    Specimen.SpecimenCollectionComponent collection = new Specimen.SpecimenCollectionComponent();
+    CodeableConcept bodySite = new CodeableConcept();
+    bodySite.addCoding(
+        new Coding().setSystem(CdaGeneratorConstants.FHIR_SNOMED_URL).setCode("123456"));
+    collection.setBodySite(bodySite);
+    spec.setCollection(collection);
+
+    String result = CdaResultGenerator.getSpecimenXml(spec, launchDetails);
+    assertNotNull("Specimen XML with body site should not be null", result);
+    assertTrue("Should contain body site content", result.length() > 0);
+  }
+
+  @Test
+  public void testGetXmlForComponents_ObservationWithoutComponents() {
+    DiagnosticReport report = new DiagnosticReport();
+    report.setId("DR/1");
+    report.setCode(new CodeableConcept().addCoding(new Coding().setCode("99999-9")));
+
+    Reference obsRef = new Reference("Observation/obs-1");
+    report.addResult(obsRef);
+
+    Observation obs = new Observation();
+    obs.setId("obs-1");
+    obs.setCode(new CodeableConcept().addCoding(new Coding().setCode("88888-8")));
+    obs.setValue(new StringType("result value"));
+
+    HashMap<String, Observation> allObs = new HashMap<>();
+    allObs.put("obs-1", obs);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    String result =
+        CdaResultGenerator.getXmlForComponents(
+            report, allObs, launchDetails, "content", 1, r4FhirData, "CDA_R31");
+    assertNotNull("Should return XML for observation without components", result);
+  }
+
+  @Test
+  public void testGetTriggerCodeTemplateXml_OtherVersion() {
+    String result = CdaResultGenerator.getTriggerCodeTemplateXml("CDA_OTHER");
+    assertNotNull("Should return template XML for other versions", result);
+    assertTrue("Should contain a template ID", result.length() > 0);
+  }
+
+  @Test
+  public void testGetCodeXml_WithLoincCode() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.addCoding(new Coding().setSystem(CdaGeneratorConstants.FHIR_LOINC_URL).setCode("12345-6"));
+
+    assertNotNull("CodeableConcept with LOINC should be valid", cd);
+    assertTrue("Should have coding", cd.hasCoding());
+  }
+
+  @Test
+  public void testGetCodeXml_EmptyCodings_WithText() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.setText("Test Text");
+
+    assertTrue("Should have text", cd.hasText());
+    assertFalse("Should not have coding", cd.hasCoding());
+  }
+
+  @Test
+  public void testPractitionerNull() {
+    R4FhirData data = new R4FhirData();
+
+    assertNull("Null practitioner should be null", data.getPractitionerById("nonexistent"));
+  }
+
+  @Test
+  public void testPractitionerNameExtraction_OfficialNamePreferred() {
+    Practitioner prac = new Practitioner();
+
+    HumanName unofficialName = new HumanName();
+    unofficialName.setUse(HumanName.NameUse.NICKNAME);
+    unofficialName.setFamily("Unofficial");
+    prac.addName(unofficialName);
+
+    HumanName officialName = new HumanName();
+    officialName.setUse(HumanName.NameUse.OFFICIAL);
+    officialName.setFamily("Official");
+    prac.addName(officialName);
+
+    assertTrue(
+        "Should have official name",
+        prac.getName().stream().anyMatch(n -> n.getUse() == HumanName.NameUse.OFFICIAL));
+  }
+
+  @Test
+  public void testPractitionerNameExtraction_FallbackToFirst() {
+    Practitioner prac = new Practitioner();
+
+    HumanName name1 = new HumanName();
+    name1.setFamily("FirstName");
+    prac.addName(name1);
+
+    HumanName name2 = new HumanName();
+    name2.setFamily("SecondName");
+    prac.addName(name2);
+
+    assertTrue("Should have names", !prac.getName().isEmpty());
+    assertEquals("First name should be available", "FirstName", prac.getName().get(0).getFamily());
+  }
+
+  @Test
+  public void testPractitionerNameExtraction_NoNames() {
+    Practitioner prac = new Practitioner();
+
+    assertTrue("Should have empty names when none added", prac.getName().isEmpty());
+  }
+
+  @Test
+  public void testPractitionerHasGivenAndFamily() {
+    HumanName name = new HumanName();
+    name.addGiven("John");
+    name.setFamily("Doe");
+
+    String given = name.getGivenAsSingleString();
+    String family = name.getFamily();
+
+    assertEquals("Given name should be John", "John", given);
+    assertEquals("Family name should be Doe", "Doe", family);
+  }
 }

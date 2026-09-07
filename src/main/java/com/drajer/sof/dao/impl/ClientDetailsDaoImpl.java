@@ -8,13 +8,25 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
 public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDao {
+
+  /**
+   * Instantiates a new client details DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public ClientDetailsDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   public ClientDetails saveOrUpdate(ClientDetails clientDetails) {
     getSession().saveOrUpdate(clientDetails);

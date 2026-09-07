@@ -69,7 +69,7 @@ public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
-    String actualXml = CdaProcedureGenerator.generateProcedureSection(data, launchDetails, "");
+    String actualXml = CdaProcedureGenerator.generateProcedureSection(data, launchDetails);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -77,14 +77,11 @@ public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateProcedureSection_withEmptyData() {
 
-    R4FhirData data = new R4FhirData();
-
     String expectedXml = TestUtils.getFileContentAsString(EMPTY_PROCEDURE_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
-    String actualXml =
-        CdaProcedureGenerator.generateProcedureSection(r4FhirData, launchDetails, "");
+    String actualXml = CdaProcedureGenerator.generateProcedureSection(r4FhirData, launchDetails);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -110,7 +107,7 @@ public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
     R4FhirData r4Data = new R4FhirData();
     r4Data.setProcedureList(Collections.singletonList(procedure));
 
-    String actualXml = CdaProcedureGenerator.generateProcedureSection(r4Data, launchDetails, "");
+    String actualXml = CdaProcedureGenerator.generateProcedureSection(r4Data, launchDetails);
 
     assertXmlEquals(expectedXml, actualXml);
   }

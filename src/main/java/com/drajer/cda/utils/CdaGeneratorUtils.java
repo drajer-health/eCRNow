@@ -349,7 +349,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForNFCDWithText(String cdName, String code, String text) {
 
-    String retVal = new String();
+    String retVal;
 
     if (text != null && !text.isEmpty()) {
 
@@ -1224,12 +1224,13 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.PIVL_TS_TYPE
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
-              + "institutionSpecified="
+              + CdaGeneratorConstants.INSTITUTION_SPECIFIED_ATTR_NAME
+              + CdaGeneratorConstants.EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.CCDA_TRUE
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
-              + "operator="
+              + CdaGeneratorConstants.OPERATOR_ATTR_NAME
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1257,12 +1258,13 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.PIVL_TS_TYPE
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
-              + "institutionSpecified="
+              + CdaGeneratorConstants.INSTITUTION_SPECIFIED_ATTR_NAME
+              + CdaGeneratorConstants.EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.CCDA_TRUE
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
-              + "operator="
+              + CdaGeneratorConstants.OPERATOR_ATTR_NAME
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1294,12 +1296,13 @@ public class CdaGeneratorUtils {
             + CdaGeneratorConstants.PIVL_TS_TYPE
             + CdaGeneratorConstants.DOUBLE_QUOTE
             + CdaGeneratorConstants.SPACE
-            + "institutionSpecified="
+            + CdaGeneratorConstants.INSTITUTION_SPECIFIED_ATTR_NAME
+            + CdaGeneratorConstants.EQUAL
             + CdaGeneratorConstants.DOUBLE_QUOTE
             + CdaGeneratorConstants.CCDA_TRUE
             + CdaGeneratorConstants.DOUBLE_QUOTE
             + CdaGeneratorConstants.SPACE
-            + "operator="
+            + CdaGeneratorConstants.OPERATOR_ATTR_NAME
             + CdaGeneratorConstants.DOUBLE_QUOTE
             + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL
             + CdaGeneratorConstants.DOUBLE_QUOTE

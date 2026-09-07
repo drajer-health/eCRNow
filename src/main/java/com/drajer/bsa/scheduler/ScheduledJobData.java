@@ -11,32 +11,79 @@ public class ScheduledJobData implements Serializable {
 
   static final long serialVersionUID = 1403267933737660088L;
 
-  UUID karExecutionStateId;
-  String actionId;
-  BsaTypes.ActionType actionType;
-  String jobId;
-  transient Instant expirationTime;
-  Map<String, String> mdcContext;
-  String xRequestId;
-  BsaJobType jobType;
+  private UUID karExecutionStateId;
+  private String actionId;
+  private BsaTypes.ActionType actionType;
+  private String jobId;
+  private transient Instant expirationTime;
+  private Map<String, String> mdcContext;
+  private String xRequestId;
+  private BsaJobType jobType;
 
-  public ScheduledJobData(
-      UUID id,
-      String action,
-      BsaTypes.ActionType type,
-      Instant t,
-      String job,
-      String xReqId,
-      BsaJobType jobtype,
-      Map<String, String> mdc) {
-    karExecutionStateId = id;
-    actionId = action;
-    actionType = type;
-    expirationTime = t;
-    jobId = job;
-    xRequestId = xReqId;
-    jobType = jobtype;
-    mdcContext = mdc;
+  private ScheduledJobData(Builder builder) {
+    karExecutionStateId = builder.karExecutionStateId;
+    actionId = builder.actionId;
+    actionType = builder.actionType;
+    expirationTime = builder.expirationTime;
+    jobId = builder.jobId;
+    xRequestId = builder.xRequestId;
+    jobType = builder.jobType;
+    mdcContext = builder.mdcContext;
+  }
+
+  public static class Builder {
+    private UUID karExecutionStateId;
+    private String actionId;
+    private BsaTypes.ActionType actionType;
+    private Instant expirationTime;
+    private String jobId;
+    private String xRequestId;
+    private BsaJobType jobType;
+    private Map<String, String> mdcContext;
+
+    public Builder karExecutionStateId(UUID id) {
+      this.karExecutionStateId = id;
+      return this;
+    }
+
+    public Builder actionId(String action) {
+      this.actionId = action;
+      return this;
+    }
+
+    public Builder actionType(BsaTypes.ActionType type) {
+      this.actionType = type;
+      return this;
+    }
+
+    public Builder expirationTime(Instant t) {
+      this.expirationTime = t;
+      return this;
+    }
+
+    public Builder jobId(String job) {
+      this.jobId = job;
+      return this;
+    }
+
+    public Builder xRequestId(String xReqId) {
+      this.xRequestId = xReqId;
+      return this;
+    }
+
+    public Builder jobType(BsaJobType jobtype) {
+      this.jobType = jobtype;
+      return this;
+    }
+
+    public Builder mdcContext(Map<String, String> mdc) {
+      this.mdcContext = mdc;
+      return this;
+    }
+
+    public ScheduledJobData build() {
+      return new ScheduledJobData(this);
+    }
   }
 
   public UUID getKarExecutionStateId() {

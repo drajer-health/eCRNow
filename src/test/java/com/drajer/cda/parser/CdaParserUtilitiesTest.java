@@ -45,7 +45,6 @@ public class CdaParserUtilitiesTest {
     Mockito.when(nodeList.getLength()).thenReturn(1);
     Mockito.when(nodeList.item(0)).thenReturn(mockElement);
 
-    CdaIi cdaIi = new CdaIi();
     Mockito.when(mockElement.getAttribute("root")).thenReturn("root");
     Mockito.when(mockElement.getAttribute("extension")).thenReturn("ext");
 

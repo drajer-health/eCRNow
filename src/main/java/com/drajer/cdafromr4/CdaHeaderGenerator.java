@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
@@ -39,15 +38,10 @@ public class CdaHeaderGenerator {
 
   private CdaHeaderGenerator() {}
 
-  private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
   private static final String SW_APP_VERSION = "4.0.3";
   private static String SW_APP_NAME = "ecrNowApp";
-  private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
-  private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
-
-  private static String activeProfile;
 
   // Map to hold Application Properties
   private static HashMap<String, String> appProps = new HashMap<>();
@@ -58,13 +52,6 @@ public class CdaHeaderGenerator {
 
   public static void loadProperties() {
     appProps = (HashMap<String, String>) AppConfig.getAllProperties();
-  }
-
-  private static String getPropertiesFileName() {
-    String activeProfile = System.getProperty(SPRING_PROFILES_ACTIVE);
-    return (activeProfile != null && !activeProfile.isEmpty())
-        ? "application-" + activeProfile + ".properties"
-        : DEFAULT_PROPERTIES_FILE;
   }
 
   public static String createCdaHeader(
@@ -176,20 +163,19 @@ public class CdaHeaderGenerator {
         eICRHeader.append(getCustodianXml(details, data));
 
         eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
-        eICRHeader.append(
-            getServiceDiscoveryLocationParticipantXml(details, data.getLocation(), data));
+        eICRHeader.append(getServiceDiscoveryLocationParticipantXml(details, data.getLocation()));
         eICRHeader.append(getEncompassingEncounter(data.getEncounter(), prs, details, data));
       } else {
         String msg = "No Fhir Data Bundle retrieved to CREATE EICR.";
         logger.error(msg);
 
-        throw new RuntimeException(msg);
+        throw new IllegalStateException(msg);
       }
     } else {
       String msg = "No existing Fhir Data for Creating EICR.";
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new IllegalStateException(msg);
     }
 
     return eICRHeader.toString();
@@ -269,7 +255,7 @@ public class CdaHeaderGenerator {
   }
 
   public static String getServiceDiscoveryLocationParticipantXml(
-      LaunchDetails details, Location location, R4FhirData data) {
+      LaunchDetails details, Location location) {
 
     StringBuilder s = new StringBuilder(200);
     if (location == null) {
@@ -300,7 +286,7 @@ public class CdaHeaderGenerator {
       s.append(CdaFhirUtilities.getAddressXml(location.getAddress()));
     }
 
-    appendScopingOrganization(s, location, details, data);
+    appendScopingOrganization(s, location, details);
 
     s.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
@@ -892,44 +878,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
 
-    List<Identifier> ids =
-        CdaFhirUtilities.getIdentifierForType(
-            p.getIdentifier(), CdaFhirEnumConstants.FHIR_ID_TYPE_MR);
-
-    Boolean addOnce = true;
-
-    if (ids != null && !ids.isEmpty()) {
-
-      for (Identifier id : ids) {
-
-        if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
-
-          logger.debug("Found Identifier with Type MR");
-
-          String system =
-              CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
-
-          patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));
-
-        } else {
-
-          logger.debug("Using Resource Identifier as id");
-
-          if (Boolean.TRUE.equals(addOnce)) {
-            patientDetails.append(
-                CdaGeneratorUtils.getXmlForII(
-                    details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
-            addOnce = false;
-          }
-        }
-      }
-
-    } else {
-      logger.debug("Using Resource Identifier as id");
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForII(
-              details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
-    }
+    processPatientIdentifiers(p, details, patientDetails);
 
     // Add Address.
     patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress(), true));
@@ -990,93 +939,9 @@ public class CdaHeaderGenerator {
             CdaGeneratorConstants.SDTC_DETAILED_ETHNIC_GROUP_CODE));
 
     // Adding Guardian
-    if (p.getContact() != null && !p.getContact().isEmpty()) {
+    addGuardianInformation(p, patientDetails);
 
-      List<ContactComponent> guardianContacts =
-          CdaFhirUtilities.getGuardianContacts(p.getContact());
-
-      for (ContactComponent guardianContact : guardianContacts) {
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
-
-        String guardXml =
-            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-                guardianContact.getRelationship(),
-                CdaGeneratorConstants.CODE_EL_NAME,
-                false,
-                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
-                true,
-                "");
-        if (!guardXml.isEmpty()) {
-          patientDetails.append(guardXml);
-        } else {
-          patientDetails.append(
-              CdaFhirUtilities.getCodeableConceptXml(
-                  guardianContact.getRelationship(), CdaGeneratorConstants.CODE_EL_NAME, false));
-        }
-
-        // Add address if found
-        List<Address> addrs = new ArrayList<>();
-        if (guardianContact.getAddress() != null) {
-
-          logger.debug("Adding Address for Guardian");
-          addrs.add(guardianContact.getAddress());
-          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs, false));
-        } else {
-          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs, false));
-        }
-
-        // Add Telecom
-        patientDetails.append(
-            CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false, false));
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
-
-        List<HumanName> names = new ArrayList<>();
-        names.add(guardianContact.getName());
-
-        patientDetails.append(CdaFhirUtilities.getNameXml(names, true));
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
-      }
-    }
-
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
-    Pair<Coding, Boolean> language =
-        CdaFhirUtilities.getLanguageForCodeSystem(
-            p.getCommunication(), CdaGeneratorConstants.FHIR_LANGUAGE_CODESYSTEM_URL);
-
-    if (language != null
-        && language.getValue0() != null
-        && language.getValue0().getCode() != null) {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getValue0().getCode()));
-
-      // Add preferred indicator.
-      if (language.getValue1()) {
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForValue(CdaGeneratorConstants.LANGUAGE_PREF_IND, "true"));
-      }
-    } else {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForNullCD(
-              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
-    }
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
+    addLanguageInformation(p, patientDetails);
 
     patientDetails.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_EL_NAME));
@@ -1213,7 +1078,7 @@ public class CdaHeaderGenerator {
   }
 
   private static void appendScopingOrganization(
-      StringBuilder xml, Location location, LaunchDetails details, R4FhirData data) {
+      StringBuilder xml, Location location, LaunchDetails details) {
 
     Organization org = null;
     if (location != null && location.getManagingOrganization() != null) {
@@ -1226,5 +1091,145 @@ public class CdaHeaderGenerator {
     xml.append(getOrganizationXml(org, details, false, false));
 
     xml.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SCOPING_ORG_EL_NAME));
+  }
+
+  /**
+   * Processes patient identifiers and appends them to the XML.
+   *
+   * @param p the patient
+   * @param details the launch details
+   * @param patientDetails the string builder to append to
+   */
+  private static void processPatientIdentifiers(
+      Patient p, LaunchDetails details, StringBuilder patientDetails) {
+    List<Identifier> ids =
+        CdaFhirUtilities.getIdentifierForType(
+            p.getIdentifier(), CdaFhirEnumConstants.FHIR_ID_TYPE_MR);
+
+    Boolean addOnce = true;
+
+    if (ids != null && !ids.isEmpty()) {
+      for (Identifier id : ids) {
+        if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
+          logger.debug("Found Identifier with Type MR");
+          String system =
+              CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
+          patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));
+        } else {
+          logger.debug("Using Resource Identifier as id");
+          if (Boolean.TRUE.equals(addOnce)) {
+            patientDetails.append(
+                CdaGeneratorUtils.getXmlForII(
+                    details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
+            addOnce = false;
+          }
+        }
+      }
+    } else {
+      logger.debug("Using Resource Identifier as id");
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForII(
+              details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
+    }
+  }
+
+  /**
+   * Adds guardian information to the XML.
+   *
+   * @param p the patient
+   * @param patientDetails the string builder to append to
+   */
+  private static void addGuardianInformation(Patient p, StringBuilder patientDetails) {
+    if (p.getContact() == null || p.getContact().isEmpty()) {
+      return;
+    }
+
+    List<ContactComponent> guardianContacts = CdaFhirUtilities.getGuardianContacts(p.getContact());
+
+    for (ContactComponent guardianContact : guardianContacts) {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+
+      String guardXml =
+          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+              guardianContact.getRelationship(),
+              CdaGeneratorConstants.CODE_EL_NAME,
+              false,
+              CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+              true,
+              "");
+      if (!guardXml.isEmpty()) {
+        patientDetails.append(guardXml);
+      } else {
+        patientDetails.append(
+            CdaFhirUtilities.getCodeableConceptXml(
+                guardianContact.getRelationship(), CdaGeneratorConstants.CODE_EL_NAME, false));
+      }
+
+      // Add address if found
+      List<Address> addrs = new ArrayList<>();
+      if (guardianContact.getAddress() != null) {
+        logger.debug("Adding Address for Guardian");
+        addrs.add(guardianContact.getAddress());
+      }
+      patientDetails.append(CdaFhirUtilities.getAddressXml(addrs, false));
+
+      // Add Telecom
+      patientDetails.append(
+          CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false, false));
+
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+      List<HumanName> names = new ArrayList<>();
+      names.add(guardianContact.getName());
+
+      patientDetails.append(CdaFhirUtilities.getNameXml(names, true));
+
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+    }
+  }
+
+  /**
+   * Adds language information to the XML.
+   *
+   * @param p the patient
+   * @param patientDetails the string builder to append to
+   */
+  private static void addLanguageInformation(Patient p, StringBuilder patientDetails) {
+    patientDetails.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
+    Pair<Coding, Boolean> language =
+        CdaFhirUtilities.getLanguageForCodeSystem(
+            p.getCommunication(), CdaGeneratorConstants.FHIR_LANGUAGE_CODESYSTEM_URL);
+
+    if (language != null
+        && language.getValue0() != null
+        && language.getValue0().getCode() != null) {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForCD(
+              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getValue0().getCode()));
+
+      // Add preferred indicator.
+      if (language.getValue1()) {
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForValue(CdaGeneratorConstants.LANGUAGE_PREF_IND, "true"));
+      }
+    } else {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+    }
+    patientDetails.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
   }
 }

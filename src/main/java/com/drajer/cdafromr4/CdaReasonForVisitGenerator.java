@@ -17,7 +17,7 @@ public class CdaReasonForVisitGenerator {
 
   private CdaReasonForVisitGenerator() {}
 
-  public static String generateReasonForVisitSection(R4FhirData data, String version) {
+  public static String generateReasonForVisitSection(R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -74,7 +74,7 @@ public class CdaReasonForVisitGenerator {
         } else if (coding != null && !StringUtils.isEmpty(coding.getDisplay())) {
           text = coding.getDisplay();
         }
-      } else if (!StringUtils.isEmpty(reasonCode.getText())) {
+      } else if (reasonCode != null && !StringUtils.isEmpty(reasonCode.getText())) {
         text = reasonCode.getText();
       }
     }

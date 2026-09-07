@@ -304,7 +304,7 @@ public class NotificationContext {
   }
 
   public void setEncounterClass(String encounterclass) {
-    this.encounterClass = encounterClass;
+    this.encounterClass = encounterclass;
   }
 
   public String getRelaunchNotificationData() {

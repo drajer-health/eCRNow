@@ -45,10 +45,20 @@ public class DirectTransportImpl implements DataTransportInterface {
   private static final String IMAP = "imap";
   private static final String INBOX = "Inbox";
 
-  @Autowired RrReceiver rrReceiver;
+  private RrReceiver rrReceiver;
 
   @Value("${bsa.output.directory:bsa-output}")
   String logDirectory;
+
+  /**
+   * Instantiates a new direct transport impl.
+   *
+   * @param rrReceiver the reportability response receiver
+   */
+  @Autowired
+  public DirectTransportImpl(RrReceiver rrReceiver) {
+    this.rrReceiver = rrReceiver;
+  }
 
   @Value("${mail.read.retries}")
   private Integer imapReadRetryLimit;
@@ -171,7 +181,7 @@ public class DirectTransportImpl implements DataTransportInterface {
                 + ", correlationId="
                 + correlationId;
         logger.error(msg);
-        throw new RuntimeException(msg);
+        throw new IllegalStateException(msg);
       }
 
       logger.info(
@@ -179,16 +189,15 @@ public class DirectTransportImpl implements DataTransportInterface {
           hs.getDirectUser(),
           correlationId);
 
-    } catch (RuntimeException re) {
-      throw re;
+    } catch (IllegalStateException ise) {
+      throw ise;
     } catch (Exception e) {
       String msg =
           "sendEicrDataUsingDirect: unable to send Direct message, user="
               + hs.getDirectUser()
               + ", correlationId="
               + correlationId;
-      logger.error(msg, e);
-      throw new RuntimeException(msg);
+      throw new IllegalStateException(msg, e);
     }
   }
 
@@ -202,7 +211,7 @@ public class DirectTransportImpl implements DataTransportInterface {
       String filename,
       String correlationId,
       String directTlsVersion)
-      throws Exception {
+      throws MessagingException, IOException {
 
     logger.info(
         "sendMail: start — user={}, correlationId={}, to={}, host={}, port={}",
@@ -335,11 +344,11 @@ public class DirectTransportImpl implements DataTransportInterface {
    */
   public String getMessageId(Message m) {
 
-    Enumeration headers;
+    Enumeration<Header> headers;
     try {
       headers = m.getAllHeaders();
       while (headers.hasMoreElements()) {
-        Header h = (Header) headers.nextElement();
+        Header h = headers.nextElement();
         if (h.getName() != null && h.getName().toLowerCase().contains("message-id")) {
           return h.getValue();
         }
@@ -416,7 +425,7 @@ public class DirectTransportImpl implements DataTransportInterface {
       String port,
       String correlationId,
       String directTlsVersion)
-      throws Exception {
+      throws MessagingException {
 
     logger.info(
         "readMail: start — user={}, correlationId={}, host={}, port={}",
@@ -456,7 +465,7 @@ public class DirectTransportImpl implements DataTransportInterface {
   }
 
   private void processMessages(Folder inbox, String username, String correlationId)
-      throws Exception {
+      throws MessagingException {
 
     int total = inbox.getMessageCount();
     int unseenCount = inbox.getUnreadMessageCount();

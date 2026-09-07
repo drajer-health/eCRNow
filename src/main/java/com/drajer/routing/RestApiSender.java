@@ -23,10 +23,14 @@ import org.springframework.web.client.RestTemplate;
 public class RestApiSender {
 
   private final Logger logger = LoggerFactory.getLogger(RestApiSender.class);
+  private final AuthorizationService authorizationService;
+  private final RestTemplate restTemplate;
 
-  @Autowired private AuthorizationService authorizationService;
-
-  @Autowired private RestTemplate restTemplate;
+  @Autowired
+  public RestApiSender(AuthorizationService authorizationService, RestTemplate restTemplate) {
+    this.authorizationService = authorizationService;
+    this.restTemplate = restTemplate;
+  }
 
   public JSONObject sendEicrXmlDocument(
       final LaunchDetails launchDetails, final String eicrXml, Eicr ecr) {

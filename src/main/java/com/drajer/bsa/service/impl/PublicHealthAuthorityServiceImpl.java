@@ -12,7 +12,17 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class PublicHealthAuthorityServiceImpl implements PublicHealthAuthorityService {
 
-  @Autowired PublicHealthAuthorityDao phaDao;
+  private final PublicHealthAuthorityDao phaDao;
+
+  /**
+   * Instantiates a new public health authority service implementation.
+   *
+   * @param phaDao the public health authority DAO
+   */
+  @Autowired
+  public PublicHealthAuthorityServiceImpl(PublicHealthAuthorityDao phaDao) {
+    this.phaDao = phaDao;
+  }
 
   /**
    * Method to create or update a PublicHealthAuthority.

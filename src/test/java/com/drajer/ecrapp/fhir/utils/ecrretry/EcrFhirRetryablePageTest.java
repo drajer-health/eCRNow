@@ -34,6 +34,8 @@ import org.mockito.MockitoAnnotations;
 public class EcrFhirRetryablePageTest {
 
   private LaunchDetails currentStateDetails;
+
+  @SuppressWarnings("unused")
   private ClientDetails clientDetails;
 
   @InjectMocks FHIRRetryTemplate fhirretryTemplate;
@@ -78,7 +80,9 @@ public class EcrFhirRetryablePageTest {
     fhirRetryTemplateConfig.setRetryWaitTimeInMillis(3000);
 
     RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
-    fhirretryTemplate = new FHIRRetryTemplate(retryStatusCode.configureRetryTemplate());
+    fhirretryTemplate =
+        new FHIRRetryTemplate(
+            retryStatusCode.configureRetryTemplate(), fhirRetryTemplateConfig, true);
     when(retryClient.getRetryTemplate()).thenReturn(fhirretryTemplate);
 
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))

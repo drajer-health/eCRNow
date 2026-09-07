@@ -91,4 +91,46 @@ public class CqlProcessorTest {
     Mockito.verify(bsaCqlCondition, times(2)).getLogicExpression();
     Mockito.verify(expression, times(2)).getExpression();
   }
+
+  @Test
+  public void testEvaluateExpression_wrongConditionType_ReturnsFalse() {
+
+    BsaCondition wrongCondition = Mockito.mock(BsaCondition.class);
+    Mockito.lenient().when(wrongCondition.getLogicExpression()).thenReturn(expression);
+    Mockito.lenient().when(expression.getExpression()).thenReturn("someExpression");
+
+    Bundle bundle = TestUtils.loadBundleFromFile(ENCOUNTER_BUNDLE_JSON);
+    Mockito.lenient().when(karProcessingData.getNotificationBundle()).thenReturn(bundle);
+
+    Boolean result =
+        cqlProcessor.evaluateExpression(
+            wrongCondition, // ← WRONG TYPE (not BsaCqlCondition)
+            bsaAction,
+            karProcessingData,
+            ehrQueryService);
+
+    assertFalse(result);
+  }
+
+  @Test
+  public void testEvaluateExpression_wrongConditionType_NoException() {
+
+    BsaCondition wrongCondition = Mockito.mock(BsaCondition.class);
+    Mockito.lenient().when(wrongCondition.getLogicExpression()).thenReturn(expression);
+    Mockito.lenient().when(expression.getExpression()).thenReturn("someExpression");
+
+    Bundle bundle = TestUtils.loadBundleFromFile(ENCOUNTER_BUNDLE_JSON);
+    Mockito.lenient().when(karProcessingData.getNotificationBundle()).thenReturn(bundle);
+
+    try {
+      Boolean result =
+          cqlProcessor.evaluateExpression(
+              wrongCondition, bsaAction, karProcessingData, ehrQueryService);
+
+      assertFalse(result);
+    } catch (ClassCastException e) {
+
+      assertTrue("ClassCastException should not be thrown", false);
+    }
+  }
 }

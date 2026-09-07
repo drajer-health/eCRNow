@@ -1,8 +1,12 @@
 package com.drajer.routing;
 
+import static org.assertj.core.api.Fail.fail;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.sof.model.LaunchDetails;
 import com.sun.net.httpserver.HttpServer;
 import java.io.OutputStream;
@@ -48,10 +52,11 @@ public class RestApiSenderTest {
     ecr.setxRequestId("req-001");
     ecr.setxCorrelationId("corr-001");
     String eicrXml = "<ClinicalDocument><id root='123'/></ClinicalDocument>";
-    RestApiSender sender = new RestApiSender();
-    java.lang.reflect.Field field = RestApiSender.class.getDeclaredField("restTemplate");
-    field.setAccessible(true);
-    field.set(sender, new RestTemplate());
+
+    AuthorizationService authService = mock(AuthorizationService.class);
+    RestTemplate restTemplate = new RestTemplate();
+    RestApiSender sender = new RestApiSender(authService, restTemplate);
+
     JSONObject response = sender.sendEicrXmlDocument(launchDetails, eicrXml, ecr);
     assertEquals(200, response.getInt("status"));
     assertEquals("success", response.getString("result"));
@@ -70,14 +75,21 @@ public class RestApiSenderTest {
     ecr.setxRequestId("req-001");
     ecr.setxCorrelationId("corr-001");
     String eicrXml = "<ClinicalDocument><id root='123'/></ClinicalDocument>";
-    RestApiSender sender = new RestApiSender();
-    java.lang.reflect.Field field = RestApiSender.class.getDeclaredField("restTemplate");
-    field.setAccessible(true);
-    field.set(sender, new RestTemplate());
+
+    AuthorizationService authService = mock(AuthorizationService.class);
+    RestTemplate restTemplate = new RestTemplate();
+    RestApiSender sender = new RestApiSender(authService, restTemplate);
+
     try {
       sender.sendEicrXmlDocument(launchDetails, eicrXml, ecr);
+
+      fail("Expected RuntimeException to be thrown for invalid URL");
+
     } catch (RuntimeException ex) {
-      assert (ex.getMessage().contains("invalid-url") || ex.getMessage().length() > 0);
+
+      assertTrue(
+          "Exception message should contain error details",
+          ex.getMessage() != null && ex.getMessage().length() > 0);
     }
   }
 }

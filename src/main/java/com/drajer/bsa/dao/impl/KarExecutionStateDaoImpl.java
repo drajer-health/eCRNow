@@ -9,8 +9,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutionStateDao {
+
+  /**
+   * Instantiates a new KAR execution state DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public KarExecutionStateDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   /**
    * Method to create or update a KarExecutionState.
@@ -96,9 +107,7 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
 
     List<KarExecutionState> result = query.getResultList();
     List<String> ids =
-        result.stream()
-            .map(karExecutionState -> karExecutionState.getId().toString())
-            .collect(Collectors.toList());
+        result.stream().map(karExecutionState -> karExecutionState.getId().toString()).toList();
     return ids;
   }
 }

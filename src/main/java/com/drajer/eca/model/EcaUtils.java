@@ -175,7 +175,7 @@ public class EcaUtils {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);
 
-        throw new RuntimeException(msg);
+        throw new IllegalStateException(msg);
       }
 
       if (eICR != null && !eICR.isEmpty()) {
@@ -195,7 +195,7 @@ public class EcaUtils {
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);
-        throw new RuntimeException(msg);
+        throw new IllegalStateException(msg);
       }
 
     } else {
@@ -204,7 +204,7 @@ public class EcaUtils {
           "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new IllegalStateException(msg);
     }
 
     return ecr;
@@ -217,9 +217,7 @@ public class EcaUtils {
 
     } catch (JsonProcessingException e) {
 
-      String msg = "Unable to update execution state.";
-      logger.error(msg, e);
-      throw new RuntimeException(msg, e);
+      throw new IllegalStateException("Unable to update execution state.", e);
     }
   }
 
@@ -310,103 +308,124 @@ public class EcaUtils {
   }
 
   public static boolean checkEncounterClose(LaunchDetails details) {
+    if (details == null || details.getEncounterId() == null || details.getEncounterId().isEmpty()) {
+      return false;
+    }
 
-    boolean retVal = false;
+    FhirContextInitializer ci = ActionRepo.getInstance().getFhirContextInitializer();
+    FhirContext ctx = ci.getFhirContext(details.getFhirVersion());
+    IGenericClient client =
+        ci.createClient(
+            ctx,
+            details.getEhrServerURL(),
+            details.getAccessToken(),
+            details.getxRequestId(),
+            null);
 
-    if (details != null
-        && details.getEncounterId() != null
-        && !details.getEncounterId().isEmpty()) {
+    Encounter r4Encounter = null;
+    ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;
 
-      // Valid Encounter Id
-      FhirContextInitializer ci = ActionRepo.getInstance().getFhirContextInitializer();
-      FhirContext ctx = ci.getFhirContext(details.getFhirVersion());
-
-      IGenericClient client =
-          ci.createClient(
-              ctx,
-              details.getEhrServerURL(),
-              details.getAccessToken(),
-              details.getxRequestId(),
-              null);
-
-      Encounter r4Encounter = null;
-      ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;
-      try {
-        if (details.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
-          r4Encounter =
-              (Encounter)
-                  client.read().resource("Encounter").withId(details.getEncounterId()).execute();
-        }
-        if (details.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
-          dstu2Encounter =
-              (ca.uhn.fhir.model.dstu2.resource.Encounter)
-                  client.read().resource("Encounter").withId(details.getEncounterId()).execute();
-        }
-
-      } catch (ResourceNotFoundException resourceNotFoundException) {
-        logger.error(
-            "Error in getting Encounter resource by Id: {}",
-            StringEscapeUtils.escapeJava(details.getEncounterId()),
-            resourceNotFoundException);
-        WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+    try {
+      if (details.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
+        r4Encounter =
+            (Encounter)
+                client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+      } else if (details.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
+        dstu2Encounter =
+            (ca.uhn.fhir.model.dstu2.resource.Encounter)
+                client.read().resource("Encounter").withId(details.getEncounterId()).execute();
       }
+    } catch (ResourceNotFoundException resourceNotFoundException) {
+      logger.error(
+          "Error in getting Encounter resource by Id: {}",
+          StringEscapeUtils.escapeJava(details.getEncounterId()),
+          resourceNotFoundException);
+      WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+      return false;
+    }
 
-      if (r4Encounter != null) {
-        logger.info(" Found Encounter for checking encounter closure ");
+    boolean isClosed = false;
+    if (r4Encounter != null) {
+      isClosed = checkR4EncounterClosed(r4Encounter, details);
+    } else if (dstu2Encounter != null) {
+      isClosed = checkDstu2EncounterClosed(dstu2Encounter, details);
+    }
 
-        if (r4Encounter.getPeriod() != null) {
-          if (r4Encounter.getPeriod().getStart() != null) {
-            details.setStartDate(r4Encounter.getPeriod().getStart());
-          }
-          if (r4Encounter.getPeriod().getEnd() != null) {
-            details.setEndDate(r4Encounter.getPeriod().getEnd());
-            logger.info(
-                " Encounter has an end date so it is considered closed {}",
-                r4Encounter.getPeriod().getEnd());
-            retVal = true;
-          }
-        }
-        if (r4Encounter.getStatus() != null
-            && (r4Encounter.getStatus() == EncounterStatus.CANCELLED
-                || r4Encounter.getStatus() == EncounterStatus.FINISHED
-                || r4Encounter.getStatus() == EncounterStatus.ENTEREDINERROR)) {
+    return isClosed;
+  }
 
-          logger.info(
-              " Encounter status is not null and is closed with a status value of {}",
-              r4Encounter.getStatus());
-          retVal = true;
-        }
+  private static boolean checkR4EncounterClosed(Encounter encounter, LaunchDetails details) {
+    logger.info(" Found Encounter for checking encounter closure ");
+    boolean isClosed = false;
+
+    if (encounter.getPeriod() != null) {
+      if (encounter.getPeriod().getStart() != null) {
+        details.setStartDate(encounter.getPeriod().getStart());
       }
-
-      if (dstu2Encounter != null) {
-        logger.info(" Found Encounter for checking encounter closure ");
-
-        if (dstu2Encounter.getPeriod() != null) {
-          if (dstu2Encounter.getPeriod().getStart() != null) {
-            details.setStartDate(dstu2Encounter.getPeriod().getStart());
-          }
-
-          if (dstu2Encounter.getPeriod().getEnd() != null) {
-            details.setEndDate(dstu2Encounter.getPeriod().getEnd());
-            logger.info(
-                " Encounter has an end date so it is considered closed {}",
-                dstu2Encounter.getPeriod().getEnd());
-            retVal = true;
-          }
-        }
-        if (dstu2Encounter.getStatus() != null
-            && (dstu2Encounter.getStatus().equals(EncounterStatus.CANCELLED.toString())
-                || dstu2Encounter.getStatus().equals(EncounterStatus.FINISHED.toString())
-                || dstu2Encounter.getStatus().equals(EncounterStatus.ENTEREDINERROR.toString()))) {
-          logger.info(
-              " Encounter status is not null and is closed with a status value of {}",
-              dstu2Encounter.getStatus());
-          retVal = true;
-        }
+      if (encounter.getPeriod().getEnd() != null) {
+        details.setEndDate(encounter.getPeriod().getEnd());
+        logger.info(
+            " Encounter has an end date so it is considered closed {}",
+            encounter.getPeriod().getEnd());
+        isClosed = true;
       }
     }
 
-    return retVal;
+    if (isR4EncounterStatusClosed(encounter)) {
+      logger.info(
+          " Encounter status is not null and is closed with a status value of {}",
+          encounter.getStatus());
+      isClosed = true;
+    }
+
+    return isClosed;
+  }
+
+  private static boolean isR4EncounterStatusClosed(Encounter encounter) {
+    if (encounter.getStatus() == null) {
+      return false;
+    }
+    return encounter.getStatus() == EncounterStatus.CANCELLED
+        || encounter.getStatus() == EncounterStatus.FINISHED
+        || encounter.getStatus() == EncounterStatus.ENTEREDINERROR;
+  }
+
+  private static boolean checkDstu2EncounterClosed(
+      ca.uhn.fhir.model.dstu2.resource.Encounter encounter, LaunchDetails details) {
+    logger.info(" Found Encounter for checking encounter closure ");
+    boolean isClosed = false;
+
+    if (encounter.getPeriod() != null) {
+      if (encounter.getPeriod().getStart() != null) {
+        details.setStartDate(encounter.getPeriod().getStart());
+      }
+      if (encounter.getPeriod().getEnd() != null) {
+        details.setEndDate(encounter.getPeriod().getEnd());
+        logger.info(
+            " Encounter has an end date so it is considered closed {}",
+            encounter.getPeriod().getEnd());
+        isClosed = true;
+      }
+    }
+
+    if (isDstu2EncounterStatusClosed(encounter)) {
+      logger.info(
+          " Encounter status is not null and is closed with a status value of {}",
+          encounter.getStatus());
+      isClosed = true;
+    }
+
+    return isClosed;
+  }
+
+  private static boolean isDstu2EncounterStatusClosed(
+      ca.uhn.fhir.model.dstu2.resource.Encounter encounter) {
+    if (encounter.getStatus() == null) {
+      return false;
+    }
+    return encounter.getStatus().equals(EncounterStatus.CANCELLED.toString())
+        || encounter.getStatus().equals(EncounterStatus.FINISHED.toString())
+        || encounter.getStatus().equals(EncounterStatus.ENTEREDINERROR.toString());
   }
 
   public static boolean checkLongRunningEncounters(LaunchDetails details) {
@@ -414,10 +433,12 @@ public class EcaUtils {
     if (appConfig.isEnableSuspend()) {
       Date thresholdDate = DateUtils.addDays(new Date(), -appConfig.getSuspendThreshold());
       if (details.getStartDate() != null && details.getStartDate().before(thresholdDate)) {
-        logger.info(
-            " Suspending encounter {} as it is running more than {} days",
-            StringEscapeUtils.escapeJava(details.getEncounterId()),
-            appConfig.getSuspendThreshold());
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              " Suspending encounter {} as it is running more than {} days",
+              StringEscapeUtils.escapeJava(details.getEncounterId()),
+              appConfig.getSuspendThreshold());
+        }
         return true;
       }
     }

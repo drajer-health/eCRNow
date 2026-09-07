@@ -13,7 +13,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class KeycloakTokenController {
 
-  @Autowired private KeyCloakTokenValidationClient keyCloakTokenValidationClient;
+  private final KeyCloakTokenValidationClient keyCloakTokenValidationClient;
+  private static final String TOKEN_DETAILS_REQUIRED = "Token details are required.";
+
+  /**
+   * Instantiates a new Keycloak token controller.
+   *
+   * @param keyCloakTokenValidationClient the KeyCloak token validation client
+   */
+  @Autowired
+  public KeycloakTokenController(KeyCloakTokenValidationClient keyCloakTokenValidationClient) {
+    this.keyCloakTokenValidationClient = keyCloakTokenValidationClient;
+  }
+
+  private static final String TOKEN_VALIDATION_FAILED = "Token validation failed.";
+  private static final String IS_SUCCESS = "isSuccess";
+  private static final String ERROR_VALIDATING_TOKEN =
+      "An error occurred while validating the token: ";
 
   /**
    * Endpoint to generate and validate a token.
@@ -25,17 +41,17 @@ public class KeycloakTokenController {
   @PostMapping("/generate-token")
   public ResponseEntity<Object> generateToken(@RequestParam Map<String, Object> tokenDetails) {
     if (tokenDetails == null || tokenDetails.isEmpty()) {
-      return ResponseEntity.badRequest().body("Token details are required.");
+      return ResponseEntity.badRequest().body(TOKEN_DETAILS_REQUIRED);
     }
 
     try {
       JSONObject tokenResponse =
           (JSONObject) keyCloakTokenValidationClient.generateToken(tokenDetails);
       if (tokenResponse == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_VALIDATION_FAILED);
       }
 
-      boolean isSuccess = Boolean.parseBoolean(String.valueOf(tokenResponse.get("isSuccess")));
+      boolean isSuccess = Boolean.parseBoolean(String.valueOf(tokenResponse.get(IS_SUCCESS)));
       HttpStatus status = isSuccess ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
       return ResponseEntity.status(status)
           .contentType(MediaType.APPLICATION_JSON)
@@ -43,7 +59,7 @@ public class KeycloakTokenController {
 
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("An error occurred while validating the token: " + e.getMessage());
+          .body(ERROR_VALIDATING_TOKEN + e.getMessage());
     }
   }
 
@@ -58,7 +74,7 @@ public class KeycloakTokenController {
   public ResponseEntity<Object> generateUserAuthToken(
       @RequestParam Map<String, Object> tokenDetails) {
     if (tokenDetails == null || tokenDetails.isEmpty()) {
-      return ResponseEntity.badRequest().body("Token details are required.");
+      return ResponseEntity.badRequest().body(TOKEN_DETAILS_REQUIRED);
     }
 
     try {
@@ -66,10 +82,10 @@ public class KeycloakTokenController {
           (JSONObject) keyCloakTokenValidationClient.generateUserAuthToken(tokenDetails);
 
       if (tokenResponse == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_VALIDATION_FAILED);
       }
 
-      boolean isSuccess = Boolean.parseBoolean(String.valueOf(tokenResponse.get("isSuccess")));
+      boolean isSuccess = Boolean.parseBoolean(String.valueOf(tokenResponse.get(IS_SUCCESS)));
       HttpStatus status = isSuccess ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
       return ResponseEntity.status(status)
           .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +93,7 @@ public class KeycloakTokenController {
 
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("An error occurred while validating the token: " + e.getMessage());
+          .body(ERROR_VALIDATING_TOKEN + e.getMessage());
     }
   }
 
@@ -93,7 +109,7 @@ public class KeycloakTokenController {
     if (tokenDetails == null
         || tokenDetails.isEmpty()
         || !(tokenDetails.containsKey("refresh_token"))) {
-      return ResponseEntity.badRequest().body("Token details are required.");
+      return ResponseEntity.badRequest().body(TOKEN_DETAILS_REQUIRED);
     }
 
     try {
@@ -101,10 +117,10 @@ public class KeycloakTokenController {
           (JSONObject) keyCloakTokenValidationClient.generateUserAuthToken(tokenDetails);
 
       if (tokenResponse == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_VALIDATION_FAILED);
       }
 
-      boolean isSuccess = Boolean.parseBoolean(String.valueOf(tokenResponse.get("isSuccess")));
+      boolean isSuccess = Boolean.parseBoolean(String.valueOf(tokenResponse.get(IS_SUCCESS)));
       HttpStatus status = isSuccess ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
       return ResponseEntity.status(status)
           .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +128,7 @@ public class KeycloakTokenController {
 
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("An error occurred while validating the token: " + e.getMessage());
+          .body(ERROR_VALIDATING_TOKEN + e.getMessage());
     }
   }
 }

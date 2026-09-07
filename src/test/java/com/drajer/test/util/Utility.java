@@ -202,15 +202,16 @@ public interface Utility {
     mdcContext.put("key2", "value2");
 
     ScheduledJobData jobData =
-        new ScheduledJobData(
-            UUID.randomUUID(),
-            "action123",
-            ActionType.CHECK_TRIGGER_CODES,
-            Instant.now(),
-            "job456",
-            "xRequestId123",
-            BsaJobType.IMMEDIATE_REPORTING,
-            mdcContext);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(UUID.randomUUID())
+            .actionId("action123")
+            .actionType(ActionType.CHECK_TRIGGER_CODES)
+            .expirationTime(Instant.now())
+            .jobId("job456")
+            .xRequestId("xRequestId123")
+            .jobType(BsaJobType.IMMEDIATE_REPORTING)
+            .mdcContext(mdcContext)
+            .build();
 
     karProcessingData.setScheduledJobData(jobData);
     return karProcessingData;

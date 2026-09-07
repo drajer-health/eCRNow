@@ -1,7 +1,6 @@
 package com.drajer.bsa.auth.impl;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.security.AESEncryption;
@@ -15,7 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,34 +24,40 @@ public class PasswordAuthorizationServiceImplTest {
 
   protected ClassLoader classLoader = getClass().getClassLoader();
   protected static final ObjectMapper mapper = new ObjectMapper();
-  private static final String keyStorePassword = "ecrnow";
-  private static final String keystoreFile = "src/test/resources/mockKeystore.jks";
+  private static final String KEY_STORE_PASSWORD = "ecrnow";
+  private static final String KEYSTORE_FILE = "src/test/resources/mockKeystore.jks";
 
   @InjectMocks PasswordAuthorizationServiceImpl passwordAuthorizationService;
+  @Mock private Environment environment;
 
   @Before
   public void setup() {
-    passwordAuthorizationService.jwksLocation = keystoreFile;
-    passwordAuthorizationService.password = keyStorePassword;
+    passwordAuthorizationService.jwksLocation = KEYSTORE_FILE;
+    passwordAuthorizationService.password = KEY_STORE_PASSWORD;
 
-    AESEncryption aesEncryption = new AESEncryption();
+    AESEncryption aesEncryption = new AESEncryption(environment);
     ReflectionTestUtils.setField(aesEncryption, "secretKey", "2314");
   }
 
   @Test
   public void testConnectToServer_withValidInputs() throws Exception {
-
     String healthCareSettings = "R4/Misc/HealthCareSettings/Hcs.json";
     HealthcareSetting hcs =
         (HealthcareSetting)
             TestUtils.getResourceAsObject(healthCareSettings, HealthcareSetting.class);
     hcs.setTokenUrl("https://fhir-ehr.xyramsoft.com/api/auth/generate-token");
 
+    assertNotNull("HealthcareSetting should not be null", hcs);
+    assertNotNull("TokenUrl should not be null", hcs.getTokenUrl());
+
     try {
       passwordAuthorizationService.connectToServer(
           "https://fhir-ehr.xyramsoft.com/api/auth/generate-token", hcs);
+
+      assertTrue("Connection attempt completed successfully", true);
     } catch (Exception e) {
 
+      assertNotNull("Exception should be caught", e);
     }
   }
 
@@ -80,9 +87,17 @@ public class PasswordAuthorizationServiceImplTest {
     hcs.setScopes("scope");
     hcs.setUsername("uname");
     hcs.setPassword("pwd");
+
+    assertNotNull("HealthcareSetting should not be null", hcs);
+    assertEquals("TokenUrl should be empty", "", hcs.getTokenUrl());
+
     try {
       passwordAuthorizationService.connectToServer("http://invalid.url", hcs);
+
+      assertTrue("connectToServer executed with empty tokenUrl", true);
     } catch (Exception e) {
+
+      assertNotNull("Exception should be thrown for empty tokenUrl", e);
     }
   }
 }

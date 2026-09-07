@@ -12,9 +12,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,11 +22,11 @@ import org.springframework.http.ResponseEntity;
 public class KeycloakTokenControllerTest {
   @Mock private KeyCloakTokenValidationClient keyCloakTokenValidationClient;
 
-  @InjectMocks private KeycloakTokenController keycloakTokenController;
+  private KeycloakTokenController keycloakTokenController;
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this); // Deprecated but still works in JUnit 4
+    keycloakTokenController = new KeycloakTokenController(keyCloakTokenValidationClient);
   }
 
   @Test

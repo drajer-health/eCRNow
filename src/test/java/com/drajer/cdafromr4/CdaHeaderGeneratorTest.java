@@ -937,7 +937,6 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     assertTrue(decXml.contains("false"));
 
-    decXml = "";
     BooleanType btf = new BooleanType(false);
     p.setDeceased(btf);
 
@@ -976,6 +975,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     assertTrue(decXml.contains("sdtc:deceasedTime nullFlavor="));
   }
 
+  @Override
   public Patient getPatientData() {
 
     Patient p = new Patient();

@@ -2,10 +2,12 @@ package com.drajer.bsa.scheduler;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.service.KarProcessor;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import com.github.kagkarlsson.scheduler.task.Task;
 import java.time.Instant;
@@ -17,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,6 +27,7 @@ public class BsaSchedulerTest {
   @Mock private Scheduler scheduler;
   @Mock private ScheduleJobConfiguration schedulerConfig;
   @Mock private Task<ScheduledJobData> sampleOneTimeJob;
+  @Mock private KarProcessor karProcessor;
 
   @InjectMocks private BsaScheduler bsaScheduler;
 
@@ -39,7 +41,6 @@ public class BsaSchedulerTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
     karExecId = UUID.randomUUID();
     actionId = "action123";
     actionType = BsaTypes.ActionType.CREATE_REPORT;
@@ -49,13 +50,13 @@ public class BsaSchedulerTest {
     mdc = new HashMap<>();
     mdc.put("key1", "value1");
 
-    when(schedulerConfig.sampleOneTimeJob()).thenReturn(sampleOneTimeJob);
+    when(schedulerConfig.sampleOneTimeJob(any(KarProcessor.class))).thenReturn(sampleOneTimeJob);
   }
 
   @Test
   public void testScheduleJobWithMDC() {
     bsaScheduler.scheduleJob(karExecId, actionId, actionType, scheduledTime, xReqId, jobType, mdc);
-    verify(schedulerConfig).sampleOneTimeJob();
+    verify(schedulerConfig).sampleOneTimeJob(any(KarProcessor.class));
     assertEquals("value1", mdc.get("key1"));
     assertFalse(mdc.isEmpty());
   }
@@ -67,7 +68,7 @@ public class BsaSchedulerTest {
             bsaScheduler.scheduleJob(
                 karExecId, actionId, actionType, scheduledTime, xReqId, jobType, null));
 
-    verify(schedulerConfig).sampleOneTimeJob();
+    verify(schedulerConfig).sampleOneTimeJob(any(KarProcessor.class));
     assertNotNull(karExecId);
     assertEquals("action123", actionId);
     assertEquals(BsaTypes.ActionType.CREATE_REPORT, actionType);
@@ -79,7 +80,7 @@ public class BsaSchedulerTest {
     Map<String, String> emptyMDC = new HashMap<>();
     bsaScheduler.scheduleJob(
         karExecId, actionId, actionType, scheduledTime, xReqId, jobType, emptyMDC);
-    verify(schedulerConfig).sampleOneTimeJob();
+    verify(schedulerConfig).sampleOneTimeJob(any(KarProcessor.class));
     assertTrue(emptyMDC.isEmpty());
   }
 
@@ -88,7 +89,7 @@ public class BsaSchedulerTest {
     BsaTypes.ActionType newActionType = BsaTypes.ActionType.SUBMIT_REPORT;
     bsaScheduler.scheduleJob(
         karExecId, actionId, newActionType, scheduledTime, xReqId, jobType, mdc);
-    verify(schedulerConfig).sampleOneTimeJob();
+    verify(schedulerConfig).sampleOneTimeJob(any(KarProcessor.class));
     assertEquals(BsaTypes.ActionType.SUBMIT_REPORT, newActionType);
     assertNotEquals(actionType, newActionType);
   }
@@ -98,7 +99,7 @@ public class BsaSchedulerTest {
     BsaTypes.BsaJobType newJobType = BsaTypes.BsaJobType.DELAYED_REPORTING;
     bsaScheduler.scheduleJob(
         karExecId, actionId, actionType, scheduledTime, xReqId, newJobType, mdc);
-    verify(schedulerConfig).sampleOneTimeJob();
+    verify(schedulerConfig).sampleOneTimeJob(any(KarProcessor.class));
     assertEquals(BsaTypes.BsaJobType.DELAYED_REPORTING, newJobType);
     assertNotEquals(jobType, newJobType);
   }
@@ -107,7 +108,7 @@ public class BsaSchedulerTest {
   public void testScheduleJobFutureTime() {
     Instant futureTime = Instant.now().plusSeconds(3600);
     bsaScheduler.scheduleJob(karExecId, actionId, actionType, futureTime, xReqId, jobType, mdc);
-    verify(schedulerConfig).sampleOneTimeJob();
+    verify(schedulerConfig).sampleOneTimeJob(any(KarProcessor.class));
     assertTrue(futureTime.isAfter(scheduledTime));
     assertNotNull(futureTime);
   }

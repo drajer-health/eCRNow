@@ -119,7 +119,7 @@ public class HcsReportCreator extends ReportCreator {
     logger.info("HCS Report Resource Count {}", inputData.size());
 
     // Create the Content Bundle.
-    Bundle contentBundle = createContentBundle(kd, ehrService, id, profile);
+    Bundle contentBundle = createContentBundle(kd);
     BundleEntryComponent contentBundlebec = new BundleEntryComponent().setResource(contentBundle);
     contentBundlebec.setFullUrl(
         StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
@@ -188,12 +188,12 @@ public class HcsReportCreator extends ReportCreator {
     HealthcareSetting hs = kd.getHealthcareSetting();
     Organization org = null;
 
-    if (kd.getNotificationContext().getNotificationResourceType()
-        == ResourceType.Encounter.toString()) {
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
 
       org = new Organization();
       org.setId(UUID.randomUUID().toString());
-      // org.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, SENDER_ORG_PROFILE));
       org.setName(hs.getOrgName());
       org.setActive(true);
 
@@ -288,8 +288,7 @@ public class HcsReportCreator extends ReportCreator {
     return header;
   }
 
-  public Bundle createContentBundle(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+  public Bundle createContentBundle(KarProcessingData kd) {
 
     Bundle returnBundle = new Bundle();
 
@@ -419,90 +418,79 @@ public class HcsReportCreator extends ReportCreator {
     SectionComponent sc = null;
 
     // Add reason for visit section
-    sc = getSection(SectionTypeEnum.REASON_FOR_VISIT, kd);
+    sc = getSection(SectionTypeEnum.REASON_FOR_VISIT);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Encounter, kd, sc, resTobeAdded);
 
     // Add Problem section.
-    sc = getSection(SectionTypeEnum.PROBLEM, kd);
+    sc = getSection(SectionTypeEnum.PROBLEM);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Condition, kd, sc, resTobeAdded);
 
     // Add Allergies section.
-    sc = getSection(SectionTypeEnum.ALLERGIES, kd);
+    sc = getSection(SectionTypeEnum.ALLERGIES);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.AllergyIntolerance, kd, sc, resTobeAdded);
 
     // Add Medications Administered section.
-    sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED, kd);
+    sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.MedicationAdministration, kd, sc, resTobeAdded);
 
     // Add Medications Section
-    sc = getSection(SectionTypeEnum.MEDICATIONS, kd);
+    sc = getSection(SectionTypeEnum.MEDICATIONS);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
 
-    // Add Admission Medications Section
-    /*    sc = getSection(SectionTypeEnum.ADMISSION_MEDICATIONS, kd);
-        if (sc != null) scs.add(sc);
-        // No way to figure out admission medications currently
-        // addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
-    */
     // Add Results section.
-    sc = getSection(SectionTypeEnum.RESULTS, kd);
+    sc = getSection(SectionTypeEnum.RESULTS);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
 
     // Add Notes section.
-    sc = getSection(SectionTypeEnum.NOTES, kd);
+    sc = getSection(SectionTypeEnum.NOTES);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.DocumentReference, kd, sc, resTobeAdded);
     addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
 
     // Add Plan Of Treatment section.
-    sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd);
+    sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.ServiceRequest, kd, sc, resTobeAdded);
     addEntries(ResourceType.MedicationRequest, kd, sc, resTobeAdded);
 
     // Add Immunizations section.
-    sc = getSection(SectionTypeEnum.IMMUNIZATIONS, kd);
+    sc = getSection(SectionTypeEnum.IMMUNIZATIONS);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Immunization, kd, sc, resTobeAdded);
 
     // Add Procedures section.
-    sc = getSection(SectionTypeEnum.PROCEDURES, kd);
+    sc = getSection(SectionTypeEnum.PROCEDURES);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Procedure, kd, sc, resTobeAdded);
 
     // Add Vital Signs section.
-    sc = getSection(SectionTypeEnum.VITAL_SIGNS, kd);
+    sc = getSection(SectionTypeEnum.VITAL_SIGNS);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
 
-    // Add Social History section.
-    /*    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
-    if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded); */
-
     // Add Medical Equipment section.
-    sc = getSection(SectionTypeEnum.MEDICAL_EQUIPMENT, kd);
+    sc = getSection(SectionTypeEnum.MEDICAL_EQUIPMENT);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Device, kd, sc, resTobeAdded);
 
     // Add Care Team section.
-    sc = getSection(SectionTypeEnum.CARE_TEAM, kd);
+    sc = getSection(SectionTypeEnum.CARE_TEAM);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.CareTeam, kd, sc, resTobeAdded);
 
     // Add Goals section.
-    sc = getSection(SectionTypeEnum.GOAL, kd);
+    sc = getSection(SectionTypeEnum.GOAL);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Goal, kd, sc, resTobeAdded);
 
     // Add Care Plan section.
-    sc = getSection(SectionTypeEnum.CARE_PLAN, kd);
+    sc = getSection(SectionTypeEnum.CARE_PLAN);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.CarePlan, kd, sc, resTobeAdded);
 
@@ -548,12 +536,12 @@ public class HcsReportCreator extends ReportCreator {
     return authors;
   }
 
-  public SectionComponent getSection(SectionTypeEnum st, KarProcessingData kd) {
+  public SectionComponent getSection(SectionTypeEnum st) {
 
-    return getSectionComponent(st, kd);
+    return getSectionComponent(st);
   }
 
-  public SectionComponent getSectionComponent(SectionTypeEnum st, KarProcessingData kd) {
+  public SectionComponent getSectionComponent(SectionTypeEnum st) {
 
     SectionComponent sc = null;
 
@@ -564,7 +552,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.REASON_FOR_VISIT_CODE,
                 FhirGeneratorConstants.REASON_FOR_VISIT_CODE_DISPLAY);
-        populateReasonForVisitNarrative(sc, kd);
+        populateReasonForVisitNarrative(sc);
         break;
 
       case PROBLEM:
@@ -573,7 +561,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case ALLERGIES:
@@ -582,7 +570,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case MEDICATION_ADMINISTERED:
@@ -591,7 +579,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case ADMISSION_MEDICATIONS:
@@ -600,7 +588,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case MEDICATIONS:
@@ -609,7 +597,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case RESULTS:
@@ -618,7 +606,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case PLAN_OF_TREATMENT:
@@ -627,7 +615,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case NOTES:
@@ -636,7 +624,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case IMMUNIZATIONS:
@@ -645,7 +633,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case PROCEDURES:
@@ -654,7 +642,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case VITAL_SIGNS:
@@ -663,7 +651,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case SOCIAL_HISTORY:
@@ -672,7 +660,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case MEDICAL_EQUIPMENT:
@@ -681,7 +669,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICAL_EQUIPMENT_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICAL_EQUIPMENT_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case CARE_TEAM:
@@ -690,7 +678,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.CARE_TEAM_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.CARE_TEAM_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       case GOAL:
@@ -699,7 +687,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
       case CARE_PLAN:
         sc =
@@ -707,7 +695,7 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.CARE_PLAN_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+        populateDefaultNarrative(sc);
         break;
 
       default:
@@ -743,7 +731,7 @@ public class HcsReportCreator extends ReportCreator {
     return dev;
   }
 
-  public void populateReasonForVisitNarrative(SectionComponent sc, KarProcessingData kd) {
+  public void populateReasonForVisitNarrative(SectionComponent sc) {
     logger.info(" Generating Reason For Visit Narrative");
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
@@ -751,8 +739,7 @@ public class HcsReportCreator extends ReportCreator {
     sc.setText(val);
   }
 
-  public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
-    logger.info("KarProcessingData:{}", kd);
+  public void populateDefaultNarrative(SectionComponent sc) {
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
@@ -803,7 +790,9 @@ public class HcsReportCreator extends ReportCreator {
   }
 
   public void addExtensionIfAppropriate(
-      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {}
+      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {
+    // No extensions required in base implementation; subclasses can override
+  }
 
   public Pair<Boolean, ReportableMatchedTriggerCode> resourceHasMatchedCode(
       Resource res, CheckTriggerCodeStatus ctcs) {

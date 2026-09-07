@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorConstants {
 
+  private CdaGeneratorConstants() {
+    // Utility class - private constructor to hide the implicit public one
+  }
+
   public static final String REFERENCE_RANGE_EL_NAME = "referenceRange";
   public static final String OBSERVATION_RANGE_EL_NAME = "observationRange";
   public static final String VITAL_SIGNS_ORG_CODE_LOINC_NAME =
@@ -50,6 +54,8 @@ public class CdaGeneratorConstants {
   public static final String UNIT_WITH_EQUAL = "unit=";
   public static final String VALUESET = "sdtc:valueSet=";
   public static final String VALUESET_VERSION = "sdtc:valueSetVersion=";
+
+  public static final String OPERATOR_ATTR_NAME = "operator=";
 
   // CCDA Header Releated
   public static final String DOC_HEADER_XML = "<?xml version=\"1.0\"?>" + "\n";
@@ -1125,12 +1131,12 @@ public class CdaGeneratorConstants {
   public static final String DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
       "http://hl7.org/fhir/patient-contact-relationship";
 
-  public static final String EstimatedDateofDeliveryValueset = "2.16.840.1.113883.11.20.9.81";
-  public static final String EstimatedDateofDeliveryExtUrl =
+  public static final String ESTIMATED_DATEOF_DELIVERY_VALUESET = "2.16.840.1.113883.11.20.9.81";
+  public static final String ESTIMATED_DATEOF_DELIVERY_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-date-determined-extension";
-  public static final String OdhCurrentJobExtension =
+  public static final String ODH_CURRENT_JOB_EXTENSION =
       "http://hl7.org/fhir/us/odh/StructureDefinition/odh-isCurrentJob-extension";
-  public static final String GestationalAgeEstimatedValueset = "2.16.840.1.113883.11.20.9.82";
+  public static final String GESTATIONAL_AGE_ESTIMATED_VALUESET = "2.16.840.1.113883.11.20.9.82";
 
   // CDA eICR versions supported
   public static final String CDA_EICR_VERSION_R11 = "CDA_R11";
@@ -1238,11 +1244,11 @@ public class CdaGeneratorConstants {
 
         prop4.forEach(
             (key, value) -> {
-              if (valueSetToCodes.containsKey(EstimatedDateofDeliveryValueset)) {
-                valueSetToCodes.get(EstimatedDateofDeliveryValueset).add((String) key);
+              if (valueSetToCodes.containsKey(ESTIMATED_DATEOF_DELIVERY_VALUESET)) {
+                valueSetToCodes.get(ESTIMATED_DATEOF_DELIVERY_VALUESET).add((String) key);
               } else {
-                valueSetToCodes.put(EstimatedDateofDeliveryValueset, new HashSet<String>());
-                valueSetToCodes.get(EstimatedDateofDeliveryValueset).add((String) key);
+                valueSetToCodes.put(ESTIMATED_DATEOF_DELIVERY_VALUESET, new HashSet<String>());
+                valueSetToCodes.get(ESTIMATED_DATEOF_DELIVERY_VALUESET).add((String) key);
               }
             });
       }
@@ -1257,11 +1263,11 @@ public class CdaGeneratorConstants {
 
         prop5.forEach(
             (key, value) -> {
-              if (valueSetToCodes.containsKey(GestationalAgeEstimatedValueset)) {
-                valueSetToCodes.get(GestationalAgeEstimatedValueset).add((String) key);
+              if (valueSetToCodes.containsKey(GESTATIONAL_AGE_ESTIMATED_VALUESET)) {
+                valueSetToCodes.get(GESTATIONAL_AGE_ESTIMATED_VALUESET).add((String) key);
               } else {
-                valueSetToCodes.put(GestationalAgeEstimatedValueset, new HashSet<String>());
-                valueSetToCodes.get(GestationalAgeEstimatedValueset).add((String) key);
+                valueSetToCodes.put(GESTATIONAL_AGE_ESTIMATED_VALUESET, new HashSet<String>());
+                valueSetToCodes.get(GESTATIONAL_AGE_ESTIMATED_VALUESET).add((String) key);
               }
             });
       }

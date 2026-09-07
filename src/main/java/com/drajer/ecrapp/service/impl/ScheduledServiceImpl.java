@@ -22,12 +22,22 @@ import org.springframework.stereotype.Service;
 public class ScheduledServiceImpl implements SchedulerService {
 
   private final Logger logger = LoggerFactory.getLogger(ScheduledServiceImpl.class);
+  private final KarExecutionStateService karExecutionStateService;
+  private final SchedulerDao schedulerDao;
+  private final ScheduledTaskUtil scheduledTaskUtil;
+  private final Scheduler scheduler;
 
-  @Autowired KarExecutionStateService karExecutionStateService;
-  @Autowired SchedulerDao schedulerDao;
-  @Autowired ScheduledTaskUtil scheduledTaskUtil;
-
-  @Autowired Scheduler scheduler;
+  @Autowired
+  public ScheduledServiceImpl(
+      KarExecutionStateService karExecutionStateService,
+      SchedulerDao schedulerDao,
+      ScheduledTaskUtil scheduledTaskUtil,
+      Scheduler scheduler) {
+    this.karExecutionStateService = karExecutionStateService;
+    this.schedulerDao = schedulerDao;
+    this.scheduledTaskUtil = scheduledTaskUtil;
+    this.scheduler = scheduler;
+  }
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {

@@ -21,13 +21,15 @@ import org.springframework.web.client.RestTemplate;
 public class FhirEicrSender {
 
   private final Logger logger = LoggerFactory.getLogger(FhirEicrSender.class);
+  private final String fhirServerURL;
 
-  @Autowired FhirContextInitializer contextInitializer;
-
-  @Autowired Authorization authorization;
-
-  @Value("${eicr.fhir.server.url}")
-  private String fhirServerURL;
+  @Autowired
+  public FhirEicrSender(
+      FhirContextInitializer contextInitializer,
+      Authorization authorization,
+      @Value("${eicr.fhir.server.url}") String fhirServerURL) {
+    this.fhirServerURL = fhirServerURL;
+  }
 
   public JSONObject submitBundle(String bundle) {
     JSONObject bundleResponse = null;

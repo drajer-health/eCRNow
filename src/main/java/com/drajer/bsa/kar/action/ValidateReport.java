@@ -114,10 +114,10 @@ public class ValidateReport extends BsaAction {
     if (outputFormat == OutputContentType.BOTH) return true;
 
     if (outputFormat == OutputContentType.CDA_R11)
-      return validateCdaR11Output(data, actStatus, validateEicrR11Data);
+      return validateCdaR11Output(data, validateEicrR11Data);
 
     if (outputFormat == OutputContentType.CDA_R30 || outputFormat == OutputContentType.CDA_R31)
-      return validateCdaR31Output(data, actStatus, validateEicrR31Data);
+      return validateCdaR31Output(data, validateEicrR31Data);
 
     // return true by default
     return true;
@@ -149,8 +149,7 @@ public class ValidateReport extends BsaAction {
     return (schemaValidation && schematronValidation);
   }
 
-  private boolean validateCdaR31Output(
-      KarProcessingData data, BsaActionStatus actStatus, Boolean validationNeeded) {
+  private boolean validateCdaR31Output(KarProcessingData data, Boolean validationNeeded) {
 
     logger.info(
         " Starting validating eICR R31 for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
@@ -162,8 +161,7 @@ public class ValidateReport extends BsaAction {
     return validateCdaData(data.getSubmittedCdaData(), validationNeeded, eicrR31SchematronPath);
   }
 
-  private boolean validateCdaR11Output(
-      KarProcessingData data, BsaActionStatus actStatus, Boolean validationNeeded) {
+  private boolean validateCdaR11Output(KarProcessingData data, Boolean validationNeeded) {
 
     logger.info(
         " Starting validating eICR R11 for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
@@ -206,31 +204,7 @@ public class ValidateReport extends BsaAction {
             data.getNotificationContext().getxRequestId(),
             data.getNotificationContext().getxCorrelationId());
 
-        try {
-          if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
-            ResponseEntity<String> response =
-                restTemplate.postForEntity(validatorEndpoint, request, String.class);
-            logger.debug(response.getBody());
-            outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
-          } else {
-            logger.warn("No validation endpoint set. Skipping validation");
-          }
-        } catch (Exception e) {
-
-          actStatus.setActionStatus(BsaActionStatusType.FAILED);
-
-          // Dont hold the output back from submission if the validator endpoint is not valid.
-          // For now, go ahead and add the output as being valid.
-          addValidatedOutputById(data, r);
-          data.addActionOutput(actionId, r);
-
-          outcome
-              .addIssue()
-              .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
-              .setDiagnostics(
-                  "Failed to validate the resource using the validator endpoint provided. Error was: "
-                      + e.getMessage());
-        }
+        outcome = validateResourceWithEndpoint(outcome, request, r, data, actStatus);
 
         if (Boolean.TRUE.equals(ActionUtils.operationOutcomeHasErrors(outcome))) {
 
@@ -261,6 +235,42 @@ public class ValidateReport extends BsaAction {
           .setDiagnostics(
               "Failed to parse request body as JSON resource. Error was: " + e.getMessage());
     }
+  }
+
+  private OperationOutcome validateResourceWithEndpoint(
+      OperationOutcome outcome,
+      String request,
+      Resource r,
+      KarProcessingData data,
+      BsaActionStatus actStatus) {
+
+    try {
+      if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
+        ResponseEntity<String> response =
+            restTemplate.postForEntity(validatorEndpoint, request, String.class);
+        logger.debug(response.getBody());
+        outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
+      } else {
+        logger.warn("No validation endpoint set. Skipping validation");
+      }
+    } catch (Exception e) {
+
+      actStatus.setActionStatus(BsaActionStatusType.FAILED);
+
+      // Dont hold the output back from submission if the validator endpoint is not valid.
+      // For now, go ahead and add the output as being valid.
+      addValidatedOutputById(data, r);
+      data.addActionOutput(actionId, r);
+
+      outcome
+          .addIssue()
+          .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
+          .setDiagnostics(
+              "Failed to validate the resource using the validator endpoint provided. Error was: "
+                  + e.getMessage());
+    }
+
+    return outcome;
   }
 
   public void addValidatedOutputById(KarProcessingData data, Resource res) {

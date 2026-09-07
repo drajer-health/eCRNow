@@ -2,13 +2,14 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.LaunchDetails;
-import com.drajer.sof.model.R4FhirData;
 
 public class CdaChiefComplaintGenerator {
 
-  public static String generateChiefComplaintSection(
-      R4FhirData data, LaunchDetails details, String version) {
+  private CdaChiefComplaintGenerator() {
+    // Utility class - private constructor to hide the implicit public one
+  }
+
+  public static String generateChiefComplaintSection() {
 
     return generatEmpyChiefComplaintSection();
   }

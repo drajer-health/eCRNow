@@ -50,14 +50,14 @@ import org.springframework.stereotype.Service;
 public class ApplicationUtils {
 
   public static final String EXCEPTION_READING_FILE = "Exception Reading File";
+  private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
+
+  private final IParser jsonParser;
 
   @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
-
-  public ApplicationUtils() {}
-
-  private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
+  public ApplicationUtils(@Qualifier("jsonParser") IParser jsonParser) {
+    this.jsonParser = jsonParser;
+  }
 
   public static List<CanonicalType> getValueSetListFromGrouper(String grouperId) {
 
@@ -328,7 +328,6 @@ public class ApplicationUtils {
             offhourEnd,
             offhoursEndMin,
             tz,
-            d,
             (new Date().toInstant()));
 
     return t;
@@ -340,7 +339,6 @@ public class ApplicationUtils {
       Integer highHours,
       Integer highMin,
       String tz,
-      Duration d,
       Instant currentTime) {
 
     if (lowHours != null && lowMin != null && highHours != null && highMin != null && tz != null) {
@@ -386,11 +384,13 @@ public class ApplicationUtils {
         offHoursEndTime.set(Calendar.MINUTE, highMin);
       }
 
-      logger.info(
-          " offHoursStart: {}, offHoursEnd {}, currentTime {}",
-          offHoursStartTime.getTime().toInstant().toString(),
-          offHoursEndTime.getTime().toInstant().toString(),
-          currentTime.toString());
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " offHoursStart: {}, offHoursEnd {}, currentTime {}",
+            offHoursStartTime.getTime().toInstant(),
+            offHoursEndTime.getTime().toInstant(),
+            currentTime);
+      }
 
       Calendar busyHourStart = null;
       Boolean isBefore = false;
@@ -429,12 +429,14 @@ public class ApplicationUtils {
       // Calculate the new Instant
       int newTimeOffset = ((int) offsetMinutes * totalOffHourMin) / totalBusyHourMin;
 
-      logger.info(
-          " Current Time: {} , busyHourStart: {} , OffsetMinutes: {}, newTimeOffset {}",
-          currentTime.toString(),
-          busyHourStart.getTime().toInstant().toString(),
-          offsetMinutes,
-          newTimeOffset);
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Current Time: {} , busyHourStart: {} , OffsetMinutes: {}, newTimeOffset {}",
+            currentTime,
+            busyHourStart.getTime().toInstant(),
+            offsetMinutes,
+            newTimeOffset);
+      }
 
       Calendar newStart = null;
       if (isBefore) {
@@ -523,10 +525,14 @@ public class ApplicationUtils {
     try (DataOutputStream outStream =
         new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
 
-      logger.debug("Writing data to file: {}", StringEscapeUtils.escapeJava(fileName));
+      if (logger.isDebugEnabled()) {
+        logger.debug("Writing data to file: {}", StringEscapeUtils.escapeJava(fileName));
+      }
       outStream.writeBytes(data);
     } catch (IOException e) {
-      logger.debug("Unable to write data to file: {}", StringEscapeUtils.escapeJava(fileName), e);
+      if (logger.isDebugEnabled()) {
+        logger.debug("Unable to write data to file: {}", StringEscapeUtils.escapeJava(fileName), e);
+      }
     }
   }
 
@@ -536,7 +542,9 @@ public class ApplicationUtils {
 
     if (v != null && v.hasUseContext() && v.getUseContext() != null) {
 
-      logger.debug("Checking Value Set Id {}", StringEscapeUtils.escapeJava(v.getId()));
+      if (logger.isDebugEnabled()) {
+        logger.debug("Checking Value Set Id {}", StringEscapeUtils.escapeJava(v.getId()));
+      }
 
       List<UsageContext> ucs = v.getUseContext();
 
@@ -609,9 +617,7 @@ public class ApplicationUtils {
       state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 
     } catch (JsonProcessingException e1) {
-      String msg = "Unable to read/write execution state";
-      logger.error(msg, e1);
-      throw new RuntimeException(msg, e1);
+      throw new IllegalArgumentException("Unable to read/write execution state", e1);
     }
 
     return state;

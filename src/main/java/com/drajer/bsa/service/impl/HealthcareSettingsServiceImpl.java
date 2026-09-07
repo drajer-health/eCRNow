@@ -23,7 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class HealthcareSettingsServiceImpl implements HealthcareSettingsService {
 
-  @Autowired HealthcareSettingsDao hsDao;
+  private final HealthcareSettingsDao hsDao;
+
+  /**
+   * Instantiates a new healthcare settings service implementation.
+   *
+   * @param hsDao the healthcare settings DAO
+   */
+  @Autowired
+  public HealthcareSettingsServiceImpl(HealthcareSettingsDao hsDao) {
+    this.hsDao = hsDao;
+  }
 
   /**
    * Method to create or update a HealthcareSetting.
@@ -62,7 +72,7 @@ public class HealthcareSettingsServiceImpl implements HealthcareSettingsService 
   /**
    * Method to retrieve all existing HealthcareSettings.
    *
-   * @param none
+   * @param
    * @return Returns the list of existing HealthcareSettings.
    */
   @Override

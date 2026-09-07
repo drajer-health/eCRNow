@@ -20,9 +20,11 @@ import org.slf4j.LoggerFactory;
 
 public class CdaOdhDataGenerator {
 
+  private CdaOdhDataGenerator() {}
+
   private static final Logger logger = LoggerFactory.getLogger(CdaOdhDataGenerator.class);
 
-  public static String generateOdhSection(R4FhirData data, LaunchDetails details, String version) {
+  public static String generateOdhSection(R4FhirData data, LaunchDetails details) {
     StringBuilder sb = new StringBuilder();
 
     logger.info("Start Creating ODH Section");
@@ -49,6 +51,9 @@ public class CdaOdhDataGenerator {
       int rowNum = 0;
       StringBuilder occEntries = new StringBuilder();
       for (Observation obs : occObs) {
+        if (obs == null) {
+          continue;
+        }
 
         if (isPastOrPresentOccupation(obs)) {
 
@@ -93,8 +98,12 @@ public class CdaOdhDataGenerator {
       StringBuilder table,
       StringBuilder occEntries,
       int rowNum) {
+    if (obs == null) {
+      logger.error("Observation is null, cannot generate Employment Status Observation");
+      return;
+    }
+
     StringBuilder sb = new StringBuilder();
-    String display = CdaGeneratorConstants.UNKNOWN_VALUE;
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(
         CdaGeneratorConstants.ODH_TABLE_COL_1_BODY_CONTENT,
@@ -136,7 +145,8 @@ public class CdaOdhDataGenerator {
 
     if (obs.hasValueCodeableConcept()) {
 
-      display = CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getValueCodeableConcept());
+      String display =
+          CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getValueCodeableConcept());
       bodyvals.put(CdaGeneratorConstants.ODH_TABLE_COL_2_BODY_CONTENT, display);
 
       sb.append(
@@ -164,7 +174,6 @@ public class CdaOdhDataGenerator {
       int rowNum) {
 
     StringBuilder sb = new StringBuilder();
-    String display = CdaGeneratorConstants.UNKNOWN_VALUE;
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(
         CdaGeneratorConstants.ODH_TABLE_COL_1_BODY_CONTENT,
@@ -205,7 +214,8 @@ public class CdaOdhDataGenerator {
 
     if (obs.hasValueCodeableConcept()) {
 
-      display = CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getValueCodeableConcept());
+      String display =
+          CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getValueCodeableConcept());
       bodyvals.put(CdaGeneratorConstants.ODH_TABLE_COL_2_BODY_CONTENT, display);
 
       sb.append(
@@ -218,7 +228,7 @@ public class CdaOdhDataGenerator {
     }
 
     // Add Usual Industry
-    sb.append(addUsualIndustryObservation(obs, details));
+    sb.append(addUsualIndustryObservation(obs));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -228,7 +238,7 @@ public class CdaOdhDataGenerator {
     occEntries.append(sb.toString());
   }
 
-  private static String addUsualIndustryObservation(Observation obs, LaunchDetails details) {
+  private static String addUsualIndustryObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -314,7 +324,6 @@ public class CdaOdhDataGenerator {
       int rowNum) {
 
     StringBuilder sb = new StringBuilder();
-    String display = CdaGeneratorConstants.UNKNOWN_VALUE;
     Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(
         CdaGeneratorConstants.ODH_TABLE_COL_1_BODY_CONTENT,
@@ -362,7 +371,8 @@ public class CdaOdhDataGenerator {
 
     if (obs.hasValueCodeableConcept()) {
 
-      display = CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getValueCodeableConcept());
+      String display =
+          CdaFhirUtilities.getDisplayStringForCodeableConcept(obs.getValueCodeableConcept());
       bodyvals.put(CdaGeneratorConstants.ODH_TABLE_COL_2_BODY_CONTENT, display);
 
       sb.append(
@@ -387,8 +397,8 @@ public class CdaOdhDataGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
 
-    sb.append(addPastOrPresentIndustryObservation(obs, details));
-    sb.append(addOccupationHazardObservation(obs, details));
+    sb.append(addPastOrPresentIndustryObservation(obs));
+    sb.append(addOccupationHazardObservation(obs));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -398,7 +408,7 @@ public class CdaOdhDataGenerator {
     occEntries.append(sb.toString());
   }
 
-  private static String addOccupationHazardObservation(Observation obs, LaunchDetails details) {
+  private static String addOccupationHazardObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -475,7 +485,7 @@ public class CdaOdhDataGenerator {
     return false;
   }
 
-  public static String addPastOrPresentIndustryObservation(Observation obs, LaunchDetails details) {
+  public static String addPastOrPresentIndustryObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -560,7 +570,7 @@ public class CdaOdhDataGenerator {
   private static Boolean isCurrentJob(Observation obs) {
 
     return CdaFhirUtilities.getBooleanExtensionValue(
-        obs.getExtension(), CdaGeneratorConstants.OdhCurrentJobExtension);
+        obs.getExtension(), CdaGeneratorConstants.ODH_CURRENT_JOB_EXTENSION);
   }
 
   private static Boolean isEmploymentStatusObservation(Observation obs) {

@@ -4,7 +4,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.dao.TimeZoneDao;
-import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.BsaAction;
@@ -35,7 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
 import org.hl7.fhir.r4.model.*;
@@ -70,9 +68,8 @@ public class BsaServiceUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(BsaServiceUtils.class);
 
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
+  private final IParser jsonParser;
+  private final QueryReaderConfig queryReaderConfig;
 
   @Value("${bsa.output.directory}")
   String debugDirectory;
@@ -80,15 +77,23 @@ public class BsaServiceUtils {
   @Value("${save.debug.files:true}")
   boolean saveDebugToFiles;
 
-  @Autowired(required = false)
-  Map<String, BsaActionStatus> actions;
-
-  @Autowired private QueryReaderConfig queryReaderConfig;
-
   private static String DEBUG_DIRECTORY;
   private static IParser FHIR_JSON_PARSER;
   private static boolean SAVE_DEBUG_TO_FILES;
   private static String TIMEZONE_QUERY;
+
+  /**
+   * Instantiates a new BSA service utilities.
+   *
+   * @param jsonParser the JSON parser (qualified as jsonParser)
+   * @param queryReaderConfig the query reader configuration
+   */
+  @Autowired
+  public BsaServiceUtils(
+      @Qualifier("jsonParser") IParser jsonParser, QueryReaderConfig queryReaderConfig) {
+    this.jsonParser = jsonParser;
+    this.queryReaderConfig = queryReaderConfig;
+  }
 
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
   private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
@@ -174,7 +179,7 @@ public class BsaServiceUtils {
     } else {
       return !res.getMeta().getProfile().stream()
           .filter(resProfile -> resProfile.getValueAsString().equals(drProfile.getValueAsString()))
-          .collect(Collectors.toList())
+          .toList()
           .isEmpty();
     }
   }
@@ -302,6 +307,100 @@ public class BsaServiceUtils {
     logger.info(
         "Resource :{} DataRequirementDateFilterComponent :{} KarProcessingData:{}", r, drdfc, kd);
 
+    // If no filter is specified, allow all resources
+    if (drdfc == null || !drdfc.hasPath()) {
+      return true;
+    }
+
+    // Evaluate the path to extract date values from the resource
+    List<IBase> search = FHIR_PATH.evaluate(r, drdfc.getPath(), IBase.class);
+    if (search == null || search.isEmpty()) {
+      logger.debug("No date values found at path: {}", drdfc.getPath());
+      return false;
+    }
+
+    // If no filter value is specified, allow resources with the path
+    if (!drdfc.hasValue()) {
+      return true;
+    }
+
+    // Check if any extracted date matches the filter criteria
+    for (IBase dateValue : search) {
+      if (matchesDateValue(dateValue, drdfc)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean matchesDateValue(
+      IBase dateValue, DataRequirement.DataRequirementDateFilterComponent filter) {
+    if (dateValue == null) {
+      return false;
+    }
+
+    try {
+      // Handle DateType values
+      if (dateValue instanceof org.hl7.fhir.r4.model.DateType) {
+        org.hl7.fhir.r4.model.DateType resourceDate = (org.hl7.fhir.r4.model.DateType) dateValue;
+        if (filter.hasValueDateTimeType()) {
+          org.hl7.fhir.r4.model.BaseDateTimeType filterDate = filter.getValueDateTimeType();
+          return compareDates(resourceDate.asStringValue(), filterDate.asStringValue());
+        }
+      }
+      // Handle DateTimeType values
+      else if (dateValue instanceof org.hl7.fhir.r4.model.DateTimeType) {
+        org.hl7.fhir.r4.model.DateTimeType resourceDate =
+            (org.hl7.fhir.r4.model.DateTimeType) dateValue;
+        if (filter.hasValueDateTimeType()) {
+          org.hl7.fhir.r4.model.BaseDateTimeType filterDate = filter.getValueDateTimeType();
+          return compareDates(resourceDate.asStringValue(), filterDate.asStringValue());
+        }
+      }
+      // Handle Period values
+      else if (dateValue instanceof org.hl7.fhir.r4.model.Period) {
+        org.hl7.fhir.r4.model.Period resourcePeriod = (org.hl7.fhir.r4.model.Period) dateValue;
+        if (filter.hasValuePeriod()) {
+          org.hl7.fhir.r4.model.Period filterPeriod = filter.getValuePeriod();
+          return comparePeriods(resourcePeriod, filterPeriod);
+        }
+      }
+    } catch (Exception e) {
+      logger.warn("Error comparing date values: {}", e.getMessage());
+      return false;
+    }
+
+    return false;
+  }
+
+  private static boolean compareDates(String resourceDate, String filterDate) {
+    if (resourceDate == null || filterDate == null) {
+      return false;
+    }
+    // Simple string comparison for date matching
+    return resourceDate.startsWith(filterDate) || filterDate.startsWith(resourceDate);
+  }
+
+  private static boolean comparePeriods(
+      org.hl7.fhir.r4.model.Period resourcePeriod, org.hl7.fhir.r4.model.Period filterPeriod) {
+    if (resourcePeriod == null || filterPeriod == null) {
+      return false;
+    }
+
+    // If filter has start date, resource start should be >= filter start
+    if (filterPeriod.hasStart()
+        && (!resourcePeriod.hasStart()
+            || resourcePeriod.getStart().before(filterPeriod.getStart()))) {
+      return false;
+    }
+
+    // If filter has end date, resource end should be <= filter end
+    if (filterPeriod.hasEnd()
+        && (!resourcePeriod.hasEnd() || resourcePeriod.getEnd().after(filterPeriod.getEnd()))) {
+      return false;
+    }
+
     return true;
   }
 
@@ -411,66 +510,89 @@ public class BsaServiceUtils {
   }
 
   public static Boolean isCodePresentInValueSet(ValueSet vs, String system, String code) {
+    if (vs == null) {
+      return false;
+    }
 
-    boolean retVal = false;
+    if (isCodeInCompose(vs, system, code)) {
+      return true;
+    }
 
-    if (vs != null && vs.hasCompose()) {
+    return isCodeInExpansion(vs, system, code);
+  }
 
-      ValueSetComposeComponent vsc = vs.getCompose();
+  private static boolean isCodeInCompose(ValueSet vs, String system, String code) {
+    if (!vs.hasCompose()) {
+      return false;
+    }
 
-      List<ConceptSetComponent> cscs = vsc.getInclude();
+    ValueSetComposeComponent vsc = vs.getCompose();
+    List<ConceptSetComponent> cscs = vsc.getInclude();
 
-      if (cscs != null) {
+    if (cscs == null) {
+      return false;
+    }
 
-        for (ConceptSetComponent csc : cscs) {
-
-          if (csc.getSystem() != null && csc.getSystem().contentEquals(system)) {
-
-            logger.info(" Found Code System {} in value set ", system);
-
-            List<ConceptReferenceComponent> crcs = csc.getConcept();
-
-            if (crcs != null) {
-
-              for (ConceptReferenceComponent crc : crcs) {
-
-                if (crc.getCode().contentEquals(code)) {
-                  logger.info(" Found code system {} and code {} in value set ", system, code);
-                  retVal = true;
-                  break;
-                }
-              }
-            }
-          }
-        }
+    for (ConceptSetComponent csc : cscs) {
+      if (isConceptSetMatchesSystem(csc, system) && isConceptPresentInSet(csc, code)) {
+        logger.info(" Found code system {} and code {} in value set ", system, code);
+        return true;
       }
     }
 
-    if (!retVal && vs.hasExpansion()) {
+    return false;
+  }
 
-      ValueSetExpansionComponent vsec = vs.getExpansion();
+  private static boolean isConceptSetMatchesSystem(ConceptSetComponent csc, String system) {
+    return csc.getSystem() != null && csc.getSystem().contentEquals(system);
+  }
 
-      if (vsec.hasContains()) {
+  private static boolean isConceptPresentInSet(ConceptSetComponent csc, String code) {
+    logger.info(" Found Code System {} in value set ", csc.getSystem());
 
-        List<ValueSetExpansionContainsComponent> expansion = vsec.getContains();
+    List<ConceptReferenceComponent> crcs = csc.getConcept();
+    if (crcs == null) {
+      return false;
+    }
 
-        for (ValueSetExpansionContainsComponent vsecc : expansion) {
-
-          if (vsecc.getSystem() != null
-              && vsecc.getSystem().contentEquals(system)
-              && vsecc.getCode() != null
-              && vsecc.getCode().contentEquals(code)) {
-
-            logger.info(
-                " Found Match for CodeSystem {} and Code {} in ValueSet {}", system, code, vs);
-            retVal = true;
-            break;
-          }
-        }
+    for (ConceptReferenceComponent crc : crcs) {
+      if (crc.getCode().contentEquals(code)) {
+        return true;
       }
     }
 
-    return retVal;
+    return false;
+  }
+
+  private static boolean isCodeInExpansion(ValueSet vs, String system, String code) {
+    if (!vs.hasExpansion()) {
+      return false;
+    }
+
+    ValueSetExpansionComponent vsec = vs.getExpansion();
+
+    if (!vsec.hasContains()) {
+      return false;
+    }
+
+    List<ValueSetExpansionContainsComponent> expansion = vsec.getContains();
+
+    for (ValueSetExpansionContainsComponent vsecc : expansion) {
+      if (isExpansionComponentMatches(vsecc, system, code)) {
+        logger.info(" Found Match for CodeSystem {} and Code {} in ValueSet {}", system, code, vs);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean isExpansionComponentMatches(
+      ValueSetExpansionContainsComponent vsecc, String system, String code) {
+    return vsecc.getSystem() != null
+        && vsecc.getSystem().contentEquals(system)
+        && vsecc.getCode() != null
+        && vsecc.getCode().contentEquals(code);
   }
 
   /**
@@ -709,20 +831,14 @@ public class BsaServiceUtils {
       state = mapper.readValue(data, CheckTriggerCodeStatusList.class);
 
     } catch (JsonProcessingException e1) {
-      String msg = "Unable to read/write Trigger Match state";
-      logger.error(msg, e1);
-      throw new RuntimeException(msg, e1);
+      throw new IllegalArgumentException("Unable to read/write Trigger Match state", e1);
     }
 
     return state;
   }
 
   public static String getEncodedTriggerMatchStatus(
-      CheckTriggerCodeStatusList ctc,
-      KarProcessingData kd,
-      String eicrId,
-      String actionId,
-      String actionType) {
+      CheckTriggerCodeStatusList ctc, String eicrId, String actionId, String actionType) {
     ObjectMapper mapper = new ObjectMapper();
 
     String state = null;
@@ -740,10 +856,7 @@ public class BsaServiceUtils {
 
       state = mapper.writeValueAsString(ctc);
     } catch (JsonProcessingException e) {
-
-      String msg = "Unable to update execution state";
-      logger.error(msg, e);
-      throw new RuntimeException(msg, e);
+      throw new IllegalArgumentException("Unable to update execution state", e);
     }
 
     return state;

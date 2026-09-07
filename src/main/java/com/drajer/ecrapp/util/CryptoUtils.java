@@ -7,6 +7,10 @@ import javax.crypto.SecretKey;
 
 public class CryptoUtils {
 
+  private CryptoUtils() {
+    // Utility class - private constructor to hide the implicit public one
+  }
+
   public static byte[] getRandomNonce(int numBytes) {
     byte[] nonce = new byte[numBytes];
     new SecureRandom().nextBytes(nonce);

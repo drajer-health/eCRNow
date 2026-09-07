@@ -8,9 +8,9 @@ import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.bsa.model.HealthcareSetting;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -23,7 +23,14 @@ public class AuthorizationUtilsTest {
 
   @Mock AuthorizationService passwordAuthorizationService;
 
-  @InjectMocks AuthorizationUtils authorizationUtils;
+  private AuthorizationUtils authorizationUtils;
+
+  @Before
+  public void setUp() {
+    authorizationUtils =
+        new AuthorizationUtils(
+            backendAuthorizationService, ehrAuthorizationService, passwordAuthorizationService);
+  }
 
   @Test
   public void testGetToken_UserNamePwd() throws JSONException {

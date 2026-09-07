@@ -8,9 +8,11 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDao {
 
   private final Logger logger = LoggerFactory.getLogger(LaunchDetailsDaoImpl.class);
+
+  /**
+   * Instantiates a new launch details DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public LaunchDetailsDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
     getSession().saveOrUpdate(authDetails);

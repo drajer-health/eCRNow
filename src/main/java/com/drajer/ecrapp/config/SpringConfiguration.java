@@ -76,14 +76,19 @@ public class SpringConfiguration {
   @Value("${disable.hostname.verifier}")
   private boolean disableHostnameVerifier;
 
-  @Autowired RetryStatusCode retryStatusCode;
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
 
   public static final FhirContext ctx = FhirContext.forR4();
 
-  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+  private final FHIRRetryTemplateConfig fhirRetryTemplateConfig;
 
-  public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
+  /**
+   * Instantiates a new Spring configuration.
+   *
+   * @param fhirRetryTemplateConfig the FHIR retry template configuration
+   */
+  @Autowired
+  public SpringConfiguration(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
     this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
   }
 
@@ -161,7 +166,7 @@ public class SpringConfiguration {
     return new R4CqlExecutionService(ecrRepository, evaluationSettings);
   }
 
-  @Bean(name = "R4CqlExecutionEvaluator")
+  @Bean(name = "r4CqlExecutionEvaluator")
   @Scope("prototype")
   R4CqlExecutionService getExecutionServiceExecutionService(
       FederatedRepository ecrRepository, EvaluationSettings evaluationSettings) {
@@ -196,7 +201,7 @@ public class SpringConfiguration {
   }
 
   @Bean(name = "ECRRetryTemplate")
-  public RetryTemplate retryTemplate() {
+  public RetryTemplate retryTemplate(RetryStatusCode retryStatusCode) {
 
     RetryTemplate template = retryStatusCode.configureRetryTemplate();
 
@@ -208,8 +213,7 @@ public class SpringConfiguration {
 
   private Bundle readErsdBundleFromFile() {
     Bundle bundle = new Bundle();
-    try {
-      InputStream in = new FileInputStream(new File(ersdFileLocation));
+    try (InputStream in = new FileInputStream(new File(ersdFileLocation))) { // ← FIXED
       bundle = getEsrdJsonParser().parseResource(Bundle.class, in);
       logger.info("Successfully loaded eRSD bundle from: {}", ersdFileLocation);
     } catch (FileNotFoundException e) {

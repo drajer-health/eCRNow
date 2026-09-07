@@ -17,18 +17,14 @@ import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class TaskConfiguration {
   private static final Logger log = LoggerFactory.getLogger(TaskConfiguration.class);
-
-  @Autowired RestTemplate restTemplate;
 
   @Value("${timer.retries:10}")
   private Integer timerRetries;
@@ -36,11 +32,9 @@ public class TaskConfiguration {
   @Value("${workflow.endpoint}")
   private String workflowEndpoint;
 
-  @Autowired LaunchDetailsDao launchDetailsDao;
-
   /** Define a one-time task which have to be manually scheduled. */
   @Bean
-  public Task<TaskTimer> sampleOneTimeTask() {
+  public Task<TaskTimer> sampleOneTimeTask(LaunchDetailsDao launchDetailsDao) {
     log.info("Initializing the One time task");
     OneTimeTask<TaskTimer> myTask =
         Tasks.oneTime("EICRTask", TaskTimer.class)
@@ -101,7 +95,7 @@ public class TaskConfiguration {
                           launchDetailsDao.getAuthDetailsById(inst.getData().getLaunchDetailsId());
                       if (details != null) {
                         details.setProcessingState(
-                            LaunchDetails.getString(LaunchDetails.ProcessingStatus.Errors));
+                            LaunchDetails.getString(LaunchDetails.ProcessingStatus.ERRORS));
                         launchDetailsDao.saveOrUpdate(details);
                       }
 

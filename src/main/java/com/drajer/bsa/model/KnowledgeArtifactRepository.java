@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -142,9 +141,7 @@ public class KnowledgeArtifactRepository {
     if (karsInfo != null) {
 
       List<KnowledgeArtifactSummaryInfo> infos =
-          karsInfo.stream()
-              .filter(art -> art.getKarAvailable().equals(Boolean.FALSE))
-              .collect(Collectors.toList());
+          karsInfo.stream().filter(art -> art.getKarAvailable().equals(Boolean.FALSE)).toList();
 
       infos.forEach(info -> karsInfo.remove(info));
     }

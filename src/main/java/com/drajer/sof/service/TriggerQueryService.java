@@ -6,8 +6,6 @@ import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.Date;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
@@ -15,9 +13,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class TriggerQueryService implements AbstractQueryService {
 
-  @Autowired TriggerQueryR4Bundle generateR4Bundles;
+  private final TriggerQueryR4Bundle generateR4Bundles;
 
-  private final Logger logger = LoggerFactory.getLogger(TriggerQueryService.class);
+  @Autowired
+  public TriggerQueryService(TriggerQueryR4Bundle generateR4Bundles) {
+    this.generateR4Bundles = generateR4Bundles;
+  }
 
   @Override
   public FhirData getData(LaunchDetails launchDetails, Date start, Date end) {

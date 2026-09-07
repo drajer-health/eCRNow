@@ -11,9 +11,11 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class KarDaoImpl extends AbstractDao implements KarDao {
 
   private final Logger logger = LoggerFactory.getLogger(KarDaoImpl.class);
+
+  /**
+   * Instantiates a new KAR DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public KarDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   @Override
   public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar) {
@@ -62,7 +74,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
     // Execute query
     List<KnowledgeArtifactRepository> kars = getSession().createQuery(cq).getResultList();
 
-    kars = removeKarsNotAvailable(kars);
+    removeKarsNotAvailable(kars);
 
     return kars;
   }
@@ -90,7 +102,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
         criteriaBuilder.createQuery(KnowledgeArtifactStatus.class);
     Root<KnowledgeArtifactStatus> root = query.from(KnowledgeArtifactStatus.class);
 
-    query.select(root).where(criteriaBuilder.equal(root.get("hsId"), hsId.intValue()));
+    query.select(root).where(criteriaBuilder.equal(root.get("hsId"), hsId));
 
     return getSession().createQuery(query).getResultList();
   }

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +25,6 @@ import org.springframework.web.filter.CorsFilter;
 public class WebSecurityConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
-
-  @Autowired private ApplicationContext context;
 
   @Value("${token.validator.class:}")
   private String tokenFilterClassName;
@@ -71,7 +68,8 @@ public class WebSecurityConfig {
   @SuppressWarnings(
       "java:S4502") // CSRF disabled intentionally - this is a stateless REST API using token-based
   // authentication, not cookie-based auth
-  public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+  public SecurityFilterChain configure(HttpSecurity http, ApplicationContext context)
+      throws Exception {
 
     logger.info("*******************************************************************");
     logger.info("Security Configuration {}", tokenFilterClassName);

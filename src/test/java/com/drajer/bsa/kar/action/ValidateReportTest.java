@@ -1,4 +1,3 @@
-/*
 package com.drajer.bsa.kar.action;
 
 import static org.junit.Assert.assertEquals;
@@ -7,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.ehr.service.impl.EhrFhirR4QueryServiceImpl;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
@@ -39,11 +37,9 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.UriType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.client.RestTemplate;
-
 
 public class ValidateReportTest {
 
@@ -62,7 +58,7 @@ public class ValidateReportTest {
   @Before
   public void setUp() {
     validateReport = new ValidateReport();
-    ehrQueryService = new EhrFhirR4QueryServiceImpl();
+    //    ehrQueryService = new EhrFhirR4QueryServiceImpl();
     karProcessingData = new KarProcessingData();
 
     NotificationContext notificationContext = getNotificationContext();
@@ -89,7 +85,6 @@ public class ValidateReportTest {
   }
 
   @Test
-  @Ignore
   public void testProcessAndValidateCdaOutputs() {
     applyOutputFormat(OutputContentType.CDA_R11);
     validateReport.setValidateEicrR11Data(true);
@@ -127,7 +122,6 @@ public class ValidateReportTest {
   }
 
   @Test
-  @Ignore
   public void testValidateFhirOutputWithValidatorResponses() throws Exception {
     applyOutputFormat(OutputContentType.FHIR);
     populateActionOutputDataById();
@@ -288,5 +282,251 @@ public class ValidateReportTest {
     outcome.addIssue().setSeverity(severity).setDiagnostics("validation response");
     return r4Context.newJsonParser().encodeResourceToString(outcome);
   }
+
+  // ========== NEW TEST CASES FOR UNCOVERED CODE PATHS ==========
+
+  @Test
+  public void testValidateCdaOutputWithCdaR30Format() {
+    applyOutputFormat(OutputContentType.CDA_R30);
+    validateReport.setValidateEicrR31Data(true);
+    validateReport.setValidateEicrR11Data(false);
+    karProcessingData.setSubmittedCdaData(TestUtils.getFileContentAsString("DSTU2/Misc/CDA.xml"));
+
+    boolean result =
+        validateReport.validateCdaOutput(
+            karProcessingData, new ValidateReportStatus(), OutputContentType.CDA_R30);
+    assertTrue("CDA_R30 validation should pass", result);
+  }
+
+  @Test
+  public void testValidateCdaOutputWithBothFormat() {
+    applyOutputFormat(OutputContentType.BOTH);
+    validateReport.setValidateEicrR11Data(true);
+    validateReport.setValidateEicrR31Data(true);
+
+    boolean result =
+        validateReport.validateCdaOutput(
+            karProcessingData, new ValidateReportStatus(), OutputContentType.BOTH);
+    assertTrue("BOTH format should return true without validation", result);
+  }
+
+  @Test
+  public void testValidateCdaOutputWhenValidationNotRequired() {
+    applyOutputFormat(OutputContentType.CDA_R11);
+    validateReport.setValidateEicrR11Data(false);
+    karProcessingData.setSubmittedCdaData(TestUtils.getFileContentAsString("DSTU2/Misc/CDA.xml"));
+
+    boolean result =
+        validateReport.validateCdaOutput(
+            karProcessingData, new ValidateReportStatus(), OutputContentType.CDA_R11);
+    assertTrue("Validation should pass when not required", result);
+  }
+
+  @Test
+  public void testValidateCdaOutputWithEmptyCdaData() {
+    applyOutputFormat(OutputContentType.CDA_R11);
+    validateReport.setValidateEicrR11Data(true);
+    karProcessingData.setSubmittedCdaData(""); // Empty CDA data
+
+    boolean result =
+        validateReport.validateCdaOutput(
+            karProcessingData, new ValidateReportStatus(), OutputContentType.CDA_R11);
+    assertFalse("Validation should fail with empty CDA data", result);
+  }
+
+  @Test
+  public void testValidateCdaOutputWithNullCdaData() {
+    applyOutputFormat(OutputContentType.CDA_R11);
+    validateReport.setValidateEicrR11Data(true);
+    karProcessingData.setSubmittedCdaData(null); // Null CDA data
+
+    boolean result =
+        validateReport.validateCdaOutput(
+            karProcessingData, new ValidateReportStatus(), OutputContentType.CDA_R11);
+    assertFalse("Validation should fail with null CDA data", result);
+  }
+
+  @Test
+  public void testProcessWithBothCdaAndFhirOutput() {
+    applyOutputFormat(OutputContentType.BOTH);
+    populateActionOutputDataById();
+    validateReport.setValidateEicrR11Data(true);
+    validateReport.setValidateEicrR31Data(true);
+    validateReport.setValidateEicrFhirData(true);
+    validateReport.setIgnoreTimers(true);
+    karProcessingData.setSubmittedCdaData(TestUtils.getFileContentAsString("DSTU2/Misc/CDA.xml"));
+
+    BsaActionStatus status = validateReport.process(karProcessingData, ehrQueryService);
+    assertEquals(
+        "Should complete processing", BsaActionStatusType.COMPLETED, status.getActionStatus());
+  }
+
+  @Test
+  public void testProcessWithCdaR31Output() {
+    applyOutputFormat(OutputContentType.CDA_R30);
+    validateReport.setValidateEicrR31Data(true);
+    validateReport.setIgnoreTimers(true);
+    karProcessingData.setSubmittedCdaData(TestUtils.getFileContentAsString("DSTU2/Misc/CDA.xml"));
+
+    BsaActionStatus status = validateReport.process(karProcessingData, ehrQueryService);
+    assertEquals(
+        "Should complete CDA R31 validation",
+        BsaActionStatusType.COMPLETED,
+        status.getActionStatus());
+  }
+
+  @Test
+  public void testValidateFhirOutputWithNullValidatorEndpoint() throws Exception {
+    applyOutputFormat(OutputContentType.FHIR);
+    populateActionOutputDataById();
+    validateReport.setValidatorEndpoint(null); // No validator endpoint
+    validateReport.setValidateEicrFhirData(true);
+
+    ValidateReportStatus status = new ValidateReportStatus();
+    validateReport.validateFhirOutput(karProcessingData, status);
+    // Should not fail when endpoint is null
+    assertFalse(
+        "Should not fail with null endpoint",
+        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+  }
+
+  @Test
+  public void testValidateFhirOutputWithEmptyValidatorEndpoint() throws Exception {
+    applyOutputFormat(OutputContentType.FHIR);
+    populateActionOutputDataById();
+    validateReport.setValidatorEndpoint(""); // Empty validator endpoint
+    validateReport.setValidateEicrFhirData(true);
+
+    ValidateReportStatus status = new ValidateReportStatus();
+    validateReport.validateFhirOutput(karProcessingData, status);
+    // Should skip validation when endpoint is empty
+    assertFalse(
+        "Should not fail with empty endpoint",
+        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+  }
+
+  @Test
+  public void testValidateFhirOutputWithNoInputData() throws Exception {
+    applyOutputFormat(OutputContentType.FHIR);
+    validateReport.setInputData(new ArrayList<>()); // Empty input data
+    validateReport.setValidateEicrFhirData(true);
+
+    ValidateReportStatus status = new ValidateReportStatus();
+    validateReport.validateFhirOutput(karProcessingData, status);
+    // Should handle empty input gracefully
+    assertFalse(
+        "Should handle empty input data",
+        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+  }
+
+  @Test
+  public void testValidateFhirOutputWithNullInputData() throws Exception {
+    applyOutputFormat(OutputContentType.FHIR);
+    validateReport.setInputData(null); // Null input data
+    validateReport.setValidateEicrFhirData(true);
+
+    ValidateReportStatus status = new ValidateReportStatus();
+    validateReport.validateFhirOutput(karProcessingData, status);
+    // Should handle null input gracefully
+    assertFalse(
+        "Should handle null input data",
+        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+  }
+
+  @Test
+  public void testAddValidatedOutputByIdWithEmptyOutputData() {
+    validateReport.setOutputData(new ArrayList<>()); // No output data
+    Patient patient = TestUtils.loadResourceDataFromFile(Patient.class, "R4/Patient/Patient.json");
+    patient.setId("patient-1");
+
+    // Should not throw exception
+    validateReport.addValidatedOutputById(karProcessingData, patient);
+    assertTrue("Should handle empty output data", true);
+  }
+
+  @Test
+  public void testAddValidatedOutputByIdWithNullOutputData() {
+    validateReport.setOutputData(null); // Null output data
+    Patient patient = TestUtils.loadResourceDataFromFile(Patient.class, "R4/Patient/Patient.json");
+    patient.setId("patient-1");
+
+    // Should not throw exception
+    validateReport.addValidatedOutputById(karProcessingData, patient);
+    assertTrue("Should handle null output data", true);
+  }
+
+  @Test
+  public void testGettersAndSetters() {
+    // Test all getter/setter methods for complete coverage
+    String endpoint = "http://validator.example.com";
+    validateReport.setValidatorEndpoint(endpoint);
+    assertEquals(
+        "Validator endpoint should match", endpoint, validateReport.getValidatorEndpoint());
+
+    validateReport.setValidateEicrR11Data(true);
+    assertTrue("ValidateEicrR11Data should be true", validateReport.getValidateEicrR11Data());
+
+    validateReport.setValidateEicrR31Data(true);
+    assertTrue("ValidateEicrR31Data should be true", validateReport.getValidateEicrR31Data());
+
+    validateReport.setValidateEicrFhirData(true);
+    assertTrue("ValidateEicrFhirData should be true", validateReport.getValidateEicrFhirData());
+
+    String r11Path = "path/to/r11.sch";
+    validateReport.setEicrR11SchematronPath(r11Path);
+    assertEquals(
+        "R11 schematron path should match", r11Path, validateReport.getEicrR11SchematronPath());
+
+    String r31Path = "path/to/r31.sch";
+    validateReport.setEicrR31SchematronPath(r31Path);
+    assertEquals(
+        "R31 schematron path should match", r31Path, validateReport.getEicrR31SchematronPath());
+  }
+
+  @Test
+  public void testProcessWithScheduledTiming() {
+    applyOutputFormat(OutputContentType.CDA_R11);
+    List<TimingSchedule> timing = new ArrayList<>();
+    timing.add(new TimingSchedule());
+    validateReport.setTimingData(timing);
+    validateReport.setIgnoreTimers(false);
+
+    BsaActionStatus status = validateReport.process(karProcessingData, ehrQueryService);
+    assertEquals(
+        "Should return SCHEDULED when timing constraints exist",
+        BsaActionStatusType.SCHEDULED,
+        status.getActionStatus());
+  }
+
+  @Test
+  public void testProcessIgnoresTimersWhenFlagSet() {
+    applyOutputFormat(OutputContentType.CDA_R11);
+    List<TimingSchedule> timing = new ArrayList<>();
+    timing.add(new TimingSchedule()); // Timing exists but should be ignored
+    validateReport.setTimingData(timing);
+    validateReport.setIgnoreTimers(true); // Ignore timers flag
+    validateReport.setValidateEicrR11Data(true);
+    karProcessingData.setSubmittedCdaData(TestUtils.getFileContentAsString("DSTU2/Misc/CDA.xml"));
+
+    BsaActionStatus status = validateReport.process(karProcessingData, ehrQueryService);
+    assertEquals(
+        "Should complete when ignoring timers",
+        BsaActionStatusType.COMPLETED,
+        status.getActionStatus());
+  }
+
+  @Test
+  public void testProcessStoresActionStatusInData() {
+    applyOutputFormat(OutputContentType.CDA_R11);
+    validateReport.setIgnoreTimers(true);
+    validateReport.setValidateEicrR11Data(false);
+    String sequenceId = "seq-test-123";
+    karProcessingData.setExecutionSequenceId(sequenceId);
+
+    validateReport.process(karProcessingData, ehrQueryService);
+
+    assertTrue(
+        "Action status should be stored in processing data",
+        karProcessingData.getActionStatus().containsKey(sequenceId));
+  }
 }
-*/

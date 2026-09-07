@@ -24,6 +24,8 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
   private EcrFhirRetryClient client;
 
   private static final Logger logger = LoggerFactory.getLogger(EcrFhirRetryableRead.class);
+  private static final String NOT_IMPLEMENTED_MESSAGE =
+      "The requested operation is not implemented";
 
   public EcrFhirRetryableRead(IRead read, EcrFhirRetryClient client) {
     super();
@@ -45,7 +47,7 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public <T extends IBaseResource> IReadTyped<T> resource(Class<T> theResourceType) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
@@ -60,17 +62,17 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IReadExecutable withIdAndVersion(String theId, String theVersion) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IReadExecutable withId(Long theId) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IReadExecutable withId(IIdType theId) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
@@ -80,43 +82,43 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IReadExecutable withUrl(IIdType theUrl) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable andLogRequestAndResponse(boolean theLogRequestAndResponse) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable cacheControl(CacheControlDirective theCacheControlDirective) {
 
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable elementsSubset(String... theElements) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable encoded(EncodingEnum theEncoding) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable encodedJson() {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable encodedXml() {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable withAdditionalHeader(String theHeaderName, String theHeaderValue) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
@@ -137,31 +139,31 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IClientExecutable preferResponseType(Class theType) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable preferResponseTypes(List theTypes) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable prettyPrint() {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable summaryMode(SummaryEnum theSummary) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IClientExecutable accept(String theHeaderValue) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 
   @Override
   public IReadIfNoneMatch ifVersionMatches(String theVersion) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+    throw new NotImplementedOperationException(NOT_IMPLEMENTED_MESSAGE);
   }
 }

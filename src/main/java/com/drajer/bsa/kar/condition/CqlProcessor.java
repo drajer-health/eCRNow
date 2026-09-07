@@ -28,7 +28,8 @@ public class CqlProcessor implements BsaConditionProcessor {
     Set<String> expressions = new HashSet<>();
     expressions.add(cond.getLogicExpression().getExpression());
     if (!(cond instanceof BsaCqlCondition)) {
-      logger.error("Expected a BsaCqlCondition, but found:{} ", cond);
+      logger.error("Expected a BsaCqlCondition, but found: {}", cond.getClass().getSimpleName());
+      return false;
     }
     BsaCqlCondition cqlCondition = (BsaCqlCondition) cond;
     Parameters parameters = null;
@@ -66,7 +67,7 @@ public class CqlProcessor implements BsaConditionProcessor {
   }
 
   public void setLibraryEvaluationService(R4LibraryEvaluationService libraryEvaluationService) {
-    this.libraryExecutionService = libraryExecutionService;
+    this.libraryExecutionService = libraryEvaluationService;
   }
 
   @Override

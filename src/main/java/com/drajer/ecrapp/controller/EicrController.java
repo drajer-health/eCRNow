@@ -24,8 +24,17 @@ public class EicrController {
 
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
   private final Logger logger = LoggerFactory.getLogger(EicrController.class);
+  private final EicrRRService eicrRRService;
 
-  @Autowired EicrRRService eicrRRService;
+  /**
+   * Instantiates a new EICR controller.
+   *
+   * @param eicrRRService the EICR RR service
+   */
+  @Autowired
+  public EicrController(EicrRRService eicrRRService) {
+    this.eicrRRService = eicrRRService;
+  }
 
   @CrossOrigin
   @GetMapping(value = "/api/eicrData", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -193,10 +202,12 @@ public class EicrController {
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue) {
     try {
-      logger.info(
-          "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
-          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
-          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
+            StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+            StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      }
 
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         logger.error("Eicr Doc Id is null ");

@@ -8,9 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,9 +27,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class NotificationContextController {
 
-  private final Logger logger = LoggerFactory.getLogger(NotificationContextController.class);
+  private final NotificationContextService notificationContextService;
 
-  @Autowired NotificationContextService notificationContextService;
+  /**
+   * Instantiates a new notification context controller.
+   *
+   * @param notificationContextService the notification context service
+   */
+  public NotificationContextController(NotificationContextService notificationContextService) {
+    this.notificationContextService = notificationContextService;
+  }
 
   @CrossOrigin
   @DeleteMapping(value = "/api/notificationContext")
@@ -46,11 +50,11 @@ public class NotificationContextController {
             notificationContextData.getId(), notificationContextData.getFhirServerBaseUrl(),
             notificationContextData.getNotificationResourceId(),
                 notificationContextData.getPatientId());
-    if (notificationContextDetails != null) {
+    if (notificationContextDetails != null && !notificationContextDetails.isEmpty()) {
       for (NotificationContext notificationContext : notificationContextDetails) {
         notificationContextService.delete(notificationContext);
-        return "NotificationContext deleted successfully.";
       }
+      return "NotificationContext deleted successfully.";
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "NotificationContext Not found");
     return "NotificationContext Not found";

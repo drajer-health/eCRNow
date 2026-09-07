@@ -222,6 +222,13 @@ public class ValueSetSingletonTest {
     set2.add(vs2);
     singleton.getGrouperToEmergentValueSetMap().put("grouperEmergent", set2);
     singleton.print();
+    assertNotNull("Singleton should not be null", singleton);
+    assertTrue(
+        "GrouperToValueSetMap should contain grouper1",
+        singleton.getGrouperToValueSetMap().containsKey("grouper1"));
+    assertTrue(
+        "GrouperToEmergentValueSetMap should contain grouperEmergent",
+        singleton.getGrouperToEmergentValueSetMap().containsKey("grouperEmergent"));
   }
 
   // ============ NEW TEST CASES FOR UNCOVERED ELSE CONDITIONS ============
@@ -232,6 +239,12 @@ public class ValueSetSingletonTest {
     map.put("grouper1", null); // Null value set
     singleton.setGrouperToValueSetMap(map);
     singleton.print();
+    assertNotNull("GrouperToValueSetMap should not be null", singleton.getGrouperToValueSetMap());
+    assertTrue(
+        "Map should contain grouper1 key",
+        singleton.getGrouperToValueSetMap().containsKey("grouper1"));
+    assertNull(
+        "Value for grouper1 should be null", singleton.getGrouperToValueSetMap().get("grouper1"));
   }
 
   @Test
@@ -239,6 +252,15 @@ public class ValueSetSingletonTest {
     singleton.setGrouperToEmergentValueSetMap(new HashMap<>());
     singleton.setGrouperToValueSetMap(new HashMap<>());
     singleton.print();
+    assertNotNull(
+        "GrouperToEmergentValueSetMap should not be null",
+        singleton.getGrouperToEmergentValueSetMap());
+    assertNotNull("GrouperToValueSetMap should not be null", singleton.getGrouperToValueSetMap());
+    assertTrue(
+        "GrouperToEmergentValueSetMap should be empty",
+        singleton.getGrouperToEmergentValueSetMap().isEmpty());
+    assertTrue(
+        "GrouperToValueSetMap should be empty", singleton.getGrouperToValueSetMap().isEmpty());
   }
 
   @Test

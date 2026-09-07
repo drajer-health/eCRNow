@@ -8,7 +8,6 @@ import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.annotation.Bean;
@@ -28,14 +27,12 @@ public class ScheduleJobConfiguration {
 
   private final Logger logger = LoggerFactory.getLogger(ScheduleJobConfiguration.class);
 
-  @Autowired KarProcessor karProcessor;
-
   @Value("${timer.retries:3}")
   private Integer timerRetries;
 
   /** Define a one-time job which has to be manually scheduled. */
   @Bean
-  public Task<ScheduledJobData> sampleOneTimeJob() {
+  public Task<ScheduledJobData> sampleOneTimeJob(KarProcessor karProcessor) {
     logger.info("Initializing the One time task");
 
     return Tasks.oneTime("BsaScheduledJob", ScheduledJobData.class)

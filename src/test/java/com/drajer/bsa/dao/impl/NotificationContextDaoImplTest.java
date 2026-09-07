@@ -273,7 +273,7 @@ public class NotificationContextDaoImplTest {
     when(hibernateCriteriaBuilder.asc(jpaPath)).thenReturn(jpaOrder);
     when(jpaCriteriaQuery.where(any(JpaExpression.class))).thenReturn(jpaCriteriaQuery);
     when(jpaCriteriaQuery.orderBy(any(JpaOrder.class))).thenReturn(jpaCriteriaQuery);
-    List<NotificationContext> result = dao.getAllNotificationContext(null, searchParams);
+    dao.getAllNotificationContext(null, searchParams);
 
     verify(session).getCriteriaBuilder();
     verify(jpaCriteriaQuery).select(jpaRoot);
@@ -298,7 +298,7 @@ public class NotificationContextDaoImplTest {
     when(jpaCriteriaQuery.where(any(JpaExpression.class))).thenReturn(jpaCriteriaQuery);
     when(jpaCriteriaQuery.orderBy(any(JpaOrder.class))).thenReturn(jpaCriteriaQuery);
 
-    List<NotificationContext> result = dao.getAllNotificationContext(id, searchParams);
+    dao.getAllNotificationContext(id, searchParams);
     verify(session).getCriteriaBuilder();
     verify(jpaCriteriaQuery).select(jpaRoot);
   }
@@ -337,12 +337,12 @@ public class NotificationContextDaoImplTest {
 
   @Test
   public void testDeleteNotificationContext() {
-    NotificationContext notificationContext = new NotificationContext();
+    NotificationContext notificationContextToDelete = new NotificationContext();
     when(sessionFactory.getCurrentSession()).thenReturn(session);
 
-    dao.delete(notificationContext);
+    dao.delete(notificationContextToDelete);
 
     verify(sessionFactory).getCurrentSession();
-    verify(session).delete(notificationContext);
+    verify(session).delete(notificationContextToDelete);
   }
 }

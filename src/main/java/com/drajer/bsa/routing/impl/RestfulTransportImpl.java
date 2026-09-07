@@ -24,9 +24,22 @@ public class RestfulTransportImpl implements DataTransportInterface {
 
   private static final Logger logger = LoggerFactory.getLogger(RestfulTransportImpl.class);
 
-  @Autowired RestApiAuthorizationHeaderIf authorizationService;
+  private RestApiAuthorizationHeaderIf authorizationService;
 
-  @Autowired private RestTemplate restTemplate;
+  private RestTemplate restTemplate;
+
+  /**
+   * Instantiates a new restful transport impl.
+   *
+   * @param authorizationService the authorization service
+   * @param restTemplate the rest template
+   */
+  @Autowired
+  public RestfulTransportImpl(
+      RestApiAuthorizationHeaderIf authorizationService, RestTemplate restTemplate) {
+    this.authorizationService = authorizationService;
+    this.restTemplate = restTemplate;
+  }
 
   @Override
   public void sendEicrDataUsingDirect(KarProcessingData data) {
@@ -70,11 +83,13 @@ public class RestfulTransportImpl implements DataTransportInterface {
       headers.add("X-Request-ID", newXReqId);
       headers.add("X-Correlation-ID", data.getPhm().getxCorrelationId());
 
-      logger.info(
-          " Launch ReqId: {} X-Request-ID for Eicr Submission: {} X-Correlation-ID for Eicr Submission: {}",
-          StringEscapeUtils.escapeJava(data.getxRequestId()),
-          StringEscapeUtils.escapeJava(newXReqId),
-          StringEscapeUtils.escapeJava(data.getPhm().getxCorrelationId()));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Launch ReqId: {} X-Request-ID for Eicr Submission: {} X-Correlation-ID for Eicr Submission: {}",
+            StringEscapeUtils.escapeJava(data.getxRequestId()),
+            StringEscapeUtils.escapeJava(newXReqId),
+            StringEscapeUtils.escapeJava(data.getPhm().getxCorrelationId()));
+      }
 
       final String json = constructJson(payload, data);
 
@@ -84,7 +99,9 @@ public class RestfulTransportImpl implements DataTransportInterface {
 
       final HttpEntity<String> request = new HttpEntity<>(json, headers);
 
-      logger.info(StringEscapeUtils.escapeJava(data.getHealthcareSetting().getRestApiUrl()));
+      if (logger.isInfoEnabled()) {
+        logger.info(StringEscapeUtils.escapeJava(data.getHealthcareSetting().getRestApiUrl()));
+      }
 
       ub = new URIBuilder(data.getHealthcareSetting().getRestApiUrl());
 
@@ -111,7 +128,7 @@ public class RestfulTransportImpl implements DataTransportInterface {
         }
       }
 
-      throw new RuntimeException(e.getMessage());
+      throw new IllegalStateException(e.getMessage());
     }
 
     return bundleResponse;

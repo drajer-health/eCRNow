@@ -14,7 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class KarServiceImpl implements KarService {
 
-  @Autowired KarDao karDao;
+  private final KarDao karDao;
+
+  /**
+   * Instantiates a new KAR service implementation.
+   *
+   * @param karDao the KAR DAO
+   */
+  @Autowired
+  public KarServiceImpl(KarDao karDao) {
+    this.karDao = karDao;
+  }
 
   @Override
   public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar) {

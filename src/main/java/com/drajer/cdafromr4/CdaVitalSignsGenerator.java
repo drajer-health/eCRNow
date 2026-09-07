@@ -23,14 +23,12 @@ public class CdaVitalSignsGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaVitalSignsGenerator.class);
 
-  public static String generateVitalsSection(
-      R4FhirData data, LaunchDetails details, String version) {
+  public static String generateVitalsSection(R4FhirData data, LaunchDetails details) {
 
     StringBuilder hsb = new StringBuilder(5000);
     StringBuilder sb = new StringBuilder(2000);
     StringBuilder vitalEntries = new StringBuilder();
 
-    List<Observation> allVitals = data.getVitalObs();
     // Check if there is a LOINC code for the observation to be translated.
     List<Observation> vitals = getValidVitals(data);
 
@@ -117,7 +115,7 @@ public class CdaVitalSignsGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        vitalEntries.append(getXmlForVitalOrganizer(data, obs, details, rowNum));
+        vitalEntries.append(getXmlForVitalOrganizer(obs, details, rowNum));
         rowNum++;
       }
 
@@ -145,7 +143,7 @@ public class CdaVitalSignsGenerator {
   }
 
   private static Object getXmlForVitalOrganizer(
-      R4FhirData data, Observation obs, LaunchDetails details, int rowNum) {
+      Observation obs, LaunchDetails details, int rowNum) {
     // Setup the Organizer and Entries
     StringBuilder vsEntry = new StringBuilder();
 
@@ -240,14 +238,7 @@ public class CdaVitalSignsGenerator {
 
         String compString =
             getXmlForObservationComponent(
-                details,
-                cc,
-                val,
-                id.toString(),
-                obs.getEffective(),
-                interpretation,
-                contentRef,
-                null);
+                details, cc, val, id.toString(), obs.getEffective(), interpretation, contentRef);
 
         if (!compString.isEmpty()) {
           foundComponent = true;
@@ -269,8 +260,7 @@ public class CdaVitalSignsGenerator {
               obs.getIdElement().getIdPart(),
               obs.getEffective(),
               obs.getInterpretation(),
-              contentRef,
-              null));
+              contentRef));
     }
 
     logger.debug("Lr Entry = {}", lrEntry);
@@ -285,8 +275,7 @@ public class CdaVitalSignsGenerator {
       String id,
       Type effective,
       List<CodeableConcept> interpretation,
-      String contentRef,
-      CodeableConcept altCode) {
+      String contentRef) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 

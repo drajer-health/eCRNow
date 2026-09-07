@@ -5,15 +5,22 @@ import com.drajer.ecrapp.service.SchedulerService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class SchedulerController {
 
   private final Logger logger = LoggerFactory.getLogger(SchedulerController.class);
+  private final SchedulerService schedulerService;
 
-  @Autowired SchedulerService schedulerService;
+  /**
+   * Instantiates a new scheduler controller.
+   *
+   * @param schedulerService the scheduler service
+   */
+  public SchedulerController(SchedulerService schedulerService) {
+    this.schedulerService = schedulerService;
+  }
 
   @CrossOrigin
   @GetMapping("/api/scheduledTasks")

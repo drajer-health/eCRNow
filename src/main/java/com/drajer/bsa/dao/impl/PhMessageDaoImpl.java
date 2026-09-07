@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   private static final Logger logger = LoggerFactory.getLogger(PhMessageDaoImpl.class);
+
+  /**
+   * Instantiates a new public health message DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public PhMessageDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
 
   public static final String ID = "id";
   public static final String FHIR_SERVER_BASE_URL = "fhirServerBaseUrl";
@@ -213,14 +225,6 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     }
   }
 
-  /*private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
-    ProjectionList projectionList = Projections.projectionList();
-    for (String propertyName : selectedProperties) {
-      projectionList.add(Projections.property(propertyName), propertyName);
-    }
-    return projectionList;
-  }*/
-
   @Override
   public List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData) {
@@ -271,37 +275,6 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   @Override
   public void delete(PublicHealthMessage message) {
     getSession().delete(message);
-  }
-
-  private CompoundSelection<Object[]> getSelectedProperties(
-      CriteriaBuilder cb, Root<PublicHealthMessage> root) {
-    return cb.array(
-        root.get("id"),
-        root.get("fhirServerBaseUrl"),
-        root.get("patientId"),
-        root.get("encounterId"),
-        root.get("notifiedResourceId"),
-        root.get("notifiedResourceType"),
-        root.get("karUniqueId"),
-        root.get("notificationId"),
-        root.get("xCorrelationId"),
-        root.get("xRequestId"),
-        root.get("submittedMessageType"),
-        root.get("submittedDataId"),
-        root.get("submittedVersionNumber"),
-        root.get("submittedMessageId"),
-        root.get("submissionMessageStatus"),
-        root.get("submissionTime"),
-        root.get("responseMessageType"),
-        root.get("responseDataId"),
-        root.get("responseMessageId"),
-        root.get("responseProcessingInstruction"),
-        root.get("responseProcessingStatus"),
-        root.get("responseReceivedTime"),
-        root.get("responseEhrDocRefId"),
-        root.get("initiatingAction"),
-        root.get("patientLinkerId"),
-        root.get("lastUpdated"));
   }
 
   /*private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {

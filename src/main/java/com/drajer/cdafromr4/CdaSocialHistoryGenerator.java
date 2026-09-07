@@ -27,6 +27,17 @@ public class CdaSocialHistoryGenerator {
   private CdaSocialHistoryGenerator() {}
 
   private static final Logger logger = LoggerFactory.getLogger(CdaSocialHistoryGenerator.class);
+  private static final String FALSE = "false";
+
+  private static class SocialHistoryData {
+    int index = 0;
+    StringBuilder tableRows = new StringBuilder();
+    String birthSexXml = "";
+    StringBuilder pregCondXml = new StringBuilder();
+    StringBuilder occHistoryXml = new StringBuilder();
+    StringBuilder travelHistoryXml = new StringBuilder();
+    String pregObsXml = "";
+  }
 
   public static String generateSocialHistorySection(
       R4FhirData data, LaunchDetails details, String version) {
@@ -34,10 +45,6 @@ public class CdaSocialHistoryGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
 
-    // Will have to wait to discuss with vendors on Travel History, Pregnancy, and
-    // Birth Sex
-    // Observations.
-    // Then we can generte the entries. Till then it will be empty section.
     CodeType birthSex =
         CdaFhirUtilities.getCodeExtension(
             data.getPatient().getExtension(), CdaGeneratorConstants.FHIR_USCORE_BIRTHSEX_EXT_URL);
@@ -53,170 +60,152 @@ public class CdaSocialHistoryGenerator {
 
     List<Observation> travelHistory = data.getTravelObs();
 
-    if (birthSex != null
+    if (!hasSocialHistoryData(birthSex, pregObs, pregCond, occHistory, travelHistory)) {
+      sb.append(generateEmptySocialHistorySection(version));
+      return sb.toString();
+    }
+
+    sb.append(generateSocialHistorySectionHeader("", version));
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
+    appendTableHeader(sb);
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+    SocialHistoryData shData = new SocialHistoryData();
+    Map<String, String> bodyvals = new LinkedHashMap<>();
+
+    processBirthSex(birthSex, shData, bodyvals);
+    processPregnancyConditions(pregCond, details, shData, bodyvals);
+    processPregnancyObservations(pregObs);
+    processOccupationHistory(occHistory, details, shData, bodyvals);
+    processTravelHistory(travelHistory, details, shData, bodyvals);
+
+    sb.append(shData.tableRows);
+    appendTableClosing(sb);
+    appendSocialHistoryEntries(sb, shData);
+    sb.append(generateSocialHistorySectionEndHeader());
+
+    return sb.toString();
+  }
+
+  private static boolean hasSocialHistoryData(
+      CodeType birthSex,
+      List<Observation> pregObs,
+      List<Condition> pregCond,
+      List<Observation> occHistory,
+      List<Observation> travelHistory) {
+    return birthSex != null
         || (pregObs != null && !pregObs.isEmpty())
         || (pregCond != null && !pregCond.isEmpty())
         || (occHistory != null && !occHistory.isEmpty())
-        || (travelHistory != null && !travelHistory.isEmpty())) {
+        || (travelHistory != null && !travelHistory.isEmpty());
+  }
 
-      sb.append(generateSocialHistorySectionHeader("", version));
+  private static void appendTableHeader(StringBuilder sb) {
+    List<String> list = new ArrayList<>();
+    list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_TITLE);
+    list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_TITLE);
+    sb.append(
+        CdaGeneratorUtils.getXmlForTableHeader(
+            list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+  }
 
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
+  private static void appendTableClosing(StringBuilder sb) {
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
+  }
 
-      // Create Table Header.
-      List<String> list = new ArrayList<>();
-      list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_TITLE);
-      list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_TITLE);
-      sb.append(
-          CdaGeneratorUtils.getXmlForTableHeader(
-              list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+  private static void processBirthSex(
+      CodeType birthSex, SocialHistoryData shData, Map<String, String> bodyvals) {
+    if (birthSex == null) return;
+    logger.info("Found Birth Sex");
+    bodyvals.put(
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+        CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
+    bodyvals.put(
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
+        CdaFhirUtilities.getStringForType(birthSex));
+    shData.tableRows.append(CdaGeneratorUtils.addTableRow(bodyvals, shData.index++));
+    shData.birthSexXml = generateBirthSexEntry(birthSex);
+  }
 
-      // Add Table Body
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+  private static void processPregnancyConditions(
+      List<Condition> pregCond,
+      LaunchDetails details,
+      SocialHistoryData shData,
+      Map<String, String> bodyvals) {
+    if (pregCond == null || pregCond.isEmpty()) return;
+    logger.info("Pregnancy Condition Found");
+    for (Condition c : pregCond) {
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+          CdaGeneratorConstants.PREGNANCY_CONDITION_DISPLAY);
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
+          CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
+                  c.getCode(), CdaGeneratorConstants.FHIR_SNOMED_URL, true)
+              .getValue0());
+      shData.tableRows.append(CdaGeneratorUtils.addTableRow(bodyvals, shData.index++));
+      shData.pregCondXml.append(generatePregnancyEntry(c, details));
+    }
+  }
 
-      String birthSexXml = "";
-      String pregObsXml = "";
-      StringBuilder pregCondXml = new StringBuilder();
-      StringBuilder occHistoryXml = new StringBuilder();
-      StringBuilder travelHistoryXml = new StringBuilder();
-      int index = 0;
-      Map<String, String> bodyvals = new LinkedHashMap<>();
+  private static void processPregnancyObservations(List<Observation> pregObs) {
+    if (pregObs == null || pregObs.isEmpty()) return;
+    logger.info("Pregnancy Status Observation Found - Will be added as needed.");
+  }
 
-      if (birthSex != null) {
-
-        logger.info("Found Birth Sex");
+  private static void processOccupationHistory(
+      List<Observation> occHistory,
+      LaunchDetails details,
+      SocialHistoryData shData,
+      Map<String, String> bodyvals) {
+    if (occHistory == null || occHistory.isEmpty()) return;
+    logger.info("Occupation History Observation Found");
+    for (Observation obs : occHistory) {
+      if (obs.getValue() != null
+          && (obs.getValue() instanceof StringType || obs.getValue() instanceof CodeableConcept)) {
         bodyvals.put(
             CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-            CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
-        bodyvals.put(
-            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
-            CdaFhirUtilities.getStringForType(birthSex));
-
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-        index++;
-
-        birthSexXml = generateBirthSexEntry(birthSex);
+            CdaGeneratorConstants.OCCUPATION_HISTORY_DISPLAY);
+        String display = formatOccupationDisplay(CdaFhirUtilities.getStringForType(obs.getValue()));
+        bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+        shData.tableRows.append(CdaGeneratorUtils.addTableRow(bodyvals, shData.index++));
+        shData.occHistoryXml.append(generateOccHistoryEntry(obs, details));
       }
-
-      if (pregCond != null && !pregCond.isEmpty()) {
-        logger.info("Pregnancy Condition Found");
-
-        for (Condition c : pregCond) {
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-              CdaGeneratorConstants.PREGNANCY_CONDITION_DISPLAY);
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
-              CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
-                      c.getCode(), CdaGeneratorConstants.FHIR_SNOMED_URL, true)
-                  .getValue0());
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-          index++;
-
-          pregCondXml.append(generatePregnancyEntry(c, details));
-        }
-      }
-
-      if (pregObs != null && !pregObs.isEmpty()) {
-
-        logger.info("Pregnancy Status Observation Found - Will be added as needed.");
-        // These are not available in FHIR right now reliably, so nothing to process
-        // until further
-        // discussion with vendors.
-
-        // Setup Table Text Entries
-
-        // Setup XML Entries
-      }
-
-      if (occHistory != null && !occHistory.isEmpty()) {
-        logger.info("Occupation History Observation Found");
-
-        for (Observation obs : occHistory) {
-
-          if (obs.getValue() != null
-              && (obs.getValue() instanceof StringType
-                  || obs.getValue() instanceof CodeableConcept)) {
-            bodyvals.put(
-                CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-                CdaGeneratorConstants.OCCUPATION_HISTORY_DISPLAY);
-
-            String display = CdaFhirUtilities.getStringForType(obs.getValue());
-
-            // Handle boolean type
-            if (display.contentEquals("true")) {
-              display = "Employed";
-            } else if (display.contentEquals("false")) {
-              display = "Unemployed";
-            }
-
-            bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-
-            sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-            index++;
-
-            occHistoryXml.append(generateOccHistoryEntry(obs, details));
-          }
-        }
-      }
-
-      if (travelHistory != null && !travelHistory.isEmpty()) {
-
-        logger.info("Travel History Observation Found ");
-
-        for (Observation obs : travelHistory) {
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-              CdaGeneratorConstants.TRAVEL_HISTORY_DISPLAY);
-
-          String display = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
-
-          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-          index++;
-
-          travelHistoryXml.append(generateTravelHistoryEntry(obs, display, details));
-        }
-      }
-
-      // Close the Table.
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
-
-      // Add entry
-      if (!StringUtils.isEmpty(birthSexXml)) {
-        sb.append(birthSexXml);
-      }
-
-      if (!StringUtils.isEmpty(pregCondXml)) {
-        sb.append(pregCondXml);
-      }
-
-      if (!StringUtils.isEmpty(pregObsXml)) {
-        sb.append(pregObsXml);
-      }
-
-      if (!StringUtils.isEmpty(occHistoryXml)) {
-        sb.append(occHistoryXml);
-      }
-
-      if (!StringUtils.isEmpty(travelHistoryXml)) {
-        sb.append(travelHistoryXml);
-      }
-
-      sb.append(generateSocialHistorySectionEndHeader());
-
-    } else {
-      sb.append(generateEmptySocialHistorySection(version));
     }
+  }
 
-    return sb.toString();
+  private static String formatOccupationDisplay(String display) {
+    if (display.contentEquals("true")) return "Employed";
+    if (display.contentEquals(FALSE)) return "Unemployed";
+    return display;
+  }
+
+  private static void processTravelHistory(
+      List<Observation> travelHistory,
+      LaunchDetails details,
+      SocialHistoryData shData,
+      Map<String, String> bodyvals) {
+    if (travelHistory == null || travelHistory.isEmpty()) return;
+    logger.info("Travel History Observation Found ");
+    for (Observation obs : travelHistory) {
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+          CdaGeneratorConstants.TRAVEL_HISTORY_DISPLAY);
+      String display = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
+      bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+      shData.tableRows.append(CdaGeneratorUtils.addTableRow(bodyvals, shData.index++));
+      shData.travelHistoryXml.append(generateTravelHistoryEntry(obs, display, details));
+    }
+  }
+
+  private static void appendSocialHistoryEntries(StringBuilder sb, SocialHistoryData shData) {
+    if (!StringUtils.isEmpty(shData.birthSexXml)) sb.append(shData.birthSexXml);
+    if (!StringUtils.isEmpty(shData.pregCondXml)) sb.append(shData.pregCondXml);
+    if (!StringUtils.isEmpty(shData.pregObsXml)) sb.append(shData.pregObsXml);
+    if (!StringUtils.isEmpty(shData.occHistoryXml)) sb.append(shData.occHistoryXml);
+    if (!StringUtils.isEmpty(shData.travelHistoryXml)) sb.append(shData.travelHistoryXml);
   }
 
   public static String generateTravelHistoryEntry(
@@ -654,12 +643,22 @@ public class CdaSocialHistoryGenerator {
     return sb.toString();
   }
 
+  private static class R31SocialHistoryData {
+    int index = 0;
+    String birthSexXml = "";
+    String genderIdentityXml = "";
+    String tribalAffiliationXml = "";
+    StringBuilder nationalityDataXml = new StringBuilder();
+    StringBuilder residencyDataXml = new StringBuilder();
+    StringBuilder travelHistoryXml = new StringBuilder();
+    StringBuilder homelessDataXml = new StringBuilder();
+    StringBuilder disabilityDataXml = new StringBuilder();
+    StringBuilder occEntries = new StringBuilder();
+  }
+
   public static Object generateR31SocialHistorySection(
       R4FhirData data, LaunchDetails details, String version) {
-
     logger.info("LaunchDetails in generateSocialHistorySection:{}", details);
-
-    StringBuilder sb = new StringBuilder(2000);
 
     CodeType birthSex =
         CdaFhirUtilities.getCodeExtension(
@@ -678,12 +677,60 @@ public class CdaSocialHistoryGenerator {
     List<Observation> travelHistory = data.getTravelObs();
     List<Observation> residencyData = data.getResidencyObs();
     List<Observation> nationalityData = data.getNationalityObs();
-    List<Observation> vaccineCredData = data.getVaccineCredObs();
     List<Observation> disabilityData = data.getDisabilityObs();
     List<Observation> homelessData = data.getHomelessObs();
     List<Observation> occObs = data.getOccupationObs();
 
-    if (birthSex != null
+    if (!hasR31SocialHistoryData(
+        birthSex,
+        genderIdentity,
+        tribalAffiliation,
+        nationalityData,
+        residencyData,
+        homelessData,
+        disabilityData,
+        travelHistory,
+        occObs)) {
+      return generateEmptySocialHistorySection(version);
+    }
+
+    StringBuilder sb = new StringBuilder(2000);
+    sb.append(generateSocialHistorySectionHeader("", version));
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
+    appendTableHeader(sb);
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+    R31SocialHistoryData data31 = new R31SocialHistoryData();
+    Map<String, String> bodyvals = new LinkedHashMap<>();
+
+    processR31BirthSex(birthSex, data31, bodyvals, sb);
+    processR31GenderIdentity(genderIdentity, data31, bodyvals, sb);
+    processR31TribalAffiliation(tribalAffiliation, data31, bodyvals, sb);
+    processR31TravelHistory(travelHistory, details, data31, bodyvals, sb);
+    processR31NationalityData(nationalityData, details, data31, bodyvals, sb);
+    processR31ResidencyData(residencyData, details, data31, bodyvals, sb);
+    processR31HomelessData(homelessData, details, data31, bodyvals, sb);
+    processR31DisabilityData(disabilityData, details, data31, bodyvals, sb);
+    processR31OccupationData(occObs, details, data31, sb);
+
+    appendTableClosing(sb);
+    appendR31SocialHistoryEntries(sb, data31);
+    sb.append(generateSocialHistorySectionEndHeader());
+
+    return sb.toString();
+  }
+
+  private static boolean hasR31SocialHistoryData(
+      CodeType birthSex,
+      CodeableConcept genderIdentity,
+      Extension tribalAffiliation,
+      List<Observation> nationalityData,
+      List<Observation> residencyData,
+      List<Observation> homelessData,
+      List<Observation> disabilityData,
+      List<Observation> travelHistory,
+      List<Observation> occObs) {
+    return birthSex != null
         || genderIdentity != null
         || tribalAffiliation != null
         || (nationalityData != null && !nationalityData.isEmpty())
@@ -691,281 +738,216 @@ public class CdaSocialHistoryGenerator {
         || (homelessData != null && !homelessData.isEmpty())
         || (disabilityData != null && !disabilityData.isEmpty())
         || (travelHistory != null && !travelHistory.isEmpty())
-        || (occObs != null && !occObs.isEmpty())) {
-
-      sb.append(generateSocialHistorySectionHeader("", version));
-
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
-
-      // Create Table Header.
-      List<String> list = new ArrayList<>();
-      list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_TITLE);
-      list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_TITLE);
-      sb.append(
-          CdaGeneratorUtils.getXmlForTableHeader(
-              list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
-
-      // Add Table Body
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-
-      String birthSexXml = "";
-      String genderIdentityXml = "";
-      String tribalAffiliationXml = "";
-      StringBuilder nationalityDataXml = new StringBuilder();
-      StringBuilder residencyDataXml = new StringBuilder();
-      StringBuilder travelHistoryXml = new StringBuilder();
-      StringBuilder homelessDataXml = new StringBuilder();
-      StringBuilder disabilityDataXml = new StringBuilder();
-      StringBuilder occEntries = new StringBuilder();
-
-      int index = 0;
-      Map<String, String> bodyvals = new LinkedHashMap<>();
-
-      if (birthSex != null) {
-
-        logger.info("Found Birth Sex");
-        bodyvals.put(
-            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-            CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
-        bodyvals.put(
-            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
-            CdaFhirUtilities.getStringForType(birthSex));
-
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-        index++;
-
-        birthSexXml = generateBirthSexEntry(birthSex);
-      }
-
-      if (genderIdentity != null) {
-        logger.info(" Found Gender Identity ");
-        bodyvals.put(
-            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-            CdaGeneratorConstants.GENDER_IDENTITY_DISPLAY);
-
-        String display = CdaFhirUtilities.getStringForType(genderIdentity);
-        bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-
-        String contentRef =
-            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
-        genderIdentityXml = generateGenderIdentityEntry(genderIdentity, display, contentRef);
-
-        index++;
-      }
-
-      if (tribalAffiliation != null) {
-
-        logger.info(" Found Tribal Affiliation ");
-        bodyvals.put(
-            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-            CdaGeneratorConstants.TRIBAL_AFFILIATION_DISPLAY);
-
-        String display = CdaFhirUtilities.getStringForType(tribalAffiliation);
-
-        bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-
-        String contentRef =
-            CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
-        tribalAffiliationXml =
-            generateTribalAffiliationEntry(tribalAffiliation, display, contentRef);
-        index++;
-      }
-
-      if (travelHistory != null && !travelHistory.isEmpty()) {
-
-        logger.info("Travel History Observation Found ");
-
-        for (Observation obs : travelHistory) {
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-              CdaGeneratorConstants.TRAVEL_HISTORY_DISPLAY);
-
-          String display = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
-
-          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-          travelHistoryXml.append(generateTravelHistoryEntry(obs, display, details));
-          index++;
-        }
-      }
-
-      if (nationalityData != null && !nationalityData.isEmpty()) {
-
-        logger.info("Nationality Data Observation Found ");
-
-        for (Observation obs : nationalityData) {
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-              CdaGeneratorConstants.NATIONALITY_DISPLAY);
-
-          String display = CdaFhirUtilities.getStringForType(obs.getValue());
-
-          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-
-          String contentRef =
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
-          nationalityDataXml.append(generateNationalityEntry(obs, display, details, contentRef));
-          index++;
-        }
-      }
-
-      if (residencyData != null && !residencyData.isEmpty()) {
-
-        logger.info("Residency Data Observation Found ");
-
-        for (Observation obs : residencyData) {
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-              CdaGeneratorConstants.RESIDENCY_DISPLAY);
-
-          String display = CdaFhirUtilities.getStringForType(obs.getValue());
-
-          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-
-          String contentRef =
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
-          residencyDataXml.append(generateResidencyEntry(obs, display, details, contentRef));
-          index++;
-        }
-      }
-
-      if (homelessData != null && !homelessData.isEmpty()) {
-
-        logger.info("Homeless Data Observation Found ");
-
-        for (Observation obs : homelessData) {
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-              CdaGeneratorConstants.HOMELESS_TABLE_DISPLAY);
-
-          String display = CdaFhirUtilities.getStringForType(obs.getValue());
-
-          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-
-          String contentRef =
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
-          homelessDataXml.append(generateHomelessEntry(obs, display, details, contentRef));
-          index++;
-        }
-      }
-
-      if (disabilityData != null && !disabilityData.isEmpty()) {
-
-        logger.info("Disability Data Observation Found ");
-
-        for (Observation obs : disabilityData) {
-
-          bodyvals.put(
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
-              CdaGeneratorConstants.DISABILITY_TABLE_DISPLAY);
-
-          String display = CdaFhirUtilities.getStringForType(obs.getCode());
-          String finalDisplay =
-              display + "|value=" + CdaFhirUtilities.getStringForType(obs.getValue());
-
-          bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, finalDisplay);
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
-
-          String contentRef =
-              CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(index);
-          homelessDataXml.append(generateDisabilityEntry(obs, display, details, contentRef));
-          index++;
-        }
-      }
-
-      for (Observation obs : occObs) {
-
-        if (isPastOrPresentOccupation(obs)) {
-
-          generatePastOrPresentEntry(obs, details, sb, occEntries, index);
-          index++;
-
-        } else if (isUsualOccupation(obs)) {
-          generateUsualOccupationEntry(obs, details, sb, occEntries, index);
-          index++;
-
-        } else if (isEmploymentStatusObservation(obs)) {
-          generateEmploymentStatusObservation(obs, details, sb, occEntries, index);
-          index++;
-        } else {
-          logger.info(
-              "Ignoring Observation {} since it is not what is expected for ODH",
-              obs.getIdElement().getIdPart());
-        }
-      }
-
-      // Close the Table.
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
-
-      // Add entry for birth sex
-      if (!StringUtils.isEmpty(birthSexXml)) {
-        sb.append(birthSexXml);
-      }
-
-      // Add entry for gender identity
-      if (!StringUtils.isEmpty(genderIdentityXml)) {
-        sb.append(genderIdentityXml);
-      }
-
-      // Add entry for tribal affiliation
-      if (!StringUtils.isEmpty(tribalAffiliationXml)) {
-        sb.append(tribalAffiliationXml);
-      }
-
-      // Add travel history
-      if (!StringUtils.isEmpty(travelHistoryXml)) {
-        sb.append(travelHistoryXml);
-      }
-
-      // Add nationality
-      if (!StringUtils.isEmpty(nationalityDataXml)) {
-        sb.append(nationalityDataXml);
-      }
-
-      // Add residency
-      if (!StringUtils.isEmpty(residencyDataXml)) {
-        sb.append(residencyDataXml);
-      }
-
-      // Add homeless data
-      if (!StringUtils.isEmpty(homelessDataXml)) {
-        sb.append(homelessDataXml);
-      }
-
-      // Add Disability data
-      if (!StringUtils.isEmpty(disabilityDataXml)) {
-        sb.append(disabilityDataXml);
-      }
-      if (!StringUtils.isEmpty(occEntries)) {
-        sb.append(occEntries);
-      }
-      sb.append(generateSocialHistorySectionEndHeader());
-
-    } else {
-      sb.append(generateEmptySocialHistorySection(version));
+        || (occObs != null && !occObs.isEmpty());
+  }
+
+  private static void processR31BirthSex(
+      CodeType birthSex,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (birthSex == null) return;
+    logger.info("Found Birth Sex");
+    bodyvals.put(
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+        CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
+    bodyvals.put(
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
+        CdaFhirUtilities.getStringForType(birthSex));
+    sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index++));
+    data31.birthSexXml = generateBirthSexEntry(birthSex);
+  }
+
+  private static void processR31GenderIdentity(
+      CodeableConcept genderIdentity,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (genderIdentity == null) return;
+    logger.info(" Found Gender Identity ");
+    bodyvals.put(
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+        CdaGeneratorConstants.GENDER_IDENTITY_DISPLAY);
+    String display = CdaFhirUtilities.getStringForType(genderIdentity);
+    bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+    sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
+    String contentRef =
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(data31.index);
+    data31.genderIdentityXml = generateGenderIdentityEntry(genderIdentity, contentRef);
+    data31.index++;
+  }
+
+  private static void processR31TribalAffiliation(
+      Extension tribalAffiliation,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (tribalAffiliation == null) return;
+    logger.info(" Found Tribal Affiliation ");
+    bodyvals.put(
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+        CdaGeneratorConstants.TRIBAL_AFFILIATION_DISPLAY);
+    String display = CdaFhirUtilities.getStringForType(tribalAffiliation);
+    bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+    sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
+    String contentRef =
+        CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT + Integer.toString(data31.index);
+    data31.tribalAffiliationXml = generateTribalAffiliationEntry(tribalAffiliation, contentRef);
+    data31.index++;
+  }
+
+  private static void processR31TravelHistory(
+      List<Observation> travelHistory,
+      LaunchDetails details,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (travelHistory == null || travelHistory.isEmpty()) return;
+    logger.info("Travel History Observation Found ");
+    for (Observation obs : travelHistory) {
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+          CdaGeneratorConstants.TRAVEL_HISTORY_DISPLAY);
+      String display = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
+      bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
+      data31.travelHistoryXml.append(generateTravelHistoryEntry(obs, display, details));
+      data31.index++;
     }
+  }
 
-    return sb.toString();
+  private static void processR31NationalityData(
+      List<Observation> nationalityData,
+      LaunchDetails details,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (nationalityData == null || nationalityData.isEmpty()) return;
+    logger.info("Nationality Data Observation Found ");
+    for (Observation obs : nationalityData) {
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+          CdaGeneratorConstants.NATIONALITY_DISPLAY);
+      String display = CdaFhirUtilities.getStringForType(obs.getValue());
+      bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
+      String contentRef =
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
+              + Integer.toString(data31.index);
+      data31.nationalityDataXml.append(generateNationalityEntry(obs, details, contentRef));
+      data31.index++;
+    }
+  }
+
+  private static void processR31ResidencyData(
+      List<Observation> residencyData,
+      LaunchDetails details,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (residencyData == null || residencyData.isEmpty()) return;
+    logger.info("Residency Data Observation Found ");
+    for (Observation obs : residencyData) {
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+          CdaGeneratorConstants.RESIDENCY_DISPLAY);
+      String display = CdaFhirUtilities.getStringForType(obs.getValue());
+      bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
+      String contentRef =
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
+              + Integer.toString(data31.index);
+      data31.residencyDataXml.append(generateResidencyEntry(obs, details, contentRef));
+      data31.index++;
+    }
+  }
+
+  private static void processR31HomelessData(
+      List<Observation> homelessData,
+      LaunchDetails details,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (homelessData == null || homelessData.isEmpty()) return;
+    logger.info("Homeless Data Observation Found ");
+    for (Observation obs : homelessData) {
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+          CdaGeneratorConstants.HOMELESS_TABLE_DISPLAY);
+      String display = CdaFhirUtilities.getStringForType(obs.getValue());
+      bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
+      String contentRef =
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
+              + Integer.toString(data31.index);
+      data31.homelessDataXml.append(generateHomelessEntry(obs, details, contentRef));
+      data31.index++;
+    }
+  }
+
+  private static void processR31DisabilityData(
+      List<Observation> disabilityData,
+      LaunchDetails details,
+      R31SocialHistoryData data31,
+      Map<String, String> bodyvals,
+      StringBuilder sb) {
+    if (disabilityData == null || disabilityData.isEmpty()) return;
+    logger.info("Disability Data Observation Found ");
+    for (Observation obs : disabilityData) {
+      bodyvals.put(
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
+          CdaGeneratorConstants.DISABILITY_TABLE_DISPLAY);
+      String display = CdaFhirUtilities.getStringForType(obs.getCode());
+      String finalDisplay = display + "|value=" + CdaFhirUtilities.getStringForType(obs.getValue());
+      bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, finalDisplay);
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, data31.index));
+      String contentRef =
+          CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT
+              + Integer.toString(data31.index);
+      data31.disabilityDataXml.append(generateDisabilityEntry(obs, details, contentRef));
+      data31.index++;
+    }
+  }
+
+  private static void processR31OccupationData(
+      List<Observation> occObs,
+      LaunchDetails details,
+      R31SocialHistoryData data31,
+      StringBuilder sb) {
+    if (occObs == null) return;
+    for (Observation obs : occObs) {
+      if (obs == null) {
+        continue;
+      }
+
+      if (isPastOrPresentOccupation(obs)) {
+        generatePastOrPresentEntry(obs, details, sb, data31.occEntries, data31.index++);
+      } else if (isUsualOccupation(obs)) {
+        generateUsualOccupationEntry(obs, details, sb, data31.occEntries, data31.index++);
+      } else if (isEmploymentStatusObservation(obs)) {
+        generateEmploymentStatusObservation(obs, details, sb, data31.occEntries, data31.index++);
+      } else {
+        logger.info(
+            "Ignoring Observation {} since it is not what is expected for ODH",
+            obs.getIdElement().getIdPart());
+      }
+    }
+  }
+
+  private static void appendR31SocialHistoryEntries(StringBuilder sb, R31SocialHistoryData data31) {
+    if (!StringUtils.isEmpty(data31.birthSexXml)) sb.append(data31.birthSexXml);
+    if (!StringUtils.isEmpty(data31.genderIdentityXml)) sb.append(data31.genderIdentityXml);
+    if (!StringUtils.isEmpty(data31.tribalAffiliationXml)) sb.append(data31.tribalAffiliationXml);
+    if (!StringUtils.isEmpty(data31.travelHistoryXml)) sb.append(data31.travelHistoryXml);
+    if (!StringUtils.isEmpty(data31.nationalityDataXml)) sb.append(data31.nationalityDataXml);
+    if (!StringUtils.isEmpty(data31.residencyDataXml)) sb.append(data31.residencyDataXml);
+    if (!StringUtils.isEmpty(data31.homelessDataXml)) sb.append(data31.homelessDataXml);
+    if (!StringUtils.isEmpty(data31.disabilityDataXml)) sb.append(data31.disabilityDataXml);
+    if (!StringUtils.isEmpty(data31.occEntries)) sb.append(data31.occEntries);
   }
 
   private static String generateDisabilityEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
     StringBuilder sb = new StringBuilder();
 
     // Generate the entry
@@ -1007,7 +989,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static String generateHomelessEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1057,7 +1039,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static Object generateResidencyEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
     StringBuilder sb = new StringBuilder();
 
     // Generate the entry
@@ -1108,7 +1090,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static Object generateNationalityEntry(
-      Observation obs, String display, LaunchDetails details, String contentRef) {
+      Observation obs, LaunchDetails details, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1160,7 +1142,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   public static String generateTribalAffiliationEntry(
-      Extension tribalAffiliation, String display, String contentRef) {
+      Extension tribalAffiliation, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1214,7 +1196,7 @@ public class CdaSocialHistoryGenerator {
       String isEntrolledString = ((BooleanType) tribalEnrolled.getValue()).getValueAsString();
       sb.append(CdaGeneratorUtils.getXmlForValueBoolean(isEntrolledString));
     } else {
-      sb.append(CdaGeneratorUtils.getXmlForValueBoolean("false"));
+      sb.append(CdaGeneratorUtils.getXmlForValueBoolean(FALSE));
     }
 
     // End Tag for Entry Relationship
@@ -1225,7 +1207,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   public static String generateGenderIdentityEntry(
-      CodeableConcept genderIdentity, String display, String contentRef) {
+      CodeableConcept genderIdentity, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1294,7 +1276,7 @@ public class CdaSocialHistoryGenerator {
         return CdaGeneratorUtils.getXmlForValueBoolean("true");
       }
       if (SNOMED_NO.equals(valueCode)) {
-        return CdaGeneratorUtils.getXmlForValueBoolean("false");
+        return CdaGeneratorUtils.getXmlForValueBoolean(FALSE);
       }
     }
 
@@ -1304,7 +1286,7 @@ public class CdaSocialHistoryGenerator {
         return CdaGeneratorUtils.getXmlForValueBoolean("true");
       }
       if ("no".equalsIgnoreCase(valueText)) {
-        return CdaGeneratorUtils.getXmlForValueBoolean("false");
+        return CdaGeneratorUtils.getXmlForValueBoolean(FALSE);
       }
     }
 
@@ -1317,6 +1299,11 @@ public class CdaSocialHistoryGenerator {
       StringBuilder table,
       StringBuilder occEntries,
       int rowNum) {
+    if (obs == null) {
+      logger.error("Observation is null, cannot generate Employment Status Observation");
+      return;
+    }
+
     StringBuilder sb = new StringBuilder();
     String display = CdaGeneratorConstants.UNKNOWN_VALUE;
     Map<String, String> bodyvals = new LinkedHashMap<>();
@@ -1444,7 +1431,7 @@ public class CdaSocialHistoryGenerator {
     }
 
     // Add Usual Industry
-    sb.append(addUsualIndustryObservation(obs, details));
+    sb.append(addUsualIndustryObservation(obs));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -1454,7 +1441,7 @@ public class CdaSocialHistoryGenerator {
     occEntries.append(sb.toString());
   }
 
-  private static String addUsualIndustryObservation(Observation obs, LaunchDetails details) {
+  private static String addUsualIndustryObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1614,8 +1601,8 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
 
-    sb.append(addPastOrPresentIndustryObservation(obs, details));
-    sb.append(addOccupationHazardObservation(obs, details));
+    sb.append(addPastOrPresentIndustryObservation(obs));
+    sb.append(addOccupationHazardObservation(obs));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -1625,7 +1612,7 @@ public class CdaSocialHistoryGenerator {
     occEntries.append(sb.toString());
   }
 
-  private static String addOccupationHazardObservation(Observation obs, LaunchDetails details) {
+  private static String addOccupationHazardObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1702,7 +1689,7 @@ public class CdaSocialHistoryGenerator {
     return false;
   }
 
-  public static String addPastOrPresentIndustryObservation(Observation obs, LaunchDetails details) {
+  public static String addPastOrPresentIndustryObservation(Observation obs) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -1787,7 +1774,7 @@ public class CdaSocialHistoryGenerator {
   private static Boolean isCurrentJob(Observation obs) {
 
     return CdaFhirUtilities.getBooleanExtensionValue(
-        obs.getExtension(), CdaGeneratorConstants.OdhCurrentJobExtension);
+        obs.getExtension(), CdaGeneratorConstants.ODH_CURRENT_JOB_EXTENSION);
   }
 
   private static Boolean isEmploymentStatusObservation(Observation obs) {

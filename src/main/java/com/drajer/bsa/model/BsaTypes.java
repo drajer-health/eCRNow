@@ -26,7 +26,7 @@ public final class BsaTypes {
     RELAUNCHED,
     REPROCESSED,
     FAILED,
-    Unknown
+    UNKNOWN
   }
 
   public enum ActionType {
@@ -136,7 +136,7 @@ public final class BsaTypes {
     else if (s.contentEquals("RELAUNCHED")) return NotificationProcessingStatusType.RELAUNCHED;
     else if (s.contentEquals("REPROCESSED")) return NotificationProcessingStatusType.REPROCESSED;
     else if (s.contentEquals("FAILED")) return NotificationProcessingStatusType.FAILED;
-    else return NotificationProcessingStatusType.Unknown;
+    else return NotificationProcessingStatusType.UNKNOWN;
   }
 
   public static String getMessageTypeString(MessageType t) {
@@ -226,7 +226,7 @@ public final class BsaTypes {
     else if (t == OutputContentType.CDA_R11) return "CDA_R11";
     else if (t == OutputContentType.CDA_R30) return "CDA_R30";
     else if (t == OutputContentType.CDA_R31) return "CDA_R31";
-    else if (t == OutputContentType.BOTH || t == OutputContentType.BOTH) return "Both";
+    else if (t == OutputContentType.BOTH) return "Both";
     else return UNKNOWN;
   }
 

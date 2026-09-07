@@ -29,13 +29,27 @@ import org.springframework.stereotype.Component;
 public class ScheduledTaskUtil {
 
   private static final Logger logger = LoggerFactory.getLogger(ScheduledTaskUtil.class);
+  private static final String TASK_DATA_KEY = "task_data";
+  private static final String EXPIRATION_TIME_KEY = "expirationTime";
+  private static final String KAR_EXECUTION_STATE_ID_KEY = "karExecutionStateId";
+  private static final String ACTION_ID_KEY = "actionId";
+  private static final String ACTION_TYPE_KEY = "actionType";
+  private static final String JOB_ID_KEY = "jobId";
+  private static final String MDC_CONTEXT_KEY = "mdcContext";
+  private static final String REQUEST_ID_KEY = "requestId";
+  private static final String JOB_TYPE_KEY = "jobType";
 
-  @Autowired private SchedulerDao schedulerDao;
-
-  @Value("${scheduled.task.file.path}")
-  private String scheduledTaskFilePath;
-
+  private final SchedulerDao schedulerDao;
+  private final String scheduledTaskFilePath;
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Autowired
+  public ScheduledTaskUtil(
+      SchedulerDao schedulerDao,
+      @Value("${scheduled.task.file.path}") String scheduledTaskFilePath) {
+    this.schedulerDao = schedulerDao;
+    this.scheduledTaskFilePath = scheduledTaskFilePath;
+  }
 
   /**
    * Updates scheduled tasks and stores them in JSON format.
@@ -52,7 +66,7 @@ public class ScheduledTaskUtil {
       ScheduledJobData scheduledJobData = deserialize(task.getTask_data());
 
       Map<String, Object> taskInfoMap = convertScheduledTaskToMap(task);
-      taskInfoMap.put("task_data", convertObjectToMap(scheduledJobData));
+      taskInfoMap.put(TASK_DATA_KEY, convertObjectToMap(scheduledJobData));
       taskJobDataMapList.add(taskInfoMap);
     }
 
@@ -78,12 +92,12 @@ public class ScheduledTaskUtil {
             scheduledTaskFilePath, new TypeReference<List<Map<String, Object>>>() {});
 
     for (Map<String, Object> scheduledTaskMap : scheduledTasksList) {
-      Object taskData = scheduledTaskMap.get("task_data");
+      Object taskData = scheduledTaskMap.get(TASK_DATA_KEY);
 
       if (taskData instanceof Map) {
         ScheduledJobData scheduledJobData =
             convertMapToScheduledJobData((Map<String, Object>) taskData);
-        scheduledTaskMap.put("task_data", serialize(scheduledJobData));
+        scheduledTaskMap.put(TASK_DATA_KEY, serialize(scheduledJobData));
       }
 
       ScheduledTasks scheduledTask =
@@ -183,28 +197,29 @@ public class ScheduledTaskUtil {
    * @return the converted ScheduledJobData object
    */
   public static ScheduledJobData convertMapToScheduledJobData(Map<String, Object> map) {
-    UUID karExecutionStateId = UUID.fromString((String) map.get("karExecutionStateId"));
-    String actionId = (String) map.get("actionId");
-    String actionType = (String) map.get("actionType");
-    String jobId = (String) map.get("jobId");
+    UUID karExecutionStateId = UUID.fromString((String) map.get(KAR_EXECUTION_STATE_ID_KEY));
+    String actionId = (String) map.get(ACTION_ID_KEY);
+    String actionType = (String) map.get(ACTION_TYPE_KEY);
+    String jobId = (String) map.get(JOB_ID_KEY);
     Instant expirationTime =
-        map.containsKey("expirationTime") && map.get("expirationTime") != null
-            ? Instant.parse((String) map.get("expirationTime"))
+        map.containsKey(EXPIRATION_TIME_KEY) && map.get(EXPIRATION_TIME_KEY) != null
+            ? Instant.parse((String) map.get(EXPIRATION_TIME_KEY))
             : null;
     @SuppressWarnings("unchecked")
-    Map<String, String> mdcContext = (Map<String, String>) map.get("mdcContext");
-    String xRequestId = mdcContext != null ? mdcContext.get("requestId") : null;
+    Map<String, String> mdcContext = (Map<String, String>) map.get(MDC_CONTEXT_KEY);
+    String xRequestId = mdcContext != null ? mdcContext.get(REQUEST_ID_KEY) : null;
 
-    BsaTypes.BsaJobType jobType = BsaTypes.BsaJobType.valueOf((String) map.get("jobType"));
+    BsaTypes.BsaJobType jobType = BsaTypes.BsaJobType.valueOf((String) map.get(JOB_TYPE_KEY));
 
-    return new ScheduledJobData(
-        karExecutionStateId,
-        actionId,
-        BsaTypes.ActionType.valueOf(actionType),
-        expirationTime,
-        jobId,
-        xRequestId,
-        jobType,
-        mdcContext);
+    return new ScheduledJobData.Builder()
+        .karExecutionStateId(karExecutionStateId)
+        .actionId(actionId)
+        .actionType(BsaTypes.ActionType.valueOf(actionType))
+        .expirationTime(expirationTime)
+        .jobId(jobId)
+        .xRequestId(xRequestId)
+        .jobType(jobType)
+        .mdcContext(mdcContext)
+        .build();
   }
 }

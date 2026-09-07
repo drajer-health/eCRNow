@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -27,7 +26,7 @@ import org.springframework.web.client.RestTemplate;
 @PrepareForTest({RestTemplate.class})
 public class AuthorizationTest {
 
-  @InjectMocks private Authorization authorization;
+  private Authorization authorization;
 
   @Mock private ClientDetailsService clientDetailsService;
 
@@ -35,6 +34,7 @@ public class AuthorizationTest {
 
   @Before
   public void setUp() throws Exception {
+    authorization = new Authorization(clientDetailsService);
     PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
   }
 

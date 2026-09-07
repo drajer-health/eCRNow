@@ -21,9 +21,19 @@ public class AESEncryption {
 
   private static final Logger logger = LoggerFactory.getLogger(AESEncryption.class);
 
-  @Autowired private Environment environment;
+  private final Environment environment;
 
   private static String secretKey;
+
+  /**
+   * Instantiates a new AES encryption service.
+   *
+   * @param environment the Spring environment for property access
+   */
+  @Autowired
+  public AESEncryption(Environment environment) {
+    this.environment = environment;
+  }
 
   private static final String ENCRYPT_ALGO = "AES/GCM/NoPadding";
 

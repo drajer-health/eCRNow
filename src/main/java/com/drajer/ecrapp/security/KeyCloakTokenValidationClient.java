@@ -17,25 +17,58 @@ public class KeyCloakTokenValidationClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KeyCloakTokenValidationClient.class);
 
+  // Media Type & Header Constants
   private static final String APPLICATION_URL_FORM_ENCODED = "application/x-www-form-urlencoded";
+  private static final String CONTENT_TYPE_HEADER = "Content-Type";
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String BEARER_PREFIX = "Bearer ";
+
+  // Configuration Property Keys
   private static final String KEYCLOAK_AUTH_SERVER = "keycloak.auth.server";
   private static final String KEYCLOAK_REALM = "keycloak.realm";
   private static final String KEYCLOAK_CLIENT_ID = "keycloak.client.id";
   private static final String KEYCLOAK_CLIENT_SECRET = "keycloak.client.secret";
+
+  // Request/Response Field Keys
+  private static final String REFRESH_TOKEN = "refresh_token";
+  private static final String GRANT_TYPE = "grant_type";
+  private static final String CLIENT_ID = "client_id";
+  private static final String CLIENT_SECRET = "client_secret";
+  private static final String IS_SUCCESS = "isSuccess";
+
+  // Log Messages
+  private static final String ENTRY_VALIDATE_TOKEN =
+      "Entry - validateToken Method in KeyCloakTokenValidationClient";
+  private static final String EXIT_VALIDATE_TOKEN =
+      "Exit - validateToken Method in KeyCloakTokenValidationClient";
+  private static final String EXCEPTION_VALIDATE_TOKEN =
+      "Exception - validateToken Method in KeyCloakTokenValidationClient";
+  private static final String FAILED_TO_AUTHENTICATE = "Failed to authenticate: {}";
+  private static final String ENTRY_GENERATING_TOKEN =
+      "Entry - Generating Token Method in KeyCloakTokenValidationClient";
   private String authUrl;
   private String realm;
   private String clientId;
   private String clientSecret;
 
-  @Autowired OkHttpClient client;
-
-  @Autowired private Environment environment;
+  private final OkHttpClient client;
+  private final Environment environment;
   private boolean credentialsFetched = false;
 
+  /**
+   * Instantiates a new Keycloak token validation client.
+   *
+   * @param client the OkHttp client for making HTTP requests
+   * @param environment the Spring environment for property access
+   */
+  @Autowired
+  public KeyCloakTokenValidationClient(OkHttpClient client, Environment environment) {
+    this.client = client;
+    this.environment = environment;
+  }
+
   public boolean validateToken(HttpServletRequest request) {
-    LOGGER.info("Entry - validateToken Method in KeyCloakTokenValidationClient");
+    LOGGER.info(ENTRY_VALIDATE_TOKEN);
 
     String token = getTokenFromRequest(request);
     if (token == null) {
@@ -59,13 +92,13 @@ public class KeyCloakTokenValidationClient {
         new Request.Builder()
             .url(url)
             .method("POST", body)
-            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .addHeader(CONTENT_TYPE_HEADER, APPLICATION_URL_FORM_ENCODED)
             .build();
 
     try (Response response = client.newCall(requestOne).execute()) {
 
       if (!response.isSuccessful()) {
-        LOGGER.error("Failed to authenticate: {}", response.message());
+        LOGGER.error(FAILED_TO_AUTHENTICATE, response.message());
         return false;
       }
 
@@ -75,15 +108,15 @@ public class KeyCloakTokenValidationClient {
       LOGGER.info("Access Token Validation Status: {}", validationResponse);
       return validationResponse;
     } catch (IOException e) {
-      LOGGER.error("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
+      LOGGER.error(EXCEPTION_VALIDATE_TOKEN, e);
       return false;
     } finally {
-      LOGGER.info("Exit - validateToken Method in KeyCloakTokenValidationClient");
+      LOGGER.info(EXIT_VALIDATE_TOKEN);
     }
   }
 
   public Object generateToken(Map<String, Object> authenticationTokenDetails) throws IOException {
-    LOGGER.info("Entry - validateToken Method in KeyCloakTokenValidationClient");
+    LOGGER.info(ENTRY_VALIDATE_TOKEN);
 
     fetchAndValidateKeyCredentials();
 
@@ -108,7 +141,7 @@ public class KeyCloakTokenValidationClient {
         new Request.Builder()
             .url(url)
             .method("POST", body)
-            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .addHeader(CONTENT_TYPE_HEADER, APPLICATION_URL_FORM_ENCODED)
             .build();
 
     try (Response response = client.newCall(requestOne).execute()) {
@@ -117,28 +150,28 @@ public class KeyCloakTokenValidationClient {
       JSONObject keyCloakResponse = new JSONObject(responseBody);
 
       if (!response.isSuccessful()) {
-        LOGGER.error("Failed to authenticate: {}", response.message());
-        keyCloakResponse.put("isSuccess", false);
+        LOGGER.error(FAILED_TO_AUTHENTICATE, response.message());
+        keyCloakResponse.put(IS_SUCCESS, false);
         return keyCloakResponse;
       }
-      keyCloakResponse.put("isSuccess", true);
+      keyCloakResponse.put(IS_SUCCESS, true);
       return keyCloakResponse;
 
     } catch (IOException e) {
-      LOGGER.error("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
-      throw new IOException("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
+      LOGGER.error(EXCEPTION_VALIDATE_TOKEN, e);
+      throw new IOException(EXCEPTION_VALIDATE_TOKEN, e);
     } catch (Exception e) {
 
       throw new KeycloakCredentialsException(
           "Exception - generate Method in KeyCloakTokenValidationClient" + e.getMessage());
     } finally {
-      LOGGER.info("Exit - validateToken Method in KeyCloakTokenValidationClient");
+      LOGGER.info(EXIT_VALIDATE_TOKEN);
     }
   }
 
   public Object generateUserAuthToken(Map<String, Object> authenticationTokenDetails)
       throws IOException {
-    LOGGER.info("Entry - Generating Token Method in KeyCloakTokenValidationClient");
+    LOGGER.info(ENTRY_GENERATING_TOKEN);
 
     fetchAndValidateKeyCredentials();
 
@@ -148,16 +181,16 @@ public class KeyCloakTokenValidationClient {
 
     StringBuilder authRequestBody = new StringBuilder();
 
-    String refreshToken = (String) authenticationTokenDetails.get("refresh_token");
+    String refreshToken = (String) authenticationTokenDetails.get(REFRESH_TOKEN);
 
-    authenticationTokenDetails.put("client_id", clientId);
-    authenticationTokenDetails.put("client_secret", clientSecret);
+    authenticationTokenDetails.put(CLIENT_ID, clientId);
+    authenticationTokenDetails.put(CLIENT_SECRET, clientSecret);
     if (refreshToken == null) {
-      authenticationTokenDetails.put("grant_type", "password");
+      authenticationTokenDetails.put(GRANT_TYPE, "password");
 
     } else {
-      authenticationTokenDetails.put("grant_type", "refresh_token");
-      authenticationTokenDetails.put("refresh_token", refreshToken);
+      authenticationTokenDetails.put(GRANT_TYPE, REFRESH_TOKEN);
+      authenticationTokenDetails.put(REFRESH_TOKEN, refreshToken);
     }
     for (Map.Entry<String, Object> authEntry : authenticationTokenDetails.entrySet()) {
       authRequestBody
@@ -176,7 +209,7 @@ public class KeyCloakTokenValidationClient {
         new Request.Builder()
             .url(url)
             .method("POST", body)
-            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .addHeader(CONTENT_TYPE_HEADER, APPLICATION_URL_FORM_ENCODED)
             .build();
 
     try (Response response = client.newCall(requestOne).execute()) {
@@ -185,22 +218,22 @@ public class KeyCloakTokenValidationClient {
       JSONObject keyCloakResponse = new JSONObject(responseBody);
 
       if (!response.isSuccessful()) {
-        LOGGER.error("Failed to authenticate: {}", response.message());
-        keyCloakResponse.put("isSuccess", false);
+        LOGGER.error(FAILED_TO_AUTHENTICATE, response.message());
+        keyCloakResponse.put(IS_SUCCESS, false);
         return keyCloakResponse;
       }
-      keyCloakResponse.put("isSuccess", true);
+      keyCloakResponse.put(IS_SUCCESS, true);
       return keyCloakResponse;
 
     } catch (IOException e) {
-      LOGGER.error("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
-      throw new IOException("Exception - validateToken Method in KeyCloakTokenValidationClient", e);
+      LOGGER.error(EXCEPTION_VALIDATE_TOKEN, e);
+      throw new IOException(EXCEPTION_VALIDATE_TOKEN, e);
     } catch (Exception e) {
 
       throw new KeycloakCredentialsException(
           "Exception - generate Method in KeyCloakTokenValidationClient" + e.getMessage());
     } finally {
-      LOGGER.info("Exit - validateToken Method in KeyCloakTokenValidationClient");
+      LOGGER.info(EXIT_VALIDATE_TOKEN);
     }
   }
 
@@ -215,12 +248,6 @@ public class KeyCloakTokenValidationClient {
   private String getProperty(String propertyKey) {
     // Retrieve the property from Environment, falling back to default values if needed
     return environment.getProperty(propertyKey, "");
-  }
-
-  private RequestBody buildRequestBody(String token, String clientId, String clientSecret) {
-    String formBody =
-        String.format("token=%s&client_id=%s&client_secret=%s", token, clientId, clientSecret);
-    return RequestBody.create(MediaType.parse(APPLICATION_URL_FORM_ENCODED), formBody);
   }
 
   public void fetchAndValidateKeyCredentials() {

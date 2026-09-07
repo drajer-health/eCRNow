@@ -59,7 +59,7 @@ public class ITRetryLogic extends BaseIntegrationTest {
     session.flush();
     tx.commit();
 
-    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    stubHelper = new WireMockHelper(wireMockServer, WIRE_MOCK_HTTP_PORT);
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);

@@ -44,20 +44,24 @@ public abstract class ReportCreator {
       Set<String> entries = prop.stringPropertyNames();
 
       for (String propName : entries) {
-        ReportCreator creator;
-        try {
-          creator = (ReportCreator) (Class.forName(prop.getProperty(propName))).newInstance();
-          reportingClasses.put(propName, creator);
-        } catch (InstantiationException e) {
-          logger2.error(" Instantiation Exception in creating reporting class {}", propName, e);
-        } catch (IllegalAccessException e) {
-          logger2.error(" IllegalAccess Exception in creating reporting class {}", propName, e);
-        } catch (ClassNotFoundException e) {
-          logger2.error(" ClassNotFound Exception in creating reporting class {}", propName, e);
-        }
+        initializeReportingClass(propName, prop);
       }
     } catch (IOException ex) {
       logger2.error("Error while loading Action Classes from Properties File ");
+    }
+  }
+
+  private static void initializeReportingClass(String propName, Properties prop) {
+    ReportCreator creator;
+    try {
+      creator = (ReportCreator) (Class.forName(prop.getProperty(propName))).newInstance();
+      reportingClasses.put(propName, creator);
+    } catch (InstantiationException e) {
+      logger2.error(" Instantiation Exception in creating reporting class {}", propName, e);
+    } catch (IllegalAccessException e) {
+      logger2.error(" IllegalAccess Exception in creating reporting class {}", propName, e);
+    } catch (ClassNotFoundException e) {
+      logger2.error(" ClassNotFound Exception in creating reporting class {}", propName, e);
     }
   }
 

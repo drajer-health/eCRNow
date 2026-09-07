@@ -136,11 +136,12 @@ public class CdaValidatorUtil {
             if (fa.getFlag() != null && (fa.getFlag().contentEquals("error"))) {
               foundFailures = true;
               logger.error(
-                  "Failed Assertion: \n"
-                      + "Id = {}\n"
-                      + "Location = {}\n"
-                      + "Text = {}\n"
-                      + "Flag = {}",
+                  """
+                  Failed Assertion:\s
+                  Id = {}
+                  Location = {}
+                  Text = {}
+                  Flag = {}""",
                   fa.getId(),
                   fa.getLocation(),
                   fa.getText(),
@@ -149,11 +150,12 @@ public class CdaValidatorUtil {
 
               // It is a warning, so need to print to log for analysis
               logger.debug(
-                  "Failed Assertion: \n"
-                      + "Id = {}\n"
-                      + "Location = {}\n"
-                      + "Text = {}\n"
-                      + "Flag = {}",
+                  """
+                  Failed Assertion:\s
+                  Id = {}
+                  Location = {}
+                  Text = {}
+                  Flag = {}""",
                   fa.getId(),
                   fa.getLocation(),
                   fa.getText(),

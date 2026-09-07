@@ -35,15 +35,16 @@ public class ScheduledJobDataTest {
     jobType = BsaTypes.BsaJobType.IMMEDIATE_REPORTING;
 
     scheduledJobData =
-        new ScheduledJobData(
-            karExecutionStateId,
-            actionId,
-            actionType,
-            expirationTime,
-            jobId,
-            xRequestId,
-            jobType,
-            mdcContext);
+        new ScheduledJobData.Builder()
+            .karExecutionStateId(karExecutionStateId)
+            .actionId(actionId)
+            .actionType(actionType)
+            .expirationTime(expirationTime)
+            .jobId(jobId)
+            .xRequestId(xRequestId)
+            .jobType(jobType)
+            .mdcContext(mdcContext)
+            .build();
   }
 
   @Test

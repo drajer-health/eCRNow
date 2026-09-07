@@ -3,6 +3,11 @@ package com.drajer.ecrapp.util;
 import org.slf4j.MDC;
 
 public class MDCUtils {
+
+  private MDCUtils() {
+    // Utility class - private constructor to hide the implicit public one
+  }
+
   private static final String MDC_KEY_CORRELATION_ID = "correlationId";
   private static final String MDC_KEY_EICR_DOC_ID = "eicrDocId";
   private static final String MDC_KEY_REQUEST_ID = "requestId";

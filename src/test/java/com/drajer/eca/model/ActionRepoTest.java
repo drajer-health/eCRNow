@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.ecrapp.config.AppConfig;
+import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
@@ -21,6 +22,7 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.client.RestTemplate;
 
 public class ActionRepoTest {
 
@@ -43,6 +45,8 @@ public class ActionRepoTest {
     repo.setupTriggerBasedActions();
     repo.setActions(new HashMap<>());
     repo.setupTriggerBasedActions();
+    assertNotNull("Actions should not be null", repo.getActions());
+    assertTrue("Actions should be empty", repo.getActions().isEmpty());
   }
 
   @Test
@@ -69,12 +73,15 @@ public class ActionRepoTest {
   @Test
   public void testPrintRunsWithoutError() {
     repo.print();
+    assertNotNull("Repo should not be null after print", repo);
   }
 
   @Test
   public void testDirectAndRestTransport() {
     DirectEicrSender direct = new DirectEicrSender();
-    RestApiSender rest = new RestApiSender();
+    AuthorizationService authService = mock(AuthorizationService.class);
+    RestTemplate restTemplate = mock(RestTemplate.class);
+    RestApiSender rest = new RestApiSender(authService, restTemplate);
     repo.setDirectTransport(direct);
     repo.setRestTransport(rest);
     assertSame(direct, repo.getDirectTransport());
@@ -117,7 +124,7 @@ public class ActionRepoTest {
 
   @Test
   public void testWorkflowService() {
-    WorkflowService workflowService = new WorkflowService();
+    WorkflowService workflowService = mock(WorkflowService.class);
     repo.setWorkflowService(workflowService);
     assertEquals(workflowService, repo.getWorkflowService());
   }
@@ -206,16 +213,22 @@ public class ActionRepoTest {
         new AbstractAction() {
           @Override
           public void execute(
-              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {}
+              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {
+            // Test stub: execute() not needed for timing schedule trigger validation
+          }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for timing schedule trigger validation
+          }
         };
 
     TimingSchedule ts =
         new TimingSchedule() {
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for getTriggerType() validation
+          }
 
           @Override
           public TriggerType getTriggerType() {
@@ -244,10 +257,16 @@ public class ActionRepoTest {
         new AbstractAction() {
           @Override
           public void execute(
-              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {}
+              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {
+            // Test stub: execute() not needed for print() validation
+
+          }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for action repo printing validation
+
+          }
         };
     Set<AbstractAction> actionSet = new HashSet<>();
     actionSet.add(action);

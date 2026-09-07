@@ -24,7 +24,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class KarExecutionStateServiceImpl implements KarExecutionStateService {
 
-  @Autowired KarExecutionStateDao karExecutionStateDao;
+  private final KarExecutionStateDao karExecutionStateDao;
+
+  /**
+   * Instantiates a new KAR execution state service implementation.
+   *
+   * @param karExecutionStateDao the KAR execution state DAO
+   */
+  @Autowired
+  public KarExecutionStateServiceImpl(KarExecutionStateDao karExecutionStateDao) {
+    this.karExecutionStateDao = karExecutionStateDao;
+  }
 
   /**
    * Method to create or update a KarExecutionState.

@@ -1,9 +1,12 @@
 package com.drajer.cdafromr4;
 
+import static org.junit.Assert.*;
+
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -68,5 +71,114 @@ public class CdaImmunizationGeneratorTest extends BaseGeneratorTest {
         CdaImmunizationGenerator.generateImmunizationSection(
             immunizationResourceData, launchDetails, "CDA_R11");
     assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGetManufacturerXml_NoManufacturerReference() {
+    Immunization imm = new Immunization();
+    imm.setId("Immunization/1");
+
+    R4FhirData data = new R4FhirData();
+
+    String result = CdaImmunizationGenerator.getManufacturerXml(imm, data);
+
+    assertNotNull("Should return empty string when no manufacturer reference", result);
+    assertEquals("Should be empty", "", result);
+  }
+
+  @Test
+  public void testGetManufacturerXml_ManufacturerNotFound() {
+    Immunization imm = new Immunization();
+    imm.setId("Immunization/2");
+    Reference mfgRef = new Reference("Organization/mfg-1");
+    imm.setManufacturer(mfgRef);
+
+    R4FhirData data = new R4FhirData();
+
+    String result = CdaImmunizationGenerator.getManufacturerXml(imm, data);
+
+    assertNotNull("Should handle manufacturer not found", result);
+    assertEquals("Should be empty when manufacturer not in data", "", result);
+  }
+
+  @Test
+  public void testGetManufacturerXml_ManufacturerNoName() {
+    Immunization imm = new Immunization();
+    imm.setId("Immunization/3");
+    Reference mfgRef = new Reference("Organization/mfg-2");
+    imm.setManufacturer(mfgRef);
+
+    Organization org = new Organization();
+    org.setId("mfg-2");
+
+    R4FhirData data = new R4FhirData();
+    java.util.List<Organization> orgs = new java.util.ArrayList<>();
+    orgs.add(org);
+    data.addOrganization(orgs);
+
+    String result = CdaImmunizationGenerator.getManufacturerXml(imm, data);
+
+    assertNotNull("Should handle organization without name", result);
+    assertEquals("Should be empty when manufacturer has no name", "", result);
+  }
+
+  @Test
+  public void testGetManufacturerXml_WithManufacturerAndName() {
+    Immunization imm = new Immunization();
+    imm.setId("Immunization/4");
+    Reference mfgRef = new Reference("Organization/mfg-3");
+    imm.setManufacturer(mfgRef);
+
+    Organization org = new Organization();
+    org.setId("mfg-3");
+    org.setName("Vaccine Manufacturer Inc");
+
+    R4FhirData data = new R4FhirData();
+    java.util.List<Organization> orgs = new java.util.ArrayList<>();
+    orgs.add(org);
+    data.addOrganization(orgs);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    String result = CdaImmunizationGenerator.getManufacturerXml(imm, data);
+
+    assertNotNull("Should generate manufacturer XML", result);
+    assertTrue("Should contain manufacturer organization", result.length() > 0);
+  }
+
+  @Test
+  public void testAddImmunizationStatus_NotCompleted() {
+    Immunization imm = new Immunization();
+    imm.setId("Immunization/status-2");
+    imm.setStatus(ImmunizationStatus.ENTEREDINERROR);
+
+    StringBuilder sb = new StringBuilder();
+    R4FhirData data = new R4FhirData();
+    java.util.List<Immunization> imms = new java.util.ArrayList<>();
+    imms.add(imm);
+    data.setImmunizations(imms);
+
+    String result =
+        CdaImmunizationGenerator.generateImmunizationSection(data, launchDetails, "CDA_R31");
+    assertNotNull("Should generate section with non-completed status", result);
+  }
+
+  @Test
+  public void testAddRouteAndDoseInformation_WithRoute() {
+    Immunization imm = new Immunization();
+    imm.setId("Immunization/route-1");
+    CodeableConcept route = new CodeableConcept();
+    route.addCoding(new Coding().setSystem("http://snomed.info/sct").setCode("34206005"));
+    imm.setRoute(route);
+
+    R4FhirData data = new R4FhirData();
+    java.util.List<Immunization> imms = new java.util.ArrayList<>();
+    imms.add(imm);
+    data.setImmunizations(imms);
+
+    String result =
+        CdaImmunizationGenerator.generateImmunizationSection(data, launchDetails, "CDA_R31");
+    assertNotNull("Should handle immunization with route", result);
   }
 }

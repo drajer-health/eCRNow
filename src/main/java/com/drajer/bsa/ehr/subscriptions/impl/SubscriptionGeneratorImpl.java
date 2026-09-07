@@ -7,7 +7,6 @@ import com.drajer.bsa.model.KarProcessingData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -92,11 +91,11 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
         bundle.getEntry().stream()
             .filter(entry -> entry.getResource().getResourceType() == ResourceType.PlanDefinition)
             .map(entry -> (PlanDefinition) entry.getResource())
-            .collect(Collectors.toList());
+            .toList();
     return planDefinitions.stream()
         .map(this::subscriptionsFromPlanDef)
         .flatMap(List::stream)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**

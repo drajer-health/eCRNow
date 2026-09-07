@@ -3,7 +3,6 @@ package com.drajer.bsa.auth.impl;
 import com.drajer.bsa.auth.AuthorizationService;
 import com.drajer.bsa.model.FhirServerDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -56,6 +55,9 @@ import org.springframework.web.client.RestTemplate;
 public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
+  private static final String RS256 = "RS256";
+  private static final String RS384 = "RS384";
+  private static final String ES384 = "ES384";
   private static final String OAUTH_URIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
   private static final String WELL_KNOWN = ".well-known/smart-configuration";
@@ -76,8 +78,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       throws KeyStoreException, JsonProcessingException {
     RestTemplate resTemplate = new RestTemplate();
     String tokenEndpoint;
-
-    ObjectMapper mapper = new ObjectMapper();
 
     tokenEndpoint = fsd.getTokenUrl();
     if (tokenEndpoint == null || tokenEndpoint.isEmpty()) {
@@ -111,7 +111,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
     ResponseEntity<String> response =
         resTemplate.postForEntity(tokenEndpoint, request, String.class);
-    logger.info(" Response Body = ", response.getBody());
+    logger.info(" Response Body = {}", response.getBody());
     String responseObj = (String) Objects.requireNonNull(response.getBody());
 
     return new JSONObject(responseObj);
@@ -185,7 +185,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     try {
       InputStream store = new FileInputStream(jwksLocation);
       ks.load(store, passwordChar);
-      // store.close();
       Key key = ks.getKey(fsd.getBackendAuthKeyAlias(), passwordChar);
 
       X509Certificate cert = (X509Certificate) ks.getCertificate(fsd.getBackendAuthKeyAlias());
@@ -235,13 +234,12 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
   }
 
   private Pair<String, SignatureAlgorithm> getSignatureAlgorithm(String backendAuthAlg) {
-
-    if (backendAuthAlg.contentEquals("RS256"))
-      return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
-    else if (backendAuthAlg.contentEquals("RS384"))
-      return new ImmutablePair<>("RS384", SignatureAlgorithm.RS384);
-    else if (backendAuthAlg.contentEquals("ES384"))
-      return new ImmutablePair<>("ES384", SignatureAlgorithm.ES384);
-    else return new ImmutablePair<>("RS256", SignatureAlgorithm.RS256);
+    if (backendAuthAlg.contentEquals(RS256))
+      return new ImmutablePair<>(RS256, SignatureAlgorithm.RS256);
+    else if (backendAuthAlg.contentEquals(RS384))
+      return new ImmutablePair<>(RS384, SignatureAlgorithm.RS384);
+    else if (backendAuthAlg.contentEquals(ES384))
+      return new ImmutablePair<>(ES384, SignatureAlgorithm.ES384);
+    else return new ImmutablePair<>(RS256, SignatureAlgorithm.RS256);
   }
 }

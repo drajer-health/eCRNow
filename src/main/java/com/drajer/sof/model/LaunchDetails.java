@@ -27,10 +27,10 @@ public class LaunchDetails {
   @Transient private final Logger logger = LoggerFactory.getLogger(LaunchDetails.class);
 
   public enum ProcessingStatus {
-    In_Progress,
-    Completed,
-    Errors,
-    Suspended
+    IN_PROGRESS,
+    COMPLETED,
+    ERRORS,
+    SUSPENDED
   }
 
   @Id
@@ -696,30 +696,28 @@ public class LaunchDetails {
   }
 
   public static String getString(ProcessingStatus status) {
-
-    if (status == ProcessingStatus.In_Progress) {
-      return "In_Progress";
-    } else if (status == ProcessingStatus.Completed) {
-      return "Completed";
-    } else if (status == ProcessingStatus.Errors) {
-      return "Errors";
-    } else if (status == ProcessingStatus.Suspended) {
-      return "Suspended";
+    if (status == ProcessingStatus.IN_PROGRESS) {
+      return "IN_PROGRESS";
+    } else if (status == ProcessingStatus.COMPLETED) {
+      return "COMPLETED";
+    } else if (status == ProcessingStatus.ERRORS) {
+      return "ERRORS";
+    } else if (status == ProcessingStatus.SUSPENDED) {
+      return "SUSPENDED";
     } else {
       return "Unknown";
     }
   }
 
   public static ProcessingStatus getProcessingStatus(String status) {
-
-    if (status.contentEquals("In_Progress")) {
-      return ProcessingStatus.In_Progress;
-    } else if (status.contentEquals("Completed")) {
-      return ProcessingStatus.Completed;
-    } else if (status.contentEquals("Errors")) {
-      return ProcessingStatus.Errors;
-    } else if (status.contentEquals("Suspended")) {
-      return ProcessingStatus.Suspended;
+    if (status.contentEquals("IN_PROGRESS")) {
+      return ProcessingStatus.IN_PROGRESS;
+    } else if (status.contentEquals("COMPLETED")) {
+      return ProcessingStatus.COMPLETED;
+    } else if (status.contentEquals("ERRORS")) {
+      return ProcessingStatus.ERRORS;
+    } else if (status.contentEquals("SUSPENDED")) {
+      return ProcessingStatus.SUSPENDED;
     } else {
       return null;
     }

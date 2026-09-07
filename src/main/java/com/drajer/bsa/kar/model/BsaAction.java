@@ -174,102 +174,96 @@ public abstract class BsaAction {
   }
 
   public void executeRelatedActions(KarProcessingData kd, EhrQueryService ehrService) {
-
     logger.info(" *** Start Executing Related Action for action {}", this.getActionId());
-
     for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
         relatedActions.entrySet()) {
-
       if (entry.getKey() == ActionRelationshipType.BEFORESTART) {
-
-        Set<BsaRelatedAction> actions = entry.getValue();
-
-        for (BsaRelatedAction ract : actions) {
-
-          if (ract.getDuration() == null && ract.getAction() != null) {
-
-            logger.info(
-                " **** Start Executing Related Action: {} **** ", ract.getRelatedActionId());
-            ract.getAction().process(kd, ehrService);
-            logger.info("**** Finished execuing the Related Action. **** ");
-
-          } else if (ract.getDuration() != null && ract.getAction() != null) {
-
-            logger.info(
-                " Found the Related Action, with a duration so need to setup a timer to execute later ");
-
-            // Check if offhours is enabled.
-            if (Boolean.TRUE.equals(
-                    kd.getHealthcareSetting().getOffhoursEnabled()
-                        && ract.getDuration().hasComparator())
-                && Objects.equals(
-                    ract.getDuration().getComparator().toString(),
-                    QuantityComparator.LESS_OR_EQUAL.toString())) {
-
-              logger.info(" Off hours is enabled, so the timers have to be shifted ");
-
-              Instant t =
-                  ApplicationUtils.getInstantForOffHours(
-                      ract.getDuration(),
-                      kd.getHealthcareSetting().getOffHoursStart(),
-                      kd.getHealthcareSetting().getOffHoursStartMin(),
-                      kd.getHealthcareSetting().getOffHoursEnd(),
-                      kd.getHealthcareSetting().getOffHoursEndMin(),
-                      kd.getHealthcareSetting().getOffHoursTimezone());
-
-              if (t != null && !ignoreTimers) {
-
-                logger.info("Setting up timer to expire at: {}", t);
-                setupTimer(kd, t, ract);
-              } else {
-                t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
-
-                if (t != null && !ignoreTimers) {
-
-                  logger.info(" Setting up timer to expire at: {}", t);
-                  setupTimer(kd, t, ract);
-                } else {
-                  logger.info(
-                      " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
-                  ract.getAction().process(kd, ehrService);
-                  logger.info(" **** Finished execuing the Related Action. **** ");
-                }
-              }
-
-            } else {
-
-              logger.info(
-                  " Does not qualify for off hour timers, so the timers will be set as in the Knowledge Artifact. ");
-
-              Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
-
-              if (t != null && !ignoreTimers) {
-
-                logger.info(" Setting up timer to expire at: {}", t);
-                setupTimer(kd, t, ract);
-              } else {
-                logger.info(
-                    " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
-                ract.getAction().process(kd, ehrService);
-                logger.info(" **** Finished execuing the Related Action. **** ");
-              }
-            }
-
-          } else {
-            logger.info(
-                " Related Action not found, so skipping executing of action {} ",
-                ract.getRelatedActionId());
-          }
-        }
-
+        processBeforeStartRelatedActions(entry.getValue(), kd, ehrService);
       } else {
-
         logger.info(
             " Not executing Related Action because relationship type is {}", entry.getKey());
       }
     }
-
     logger.info(" *** Finished Executing Related Action for action {}", this.getActionId());
+  }
+
+  private void processBeforeStartRelatedActions(
+      Set<BsaRelatedAction> actions, KarProcessingData kd, EhrQueryService ehrService) {
+    for (BsaRelatedAction ract : actions) {
+      processRelatedAction(ract, kd, ehrService);
+    }
+  }
+
+  private void processRelatedAction(
+      BsaRelatedAction ract, KarProcessingData kd, EhrQueryService ehrService) {
+    if (ract.getAction() == null) {
+      logger.info(
+          " Related Action not found, so skipping executing of action {} ",
+          ract.getRelatedActionId());
+      return;
+    }
+
+    if (ract.getDuration() == null) {
+      logger.info(" **** Start Executing Related Action: {} **** ", ract.getRelatedActionId());
+      ract.getAction().process(kd, ehrService);
+      logger.info("**** Finished execuing the Related Action. **** ");
+      return;
+    }
+
+    logger.info(
+        " Found the Related Action, with a duration so need to setup a timer to execute later ");
+    executeActionWithDuration(ract, kd, ehrService);
+  }
+
+  private void executeActionWithDuration(
+      BsaRelatedAction ract, KarProcessingData kd, EhrQueryService ehrService) {
+    if (isOffHoursEnabled(ract, kd)) {
+      setupTimerWithOffHours(ract, kd, ehrService);
+    } else {
+      setupTimerWithoutOffHours(ract, kd, ehrService);
+    }
+  }
+
+  private boolean isOffHoursEnabled(BsaRelatedAction ract, KarProcessingData kd) {
+    return Boolean.TRUE.equals(
+            kd.getHealthcareSetting().getOffhoursEnabled() && ract.getDuration().hasComparator())
+        && Objects.equals(
+            ract.getDuration().getComparator().toString(),
+            QuantityComparator.LESS_OR_EQUAL.toString());
+  }
+
+  private void setupTimerWithOffHours(
+      BsaRelatedAction ract, KarProcessingData kd, EhrQueryService ehrService) {
+    logger.info(" Off hours is enabled, so the timers have to be shifted ");
+    Instant t =
+        ApplicationUtils.getInstantForOffHours(
+            ract.getDuration(),
+            kd.getHealthcareSetting().getOffHoursStart(),
+            kd.getHealthcareSetting().getOffHoursStartMin(),
+            kd.getHealthcareSetting().getOffHoursEnd(),
+            kd.getHealthcareSetting().getOffHoursEndMin(),
+            kd.getHealthcareSetting().getOffHoursTimezone());
+    setupTimerOrExecute(t, ract, kd, ehrService);
+  }
+
+  private void setupTimerWithoutOffHours(
+      BsaRelatedAction ract, KarProcessingData kd, EhrQueryService ehrService) {
+    logger.info(
+        " Does not qualify for off hour timers, so the timers will be set as in the Knowledge Artifact. ");
+    Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+    setupTimerOrExecute(t, ract, kd, ehrService);
+  }
+
+  private void setupTimerOrExecute(
+      Instant t, BsaRelatedAction ract, KarProcessingData kd, EhrQueryService ehrService) {
+    if (t != null && !ignoreTimers) {
+      logger.info(" Setting up timer to expire at: {}", t);
+      setupTimer(kd, t, ract);
+    } else {
+      logger.info(" **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+      ract.getAction().process(kd, ehrService);
+      logger.info(" **** Finished execuing the Related Action. **** ");
+    }
   }
 
   public void setupTimer(KarProcessingData kd, Instant t, BsaRelatedAction ract) {
@@ -345,6 +339,9 @@ public abstract class BsaAction {
             res = new HashSet<>();
             res.add(r.getResource());
           } else if (r.hasResource()) {
+            if (res == null) {
+              res = new HashSet<>();
+            }
             res.add(r.getResource());
           }
         }
@@ -618,15 +615,17 @@ public abstract class BsaAction {
   }
 
   public void printSummary() {
-
     logger.info(" **** START Printing Action **** ({})", actionId);
-
     logger.info(" Action Type : {}", type);
-
     namedEventTriggers.forEach(ne -> logger.info(" Named Event : ({})", ne));
-
     conditions.forEach(con -> con.log());
+    printInputDataRequirements();
+    printRelatedActions();
+    printSubActions();
+    logger.info(" **** END Printing Action **** {}", actionId);
+  }
 
+  private void printInputDataRequirements() {
     if (inputDataRequirementQueries != null)
       inputDataRequirementQueries.forEach(
           (key, value) -> {
@@ -637,77 +636,68 @@ public abstract class BsaAction {
     if (inputDataIdToRelatedDataIdMap != null)
       inputDataIdToRelatedDataIdMap.forEach(
           (key, value) -> logger.info(" DR Id : {}, Related Data Id {}", key, value));
+  }
 
-    if (relatedActions != null && relatedActions.size() > 0) {
-
-      logger.info(" ****** Number of Related Actions : ({}) ****** ", relatedActions.size());
-
-      for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
-          relatedActions.entrySet()) {
-
-        logger.info(" ****** RelationshipType : ({}) ****** ", entry.getKey());
-        Set<BsaRelatedAction> racts = entry.getValue();
-
-        for (BsaRelatedAction ract : racts) {
-
-          logger.info(" ******** Related Action Id : ({}) ******** ", ract.getRelatedActionId());
-        }
+  private void printRelatedActions() {
+    if (relatedActions == null || relatedActions.isEmpty()) {
+      return;
+    }
+    logger.info(" ****** Number of Related Actions : ({}) ****** ", relatedActions.size());
+    for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
+        relatedActions.entrySet()) {
+      logger.info(" ****** RelationshipType : ({}) ****** ", entry.getKey());
+      for (BsaRelatedAction ract : entry.getValue()) {
+        logger.info(" ******** Related Action Id : ({}) ******** ", ract.getRelatedActionId());
       }
     }
+  }
 
-    if (!subActions.isEmpty()) {
-
-      logger.info(" ****** Number of SubActions : ({}) ****** ", subActions.size());
-      for (BsaAction subAct : subActions) {
-
-        logger.info(" ******** Sub Action Id : ({}) ******** ", subAct.getActionId());
-
-        if (subAct.getRelatedActions() != null && subAct.getRelatedActions().size() > 0) {
-
-          for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
-              subAct.getRelatedActions().entrySet()) {
-
-            logger.info(" ********** RelationshipType : ({}) ********** ", entry.getKey());
-            Set<BsaRelatedAction> racts = entry.getValue();
-
-            for (BsaRelatedAction ract : racts) {
-
-              logger.info(
-                  " ************ Related Action Id : ({}) ************ ",
-                  ract.getRelatedActionId());
-            }
-          }
-        } else {
-
-          logger.info(
-              " ********** No Related Actions for sub Action : ({}) ********** ",
-              subAct.getActionId());
-        }
-
-        logger.info(" START Printing Sub Actions Data Requirements ");
-
-        if (subAct.getInputDataRequirementQueries() != null)
-          subAct
-              .getInputDataRequirementQueries()
-              .forEach(
-                  (key, value) -> {
-                    logger.info(" DR Id: {}", key);
-                    value.log();
-                  });
-
-        if (subAct.getInputDataIdToRelatedDataIdMap() != null)
-          subAct
-              .getInputDataIdToRelatedDataIdMap()
-              .forEach((key, value) -> logger.info(" DR Id : {}, RelatedData Id {}", key, value));
-
-        logger.info(" END Printing Sub Actions Data Requirements ");
-      }
-
-    } else {
+  private void printSubActions() {
+    if (subActions.isEmpty()) {
       logger.info(" ******** No Sub Actions for : ({}) ******** ", actionId);
+      return;
     }
+    logger.info(" ****** Number of SubActions : ({}) ****** ", subActions.size());
+    for (BsaAction subAct : subActions) {
+      logger.info(" ******** Sub Action Id : ({}) ******** ", subAct.getActionId());
+      printSubActionRelatedActions(subAct);
+      printSubActionDataRequirements(subAct);
+    }
+  }
 
-    logger.info(" **** END Printing Action **** {}", actionId);
+  private void printSubActionRelatedActions(BsaAction subAct) {
+    if (subAct.getRelatedActions() == null || subAct.getRelatedActions().isEmpty()) {
+      logger.info(
+          " ********** No Related Actions for sub Action : ({}) ********** ", subAct.getActionId());
+      return;
+    }
+    for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
+        subAct.getRelatedActions().entrySet()) {
+      logger.info(" ********** RelationshipType : ({}) ********** ", entry.getKey());
+      for (BsaRelatedAction ract : entry.getValue()) {
+        logger.info(
+            " ************ Related Action Id : ({}) ************ ", ract.getRelatedActionId());
+      }
+    }
+  }
+
+  private void printSubActionDataRequirements(BsaAction subAct) {
+    logger.info(" START Printing Sub Actions Data Requirements ");
+    if (subAct.getInputDataRequirementQueries() != null)
+      subAct
+          .getInputDataRequirementQueries()
+          .forEach(
+              (key, value) -> {
+                logger.info(" DR Id: {}", key);
+                value.log();
+              });
+
+    if (subAct.getInputDataIdToRelatedDataIdMap() != null)
+      subAct
+          .getInputDataIdToRelatedDataIdMap()
+          .forEach((key, value) -> logger.info(" DR Id : {}, RelatedData Id {}", key, value));
+
+    logger.info(" END Printing Sub Actions Data Requirements ");
   }
 
   public void log() {

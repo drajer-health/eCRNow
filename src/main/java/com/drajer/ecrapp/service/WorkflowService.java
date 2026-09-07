@@ -16,6 +16,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.routing.impl.DirectResponseReceiver;
+import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
@@ -52,56 +53,94 @@ public class WorkflowService {
   private static final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
   private static WorkflowService workflowInstance = null;
 
-  /*
-   *  These are other services that the action classes use and we are storing it once for all of them instead
-   *  of using it class variables which can be injected.
-   *  We could do injection if we do not use NEW operator , but the ERSD processor will use new to create instead of Spring context, hence Autowired
-   *   variables cannot be injected into this class or the action classes.
-   */
-  @Autowired TriggerQueryService triggerQueryService;
-
-  @Autowired LoadingQueryService loadingQueryService;
-
-  @Autowired LaunchService launchService;
-
-  @Autowired ClientDetailsService clientDetailService;
-
-  @Autowired ThreadPoolTaskScheduler taskScheduler;
-
-  @Autowired EicrRRService eicrRRService;
-
-  @Autowired DirectEicrSender directTansport;
-
-  @Autowired RestApiSender restApiTransport;
-
-  @Autowired DirectResponseReceiver directReceiver;
-
-  @Autowired ObjectMapper mapper;
-
-  @Autowired Scheduler scheduler;
-
+  private final TriggerQueryService triggerQueryService;
+  private final LoadingQueryService loadingQueryService;
+  private final LaunchService launchService;
+  private final ClientDetailsService clientDetailService;
+  private final ThreadPoolTaskScheduler taskScheduler;
+  private final EicrRRService eicrRRService;
+  private final DirectEicrSender directTansport;
+  private final RestApiSender restApiTransport;
+  private final DirectResponseReceiver directReceiver;
+  private final ObjectMapper mapper;
+  private final Scheduler scheduler;
   private static Scheduler staticScheduler;
-
-  @Autowired TaskConfiguration taskConfiguration;
-
+  private final TaskConfiguration taskConfiguration;
   private static TaskConfiguration staticTaskConfiguration;
-
-  @Autowired SchedulerService schedulerService;
-
-  @Autowired AppConfig appConfig;
-
-  @Autowired FhirContextInitializer fhirContextInitializer;
-
+  private final SchedulerService schedulerService;
+  private final AppConfig appConfig;
+  private final FhirContextInitializer fhirContextInitializer;
+  private final LaunchDetailsDao launchDetailsDao;
+  private static LaunchDetailsDao staticLaunchDetailsDao;
   private static SchedulerService staticSchedulerService;
+  private final String schematronFileLocation;
+  private final String logFileLocation;
+  private final String xsdSchemasLocation;
 
-  @Value("${schematron.file.location}")
-  String schematronFileLocation;
-
-  @Value("${logging.file.name}")
-  String logFileLocation;
-
-  @Value("${xsd.schemas.location}")
-  String xsdSchemasLocation;
+  /**
+   * Instantiates a new workflow service.
+   *
+   * @param triggerQueryService the trigger query service
+   * @param loadingQueryService the loading query service
+   * @param launchService the launch service
+   * @param clientDetailService the client detail service
+   * @param taskScheduler the thread pool task scheduler
+   * @param eicrRRService the EICR RR service
+   * @param directTansport the direct transport sender
+   * @param restApiTransport the REST API transport sender
+   * @param directReceiver the direct response receiver
+   * @param mapper the object mapper
+   * @param scheduler the scheduler
+   * @param taskConfiguration the task configuration
+   * @param schedulerService the scheduler service
+   * @param appConfig the application configuration
+   * @param fhirContextInitializer the FHIR context initializer
+   * @param launchDetailsDao the launch details DAO
+   * @param schematronFileLocation the schematron file location from properties
+   * @param logFileLocation the log file location from properties
+   * @param xsdSchemasLocation the XSD schemas location from properties
+   */
+  @Autowired
+  public WorkflowService(
+      TriggerQueryService triggerQueryService,
+      LoadingQueryService loadingQueryService,
+      LaunchService launchService,
+      ClientDetailsService clientDetailService,
+      ThreadPoolTaskScheduler taskScheduler,
+      EicrRRService eicrRRService,
+      DirectEicrSender directTansport,
+      RestApiSender restApiTransport,
+      DirectResponseReceiver directReceiver,
+      ObjectMapper mapper,
+      Scheduler scheduler,
+      TaskConfiguration taskConfiguration,
+      SchedulerService schedulerService,
+      AppConfig appConfig,
+      FhirContextInitializer fhirContextInitializer,
+      LaunchDetailsDao launchDetailsDao,
+      @Value("${schematron.file.location}") String schematronFileLocation,
+      @Value("${logging.file.name}") String logFileLocation,
+      @Value("${xsd.schemas.location}") String xsdSchemasLocation) {
+    this.triggerQueryService = triggerQueryService;
+    this.loadingQueryService = loadingQueryService;
+    this.launchService = launchService;
+    this.clientDetailService = clientDetailService;
+    this.taskScheduler = taskScheduler;
+    this.eicrRRService = eicrRRService;
+    this.directTansport = directTansport;
+    this.restApiTransport = restApiTransport;
+    this.directReceiver = directReceiver;
+    this.mapper = mapper;
+    this.scheduler = scheduler;
+    this.taskConfiguration = taskConfiguration;
+    this.schedulerService = schedulerService;
+    this.appConfig = appConfig;
+    this.fhirContextInitializer = fhirContextInitializer;
+    this.launchDetailsDao = launchDetailsDao;
+    this.schematronFileLocation = schematronFileLocation;
+    this.logFileLocation = logFileLocation;
+    this.xsdSchemasLocation = xsdSchemasLocation;
+  }
 
   @PostConstruct
   public void initializeActionRepo() {
@@ -125,6 +164,7 @@ public class WorkflowService {
     this.staticScheduler = scheduler;
     this.staticTaskConfiguration = taskConfiguration;
     this.staticSchedulerService = schedulerService;
+    this.staticLaunchDetailsDao = launchDetailsDao;
   }
 
   public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -368,7 +408,7 @@ public class WorkflowService {
       task = ignored -> logger.info("Scheduling one time task to after!");
       staticScheduler.schedule(
           staticTaskConfiguration
-              .sampleOneTimeTask()
+              .sampleOneTimeTask(staticLaunchDetailsDao)
               .instance(
                   actionType.toString()
                       + "_"

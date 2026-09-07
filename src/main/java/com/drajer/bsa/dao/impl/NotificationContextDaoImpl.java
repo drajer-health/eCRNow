@@ -12,7 +12,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,29 @@ import org.springframework.web.server.ResponseStatusException;
 @Repository
 @Transactional
 public class NotificationContextDaoImpl extends AbstractDao implements NotificationContextDao {
+
+  /**
+   * Instantiates a new notification context DAO implementation.
+   *
+   * @param sessionFactory the Hibernate session factory
+   */
+  @Autowired
+  public NotificationContextDaoImpl(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
+
+  private static final String FHIR_SERVER_BASE_URL = "fhirServerBaseURL";
+  private static final String FHIR_SERVER_BASE_URL_LOWERCASE = "fhirServerBaseUrl";
+  private static final String PATIENT_ID = "patientId";
+  private static final String NOTIFICATION_RESOURCE_ID = "notificationResourceId";
+  private static final String NOTIFICATION_RESOURCE_TYPE = "notificationResourceType";
+  private static final String NOTIFICATION_PROCESSING_STATUS = "notificationProcessingStatus";
+  private static final String LAST_UPDATED = "lastUpdated";
+  private static final String ID = "id";
+  private static final String LIMIT = "limit";
+  private static final String ENCOUNTER_START_TIME = "encounterStartTime";
+  private static final String ENCOUNTER_END_TIME = "encounterEndTime";
+  private static final String FAILED_STATUS = "FAILED";
 
   @Override
   public NotificationContext saveOrUpdate(NotificationContext nc) {
@@ -58,15 +83,12 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
    */
   @Override
   public NotificationContext getNotificationContextByUrl(String url) {
-
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
       CriteriaBuilder cb = em.getCriteriaBuilder();
       CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
       Root<NotificationContext> root = cq.from(NotificationContext.class);
-      cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
-
+      cq.where(cb.equal(root.get(FHIR_SERVER_BASE_URL), url)); // ← Use constant
       Query<NotificationContext> q = getSession().createQuery(cq);
-
       return q.uniqueResult();
     }
   }
@@ -89,7 +111,6 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       String patientId,
       String notificationResourceId,
       String notificationResourceType) {
-
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
       CriteriaBuilder cb = em.getCriteriaBuilder();
       CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
@@ -97,14 +118,12 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
       Predicate criteria =
           cb.and(
-              cb.equal(root.get("fhirServerBaseURL"), url),
-              cb.equal(root.get("patientId"), patientId),
-              cb.equal(root.get("notificationResourceId"), notificationResourceId),
-              cb.equal(root.get("notificationResourceType"), notificationResourceType));
+              cb.equal(root.get(FHIR_SERVER_BASE_URL), url),
+              cb.equal(root.get(PATIENT_ID), patientId),
+              cb.equal(root.get(NOTIFICATION_RESOURCE_ID), notificationResourceId),
+              cb.equal(root.get(NOTIFICATION_RESOURCE_TYPE), notificationResourceType));
       cq.where(criteria);
-
       Query<NotificationContext> q = getSession().createQuery(cq);
-
       return q.uniqueResult();
     }
   }
@@ -112,7 +131,6 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
   @Override
   public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
-
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
       List<Predicate> predicates = new ArrayList<>();
       CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -120,13 +138,13 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       Root<NotificationContext> root = cq.from(NotificationContext.class);
 
       if (id != null) {
-        predicates.add(cb.equal(root.get("id"), id));
+        predicates.add(cb.equal(root.get(ID), id));
       } else {
         if (fhirServerBaseUrl != null)
-          predicates.add(cb.equal(root.get("fhirServerBaseURL"), fhirServerBaseUrl));
+          predicates.add(cb.equal(root.get(FHIR_SERVER_BASE_URL), fhirServerBaseUrl));
         if (notificationResourceId != null)
-          predicates.add(cb.equal(root.get("notificationResourceId"), notificationResourceId));
-        if (patientId != null) predicates.add(cb.equal(root.get("patientId"), patientId));
+          predicates.add(cb.equal(root.get(NOTIFICATION_RESOURCE_ID), notificationResourceId));
+        if (patientId != null) predicates.add(cb.equal(root.get(PATIENT_ID), patientId));
       }
       Predicate[] predArr = new Predicate[predicates.size()];
       predArr = predicates.toArray(predArr);
@@ -151,30 +169,32 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     List<Predicate> predicates = new ArrayList<>();
 
     if (id != null) {
-      predicates.add(cb.equal(root.get("id"), id));
+      predicates.add(cb.equal(root.get(ID), id));
     } else {
-      if (searchParams.get("fhirServerBaseURL") != null) {
-        predicates.add(
-            cb.equal(root.get("fhirServerBaseUrl"), searchParams.get("fhirServerBaseURL")));
-      }
-      if (searchParams.get("notificationResourceId") != null) {
+      if (searchParams.get(FHIR_SERVER_BASE_URL) != null) {
         predicates.add(
             cb.equal(
-                root.get("notificationResourceId"), searchParams.get("notificationResourceId")));
+                root.get(FHIR_SERVER_BASE_URL_LOWERCASE), searchParams.get(FHIR_SERVER_BASE_URL)));
       }
-      if (searchParams.get("patientId") != null) {
-        predicates.add(cb.equal(root.get("patientId"), searchParams.get("patientId")));
+      if (searchParams.get(NOTIFICATION_RESOURCE_ID) != null) {
+        predicates.add(
+            cb.equal(
+                root.get(NOTIFICATION_RESOURCE_ID), searchParams.get(NOTIFICATION_RESOURCE_ID)));
+      }
+      if (searchParams.get(PATIENT_ID) != null) {
+        predicates.add(cb.equal(root.get(PATIENT_ID), searchParams.get(PATIENT_ID)));
       }
 
-      if (searchParams.get("notificationProcessingStatus") != null) {
-        String notificationProcessingStatus = searchParams.get("notificationProcessingStatus");
+      if (searchParams.get(NOTIFICATION_PROCESSING_STATUS) != null) {
+        String notificationProcessingStatus = searchParams.get(NOTIFICATION_PROCESSING_STATUS);
         List<String> searchStatusList =
             notificationProcessingStatus.contains(",")
                 ? Arrays.asList(notificationProcessingStatus.split(","))
                 : Collections.singletonList(notificationProcessingStatus);
-        predicates.add(root.get("notificationProcessingStatus").in(searchStatusList));
+        predicates.add(root.get(NOTIFICATION_PROCESSING_STATUS).in(searchStatusList));
       }
 
+      // ============ ADD THESE DATE PARSING VARIABLES & LOGIC ============
       String startDate = searchParams.get("startDateTime");
       String endDate = searchParams.get("endDateTime");
       String lastUpdatedStartTime = searchParams.get("lastUpdatedStartTime");
@@ -185,20 +205,19 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       try {
         if (startDate != null) {
           Date eicrStartDate = sdf.parse(startDate);
-          predicates.add(cb.greaterThanOrEqualTo(root.get("encounterStartTime"), eicrStartDate));
+          predicates.add(cb.greaterThanOrEqualTo(root.get(ENCOUNTER_START_TIME), eicrStartDate));
         }
         if (endDate != null) {
           Date eicrEndDate = sdf.parse(endDate);
-          predicates.add(cb.lessThanOrEqualTo(root.get("encounterEndTime"), eicrEndDate));
+          predicates.add(cb.lessThanOrEqualTo(root.get(ENCOUNTER_END_TIME), eicrEndDate));
         }
         if (lastUpdatedStartTime != null) {
           Date eicrLastUpdatedStartTime = sdf.parse(lastUpdatedStartTime);
-          predicates.add(
-              cb.greaterThanOrEqualTo(root.get("lastUpdated"), eicrLastUpdatedStartTime));
+          predicates.add(cb.greaterThanOrEqualTo(root.get(LAST_UPDATED), eicrLastUpdatedStartTime));
         }
         if (lastUpdatedEndTime != null) {
           Date eicrLastUpdatedEndTime = sdf.parse(lastUpdatedEndTime);
-          predicates.add(cb.lessThanOrEqualTo(root.get("lastUpdated"), eicrLastUpdatedEndTime));
+          predicates.add(cb.lessThanOrEqualTo(root.get(LAST_UPDATED), eicrLastUpdatedEndTime));
         }
       } catch (ParseException e) {
         throw new ResponseStatusException(
@@ -208,15 +227,15 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
     cq.select(root)
         .where(cb.and(predicates.toArray(new Predicate[0])))
-        .orderBy(cb.asc(root.get("lastUpdated")));
+        .orderBy(cb.asc(root.get(LAST_UPDATED)));
 
     Query<NotificationContext> query = session.createQuery(cq);
 
-    if (searchParams.get("limit") != null) {
-      query.setMaxResults(Integer.parseInt(searchParams.get("limit")));
+    if (searchParams.get(LIMIT) != null) {
+      query.setMaxResults(Integer.parseInt(searchParams.get(LIMIT)));
     }
 
-    return query.getResultList();
+    return query.getResultList(); // ← ADD THIS RETURN STATEMENT
   }
 
   @Override
@@ -225,9 +244,9 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
     Date lastUpdatedStart = null;
     Date lastUpdatedEnd = null;
-    int limit =
-        searchParams.get("limit") != null ? Integer.parseInt(searchParams.get("limit")) : 10;
+    int limit = searchParams.get(LIMIT) != null ? Integer.parseInt(searchParams.get(LIMIT)) : 10;
 
+    // ============ ADD DATE PARSING LOGIC ============
     final String startParam = searchParams.get("lastUpdatedStartTime");
     final String endParam = searchParams.get("lastUpdatedEndTime");
     try {
@@ -239,42 +258,41 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
         lastUpdatedEnd = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(endParam);
       }
     } catch (Exception e) {
-      throw new org.springframework.web.server.ResponseStatusException(
-          org.springframework.http.HttpStatus.BAD_REQUEST,
-          "Invalid date format: " + e.getMessage());
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Invalid date format: " + e.getMessage());
     }
 
     var cb = getSession().getCriteriaBuilder();
     var cq = cb.createQuery(NotificationContext.class);
-    var f = cq.from(NotificationContext.class); // alias "f" (FAILED row candidate)
+    var f = cq.from(NotificationContext.class);
 
     var notExists = cq.subquery(Long.class);
     var nc = notExists.from(NotificationContext.class);
     notExists
         .select(cb.literal(1L))
         .where(
-            cb.equal(nc.get("notificationResourceId"), f.get("notificationResourceId")),
-            cb.notEqual(nc.get("notificationProcessingStatus"), "FAILED"),
+            cb.equal(nc.get(NOTIFICATION_RESOURCE_ID), f.get(NOTIFICATION_RESOURCE_ID)),
+            cb.notEqual(nc.get(NOTIFICATION_PROCESSING_STATUS), FAILED_STATUS),
             cb.greaterThan(
-                nc.<java.util.Date>get("lastUpdated"), f.<java.util.Date>get("lastUpdated")));
+                nc.<java.util.Date>get(LAST_UPDATED), f.<java.util.Date>get(LAST_UPDATED)));
 
     java.util.List<jakarta.persistence.criteria.Predicate> preds = new java.util.ArrayList<>();
-    preds.add(cb.equal(f.get("notificationProcessingStatus"), "FAILED"));
+    preds.add(cb.equal(f.get(NOTIFICATION_PROCESSING_STATUS), FAILED_STATUS));
 
     if (lastUpdatedStart != null) {
-      preds.add(cb.greaterThanOrEqualTo(f.<java.util.Date>get("lastUpdated"), lastUpdatedStart));
+      preds.add(cb.greaterThanOrEqualTo(f.<java.util.Date>get(LAST_UPDATED), lastUpdatedStart));
     }
-    // (Your original code parsed end time but didn’t apply it; adding it here is usually intended.)
     if (lastUpdatedEnd != null) {
-      preds.add(cb.lessThanOrEqualTo(f.<java.util.Date>get("lastUpdated"), lastUpdatedEnd));
+      preds.add(cb.lessThanOrEqualTo(f.<java.util.Date>get(LAST_UPDATED), lastUpdatedEnd));
     }
 
     preds.add(cb.not(cb.exists(notExists)));
 
     cq.select(f)
         .where(preds.toArray(new jakarta.persistence.criteria.Predicate[0]))
-        .orderBy(cb.asc(f.get("lastUpdated")));
+        .orderBy(cb.asc(f.get(LAST_UPDATED)));
 
+    // ============ ADD THIS MISSING SECTION ============
     var results = getSession().createQuery(cq).getResultList();
 
     var byId =
@@ -294,7 +312,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
         .map(java.util.Map.Entry::getKey)
         .sorted(java.util.Comparator.comparing(NotificationContext::getLastUpdated))
         .limit(limit)
-        .collect(java.util.stream.Collectors.toList());
+        .toList();
   }
 
   @Override

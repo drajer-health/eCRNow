@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,22 +37,37 @@ public class HealthcareSettingsController {
   private static final String VALUE_URI = "valueUri";
   private static final String EXTENSION = "extension";
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
-
-  @Autowired Authorization authorization;
-
-  @Autowired HealthcareSettingsService healthcareSettingsService;
+  private static final String MESSAGE = "message";
+  private static final String STATUS = "status";
+  private static final String ERROR = "error";
+  private static final String EXISTS = "exists";
 
   @Value("${direct.tls.version}")
   String directSmtpTlsVersion;
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsController.class);
+  private final Authorization authorization;
+  private final HealthcareSettingsService healthcareSettingsService;
+
+  /**
+   * Instantiates a new healthcare settings controller.
+   *
+   * @param authorization the authorization service
+   * @param healthcareSettingsService the healthcare settings service
+   */
+  public HealthcareSettingsController(
+      Authorization authorization, HealthcareSettingsService healthcareSettingsService) {
+    this.authorization = authorization;
+    this.healthcareSettingsService = healthcareSettingsService;
+  }
 
   /**
    * This method is used to retrieve the HealthcareSettings details by primary key of the table. The
    * user interface for the BSA is expected to use this method when it already knows the id of the
    * HealthcareSetting.
    *
-   * @param hdsId The id to be used to retrieve the HealthcareSetting
+   * <p>//* @param hdsId The id to be used to retrieve the HealthcareSetting
+   *
    * @return The HealthcareSetting object for the id provided
    */
   @CrossOrigin
@@ -77,52 +91,71 @@ public class HealthcareSettingsController {
     HealthcareSetting hsd =
         healthcareSettingsService.getHealthcareSettingByUrl(hsDetails.getFhirServerBaseURL());
 
-    if (hsd == null) {
+    if (hsd != null) {
+      return buildAlreadyExistsResponse();
+    }
 
-      logger.info("Healthcare Setting does not exist, Saving the Healthcare Settings");
+    logger.info("Healthcare Setting does not exist, Saving the Healthcare Settings");
 
-      if (hsDetails.getTokenUrl() == null) {
-        JSONObject object = authorization.getMetadata(hsd.getFhirServerBaseURL() + "/metadata");
-        if (object != null) {
-          logger.info("Reading Metadata information");
-          JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
-          JSONObject sec = security.getJSONObject("security");
-          JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
-          JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-          if (object.getString(FHIR_VERSION).startsWith("1.")) {
-            hsDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
-          }
-          if (object.getString(FHIR_VERSION).startsWith("4.")) {
-            hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
-          }
+    if (hsDetails.getTokenUrl() == null) {
+      processMetadataIfNeeded(hsDetails);
+    }
 
-          if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
-            hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
-          }
+    healthcareSettingsService.saveOrUpdate(hsDetails);
+    return new ResponseEntity<>(hsDetails, HttpStatus.OK);
+  }
 
-          for (int i = 0; i < innerExtension.length(); i++) {
-            JSONObject urlExtension = innerExtension.getJSONObject(i);
-            if (urlExtension.getString("url").equals("token")) {
-              logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
-              hsDetails.setTokenUrl(urlExtension.getString(VALUE_URI));
-            }
-          }
+  private ResponseEntity<Object> buildAlreadyExistsResponse() {
+    logger.error("FHIR Server URL is already registered, suggest modifying the existing record.");
+    JSONObject responseObject = new JSONObject();
+    responseObject.put(STATUS, ERROR);
+    responseObject.put(
+        MESSAGE,
+        "FHIR Server URL is already registered, suggest modifying the existing record. is already registered");
+    return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private void processMetadataIfNeeded(HealthcareSetting hsDetails) {
+    JSONObject object = authorization.getMetadata(hsDetails.getFhirServerBaseURL() + "/metadata");
+    if (object == null) {
+      return;
+    }
+
+    logger.info("Reading Metadata information");
+    JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
+    JSONObject sec = security.getJSONObject("security");
+    JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
+    JSONArray innerExtension = extension.getJSONArray(EXTENSION);
+
+    setFhirVersion(hsDetails, object);
+    setDirectTlsVersionIfEmpty(hsDetails);
+    extractTokenUrlFromMetadata(hsDetails, innerExtension);
+  }
+
+  private void setFhirVersion(HealthcareSetting hsDetails, JSONObject object) {
+    String fhirVersion = object.getString(FHIR_VERSION);
+    if (fhirVersion.startsWith("1.")) {
+      hsDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
+    } else if (fhirVersion.startsWith("4.")) {
+      hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
+    }
+  }
+
+  private void setDirectTlsVersionIfEmpty(HealthcareSetting hsDetails) {
+    if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+      hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+    }
+  }
+
+  private void extractTokenUrlFromMetadata(HealthcareSetting hsDetails, JSONArray innerExtension) {
+    for (int i = 0; i < innerExtension.length(); i++) {
+      JSONObject urlExtension = innerExtension.getJSONObject(i);
+      if (urlExtension.getString("url").equals("token")) {
+        if (logger.isInfoEnabled()) {
+          logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
         }
+        hsDetails.setTokenUrl(urlExtension.getString(VALUE_URI));
       }
-      healthcareSettingsService.saveOrUpdate(hsDetails);
-
-      return new ResponseEntity<>(hsDetails, HttpStatus.OK);
-
-    } else {
-
-      logger.error("FHIR Server URL is already registered, suggest modifying the existing record.");
-
-      JSONObject responseObject = new JSONObject();
-      responseObject.put("status", "error");
-      responseObject.put(
-          "message",
-          "FHIR Server URL is already registered, suggest modifying the existing record. is already registered");
-      return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -155,9 +188,9 @@ public class HealthcareSettingsController {
           "Healthcare Setting is already registered with a different Id which is {}, contact developer. ",
           existingHsd.getId());
       JSONObject responseObject = new JSONObject();
-      responseObject.put("status", "error");
+      responseObject.put(STATUS, ERROR);
       responseObject.put(
-          "message",
+          MESSAGE,
           "Healthcare Setting is already registered with a different Id, contact developer. ");
       return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -181,7 +214,8 @@ public class HealthcareSettingsController {
    * This method is used to retrieve all existing HealthcareSettings details. The user interface for
    * the BSA is expected to use this method during configuration of the HealthcareSetting.
    *
-   * @param none
+   * <p>// * @param none
+   *
    * @return The existing list of HealthcareSettings.
    */
   @CrossOrigin
@@ -217,9 +251,9 @@ public class HealthcareSettingsController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("HealthcareSetting not found");
 
     } catch (Exception e) {
-      logger.error("Error in processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("Error in processing the request");
+          .body(ERROR_IN_PROCESSING_THE_REQUEST);
     }
   }
 
@@ -238,17 +272,17 @@ public class HealthcareSettingsController {
 
       Map<String, Object> response = new HashMap<>();
       if (healthcareSetting != null) {
-        response.put("message", "HealthcareSetting already exists");
-        response.put("exists", true);
+        response.put(MESSAGE, "HealthcareSetting already exists");
+        response.put(EXISTS, true);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
       }
 
-      response.put("message", "HealthcareSetting does not exists");
-      response.put("exists", false);
+      response.put(MESSAGE, "HealthcareSetting does not exists");
+      response.put(EXISTS, false);
       return ResponseEntity.ok(response);
 
     } catch (Exception e) {
-      logger.error("Error in processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(ERROR_IN_PROCESSING_THE_REQUEST);
     }
