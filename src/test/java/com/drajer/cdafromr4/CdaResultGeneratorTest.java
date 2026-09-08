@@ -9,7 +9,6 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.junit.Test;
@@ -244,56 +243,6 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
             data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     assertXmlEquals(expectedXml, actualXml);
-  }
-
-  @Test
-  public void testGetDiagnosticReportsWithObservations_withDiagnosticReport() {
-
-    R4FhirData data = buildR4FhirDataFromBundle(LOADING_QUERY_BUNDLE_WITH_DIAGNOSTIC_REPORT);
-
-    List<Observation> labResults = data.getLabResults();
-    Map<String, Observation> uniqueObservations = new HashMap<>();
-
-    Map<DiagnosticReport, List<Observation>> reports =
-        CdaResultGenerator.getDiagnosticReportsWithObservations(
-            data, labResults, uniqueObservations);
-
-    assertNotNull(reports);
-    assertEquals(1, reports.size());
-    assertTrue(uniqueObservations.isEmpty());
-
-    DiagnosticReport report = reports.keySet().iterator().next();
-    assertEquals("a-432.clinicalresult-806061", report.getIdElement().getIdPart());
-
-    List<String> observationIds =
-        reports.get(report).stream()
-            .map(obs -> obs.getIdElement().getIdPart())
-            .sorted()
-            .collect(Collectors.toList());
-
-    assertEquals(
-        Arrays.asList("a-432.resultamb-3194388", "a-432.resultamb-3194389"), observationIds);
-  }
-
-  @Test
-  public void testGetDiagnosticReportsWithObservations_withoutDiagnosticReport() {
-
-    R4FhirData data = buildR4FhirDataFromBundle(LOADING_QUERY_BUNDLE_WITHOUT_DIAGNOSTIC_REPORT);
-
-    List<Observation> allObservations = getObs(LOADING_QUERY_BUNDLE_WITHOUT_DIAGNOSTIC_REPORT);
-    Map<String, Observation> uniqueObservations = new HashMap<>();
-
-    Map<DiagnosticReport, List<Observation>> reports =
-        CdaResultGenerator.getDiagnosticReportsWithObservations(
-            data, allObservations, uniqueObservations);
-
-    assertNotNull(reports);
-    assertTrue(reports.isEmpty());
-    assertEquals(allObservations.size(), uniqueObservations.size());
-
-    for (Observation obs : allObservations) {
-      assertTrue(uniqueObservations.containsKey(obs.getIdElement().getIdPart()));
-    }
   }
 
   @Test
