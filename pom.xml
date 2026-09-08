@@ -108,7 +108,6 @@
             <artifactId>cqf-fhir-bom</artifactId>
             <version>${cqf.fhir.version}</version>
             <type>pom</type>
-            <scope>import</scope>
         </dependency>
 
         <dependency>
