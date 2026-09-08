@@ -1144,16 +1144,16 @@ public class CdaGeneratorConstants {
   // Inner table headers
   public static final String INNER_COL_TEST = "Test";
   public static final String INNER_COL_OUTCOME = "Outcome";
-  public static final String INNER_COL_INTERP = "Interpretation";
   public static final String INNER_COL_DATE = "Date(s)";
+  public static final String INNER_COL_INTERP = "Interpretation";
   public static final String INNER_COL_REF_RANGE = "Reference Range";
   public static final String INNER_COL_COLLECTION = "Specimen Collection Date";
 
   // Inner table content IDs
   public static final String INNER_BODY_TEST = "test";
   public static final String INNER_BODY_OUTCOME = "outcome";
-  public static final String INNER_BODY_INTERP = "interpretation";
   public static final String INNER_BODY_DATE = "date";
+  public static final String INNER_BODY_INTERP = "interpretation";
   public static final String INNER_BODY_REF_RANGE = "refRange";
   public static final String INNER_BODY_COLLECTION = "collection";
 

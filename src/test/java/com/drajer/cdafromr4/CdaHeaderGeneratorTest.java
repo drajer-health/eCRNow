@@ -759,6 +759,49 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGetEncompassingEncounter_usesFilteredLocationWithValidAddress() {
+    HashMap<V3ParticipationType, List<Practitioner>> practMap =
+        new HashMap<V3ParticipationType, List<Practitioner>>();
+    Practitioner pr = new Practitioner();
+    List<Practitioner> practList = new ArrayList<Practitioner>();
+    practList.add(pr);
+    practMap.put(V3ParticipationType.PPRF, practList);
+
+    R4FhirData r4FhirData1 = new R4FhirData();
+
+    Organization organization =
+        (Organization) loadResourceDataFromFile(Organization.class, ORGANIZATION_FILENAME);
+    r4FhirData1.setOrganization(organization);
+
+    // Simulates the historical bug: data.getLocation() points at a Location whose
+    // address is incomplete (Location.json has no state), distinct from the fully
+    // valid Location returned by filterLocation() via the location list.
+    Location incompleteLocation =
+        (Location) loadResourceDataFromFile(Location.class, LOCATION_FILENAME);
+    r4FhirData1.setLocation(incompleteLocation);
+
+    Location validLocation = new Location();
+    validLocation.setId("valid-location");
+    validLocation.setName("Valid Full Address Location");
+    Address addr = new Address();
+    addr.addLine("100 Main St");
+    addr.setCity("Springfield");
+    addr.setState("IL");
+    addr.setPostalCode("62701");
+    validLocation.setAddress(addr);
+
+    r4FhirData1.setLocationList(Collections.singletonList(validLocation));
+
+    String actualXml =
+        CdaHeaderGenerator.getEncompassingEncounter(null, practMap, launchDetails, r4FhirData1);
+
+    assertThat(actualXml).contains("Valid Full Address Location");
+    assertThat(actualXml).contains("Springfield");
+    assertThat(actualXml).contains("IL");
+    assertThat(actualXml).doesNotContain("South Wing, second floor");
+  }
+
+  @Test
   public void testGetSortedPractitionerList() {
     R4FhirData r4FhirData1 = new R4FhirData();
     Encounter encounter =

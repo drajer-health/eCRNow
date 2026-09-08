@@ -5,6 +5,7 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -21,6 +22,9 @@ import org.slf4j.LoggerFactory;
 public class CdaPregnancyGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaPregnancyGenerator.class);
+  private static final String GESTATIONAL_AGE_DAY_UNIT = "d";
+  private static final String GESTATIONAL_AGE_WEEK_UNIT = "wk";
+  private static final BigDecimal DAYS_PER_WEEK = new BigDecimal(7);
 
   public static String generatePregnancySection(
       R4FhirData data, LaunchDetails details, String version) {
@@ -575,9 +579,31 @@ public class CdaPregnancyGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-    sb.append(CdaFhirUtilities.getXmlForType(quantity, CdaGeneratorConstants.VAL_EL_NAME, true));
+    sb.append(getXmlForGestationalAgeValueInDays(quantity));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     return sb.toString();
+  }
+
+  private static String getXmlForGestationalAgeValueInDays(Quantity quantity) {
+
+    if (quantity == null || quantity.getValue() == null) {
+      return CdaGeneratorUtils.getXmlForNfQuantity(
+          CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI, true);
+    }
+
+    BigDecimal value = quantity.getValue();
+    String unit = quantity.hasCode() ? quantity.getCode() : quantity.getUnit();
+
+    if (GESTATIONAL_AGE_WEEK_UNIT.equals(unit)) {
+      value = value.multiply(DAYS_PER_WEEK);
+    } else if (!GESTATIONAL_AGE_DAY_UNIT.equals(unit)) {
+      logger.warn(
+          "Unrecognized gestational age unit '{}', emitting value as days without conversion",
+          unit);
+    }
+
+    return CdaGeneratorUtils.getXmlForQuantityWithUnits(
+        CdaGeneratorConstants.VAL_EL_NAME, value.toString(), GESTATIONAL_AGE_DAY_UNIT, true);
   }
 
   public static void processCondition(

@@ -9,6 +9,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.junit.Test;
@@ -32,6 +33,47 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
       "CdaTestData/Observation/ObservationStart.json";
   private static final String DIAGNOSTIC_REPORT_JSON =
       "CdaTestData/DiagnosticReport/DiagnosticReport.json";
+  private static final String LOADING_QUERY_BUNDLE_WITH_DIAGNOSTIC_REPORT =
+      "CdaTestData/LoadingQuery/LoadingQueryBundle_a-432.E-1563935_a-432.encounter-156141 (1).json";
+  private static final String LOADING_QUERY_BUNDLE_WITHOUT_DIAGNOSTIC_REPORT =
+      "CdaTestData/bundle/LoadingQueryBundle_2099780595662060_2099780857662530.json";
+
+  private R4FhirData buildR4FhirDataFromBundle(String filename) {
+
+    R4FhirData data = new R4FhirData();
+    Bundle b = loadBundleFromFile(filename);
+
+    List<Bundle.BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
+
+    for (Bundle.BundleEntryComponent ent : entries) {
+      Resource resource = ent.getResource();
+      ResourceType resourceType = resource.getResourceType();
+
+      resourcesByType.computeIfAbsent(resourceType, k -> new LinkedHashSet<>()).add(resource);
+    }
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (ResourceType resourceType : resourcesByType.keySet()) {
+
+      Set<Resource> resourceSet = resourcesByType.get(resourceType);
+
+      if (resourceSet != null && !resourceSet.isEmpty()) {
+        R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+            "1",
+            bundle,
+            data,
+            launchDetails,
+            resourceSet,
+            resourceType.toString(),
+            uniqueResourceIdsByType);
+      }
+    }
+
+    data.setData(bundle);
+    return data;
+  }
 
   @Test
   public void testGenerateResultsSection() {
@@ -202,6 +244,56 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
             data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGetDiagnosticReportsWithObservations_withDiagnosticReport() {
+
+    R4FhirData data = buildR4FhirDataFromBundle(LOADING_QUERY_BUNDLE_WITH_DIAGNOSTIC_REPORT);
+
+    List<Observation> labResults = data.getLabResults();
+    Map<String, Observation> uniqueObservations = new HashMap<>();
+
+    Map<DiagnosticReport, List<Observation>> reports =
+        CdaResultGenerator.getDiagnosticReportsWithObservations(
+            data, labResults, uniqueObservations);
+
+    assertNotNull(reports);
+    assertEquals(1, reports.size());
+    assertTrue(uniqueObservations.isEmpty());
+
+    DiagnosticReport report = reports.keySet().iterator().next();
+    assertEquals("a-432.clinicalresult-806061", report.getIdElement().getIdPart());
+
+    List<String> observationIds =
+        reports.get(report).stream()
+            .map(obs -> obs.getIdElement().getIdPart())
+            .sorted()
+            .collect(Collectors.toList());
+
+    assertEquals(
+        Arrays.asList("a-432.resultamb-3194388", "a-432.resultamb-3194389"), observationIds);
+  }
+
+  @Test
+  public void testGetDiagnosticReportsWithObservations_withoutDiagnosticReport() {
+
+    R4FhirData data = buildR4FhirDataFromBundle(LOADING_QUERY_BUNDLE_WITHOUT_DIAGNOSTIC_REPORT);
+
+    List<Observation> allObservations = getObs(LOADING_QUERY_BUNDLE_WITHOUT_DIAGNOSTIC_REPORT);
+    Map<String, Observation> uniqueObservations = new HashMap<>();
+
+    Map<DiagnosticReport, List<Observation>> reports =
+        CdaResultGenerator.getDiagnosticReportsWithObservations(
+            data, allObservations, uniqueObservations);
+
+    assertNotNull(reports);
+    assertTrue(reports.isEmpty());
+    assertEquals(allObservations.size(), uniqueObservations.size());
+
+    for (Observation obs : allObservations) {
+      assertTrue(uniqueObservations.containsKey(obs.getIdElement().getIdPart()));
+    }
   }
 
   @Test

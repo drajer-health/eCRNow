@@ -57,26 +57,4 @@ public class CdaParserConstants {
   public CdaParserConstants getInstance() {
     return constants;
   }
-
-  /*
-  NamespaceContext ctx =
-      new NamespaceContext() {
-        public String getNamespaceURI(String prefix) {
-          if (prefix.contentEquals("hl7")) {
-            return "urn:hl7-org:v3";
-          } else if (prefix.contentEquals("hl7:sdtc")) {
-            return "urn:hl7-org:v3:sdtc";
-          } else return null;
-        }
-
-        public Iterator getPrefixes(String val) {
-          return null;
-        }
-
-        public String getPrefix(String uri) {
-          return null;
-        }
-      };
-
-      */
 }

@@ -3,14 +3,12 @@ package com.drajer.sof.utils;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
-import com.drajer.sof.service.ClientDetailsService;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,8 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class Authorization {
-
-  @Autowired ClientDetailsService clientDetailService;
 
   private final Logger logger = LoggerFactory.getLogger(Authorization.class);
 

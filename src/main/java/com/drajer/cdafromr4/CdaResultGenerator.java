@@ -414,7 +414,29 @@ public class CdaResultGenerator {
       Map<String, Observation> uniqueObservations) {
 
     Map<DiagnosticReport, List<Observation>> reports = new HashMap<>();
-    allObservations.forEach(e -> uniqueObservations.put(e.getIdElement().getIdPart(), e));
+
+    // Build a lookup map using Observation ID.
+    // If the same Observation ID occurs more than once, keep the first one.
+    Map<String, Observation> observationsById = new HashMap<>();
+
+    for (Observation observation : allObservations) {
+      String observationId = observation.getIdElement().getIdPart();
+
+      if (observationId == null || observationId.isEmpty()) {
+        logger.warn("Ignoring Observation with missing ID");
+        continue;
+      }
+
+      if (observationsById.containsKey(observationId)) {
+        logger.warn(
+            "Duplicate Observation ID {} found in the bundle. Ignoring duplicate occurrence.",
+            observationId);
+        continue;
+      }
+
+      observationsById.put(observationId, observation);
+      uniqueObservations.put(observationId, observation);
+    }
 
     if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
 
@@ -426,46 +448,74 @@ public class CdaResultGenerator {
         if (dr.hasResult()) {
 
           List<Observation> obs = new ArrayList<>();
+
+          // Prevent the same Observation from being added more than once
+          // to the same DiagnosticReport.
+          Set<String> processedObservationIds = new HashSet<>();
+
           List<Reference> obsRefs = dr.getResult();
 
           for (Reference r : obsRefs) {
 
             if (r.hasReference()) {
 
-              // If we find the reference, add it to the overall list
-              obs.addAll(
-                  allObservations.stream()
-                      .filter(
-                          s ->
-                              s.getIdElement()
-                                  .getIdPart()
-                                  .contentEquals(r.getReferenceElement().getIdPart()))
-                      .collect(Collectors.toList()));
+              String observationId = r.getReferenceElement().getIdPart();
+
+              if (observationId == null || observationId.isEmpty()) {
+                logger.warn(
+                    "Ignoring Observation reference with missing ID in Diagnostic Report {}",
+                    dr.getIdElement().getIdPart());
+                continue;
+              }
+
+              // Guard against duplicate references within the same DiagnosticReport.
+              if (!processedObservationIds.add(observationId)) {
+                logger.warn(
+                    "Ignoring duplicate Observation reference {} in Diagnostic Report {}",
+                    observationId,
+                    dr.getIdElement().getIdPart());
+                continue;
+              }
+
+              // Find the Observation by ID.
+              Observation observation = observationsById.get(observationId);
+
+              if (observation != null) {
+                obs.add(observation);
+              }
             }
           }
 
-          if (obs != null && !obs.isEmpty()) {
+          if (!obs.isEmpty()) {
 
-            obs.forEach(e -> uniqueObservations.remove(e.getIdElement().getIdPart()));
+            // Remove from uniqueObservations because this Observation
+            // has been referenced by at least one DiagnosticReport.
+            obs.forEach(
+                observation -> uniqueObservations.remove(observation.getIdElement().getIdPart()));
+
             reports.put(dr, obs);
+
           } else {
             logger.info(
-                " Ignoring Diagnostic Report with id {} as observations referenced cannot be found ",
+                "Ignoring Diagnostic Report with id {} as observations referenced cannot be found",
                 dr.getIdElement().getIdPart());
           }
-        } // if results are present
-        else {
+
+        } else {
+
           logger.info(
-              " Ignoring Diagnostic Report with id {} as it has no results ",
+              "Ignoring Diagnostic Report with id {} as it has no results",
               dr.getIdElement().getIdPart());
         }
-      } // for
+      }
+
     } else {
       logger.info("No Valid DiagnosticReport in the bundle to process");
     }
 
     logger.info(
-        " Total # of Diagnostic Reports being used for Results section : {}", reports.size());
+        "Total # of Diagnostic Reports being used for Results section : {}", reports.size());
+
     return reports;
   }
 
@@ -1532,7 +1582,7 @@ public class CdaResultGenerator {
    * <p><tr> <td colspan="20"> <list styleCode="none"><item>
    *
    * <table>
-   *         <thead> Test | Outcome | Interpretation | Date(s) | Reference Range | Specimen Collection Date </thead>
+   *         <thead> Test | Outcome | Date(s) | Interpretation | Reference Range | Specimen Collection Date </thead>
    *         <tbody> one <tr> per component </tbody>
    *       </table>
    *
@@ -1576,11 +1626,11 @@ public class CdaResultGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
-            CdaGeneratorConstants.INNER_COL_INTERP));
+            CdaGeneratorConstants.INNER_COL_DATE));
     sb.append(
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
-            CdaGeneratorConstants.INNER_COL_DATE));
+            CdaGeneratorConstants.INNER_COL_INTERP));
     sb.append(
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TABLE_HEAD_CONTENT_EL_NAME,
