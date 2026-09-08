@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
-    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
-    <root level="INFO">
-        <appender-ref ref="FILE" />
-    </root>
-</configuration> 
+
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+  <!-- Pull logging.file.name from Spring Boot config -->
+  <springProperty scope="context" name="LOG_FILE" source="logging.file.name"/>
+
+  <!-- Fallback if not set -->
+  <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+
+  <!-- Daily rolling file appender, keep 30 days -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_FILE}</file>
+    <append>true</append>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+
+      <!-- keep last 30 days -->
+      <maxHistory>30</maxHistory>
+
+      <!-- optional: clean old logs on startup -->
+      <cleanHistoryOnStart>true</cleanHistoryOnStart>
+    </rollingPolicy>
+
+     <encoder>
+        <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="FILE"/>
+  </root>
+
+</configuration>
