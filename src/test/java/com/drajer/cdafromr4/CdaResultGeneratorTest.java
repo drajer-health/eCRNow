@@ -246,7 +246,6 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
     assertXmlEquals(expectedXml, actualXml);
   }
 
-
   @Test
   public void testGetDiagnosticReportsWithObservations_withDiagnosticReport() {
 
