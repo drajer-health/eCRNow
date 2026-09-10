@@ -52,7 +52,7 @@
 										<content ID="labTestName4">Panel Name: CBC panel - Blood by Automated count| Component Name: White Cell Count| Component Name: Eosinophils</content>
 									</td>
 									<td>
-										<content ID="labTestResultValue4">4.6|http://unitsofmeasure.org|10*9/L20.0|http://unitsofmeasure.org|%</content>
+										<content ID="labTestResultValue4">4.6|10*9/L20.0|%</content>
 									</td>
 									<td>
 										<content ID="labTestResultValueDate4">20240101000000+0000</content>
@@ -74,7 +74,7 @@
 										<content ID="labTestName6">Panel Name: SARS coronavirus 2 Ag [Presence] in Respiratory sp| Component Name: SARS coronavirus 2 Ag [Presence] in Respiratory specimen by</content>
 									</td>
 									<td>
-										<content ID="labTestResultValue6">22.0|http://unitsofmeasure.org|mg</content>
+										<content ID="labTestResultValue6">22.0|mg</content>
 									</td>
 									<td>
 										<content ID="labTestResultValueDate6">20240409000000+0000</content>

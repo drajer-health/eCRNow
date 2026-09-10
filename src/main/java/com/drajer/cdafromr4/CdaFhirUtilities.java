@@ -1965,33 +1965,22 @@ public class CdaFhirUtilities {
   }
 
   public static String getStringForQuantity(Quantity qt) {
-
-    String val = "";
-
-    if (qt != null
-        && qt.hasValueElement()
-        && qt.hasSystemElement()
-        && (qt.hasUnit() || qt.hasCode())) {
-
-      String units = (qt.hasCode() ? qt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
-
-      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && qt.hasUnit()) {
-        units = qt.getUnit();
-      }
-
-      val +=
-          qt.getValueElement().getValueAsString()
-              + CdaGeneratorConstants.PIPE
-              + qt.getSystemElement().getValueAsString()
-              + CdaGeneratorConstants.PIPE
-              + units;
-    } else if (qt != null && qt.hasValueElement()) {
-      val += qt.getValueElement().getValueAsString();
-    } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (qt == null || !qt.hasValueElement()) {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
     }
 
-    return val;
+    String value = qt.getValueElement().getValueAsString();
+    String units = "";
+
+    if (qt.hasCode() && StringUtils.isNotBlank(qt.getCode())) {
+      units = qt.getCode();
+    } else if (qt.hasUnit() && StringUtils.isNotBlank(qt.getUnit())) {
+      units = qt.getUnit();
+    }
+
+    return StringUtils.isNotBlank(units)
+        ? value + CdaGeneratorConstants.PIPE + units
+        : value;
   }
 
   public static String getStringForMedicationFromContainedResources(

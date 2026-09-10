@@ -1359,7 +1359,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     quantity.setUnit("milligrams");
     quantity.setValueElement(new DecimalType(100));
 
-    String expectedResult = "100|http://snomed.info/sct|mg";
+    String expectedResult = "100|mg";
     String actualResult = CdaFhirUtilities.getStringForQuantity(quantity);
     assertEquals(expectedResult, actualResult);
 
@@ -1370,6 +1370,15 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     expectedResult = "100";
     actualResult = CdaFhirUtilities.getStringForQuantity(quantity1);
+    assertEquals(expectedResult, actualResult);
+
+    // Check unit fallback when the UCUM code is absent
+    Quantity quantity2 = new Quantity();
+    quantity2.setValue(100);
+    quantity2.setUnit("milligrams");
+
+    expectedResult = "100|milligrams";
+    actualResult = CdaFhirUtilities.getStringForQuantity(quantity2);
     assertEquals(expectedResult, actualResult);
 
     // passing null quantity
@@ -1898,6 +1907,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals("Example Concept", result);
   }
 
+// ASP: Athena Specific Change
   @Test
   public void testGetStringForTypeFromQuantity() {
     Quantity quantity =
@@ -1909,8 +1919,9 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     String result = CdaFhirUtilities.getStringForType(quantity);
 
-    assertEquals("123.45|http://unitsofmeasure.org|mg", result);
+    assertEquals("123.45|mg", result);
   }
+// End: ASP
 
   @Test
   public void testGetStringForTypeFromDateTimeType() {

@@ -794,7 +794,7 @@
                                                     <content ID="labTestName14-1">Weight Dosing</content>
                                                 </td>
                                                 <td>
-                                                    <content ID="labTestResultValue14-1">70.3|http://unitsofmeasure.org|kg</content>
+                                                    <content ID="labTestResultValue14-1">70.3|kg</content>
                                                 </td>
                                                 <td>
                                                     <content ID="labTestResultValueDate14-1">20200429133200+0000</content>

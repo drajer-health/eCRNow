@@ -22,7 +22,7 @@
                             <content ID="medicationDate1">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="medicationDosagePeriod1">500|http://unitsofmeasure.org|mg|Unknown</content>
+                            <content ID="medicationDosagePeriod1">500|mg|Unknown</content>
                         </td>
                     </tr>
                     <tr>
@@ -33,7 +33,7 @@
                             <content ID="medicationDate2">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="medicationDosagePeriod2">500|http://unitsofmeasure.org|mg|Unknown</content>
+                            <content ID="medicationDosagePeriod2">500|mg|Unknown</content>
                         </td>
                     </tr>
                     <tr>
@@ -44,7 +44,7 @@
                             <content ID="medicationDate3">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="medicationDosagePeriod3">500|http://unitsofmeasure.org|mg|Unknown</content>
+                            <content ID="medicationDosagePeriod3">500|mg|Unknown</content>
                         </td>
                     </tr>
                 </tbody>

@@ -19,7 +19,7 @@
                             <content ID="vitalSign1">Blood pressure panel with all children optional</content>
                         </td>
                         <td>
-                            <content ID="vitalSignValue1">107|http://unitsofmeasure.org|mm[Hg]</content>
+                            <content ID="vitalSignValue1">107|mm[Hg]</content>
                         </td>
                         <td>
                             <content ID="vitalSignDate1">20120917</content>
@@ -41,7 +41,7 @@
                             <content ID="vitalSign3">Body mass index (BMI) [Ratio]</content>
                         </td>
                         <td>
-                            <content ID="vitalSignValue3">16.2|http://unitsofmeasure.org|kg/m2</content>
+                            <content ID="vitalSignValue3">16.2|kg/m2</content>
                         </td>
                         <td>
                             <content ID="vitalSignDate3">19990702000000+0000</content>
@@ -52,7 +52,7 @@
                             <content ID="vitalSign4">Body height</content>
                         </td>
                         <td>
-                            <content ID="vitalSignValue4">66.89999999999999|http://unitsofmeasure.org|[in_i]</content>
+                            <content ID="vitalSignValue4">66.89999999999999|[in_i]</content>
                         </td>
                         <td>
                             <content ID="vitalSignDate4">19990702000000+0000</content>
