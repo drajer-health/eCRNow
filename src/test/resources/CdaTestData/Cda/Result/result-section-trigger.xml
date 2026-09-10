@@ -107,7 +107,7 @@
                                                     <content ID="labTestInterpretation2-1">Normal</content>
                                                 </td>
                                                 <td>
-                                                    <content ID="labTestReferenceRange2-1">0.1|http://unitsofmeasure.org|mg/dL | 1|http://unitsofmeasure.org|mg/dL</content>
+                                                    <content ID="labTestReferenceRange2-1">0.1|mg/dL | 1|mg/dL</content>
                                                 </td>
                                                 <td>
                                                     <content ID="labTestSpecimenCollectionDate2-1">Unknown</content>

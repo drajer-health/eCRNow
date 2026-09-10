@@ -22,7 +22,7 @@
                             <content ID="medDate1">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="medDosagePeriod1">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|frequency: 2|period: 1|periodUnit: D</content>
+                            <content ID="medDosagePeriod1">1|TAB|frequency: 2|period: 1|periodUnit: D</content>
                         </td>
                     </tr>
                     <tr>
@@ -33,7 +33,7 @@
                             <content ID="medDate2">20231227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="medDosagePeriod2">1|http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm|TAB|Unknown</content>
+                            <content ID="medDosagePeriod2">1|TAB|Unknown</content>
                         </td>
                     </tr>
                     <tr>
@@ -44,7 +44,7 @@
                             <content ID="medDate3">20241227000000+0000</content>
                         </td>
                         <td>
-                            <content ID="medDosagePeriod3">1|http://unitsofmeasure.org|{tbl}|frequency: 2|period: 6|periodUnit: H</content>
+                            <content ID="medDosagePeriod3">1|{tbl}|frequency: 2|period: 6|periodUnit: H</content>
                         </td>
                     </tr>
                 </tbody>
