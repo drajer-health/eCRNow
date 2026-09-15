@@ -82,7 +82,6 @@ public class EvaluateMeasure extends BsaAction {
 
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
-
       //      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
       //      // Get the Resources that need to be retrieved.
       //      ehrService.getFilteredData(data, resourceTypes);
@@ -156,7 +155,6 @@ public class EvaluateMeasure extends BsaAction {
         data.addResourcesById(measureReportId, measureReports);
         data.addResourcesByType(ResourceType.MeasureReport, measureReports);
       }
-
       if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
