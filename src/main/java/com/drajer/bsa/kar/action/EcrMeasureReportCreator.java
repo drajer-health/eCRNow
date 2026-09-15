@@ -3,6 +3,7 @@ package com.drajer.bsa.kar.action;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
@@ -28,25 +29,31 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
       BsaAction act) {
     logger.info("Ecr Measure Report Creator is executing");
 
-    Resource res = super.createReport(kd, ehrService, id, profile, act);
-    if (res instanceof Bundle bund) {
-      inputData.addAll(getMeasureReports(kd));
-      Bundle measureReportBundle = createMeasureReportBundle(inputData);
-      if (!measureReportBundle.getEntry().isEmpty()) {
-        org.hl7.fhir.r4.model.Bundle.BundleEntryComponent measureEntry = new BundleEntryComponent();
-        measureEntry.setResource(measureReportBundle);
-        measureEntry.setFullUrl(
-            kd.getHealthcareSetting().getFhirServerBaseURL()
-                + "/"
-                + ResourceType.Bundle
-                + "/"
-                + measureReportBundle.getId());
+    Profiler profiler = Profiler.get();
 
-        bund.addEntry(measureEntry);
+    try (Profiler.Step ignored = profiler.step("EcrMeasureReportCreator.createReport")) {
+      Resource res = super.createReport(kd, ehrService, id, profile, act);
+
+      if (res instanceof Bundle bund) {
+        inputData.addAll(getMeasureReports(kd));
+        Bundle measureReportBundle = createMeasureReportBundle(inputData);
+        if (!measureReportBundle.getEntry().isEmpty()) {
+          org.hl7.fhir.r4.model.Bundle.BundleEntryComponent measureEntry =
+              new BundleEntryComponent();
+          measureEntry.setResource(measureReportBundle);
+          measureEntry.setFullUrl(
+              kd.getHealthcareSetting().getFhirServerBaseURL()
+                  + "/"
+                  + ResourceType.Bundle
+                  + "/"
+                  + measureReportBundle.getId());
+
+          bund.addEntry(measureEntry);
+        }
       }
-    }
 
-    return res;
+      return res;
+    }
   }
 
   private Bundle createMeasureReportBundle(Set<Resource> resources) {

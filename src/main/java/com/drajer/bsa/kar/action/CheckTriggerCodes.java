@@ -7,6 +7,7 @@ import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.*;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -30,6 +31,7 @@ public class CheckTriggerCodes extends BsaAction {
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
 
+    Profiler profiler = Profiler.get();
     CheckTriggerCodeStatus actStatus = new CheckTriggerCodeStatus();
     actStatus.setActionId(this.getActionId());
     actStatus.setActionType(ActionType.CHECK_TRIGGER_CODES);
@@ -44,79 +46,87 @@ public class CheckTriggerCodes extends BsaAction {
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
       // Get the default queries.
-      Map<String, FhirQueryFilter> queries =
-          BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
+      try (Profiler.Step q =
+          profiler.step("Input Loading - Execute Queries for check trigger codes")) {
+        Map<String, FhirQueryFilter> queries =
+            BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
 
-      if (queries != null && !queries.isEmpty()) {
+        if (queries != null && !queries.isEmpty()) {
 
-        logger.info(" Data Requirements Exist with Queries, so executing queries to load data ");
-        // Try to execute the queries.
-        queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+          logger.info(" Data Requirements Exist with Queries, so executing queries to load data ");
+          // Try to execute the queries.
+          queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
 
-      } else {
+        } else {
 
-        logger.info(" No Queries, so just get data by Resource Type ");
+          logger.info(" No Queries, so just get data by Resource Type ");
 
-        // Try to Get the Resources that need to be retrieved using Resource Type since queries are
-        // not specified.
-        ehrService.getFilteredData(data, getInputData());
+          // Try to Get the Resources that need to be retrieved using Resource Type since queries
+          // are
+          // not specified.
+          ehrService.getFilteredData(data, getInputData());
+        }
       }
+      try (Profiler.Step sl = profiler.step("Trigger Code creation and saving")) {
 
-      data.saveDataToFile(
-          KarProcessingData.DebugDataType.TRIGGER,
-          getInputData(),
-          KarProcessingData.TRIGGER_QUERY_FILE_NAME);
+        data.saveDataToFile(
+            KarProcessingData.DebugDataType.TRIGGER,
+            getInputData(),
+            KarProcessingData.TRIGGER_QUERY_FILE_NAME);
+      }
 
       HashMap<String, Set<Resource>> idres = new HashMap<>();
       Parameters params = new Parameters();
 
       CheckTriggerCodeStatusList ctcsl = new CheckTriggerCodeStatusList();
 
-      // Apply filters for data and then send the collections to the Condition Evaluator.
-      for (DataRequirement dr : inputData) {
+      try (Profiler.Step sl = profiler.step("Check Trigger Codes - FHIR Path Processing")) {
+        // Apply filters for data and then send the collections to the Condition Evaluator.
+        for (DataRequirement dr : inputData) {
 
-        Set<Resource> allResources = new HashSet<>();
-        if (dr.hasCodeFilter()) {
+          Set<Resource> allResources = new HashSet<>();
+          if (dr.hasCodeFilter()) {
 
-          logger.info(" Checking Trigger Codes based on code filter ");
-          Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> matchInfo =
-              fhirPathProcessor.applyCodeFilter(dr, data, this);
+            logger.info(" Checking Trigger Codes based on code filter ");
+            Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> matchInfo =
+                fhirPathProcessor.applyCodeFilter(dr, data, this);
 
-          if (matchInfo != null && matchInfo.getValue0().getTriggerMatchStatus()) {
+            if (matchInfo != null && matchInfo.getValue0().getTriggerMatchStatus()) {
 
-            logger.info(" Found Match for Code Filter {}", dr.getType());
+              logger.info(" Found Match for Code Filter {}", dr.getType());
 
-            matchInfo
-                .getValue1()
-                .values()
-                .forEach(setOfResources -> allResources.addAll(setOfResources));
+              matchInfo
+                  .getValue1()
+                  .values()
+                  .forEach(setOfResources -> allResources.addAll(setOfResources));
 
-            idres.putAll(matchInfo.getValue1());
+              idres.putAll(matchInfo.getValue1());
 
-            actStatus.addOutputProducedId(dr.getId());
-            actStatus.copyFrom(matchInfo.getValue0());
+              actStatus.addOutputProducedId(dr.getId());
+              actStatus.copyFrom(matchInfo.getValue0());
 
-            ctcsl.addCheckTriggerCodeStatus(matchInfo.getValue0());
+              ctcsl.addCheckTriggerCodeStatus(matchInfo.getValue0());
+
+            } else {
+
+              logger.info(" No Match found for Code Filter {}", dr.getType());
+            }
 
           } else {
-
-            logger.info(" No Match found for Code Filter {}", dr.getType());
+            Set<Resource> resources = getResourcesFromInput(dr, params);
+            if (resources == null || resources.isEmpty()) {
+              resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+            }
+            allResources.addAll(resources);
           }
-
-        } else {
-          Set<Resource> resources = getResourcesFromInput(dr, params);
-          if (resources == null || resources.isEmpty()) {
-            resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
-          }
-          allResources.addAll(resources);
+          // Add params
+          BsaServiceUtils.convertDataToParameters(
+              dr.getId(),
+              dr.getType(),
+              (dr.hasLimit() ? Integer.toString(dr.getLimit()) : "*"),
+              allResources,
+              params);
         }
-        // Add params
-        BsaServiceUtils.convertDataToParameters(
-            dr.getId(),
-            dr.getType(),
-            (dr.hasLimit() ? Integer.toString(dr.getLimit()) : "*"),
-            allResources,
-            params);
       }
       data.addParameters(actionId, params);
       actStatus.setMatchedResources(idres);
