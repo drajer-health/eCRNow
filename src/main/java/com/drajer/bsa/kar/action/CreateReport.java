@@ -8,6 +8,7 @@ import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthMessage;
+import com.drajer.bsa.profiler.Profiler;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.MDCUtils;
 import java.time.Instant;
@@ -57,6 +58,7 @@ public class CreateReport extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
+      Profiler profiler = Profiler.get();
       Set<Resource> resources = new HashSet<>();
 
       // Get the default queries.
@@ -68,14 +70,18 @@ public class CreateReport extends BsaAction {
         logger.info(" Found Default/Custom Queries for execution ");
 
         // Try to execute the queries.
-        queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+        try (Profiler.Step q = profiler.step("Input Loading - Execute Queries for create report")) {
+          queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+        }
 
       } else {
 
         // Try to Get the Resources that need to be retrieved using Resource Type since queries are
         // not specified.
         List<DataRequirement> inputRequirements = getInputData();
-        ehrService.getFilteredData(data, inputRequirements);
+        try (Profiler.Step il = profiler.step("Input Loading")) {
+          ehrService.getFilteredData(data, inputRequirements);
+        }
         inputRequirements.stream()
             .filter(
                 ir ->
@@ -84,7 +90,9 @@ public class CreateReport extends BsaAction {
             .forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
       }
 
-      ehrService.loadJurisdicationData(data);
+      try (Profiler.Step j = profiler.step("Jurisdiction Loading")) {
+        ehrService.loadJurisdicationData(data);
+      }
 
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {
@@ -101,55 +109,58 @@ public class CreateReport extends BsaAction {
             if (rc != null) {
 
               logger.info("Start creating report");
-              Resource output =
-                  rc.createReport(
-                      data, ehrService, resources, dr.getId(), ct.asStringValue(), this);
-              logger.info("Finished creating report");
+              try (Profiler.Step rg = profiler.step("MeasureReport Generation")) {
+                Resource output =
+                    rc.createReport(
+                        data, ehrService, resources, dr.getId(), ct.asStringValue(), this);
+                logger.info("Finished creating report");
 
-              if (output != null) {
+                if (output != null) {
 
-                logger.info(" Adding Report to output generated {}", output.getId());
-                data.addActionOutput(actionId, output);
+                  logger.info(" Adding Report to output generated {}", output.getId());
+                  data.addActionOutput(actionId, output);
 
-                logger.info(" Adding Report to output using id {}", dr.getId());
+                  logger.info(" Adding Report to output using id {}", dr.getId());
 
-                data.addActionOutputById(dr.getId(), output);
+                  data.addActionOutputById(dr.getId(), output);
 
-                if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
+                  if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
 
-                  logger.info("Creating PH message for CDA Data ");
-                  createPublicHealthMessageForCda(
-                      data, BsaTypes.getActionString(type), output, actionId);
+                    logger.info("Creating PH message for CDA Data ");
+                    createPublicHealthMessageForCda(
+                        data, BsaTypes.getActionString(type), output, actionId);
 
+                  } else {
+
+                    // Save FHIR Data to PH messages
+                    String fileName =
+                        logDirectory
+                            + BsaTypes.getActionString(type)
+                            + "_"
+                            + data.getNotificationContext().getPatientId()
+                            + "_"
+                            + data.getNotificationContext().getNotificationResourceId()
+                            + ".json";
+
+                    try (Profiler.Step ser = profiler.step("Serialization")) {
+                      saveReportToFile(jsonParser.encodeResourceToString(output), fileName);
+                      String xmlFileName =
+                          logDirectory
+                              + BsaTypes.getActionString(type)
+                              + "_"
+                              + data.getNotificationContext().getPatientId()
+                              + "_"
+                              + data.getNotificationContext().getNotificationResourceId()
+                              + ".xml";
+                      saveReportToFile(xmlParser.encodeResourceToString(output), xmlFileName);
+                    }
+                  }
                 } else {
-
-                  // Save FHIR Data to PH messages
-                  String fileName =
-                      logDirectory
-                          + BsaTypes.getActionString(type)
-                          + "_"
-                          + data.getNotificationContext().getPatientId()
-                          + "_"
-                          + data.getNotificationContext().getNotificationResourceId()
-                          + ".json";
-
-                  saveReportToFile(jsonParser.encodeResourceToString(output), fileName);
-
-                  String xmlFileName =
-                      logDirectory
-                          + BsaTypes.getActionString(type)
-                          + "_"
-                          + data.getNotificationContext().getPatientId()
-                          + "_"
-                          + data.getNotificationContext().getNotificationResourceId()
-                          + ".xml";
-                  saveReportToFile(xmlParser.encodeResourceToString(output), xmlFileName);
+                  logger.error(" No report created, hence nothing do ");
                 }
-              } else {
-                logger.error(" No report created, hence nothing do ");
               }
             } else {
-              logger.error(" No Report creator for type ", ct.asStringValue());
+              logger.error(" No Report creator for type {}", ct.asStringValue());
             }
           }
         }
