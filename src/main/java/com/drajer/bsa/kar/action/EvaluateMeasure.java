@@ -2,13 +2,12 @@ package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import java.time.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.opencds.cqf.fhir.utility.Constants;
@@ -84,9 +83,25 @@ public class EvaluateMeasure extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-      // Get the Resources that need to be retrieved.
-      ehrService.getFilteredData(data, resourceTypes);
+      //      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+      //      // Get the Resources that need to be retrieved.
+      //      ehrService.getFilteredData(data, resourceTypes);
+
+      Map<String, FhirQueryFilter> queries =
+          BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
+
+      if (queries != null && !queries.isEmpty()) {
+
+        logger.info(" Data Requirements Exist with Queries, so executing queries to load data ");
+        // Try to execute the queries.
+        queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+
+      } else {
+
+        logger.info(" No Queries, so just get data by Resource Type ");
+
+        ehrService.getFilteredData(data, getInputData());
+      }
 
       Endpoint endpoint =
           new Endpoint()
