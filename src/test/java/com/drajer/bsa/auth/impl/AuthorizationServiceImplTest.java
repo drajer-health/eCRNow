@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.security.AESEncryption;
-import com.drajer.sof.model.Response;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -53,19 +52,16 @@ public class AuthorizationServiceImplTest {
 
     PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(mockRestemplate);
     when(mockRestemplate.exchange(
-            anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Response.class)))
-        .thenReturn(new ResponseEntity<>(getResponse(), HttpStatus.OK));
+            anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class)))
+        .thenReturn(new ResponseEntity<>(getTokenResponse(), HttpStatus.OK));
     JSONObject result = authorizationService.getAuthorizationToken(hcs);
     assertNotNull(result);
     assertEquals("access_token_value", result.getString("access_token"));
     assertEquals(3000, result.getInt("expires_in"));
   }
 
-  public Response getResponse() {
-    Response response = new Response();
-    response.setAccess_token("access_token_value");
-    response.setExpires_in(3000);
-    return response;
+  public String getTokenResponse() {
+    return "{\"access_token\":\"access_token_value\",\"expires_in\":3000}";
   }
 
   @Test

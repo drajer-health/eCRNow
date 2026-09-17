@@ -115,7 +115,7 @@ public class CreateReport extends BsaAction {
 
                 data.addActionOutputById(dr.getId(), output);
 
-                if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
+                if (BsaServiceUtils.hasCdaData(output)) {
 
                   logger.info("Creating PH message for CDA Data ");
                   createPublicHealthMessageForCda(

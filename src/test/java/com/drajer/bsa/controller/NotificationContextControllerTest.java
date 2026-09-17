@@ -94,7 +94,8 @@ public class NotificationContextControllerTest {
         204,
         notificationContextController
             .getNotificationContextData("url", "patient", "res")
-            .getStatusCodeValue());
+            .getStatusCode()
+            .value());
   }
 
   @Test
@@ -112,7 +113,8 @@ public class NotificationContextControllerTest {
         200,
         notificationContextController
             .getNotificationContextData("url", "patient", "res")
-            .getStatusCodeValue());
+            .getStatusCode()
+            .value());
   }
 
   @Test
@@ -127,7 +129,8 @@ public class NotificationContextControllerTest {
         204,
         notificationContextController
             .getAllNotificationContextData(new java.util.HashMap<>())
-            .getStatusCodeValue());
+            .getStatusCode()
+            .value());
   }
 
   @Test
@@ -142,7 +145,8 @@ public class NotificationContextControllerTest {
         204,
         notificationContextController
             .getNotificationContextForReprocessing(new java.util.HashMap<>())
-            .getStatusCodeValue());
+            .getStatusCode()
+            .value());
   }
 
   @Test
@@ -160,6 +164,7 @@ public class NotificationContextControllerTest {
         200,
         notificationContextController
             .getNotificationContextForReprocessing(new java.util.HashMap<>())
-            .getStatusCodeValue());
+            .getStatusCode()
+            .value());
   }
 }

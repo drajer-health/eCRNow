@@ -88,13 +88,14 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   @Override
   public ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks) {
-    getSession().saveOrUpdate(scheduledTasks);
+    // ScheduledTasks uses an assigned composite key, so it is always merged rather than persisted.
+    getSession().merge(scheduledTasks);
     return scheduledTasks;
   }
 
   @Override
   public ScheduledTasks delete(ScheduledTasks scheduledTasks) {
-    getSession().delete(scheduledTasks);
+    remove(scheduledTasks);
     return scheduledTasks;
   }
 }

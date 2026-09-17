@@ -59,7 +59,7 @@ public class KarDaoImplTest {
     kar.setFhirServerURL("http://example.com");
     when(sessionFactory.getCurrentSession()).thenReturn(session);
     KnowledgeArtifactRepository result = karDaoImpl.saveOrUpdate(kar);
-    verify(session).saveOrUpdate(kar);
+    verify(session).persist(kar);
     assertEquals(kar, result);
   }
 
@@ -120,7 +120,7 @@ public class KarDaoImplTest {
     when(sessionFactory.getCurrentSession()).thenReturn(session);
     karDaoImpl.saveOrUpdateKARStatus(status);
 
-    verify(session).saveOrUpdate(status);
+    verify(session).persist(status);
   }
 
   @Test

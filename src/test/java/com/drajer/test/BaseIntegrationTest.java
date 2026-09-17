@@ -24,12 +24,12 @@ import org.junit.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -79,8 +79,8 @@ public abstract class BaseIntegrationTest {
     restTemplate =
         new TestRestTemplate(
             restTemplateBuilder
-                .setConnectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
-                .setReadTimeout(Duration.ofSeconds(600)) // Set read timeout
+                .connectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
+                .readTimeout(Duration.ofSeconds(600)) // Set read timeout
             );
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();

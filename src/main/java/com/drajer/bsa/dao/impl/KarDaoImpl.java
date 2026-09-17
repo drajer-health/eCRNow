@@ -25,7 +25,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar) {
-    getSession().saveOrUpdate(kar);
+    persistOrMerge(kar, kar.getId());
     return kar;
   }
 
@@ -79,7 +79,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public KnowledgeArtifactStatus saveOrUpdateKARStatus(KnowledgeArtifactStatus karStatus) {
-    getSession().saveOrUpdate(karStatus);
+    persistOrMerge(karStatus, karStatus.getId());
     return karStatus;
   }
 

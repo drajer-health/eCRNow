@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.*;
 import org.hibernate.Session;
@@ -18,6 +19,7 @@ import org.hibernate.query.criteria.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -79,7 +81,7 @@ public class NotificationContextDaoImplTest {
   public void testSaveOrUpdate_NewNotificationContext() {
 
     when(sessionFactory.getCurrentSession()).thenReturn(session);
-    doNothing().when(session).saveOrUpdate(notificationContext);
+    when(session.merge(notificationContext)).thenReturn(notificationContext);
     NotificationContext result = dao.saveOrUpdate(notificationContext);
 
     assertEquals("patient-123", result.getPatientId());
@@ -293,7 +295,7 @@ public class NotificationContextDaoImplTest {
 
     when(jpaCriteriaQuery.select(jpaRoot)).thenReturn(jpaCriteriaQuery);
     when(jpaRoot.get(anyString())).thenReturn(jpaPath);
-    when(hibernateCriteriaBuilder.and(any())).thenReturn(jpaPredicate);
+    when(hibernateCriteriaBuilder.and(ArgumentMatchers.<Predicate>any())).thenReturn(jpaPredicate);
     when(hibernateCriteriaBuilder.asc(jpaPath)).thenReturn(jpaOrder);
     when(jpaCriteriaQuery.where(any(JpaExpression.class))).thenReturn(jpaCriteriaQuery);
     when(jpaCriteriaQuery.orderBy(any(JpaOrder.class))).thenReturn(jpaCriteriaQuery);
@@ -340,9 +342,10 @@ public class NotificationContextDaoImplTest {
     NotificationContext notificationContext = new NotificationContext();
     when(sessionFactory.getCurrentSession()).thenReturn(session);
 
+    when(session.merge(notificationContext)).thenReturn(notificationContext);
     dao.delete(notificationContext);
 
     verify(sessionFactory).getCurrentSession();
-    verify(session).delete(notificationContext);
+    verify(session).remove(notificationContext);
   }
 }

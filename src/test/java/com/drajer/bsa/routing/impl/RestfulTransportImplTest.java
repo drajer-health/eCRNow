@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -68,7 +69,7 @@ public class RestfulTransportImplTest {
 
     ResponseEntity<String> mockResponse = mock(ResponseEntity.class);
     when(mockResponse.getBody()).thenReturn("{\"response\":\"success\"}");
-    when(mockResponse.getStatusCodeValue()).thenReturn(200);
+    when(mockResponse.getStatusCode()).thenReturn(HttpStatus.OK);
     when(restTemplate.exchange(anyString(), any(), any(), eq(String.class)))
         .thenReturn(mockResponse);
 

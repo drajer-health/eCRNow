@@ -270,7 +270,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   @Override
   public void delete(PublicHealthMessage message) {
-    getSession().delete(message);
+    remove(message);
   }
 
   private CompoundSelection<Object[]> getSelectedProperties(

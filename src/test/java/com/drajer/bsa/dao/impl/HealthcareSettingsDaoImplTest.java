@@ -63,7 +63,7 @@ public class HealthcareSettingsDaoImplTest {
 
     dao.saveOrUpdate(hs);
 
-    verify(session).saveOrUpdate(hs);
+    verify(session).merge(hs);
     assertNotNull(hs.getKarsActive());
   }
 
@@ -152,7 +152,8 @@ public class HealthcareSettingsDaoImplTest {
   @Test
   public void testDelete() {
     HealthcareSetting hs = new HealthcareSetting();
+    when(session.merge(hs)).thenReturn(hs);
     dao.delete(hs);
-    verify(session).delete(hs);
+    verify(session).remove(hs);
   }
 }

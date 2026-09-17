@@ -64,7 +64,7 @@ public class KarExecutionStateDaoImplTest {
 
     karExecutionStateDaoImpl.saveOrUpdate(kar);
 
-    verify(session, times(1)).saveOrUpdate(kar);
+    verify(session, times(1)).persist(kar);
   }
 
   @Test
@@ -105,9 +105,10 @@ public class KarExecutionStateDaoImplTest {
   public void testDelete() throws Exception {
     KarExecutionState kar = createKarExecutionState();
 
+    when(session.merge(kar)).thenReturn(kar);
     karExecutionStateDaoImpl.delete(kar);
 
-    verify(session, times(1)).delete(kar);
+    verify(session, times(1)).remove(kar);
   }
 
   @Test

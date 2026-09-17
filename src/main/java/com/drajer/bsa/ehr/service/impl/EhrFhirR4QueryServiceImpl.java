@@ -569,7 +569,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       } // For participant != null
 
       // Load Organizations
-      if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
+      if (encounter.hasServiceProvider()) {
         Reference organizationReference = encounter.getServiceProvider();
         if (organizationReference.hasReferenceElement()
             && !kd.containsResourceWithId(
@@ -592,7 +592,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
       // Load Locations
-      if (Boolean.TRUE.equals(encounter.hasLocation())) {
+      if (encounter.hasLocation()) {
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
         for (EncounterLocationComponent location : enocunterLocations) {
           if (location.hasLocation()
@@ -962,7 +962,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(" Substituted Query to be executed {}", queryToExecute);
 
-        if (Boolean.TRUE.equals(isSearchQuery(queryToExecute))) {
+        if (isSearchQuery(queryToExecute)) {
 
           String finalSearchQuery = createSearchUrl(data, queryToExecute);
 

@@ -46,7 +46,7 @@ public class PublicHealthMessagesDaoImplTest {
     assertEquals(publicHealthMessage.getId(), result.getId());
     assertEquals(publicHealthMessage.getFhirServerBaseUrl(), result.getFhirServerBaseUrl());
 
-    verify(mocksession).saveOrUpdate(publicHealthMessage);
+    verify(mocksession).merge(publicHealthMessage);
   }
 
   @Test
@@ -468,11 +468,11 @@ public class PublicHealthMessagesDaoImplTest {
     Session session = mock(Session.class);
 
     when(sessionFactory.getCurrentSession()).thenReturn(session);
-    doNothing().when(session).delete(publicHealthMessage);
+    when(session.merge(publicHealthMessage)).thenReturn(publicHealthMessage);
 
     publicHealthMessagesDao.delete(publicHealthMessage);
     verify(sessionFactory).getCurrentSession();
-    verify(session).delete(publicHealthMessage);
+    verify(session).remove(publicHealthMessage);
   }
 
   //

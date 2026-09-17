@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.drajer.ecrapp.model.ScheduledTasks;
 import jakarta.persistence.criteria.*;
@@ -122,7 +123,7 @@ public class SchedulerDaoImplTest {
 
     ScheduledTasks returned = dao.saveOrUpdate(t);
 
-    verify(session).saveOrUpdate(t);
+    verify(session).merge(t);
     assertSame(t, returned);
   }
 
@@ -130,9 +131,10 @@ public class SchedulerDaoImplTest {
   public void testDelete_invokesSession() {
     ScheduledTasks t = new ScheduledTasks();
 
+    when(session.merge(t)).thenReturn(t);
     ScheduledTasks returned = dao.delete(t);
 
-    verify(session).delete(t);
+    verify(session).remove(t);
     assertSame(t, returned);
   }
 }

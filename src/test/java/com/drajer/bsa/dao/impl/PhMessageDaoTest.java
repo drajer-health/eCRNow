@@ -188,11 +188,11 @@ public class PhMessageDaoTest {
   public void testDelete() {
     PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
 
-    Mockito.lenient().doNothing().when(session).delete(publicHealthMessage);
+    Mockito.lenient().when(session.merge(publicHealthMessage)).thenReturn(publicHealthMessage);
 
     phMessageDaoImpl.delete(publicHealthMessage);
 
-    verify(session).delete(publicHealthMessage);
+    verify(session).remove(publicHealthMessage);
   }
 
   private void mockProjectionAndCriteria() {

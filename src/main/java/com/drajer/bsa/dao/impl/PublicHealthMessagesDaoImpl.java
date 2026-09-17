@@ -36,7 +36,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public PublicHealthMessage saveOrUpdate(PublicHealthMessage message) {
-    getSession().saveOrUpdate(message);
+    persistOrMerge(message, message.getId());
     return message;
   }
 
@@ -165,7 +165,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public void delete(PublicHealthMessage message) {
-    getSession().delete(message);
+    remove(message);
   }
 
   @Override
