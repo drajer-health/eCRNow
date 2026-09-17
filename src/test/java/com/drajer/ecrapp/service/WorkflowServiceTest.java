@@ -471,6 +471,7 @@ public class WorkflowServiceTest {
     try {
       WorkflowService.scheduleJob(launchId, ts, actionType, timeRef, "task3");
     } catch (NullPointerException npe) {
+      // Expected when TimingSchedule is null; test only verifies no unhandled exception escapes.
     }
 
     Assert.assertTrue("Method should process input", true);

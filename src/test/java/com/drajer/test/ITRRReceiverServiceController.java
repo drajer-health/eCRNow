@@ -44,6 +44,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   @Autowired private EicrServiceImpl eicrService;
 
   @Before
+  @Override
   public void setUp() throws Throwable {
     try {
       super.setUp();
@@ -509,7 +510,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
         ub.addParameter("eicrId", String.valueOf(eicr.getId()));
       }
       ub.addParameter("eicrDocId", eicr.getEicrDocId());
-      logger.info("Constructed URL:::::{}", ub.toString());
+      logger.info("Constructed URL:::::{}", ub);
       return restTemplate.postForEntity(ub.toString(), null, String.class);
 
     } catch (URISyntaxException e) {

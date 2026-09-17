@@ -138,20 +138,21 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   public void testGenerateTravelHistoryEntry() {
 
     String expectedXml =
-        "<entry>\r\n"
-            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
-            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
-            + "<text>Travel history</text>\r\n"
-            + "<statusCode code=\"completed\"/>\r\n"
-            + "<effectiveTime>\r\n"
-            + "<low value=\"20220403153000-0400\"/>\r\n"
-            + "<high value=\"20230403153000-0400\"/>\r\n"
-            + "</effectiveTime>\r\n"
-            + "</act>\r\n"
-            + "</entry>\r\n"
-            + "";
+        """
+        <entry>\r
+        <act classCode="ACT" moodCode="EVN">\r
+        <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>\r
+        <id root="2.16.840.1.113883.1.1.1.1" extension="null"/>\r
+        <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>\r
+        <text>Travel history</text>\r
+        <statusCode code="completed"/>\r
+        <effectiveTime>\r
+        <low value="20220403153000-0400"/>\r
+        <high value="20230403153000-0400"/>\r
+        </effectiveTime>\r
+        </act>\r
+        </entry>\r
+        """;
 
     Observation observation = new Observation();
     Period period = new Period();
@@ -172,17 +173,18 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   public void testGenerateTravelHistoryEntry1() {
 
     String expectedXml =
-        "<entry>\r\n"
-            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
-            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
-            + "<text>Travel history</text>\r\n"
-            + "<statusCode code=\"completed\"/>\r\n"
-            + "<effectiveTime value=\"20230403153000-0400\"/>\r\n"
-            + "</act>\r\n"
-            + "</entry>\r\n"
-            + "";
+        """
+        <entry>\r
+        <act classCode="ACT" moodCode="EVN">\r
+        <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>\r
+        <id root="2.16.840.1.113883.1.1.1.1" extension="null"/>\r
+        <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>\r
+        <text>Travel history</text>\r
+        <statusCode code="completed"/>\r
+        <effectiveTime value="20230403153000-0400"/>\r
+        </act>\r
+        </entry>\r
+        """;
 
     Observation observation = new Observation();
     DateTimeType dateTimeType = new DateTimeType("2023-04-03T15:30:00-04:00");

@@ -205,9 +205,9 @@ public class ActionRepoTest {
   @Test
   public void testSetupTriggerBasedActions_withTimingSchedule() {
 
-    ActionRepo repo = ActionRepo.getInstance();
-    repo.setActions(null);
-    repo.setActionsByTriggers(null);
+    ActionRepo localRepo = ActionRepo.getInstance();
+    localRepo.setActions(null);
+    localRepo.setActionsByTriggers(null);
 
     AbstractAction action =
         new AbstractAction() {
@@ -243,16 +243,16 @@ public class ActionRepoTest {
     actionSet.add(action);
     actionsMap.put(EcrActionTypes.PERIODIC_UPDATE_EICR, actionSet);
 
-    repo.setActions(actionsMap);
-    repo.setupTriggerBasedActions();
-    assertNotNull(repo.getActionsByTriggers());
-    assertTrue(repo.getActionsByTriggers().containsKey(TriggerType.DATACHANGED));
-    assertTrue(repo.getActionsByTriggers().get(TriggerType.DATACHANGED).contains(action));
+    localRepo.setActions(actionsMap);
+    localRepo.setupTriggerBasedActions();
+    assertNotNull(localRepo.getActionsByTriggers());
+    assertTrue(localRepo.getActionsByTriggers().containsKey(TriggerType.DATACHANGED));
+    assertTrue(localRepo.getActionsByTriggers().get(TriggerType.DATACHANGED).contains(action));
   }
 
   @Test
   public void testPrintRunsWithoutErrosr() {
-    ActionRepo repo = ActionRepo.getInstance();
+    ActionRepo localRepo = ActionRepo.getInstance();
     AbstractAction action =
         new AbstractAction() {
           @Override
@@ -272,18 +272,18 @@ public class ActionRepoTest {
     actionSet.add(action);
     Map<EcrActionTypes, Set<AbstractAction>> actionsMap = new HashMap<>();
     actionsMap.put(EcrActionTypes.CREATE_EICR, actionSet);
-    repo.setActions(actionsMap);
+    localRepo.setActions(actionsMap);
     Set<AbstractAction> triggerSet = new HashSet<>();
     triggerSet.add(action);
     Map<TriggerType, Set<AbstractAction>> triggerMap = new HashMap<>();
     triggerMap.put(TriggerType.DATAACCESSED, triggerSet);
-    repo.setActionsByTriggers(triggerMap);
-    repo.print();
+    localRepo.setActionsByTriggers(triggerMap);
+    localRepo.print();
 
-    assertNotNull(repo.getActions());
-    assertTrue(repo.getActions().get(EcrActionTypes.CREATE_EICR).contains(action));
+    assertNotNull(localRepo.getActions());
+    assertTrue(localRepo.getActions().get(EcrActionTypes.CREATE_EICR).contains(action));
 
-    assertNotNull(repo.getActionsByTriggers());
-    assertTrue(repo.getActionsByTriggers().get(TriggerType.DATAACCESSED).contains(action));
+    assertNotNull(localRepo.getActionsByTriggers());
+    assertTrue(localRepo.getActionsByTriggers().get(TriggerType.DATAACCESSED).contains(action));
   }
 }

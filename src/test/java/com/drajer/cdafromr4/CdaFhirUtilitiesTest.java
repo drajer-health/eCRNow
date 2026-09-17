@@ -272,11 +272,11 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @org.junit.jupiter.api.Test
   public void testGetCodingXmlForMappedConceptDomain() {
     String expectedResult =
-        "<interpretationCode code=\"A\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Abnormal\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Normal\"/>";
-    expectedResult +=
-        "\n"
-            + "<translation code=\"L\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Low\"/>";
-    expectedResult += "\n" + "</interpretationCode>" + "\n";
+        """
+        <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"><translation code="N" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Normal"/>
+        <translation code="L" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Low"/>
+        </interpretationCode>
+        """;
     String actualResult =
         CdaFhirUtilities.getCodingXmlForMappedConceptDomain(
             INTERPRETATION_CODE, codes, INTERPRETATION_CODE, false);
@@ -965,16 +965,17 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
             includeNullFlavor);
 
     String expectedXml =
-        "<interpretationCode nullFlavor=\"OTH\">\r\n"
-            + "<originalText>\r\n"
-            + "interpretationCode text 1</originalText>\r\n"
-            + "\r\n"
-            + "</interpretationCode>\r\n"
-            + "<interpretationCode nullFlavor=\"OTH\">\r\n"
-            + "<originalText>\r\n"
-            + "interpretationCode text 2</originalText>\r\n"
-            + "\r\n"
-            + "</interpretationCode>";
+        """
+        <interpretationCode nullFlavor="OTH">\r
+        <originalText>\r
+        interpretationCode text 1</originalText>\r
+        \r
+        </interpretationCode>\r
+        <interpretationCode nullFlavor="OTH">\r
+        <originalText>\r
+        interpretationCode text 2</originalText>\r
+        \r
+        </interpretationCode>""";
     assertThat(actualXml).isNotNull().isNotEmpty();
     assertXmlEquals(expectedXml, actualXml);
   }

@@ -3,8 +3,6 @@ package com.drajer.test;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.WireMockHelper;
@@ -44,8 +42,6 @@ public class ITRetryLogic extends BaseIntegrationTest {
 
   private static final Logger logger = LoggerFactory.getLogger(ITRetryLogic.class);
   private String systemLaunchPayLoad;
-  private LaunchDetails launchDetails;
-  private PatientExecutionState state;
   WireMockHelper stubHelper;
 
   @Before

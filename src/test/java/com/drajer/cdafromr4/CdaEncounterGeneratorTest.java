@@ -31,16 +31,17 @@ public class CdaEncounterGeneratorTest extends BaseGeneratorTest {
       "R4/Condition/Condition-Problem-WithCovidTriggerCode.json";
   private static final String ENCOUNTER_CDA_FILE = "CdaTestData/Cda/Encounter/encounter.xml";
   private static final String EXPECTED_EMPTY_ENCOUNTER_SECTION =
-      "<component>\r\n"
-          + "<section nullFlavor=\"NI\">\r\n"
-          + "<templateId root=\"2.16.840.1.113883.10.20.22.2.22.1\"/>\r\n"
-          + "<templateId root=\"2.16.840.1.113883.10.20.22.2.22.1\" extension=\"2015-08-01\"/>\r\n"
-          + "<code code=\"46240-8\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"History of Encounters\"/>\r\n"
-          + "<title>ENCOUNTERS</title>\r\n"
-          + "<text>No Encounter Information</text>\r\n"
-          + "</section>\r\n"
-          + "</component>\r\n"
-          + "";
+      """
+      <component>\r
+      <section nullFlavor="NI">\r
+      <templateId root="2.16.840.1.113883.10.20.22.2.22.1"/>\r
+      <templateId root="2.16.840.1.113883.10.20.22.2.22.1" extension="2015-08-01"/>\r
+      <code code="46240-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Encounters"/>\r
+      <title>ENCOUNTERS</title>\r
+      <text>No Encounter Information</text>\r
+      </section>\r
+      </component>\r
+      """;
 
   @Test
   public void testGenerateEncounterSection() {

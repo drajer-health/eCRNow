@@ -127,9 +127,11 @@ public class EcrFhirRetryableSearchTest {
     EcrFhirRetryableSearch untypedSearch =
         new EcrFhirRetryableSearch(mock(IUntypedQuery.class), client);
 
-    assertThrows(NotImplementedOperationException.class, () -> untypedSearch.where(new HashMap()));
+    Map emptyWhereMap = new HashMap();
+    assertThrows(NotImplementedOperationException.class, () -> untypedSearch.where(emptyWhereMap));
+    Map emptyWhereMultiMap = new HashMap();
     assertThrows(
-        NotImplementedOperationException.class, () -> untypedSearch.whereMap(new HashMap()));
+        NotImplementedOperationException.class, () -> untypedSearch.whereMap(emptyWhereMultiMap));
     assertThrows(
         NotImplementedOperationException.class, () -> untypedSearch.encoded(EncodingEnum.JSON));
     assertThrows(NotImplementedOperationException.class, () -> untypedSearch.encodedJson());
@@ -137,9 +139,10 @@ public class EcrFhirRetryableSearchTest {
     assertThrows(
         NotImplementedOperationException.class,
         () -> untypedSearch.preferResponseType(Bundle.class));
+    List emptyPreferredTypes = new ArrayList();
     assertThrows(
         NotImplementedOperationException.class,
-        () -> untypedSearch.preferResponseTypes(new ArrayList()));
+        () -> untypedSearch.preferResponseTypes(emptyPreferredTypes));
     assertThrows(
         NotImplementedOperationException.class, () -> untypedSearch.accept("application/json"));
     assertThrows(NotImplementedOperationException.class, () -> untypedSearch.prettyPrint());
@@ -149,9 +152,10 @@ public class EcrFhirRetryableSearchTest {
         NotImplementedOperationException.class, () -> untypedSearch.elementsSubset("elem"));
     assertThrows(
         NotImplementedOperationException.class, () -> untypedSearch.andLogRequestAndResponse(true));
+    CacheControlDirective mockCacheControlDirective = mock(CacheControlDirective.class);
     assertThrows(
         NotImplementedOperationException.class,
-        () -> untypedSearch.cacheControl(mock(CacheControlDirective.class)));
+        () -> untypedSearch.cacheControl(mockCacheControlDirective));
     assertThrows(
         NotImplementedOperationException.class, () -> untypedSearch.withAdditionalHeader("h", "v"));
     assertThrows(NotImplementedOperationException.class, () -> untypedSearch.forAllResources());
@@ -187,8 +191,9 @@ public class EcrFhirRetryableSearchTest {
     EcrFhirRetryableSearch search = new EcrFhirRetryableSearch(mock(IQuery.class), client);
 
     assertThrows(NotImplementedOperationException.class, () -> search.withProfile("uri"));
+    List emptyProfileUris = new ArrayList();
     assertThrows(
-        NotImplementedOperationException.class, () -> search.withAnyProfile(new ArrayList()));
+        NotImplementedOperationException.class, () -> search.withAnyProfile(emptyProfileUris));
     assertThrows(NotImplementedOperationException.class, () -> search.withTag("s", "c"));
     assertThrows(NotImplementedOperationException.class, () -> search.withSecurity("s", "c"));
     assertThrows(

@@ -80,8 +80,8 @@ public abstract class BaseIntegrationTest {
     restTemplate =
         new TestRestTemplate(
             restTemplateBuilder
-                .setConnectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
-                .setReadTimeout(Duration.ofSeconds(600)) // Set read timeout
+                .connectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
+                .readTimeout(Duration.ofSeconds(600)) // Set read timeout
             );
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();

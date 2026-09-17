@@ -244,16 +244,17 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
   public void testGenerateEmptyPlanOfTreatmentSection() {
 
     String expectedXml =
-        "<component>\r\n"
-            + "<section nullFlavor=\"NI\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.10\"/>\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.10\" extension=\"2014-06-09\"/>\r\n"
-            + "<code code=\"18776-5\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Treatment Plan\"/>\r\n"
-            + "<title>Plan of Treatment</title>\r\n"
-            + "<text>No Plan Of Treatment Information</text>\r\n"
-            + "</section>\r\n"
-            + "</component>\r\n"
-            + "";
+        """
+        <component>\r
+        <section nullFlavor="NI">\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.10"/>\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>\r
+        <code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>\r
+        <title>Plan of Treatment</title>\r
+        <text>No Plan Of Treatment Information</text>\r
+        </section>\r
+        </component>\r
+        """;
     String actualXml = CdaPlanOfTreatmentGenerator.generateEmptyPlanOfTreatmentSection();
 
     assertNotNull(actualXml);
@@ -438,29 +439,30 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
   public String getAuthor() {
     String authorXml =
-        "<author>\n"
-            + "            <time value=\"20250217125323+0000\"/>\n"
-            + "            <assignedAuthor>\n"
-            + "                <id root=\"2.16.840.1.113883.4.6\" extension=\"9999993519\"/>\n"
-            + "                <addr>\n"
-            + "                    <streetAddressLine>5400 N Oak Trfy</streetAddressLine>\n"
-            + "                    <city>New York City</city>\n"
-            + "                    <county>Manhattan</county>\n"
-            + "                    <state>NY</state>\n"
-            + "                    <postalCode>10001</postalCode>\n"
-            + "                    <country>US</country>\n"
-            + "                </addr>\n"
-            + "                <telecom value=\"tel:(816)673-2878\" use=\"MC\"/>\n"
-            + "                <telecom value=\"mailto:arthur.james73@gmail.com\"/>\n"
-            + "                <assignedPerson>\n"
-            + "                    <name>\n"
-            + "                        <given>Arthur</given>\n"
-            + "                        <given>James</given>\n"
-            + "                        <family>Smith</family>\n"
-            + "                    </name>\n"
-            + "                </assignedPerson>\n"
-            + "            </assignedAuthor>\n"
-            + "        </author>";
+        """
+        <author>
+                    <time value="20250217125323+0000"/>
+                    <assignedAuthor>
+                        <id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+                        <addr>
+                            <streetAddressLine>5400 N Oak Trfy</streetAddressLine>
+                            <city>New York City</city>
+                            <county>Manhattan</county>
+                            <state>NY</state>
+                            <postalCode>10001</postalCode>
+                            <country>US</country>
+                        </addr>
+                        <telecom value="tel:(816)673-2878" use="MC"/>
+                        <telecom value="mailto:arthur.james73@gmail.com"/>
+                        <assignedPerson>
+                            <name>
+                                <given>Arthur</given>
+                                <given>James</given>
+                                <family>Smith</family>
+                            </name>
+                        </assignedPerson>
+                    </assignedAuthor>
+                </author>""";
     return authorXml;
   }
 

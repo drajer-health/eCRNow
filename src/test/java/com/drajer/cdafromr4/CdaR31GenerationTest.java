@@ -8,8 +8,6 @@ import org.junit.Test;
 
 public class CdaR31GenerationTest extends BaseGeneratorTest {
 
-  private static final String SCENARIO_DIRECTORY = "/CdaR31TestScenarios";
-
   @Before
   public void initTestData() {
 

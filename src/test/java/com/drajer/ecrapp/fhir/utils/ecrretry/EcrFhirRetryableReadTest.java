@@ -204,9 +204,10 @@ public class EcrFhirRetryableReadTest {
     assertThrows(
         NotImplementedOperationException.class,
         () -> retryRead.preferResponseType(Encounter.class));
+    List emptyPreferredTypes = new ArrayList<>();
     assertThrows(
         NotImplementedOperationException.class,
-        () -> retryRead.preferResponseTypes(new ArrayList<>()));
+        () -> retryRead.preferResponseTypes(emptyPreferredTypes));
     assertThrows(NotImplementedOperationException.class, () -> retryRead.prettyPrint());
     assertThrows(
         NotImplementedOperationException.class, () -> retryRead.summaryMode(SummaryEnum.TRUE));

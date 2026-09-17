@@ -41,7 +41,11 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateCdaBodyWithEmptyComponent() {
     String expectedXml =
-        "<component>\r\n" + "<structuredBody>\r\n" + "</structuredBody>\r\n" + "</component>";
+        """
+        <component>\r
+        <structuredBody>\r
+        </structuredBody>\r
+        </component>""";
     String actualXml =
         CdaBodyGenerator.generateCdaBody(null, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 

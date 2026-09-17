@@ -161,15 +161,16 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   @Test
   public void TestGenerateEmptyMedicationsAdministeredSection() {
     String expectedXml =
-        "<component>\r\n"
-            + "<section nullFlavor=\"NI\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.38\"/>\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.38\" extension=\"2014-06-09\"/>\r\n"
-            + "<code code=\"29549-3\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Medications Administered\"/>\r\n"
-            + "<title>Medications Administered</title>\r\n"
-            + "<text>No Medication Administered Information</text>\r\n"
-            + "</section>\r\n"
-            + "</component>";
+        """
+        <component>\r
+        <section nullFlavor="NI">\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.38"/>\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>\r
+        <code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>\r
+        <title>Medications Administered</title>\r
+        <text>No Medication Administered Information</text>\r
+        </section>\r
+        </component>""";
     String actualXml = CdaMedicationGenerator.generateEmptyMedicationsAdministeredSection();
 
     assertXmlEquals(expectedXml, actualXml);
@@ -178,15 +179,17 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateEmptyMedicationsSection() {
     String expectedXml =
-        "<component>\n"
-            + "<section nullFlavor=\"NI\">\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.1.1\"/>\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.1.1\" extension=\"2014-06-09\"/>\n"
-            + "<code code=\"10160-0\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"History of Medication Use\"/>\n"
-            + "<title>MEDICATIONS</title>\n"
-            + "<text>No Medication Statement Information</text>\n"
-            + "</section>\n"
-            + "</component>\n";
+        """
+        <component>
+        <section nullFlavor="NI">
+        <templateId root="2.16.840.1.113883.10.20.22.2.1.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.1.1" extension="2014-06-09"/>
+        <code code="10160-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Medication Use"/>
+        <title>MEDICATIONS</title>
+        <text>No Medication Statement Information</text>
+        </section>
+        </component>
+        """;
     String actualXml = CdaMedicationGenerator.generateEmptyMedicationsSection();
 
     assertXmlEquals(expectedXml, actualXml);

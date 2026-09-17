@@ -3,7 +3,6 @@ package com.drajer.test;
 import static org.junit.Assert.*;
 
 import com.drajer.eca.model.*;
-import com.drajer.ecrapp.model.Eicr;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
@@ -88,20 +87,5 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     assertNotNull("Test case ID should not be null", testCaseId);
     assertNotNull("Test data should not be null", testData);
     assertNotNull("System launch payload should not be null", systemLaunchPayload);
-  }
-
-  private Eicr getEICRDocument(String eicrId) {
-    try {
-
-      Eicr eicr = session.get(Eicr.class, Integer.parseInt(eicrId));
-      if (eicr != null) {
-        session.refresh(eicr);
-        return eicr;
-      }
-    } catch (Exception e) {
-      logger.error("Exception retrieving EICR ", e);
-      fail("Something went wrong retrieving EICR, check the log");
-    }
-    return null;
   }
 }

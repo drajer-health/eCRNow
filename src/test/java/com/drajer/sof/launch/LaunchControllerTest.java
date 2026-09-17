@@ -159,9 +159,9 @@ public class LaunchControllerTest {
 
     when(authDetailsService.getAuthDetailsById(1)).thenReturn(launchDetails);
 
-    String response = launchController.triggerDataFromEHR(1);
+    String localResponse = launchController.triggerDataFromEHR(1);
 
-    assertEquals("Success", response);
+    assertEquals("Success", localResponse);
 
     verify(triggerQueryService).getData(eq(launchDetails), any(Date.class), any(Date.class));
   }
@@ -171,9 +171,9 @@ public class LaunchControllerTest {
 
     when(authDetailsService.getAuthDetailsById(1)).thenReturn(launchDetails);
 
-    String response = launchController.loadingDataFromEHR(1);
+    String localResponse = launchController.loadingDataFromEHR(1);
 
-    assertEquals("Success", response);
+    assertEquals("Success", localResponse);
 
     verify(loadingQueryService).getData(eq(launchDetails), any(Date.class), any(Date.class));
   }
@@ -186,12 +186,12 @@ public class LaunchControllerTest {
     systemLaunch.setEncounterId("enc-1");
     systemLaunch.setFhirServerURL("http://test");
 
-    ClientDetails clientDetails = new ClientDetails();
-    clientDetails.setClientId("cid");
-    clientDetails.setScopes("scope");
-    clientDetails.setAssigningAuthorityId("auth");
-    clientDetails.setFhirServerBaseURL("http://base");
-    clientDetails.setIsMultiTenantSystemLaunch(false);
+    ClientDetails localClientDetails = new ClientDetails();
+    localClientDetails.setClientId("cid");
+    localClientDetails.setScopes("scope");
+    localClientDetails.setAssigningAuthorityId("auth");
+    localClientDetails.setFhirServerBaseURL("http://base");
+    localClientDetails.setIsMultiTenantSystemLaunch(false);
 
     JSONObject metadata = new JSONObject();
     metadata.put("fhirVersion", "4.0.1");
@@ -212,7 +212,7 @@ public class LaunchControllerTest {
     tokenResponse.put("access_token", "token123");
     tokenResponse.put("expires_in", 3600);
 
-    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(clientDetails);
+    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(localClientDetails);
 
     when(authorization.getMetadata(any())).thenReturn(metadata);
 
@@ -254,14 +254,14 @@ public class LaunchControllerTest {
     systemLaunch.setEncounterId("enc-1");
     systemLaunch.setFhirServerURL("http://test");
 
-    ClientDetails clientDetails = new ClientDetails();
-    clientDetails.setIsMultiTenantSystemLaunch(false);
+    ClientDetails localClientDetails = new ClientDetails();
+    localClientDetails.setIsMultiTenantSystemLaunch(false);
 
     JSONObject tokenResponse = new JSONObject();
     tokenResponse.put("access_token", "token123");
     tokenResponse.put("expires_in", 3600);
 
-    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(clientDetails);
+    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(localClientDetails);
 
     when(tokenScheduler.getAccessTokenUsingClientDetails(any())).thenReturn(tokenResponse);
 
@@ -275,9 +275,9 @@ public class LaunchControllerTest {
     systemLaunch.setPatientId(null);
     systemLaunch.setFhirServerURL("url");
 
-    ClientDetails clientDetails = new ClientDetails();
+    ClientDetails localClientDetails = new ClientDetails();
 
-    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(clientDetails);
+    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(localClientDetails);
 
     JSONObject tokenResponse = new JSONObject();
     tokenResponse.put("access_token", "token123");
@@ -296,9 +296,9 @@ public class LaunchControllerTest {
     systemLaunch.setEncounterId("e1");
     systemLaunch.setFhirServerURL("url");
 
-    ClientDetails clientDetails = new ClientDetails();
+    ClientDetails localClientDetails = new ClientDetails();
 
-    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(clientDetails);
+    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(localClientDetails);
 
     when(tokenScheduler.getAccessTokenUsingClientDetails(any())).thenReturn(null);
 
@@ -350,12 +350,12 @@ public class LaunchControllerTest {
 
     when(authorization.getMetadata(any())).thenReturn(metadata);
 
-    ClientDetails clientDetails = new ClientDetails();
-    clientDetails.setClientId("client123");
-    clientDetails.setScopes("openid profile");
-    clientDetails.setRequireAud(true);
+    ClientDetails localClientDetails = new ClientDetails();
+    localClientDetails.setClientId("client123");
+    localClientDetails.setScopes("openid profile");
+    localClientDetails.setRequireAud(true);
 
-    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(clientDetails);
+    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(localClientDetails);
 
     when(authorization.createAuthUrl(any(), any(), anyInt()))
         .thenReturn("http://constructed-auth-url");
@@ -368,7 +368,7 @@ public class LaunchControllerTest {
 
     verify(clientDetailsService).getClientDetailsByUrl(iss);
 
-    verify(authorization).createAuthUrl(any(), eq(clientDetails), anyInt());
+    verify(authorization).createAuthUrl(any(), eq(localClientDetails), anyInt());
 
     verify(authDetailsService).saveOrUpdate(any());
 
@@ -381,10 +381,10 @@ public class LaunchControllerTest {
     String code = "authCode123";
     String state = "1";
 
-    LaunchDetails launchDetails = new LaunchDetails();
-    launchDetails.setEhrServerURL("http://fhir");
+    LaunchDetails localLaunchDetails = new LaunchDetails();
+    localLaunchDetails.setEhrServerURL("http://fhir");
 
-    when(authDetailsService.getLaunchDetailsByState(1)).thenReturn(launchDetails);
+    when(authDetailsService.getLaunchDetailsByState(1)).thenReturn(localLaunchDetails);
 
     JSONObject tokenResponse = new JSONObject();
     tokenResponse.put("access_token", "token123");
@@ -395,12 +395,12 @@ public class LaunchControllerTest {
 
     when(authorization.getAccessToken(any())).thenReturn(tokenResponse);
 
-    ClientDetails clientDetails = new ClientDetails();
-    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(clientDetails);
+    ClientDetails localClientDetails = new ClientDetails();
+    when(clientDetailsService.getClientDetailsByUrl(any())).thenReturn(localClientDetails);
 
-    doReturn(launchDetails).when(launchController).setLaunchDetails(any(), any(), any());
+    doReturn(localLaunchDetails).when(launchController).setLaunchDetails(any(), any(), any());
 
-    doReturn(launchDetails).when(launchController).saveLaunchDetails(any());
+    doReturn(localLaunchDetails).when(launchController).saveLaunchDetails(any());
 
     launchController.redirectEndPoint(code, state, request, response);
 
@@ -450,16 +450,16 @@ public class LaunchControllerTest {
     accessTokenObject.put("PATIENT", "patient1");
     accessTokenObject.put("ENCOUNTER", "enc1");
 
-    ClientDetails clientDetails = mock(ClientDetails.class);
+    ClientDetails localClientDetails = mock(ClientDetails.class);
 
-    when(clientDetails.getAssigningAuthorityId()).thenReturn("authId");
-    when(clientDetails.getDirectUser()).thenReturn("directUser");
-    when(clientDetails.getDirectHost()).thenReturn("directHost");
-    when(clientDetails.getDirectPwd()).thenReturn("directPwd"); // no encryption
-    when(clientDetails.getDirectRecipientAddress()).thenReturn("recipient@test.com");
-    when(clientDetails.getRestAPIURL()).thenReturn("http://rest");
-    when(clientDetails.getIsCovid()).thenReturn(true);
-    when(clientDetails.getDebugFhirQueryAndEicr()).thenReturn(true);
+    when(localClientDetails.getAssigningAuthorityId()).thenReturn("authId");
+    when(localClientDetails.getDirectUser()).thenReturn("directUser");
+    when(localClientDetails.getDirectHost()).thenReturn("directHost");
+    when(localClientDetails.getDirectPwd()).thenReturn("directPwd"); // no encryption
+    when(localClientDetails.getDirectRecipientAddress()).thenReturn("recipient@test.com");
+    when(localClientDetails.getRestAPIURL()).thenReturn("http://rest");
+    when(localClientDetails.getIsCovid()).thenReturn(true);
+    when(localClientDetails.getDebugFhirQueryAndEicr()).thenReturn(true);
 
     LaunchController spyController = Mockito.spy(launchController);
 
@@ -467,7 +467,7 @@ public class LaunchControllerTest {
     doNothing().when(spyController).setStartAndEndDates(any(), any(), any());
 
     LaunchDetails result =
-        spyController.setLaunchDetails(currentDetails, accessTokenObject, clientDetails);
+        spyController.setLaunchDetails(currentDetails, accessTokenObject, localClientDetails);
 
     assertNotNull(result);
 
@@ -492,7 +492,7 @@ public class LaunchControllerTest {
     assertTrue(result.getDebugFhirQueryAndEicr());
 
     verify(spyController).getEncounterById(result);
-    verify(spyController).setStartAndEndDates(eq(clientDetails), eq(result), isNull());
+    verify(spyController).setStartAndEndDates(eq(localClientDetails), eq(result), isNull());
   }
 
   @Test
@@ -616,7 +616,7 @@ public class LaunchControllerTest {
   @Test
   public void testGetEncounterById() {
 
-    LaunchDetails launchDetails = new LaunchDetails();
+    LaunchDetails localLaunchDetails = new LaunchDetails();
 
     FhirContext context = mock(FhirContext.class);
     IGenericClient client = mock(IGenericClient.class);
@@ -628,8 +628,8 @@ public class LaunchControllerTest {
 
     when(fhirContextInitializer.createClient(any(), any(), any())).thenReturn(client);
 
-    launchDetails.setFhirVersion("R4");
-    launchDetails.setEncounterId("enc1");
+    localLaunchDetails.setFhirVersion("R4");
+    localLaunchDetails.setEncounterId("enc1");
 
     org.hl7.fhir.r4.model.Encounter encounter = new org.hl7.fhir.r4.model.Encounter();
     encounter.setId("enc1");
@@ -639,12 +639,12 @@ public class LaunchControllerTest {
     when(readTyped.withId("enc1")).thenReturn(readExec);
     when(readExec.execute()).thenReturn(encounter);
 
-    IBaseResource result = launchController.getEncounterById(launchDetails);
+    IBaseResource result = launchController.getEncounterById(localLaunchDetails);
 
     assertNotNull(result);
     assertEquals("enc1", result.getIdElement().getIdPart());
 
-    launchDetails.setEncounterId(null);
+    localLaunchDetails.setEncounterId(null);
 
     Bundle bundle = new Bundle();
 
@@ -662,14 +662,14 @@ public class LaunchControllerTest {
     when(fhirContextInitializer.getResourceByPatientId(any(), any(), any(), eq("Encounter")))
         .thenReturn(bundle);
 
-    result = launchController.getEncounterById(launchDetails);
+    result = launchController.getEncounterById(localLaunchDetails);
 
     assertNotNull(result);
     assertEquals("e2", result.getIdElement().getIdPart());
-    assertEquals("e2", launchDetails.getEncounterId());
+    assertEquals("e2", localLaunchDetails.getEncounterId());
 
-    launchDetails.setFhirVersion("DSTU2");
-    launchDetails.setEncounterId(null);
+    localLaunchDetails.setFhirVersion("DSTU2");
+    localLaunchDetails.setEncounterId(null);
 
     ca.uhn.fhir.model.dstu2.resource.Bundle dstu2Bundle =
         new ca.uhn.fhir.model.dstu2.resource.Bundle();
@@ -690,14 +690,14 @@ public class LaunchControllerTest {
     when(fhirContextInitializer.getResourceByPatientId(any(), any(), any(), eq("Encounter")))
         .thenReturn(dstu2Bundle);
 
-    result = launchController.getEncounterById(launchDetails);
+    result = launchController.getEncounterById(localLaunchDetails);
 
     assertNotNull(result);
     assertEquals("d2", result.getIdElement().getIdPart());
-    assertEquals("d2", launchDetails.getEncounterId());
+    assertEquals("d2", localLaunchDetails.getEncounterId());
 
-    launchDetails.setFhirVersion("R4");
-    launchDetails.setEncounterId("encX");
+    localLaunchDetails.setFhirVersion("R4");
+    localLaunchDetails.setEncounterId("encX");
 
     when(client.read()).thenReturn(read);
     when(read.resource("Encounter")).thenReturn(readTyped);
@@ -705,7 +705,7 @@ public class LaunchControllerTest {
     when(readExec.execute()).thenThrow(new ResourceNotFoundException("Not found"));
 
     try {
-      launchController.getEncounterById(launchDetails);
+      launchController.getEncounterById(localLaunchDetails);
       fail("Expected ResponseStatusException");
     } catch (ResponseStatusException ex) {
       assertEquals(404, ex.getStatusCode().value());
@@ -714,7 +714,7 @@ public class LaunchControllerTest {
     when(fhirContextInitializer.getFhirContext(any())).thenThrow(new RuntimeException("Boom"));
 
     try {
-      launchController.getEncounterById(launchDetails);
+      launchController.getEncounterById(localLaunchDetails);
       fail("Expected ResponseStatusException");
     } catch (ResponseStatusException ex) {
       assertEquals(500, ex.getStatusCode().value());

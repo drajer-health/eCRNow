@@ -44,15 +44,16 @@ public class CdaImmunizationGeneratorTest extends BaseGeneratorTest {
   public void testGenerateEmptyImmunizations() {
 
     String expectedXml =
-        "<component>\r\n"
-            + "<section nullFlavor=\"NI\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.2.1\"/>\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.2.1\" extension=\"2015-08-01\"/>\r\n"
-            + "<code code=\"11369-6\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"History of immunizations\"/>\r\n"
-            + "<title>IMMUNIZATIONS</title>\r\n"
-            + "<text>No ImmunizationInformation</text>\r\n"
-            + "</section>\r\n"
-            + "</component>";
+        """
+        <component>\r
+        <section nullFlavor="NI">\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.2.1" extension="2015-08-01"/>\r
+        <code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>\r
+        <title>IMMUNIZATIONS</title>\r
+        <text>No ImmunizationInformation</text>\r
+        </section>\r
+        </component>""";
 
     String actualXml = CdaImmunizationGenerator.generateEmptyImmunizations();
     assertXmlEquals(expectedXml, actualXml);
@@ -153,7 +154,6 @@ public class CdaImmunizationGeneratorTest extends BaseGeneratorTest {
     imm.setId("Immunization/status-2");
     imm.setStatus(ImmunizationStatus.ENTEREDINERROR);
 
-    StringBuilder sb = new StringBuilder();
     R4FhirData data = new R4FhirData();
     java.util.List<Immunization> imms = new java.util.ArrayList<>();
     imms.add(imm);
