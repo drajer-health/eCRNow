@@ -276,15 +276,4 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   public void delete(PublicHealthMessage message) {
     getSession().delete(message);
   }
-
-  /*private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {
-    if (summaryFlag) {
-      List<String> selectedProperties = getSelectedProperties();
-      ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
-
-      criteria.setProjection(projectionList);
-
-      criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
-    }
-  }*/
 }

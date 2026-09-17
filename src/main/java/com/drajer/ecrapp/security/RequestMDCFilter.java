@@ -37,7 +37,7 @@ public class RequestMDCFilter implements Filter {
 
     boolean isHealthCheck = uri.contains("/health") || uri.contains("/actuator/health");
 
-    if (!isHealthCheck) {
+    if (!isHealthCheck && logger.isDebugEnabled()) {
       logger.debug("Start to handle request: {}", StringEscapeUtils.escapeJava(uri));
     }
 
@@ -73,7 +73,7 @@ public class RequestMDCFilter implements Filter {
       chain.doFilter(request, response);
 
     } finally {
-      if (!isHealthCheck) {
+      if (!isHealthCheck && logger.isInfoEnabled()) {
         logger.info(
             "Request {} completed for requestId {} associated to correlationId {} for domain {}",
             StringEscapeUtils.escapeJava(uri),
@@ -86,7 +86,7 @@ public class RequestMDCFilter implements Filter {
       MDC.remove(MDC_CORRELATION_ID_KEY);
       MDC.remove(MDC_DOMAIN_LOGICAL_DOMAIN_ID);
 
-      if (!isHealthCheck) {
+      if (!isHealthCheck && logger.isDebugEnabled()) {
         logger.debug("Completed handling request: {}", StringEscapeUtils.escapeJava(uri));
       }
     }

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class OperationOutcomeUtil {
 
+  private OperationOutcomeUtil() {}
+
   private static final Logger logger = LoggerFactory.getLogger(OperationOutcomeUtil.class);
 
   private static final ObjectMapper objectMapper = new ObjectMapper();

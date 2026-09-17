@@ -27,9 +27,9 @@ public class ReportGenerationUtilsTest {
 
   @Test
   public void testFilterObservationsByCategory() {
-    FhirContext fhirContext = FhirContext.forR4();
+    FhirContext localFhirContext = FhirContext.forR4();
     Bundle bundle =
-        fhirContext
+        localFhirContext
             .newJsonParser()
             .parseResource(
                 Bundle.class,

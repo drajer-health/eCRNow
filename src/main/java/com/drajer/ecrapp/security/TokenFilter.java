@@ -42,7 +42,7 @@ public class TokenFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     String authorizationHeader = request.getHeader("Authorization");
-    if (authorizationHeader != null) {
+    if (authorizationHeader != null && log.isDebugEnabled()) {
       log.debug(
           "Received Authorization Header: {}", StringEscapeUtils.escapeJava(authorizationHeader));
     }
@@ -58,7 +58,6 @@ public class TokenFilter extends OncePerRequestFilter {
       chain.doFilter(request, response);
     } else {
       log.error("Access token validation failed.");
-      // response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       chain.doFilter(request, response);
     }
   }

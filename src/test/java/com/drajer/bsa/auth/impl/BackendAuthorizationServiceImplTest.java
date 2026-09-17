@@ -42,19 +42,6 @@ public class BackendAuthorizationServiceImplTest {
     backendAuthorizationService.password = KEY_STORE_PASSWORD;
   }
 
-  //  @Test
-  //  public void testconnectToServer() {
-  //    String healthCareSettings = "R4/Misc/HealthCareSettings/Hcs.json";
-  //    HealthcareSetting hcs =
-  //        (HealthcareSetting)
-  //            TestUtils.getResourceAsObject(healthCareSettings, HealthcareSetting.class);
-  //    try {
-  //      backendAuthorizationService.connectToServer(
-  //          "https://fhir-ehr.xyramsoft.com/api/auth/generate-token", hcs);
-  //    } catch (Exception e) {
-  //    }
-  //  }
-
   @Test
   public void testconnectToServer() {
     String healthCareSettings = "R4/Misc/HealthCareSettings/Hcs.json";

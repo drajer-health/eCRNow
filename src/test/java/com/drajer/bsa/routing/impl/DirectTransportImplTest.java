@@ -324,8 +324,8 @@ public class DirectTransportImplTest {
     assertNotNull(
         "Healthcare setting should not be null", karProcessingData.getHealthcareSetting());
     assertNotNull("XML attachment should be processed", emailMessage);
-    assertTrue("Message count should be 1", inboxFolder.getMessageCount() == 1);
-    assertTrue("Unread count should be 1", inboxFolder.getUnreadMessageCount() == 1);
+    assertEquals("Message count should be 1", 1, inboxFolder.getMessageCount());
+    assertEquals("Unread count should be 1", 1, inboxFolder.getUnreadMessageCount());
 
     verify(rrReceiver, times(1)).handleReportabilityResponse(any(), eq("<msg-1>"));
     verify(emailMessage, times(1)).setFlag(Flags.Flag.SEEN, true);
@@ -428,8 +428,8 @@ public class DirectTransportImplTest {
     assertNotNull("Message 1 should not be null", readMessage1);
     assertNotNull("Message 2 should not be null", readMessage2);
     assertNotNull("Data should not be null", karProcessingData);
-    assertTrue("Message count should be 2", inboxFolder.getMessageCount() == 2);
-    assertTrue("Unread count should be 0", inboxFolder.getUnreadMessageCount() == 0);
+    assertEquals("Message count should be 2", 2, inboxFolder.getMessageCount());
+    assertEquals("Unread count should be 0", 0, inboxFolder.getUnreadMessageCount());
     assertTrue("Inbox should be open", inboxFolder.isOpen());
 
     verify(inboxFolder, times(1)).search(any(FlagTerm.class));
@@ -510,7 +510,7 @@ public class DirectTransportImplTest {
     // Assertions - method should complete and close folder
     assertNotNull("Message should not be null", emailMessage);
     assertNotNull("Data should not be null", karProcessingData);
-    assertTrue("Message count should be 1", inboxFolder.getMessageCount() == 1);
+    assertEquals("Message count should be 1", 1, inboxFolder.getMessageCount());
     assertTrue("Content should be multipart", emailMessage.getContent() instanceof Multipart);
 
     verify(inboxFolder, times(1)).close(true);
@@ -546,8 +546,8 @@ public class DirectTransportImplTest {
     // Assertions - generic exception should NOT be rethrown
     assertNotNull("Message should not be null", emailMessage);
     assertNotNull("Data should not be null", karProcessingData);
-    assertTrue("Message count should be 1", inboxFolder.getMessageCount() == 1);
-    assertTrue("Unread count should be 1", inboxFolder.getUnreadMessageCount() == 1);
+    assertEquals("Message count should be 1", 1, inboxFolder.getMessageCount());
+    assertEquals("Unread count should be 1", 1, inboxFolder.getUnreadMessageCount());
 
     // Verify folder operations completed despite exception
     verify(inboxFolder, times(1)).close(true);

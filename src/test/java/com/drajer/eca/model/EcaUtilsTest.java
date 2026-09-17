@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -309,8 +310,8 @@ public class EcaUtilsTest {
     when(mockClient.read().resource("Encounter").withId(mockDetails.getEncounterId()).execute())
         .thenReturn(mockr4Encounter);
     when(mockr4Encounter.getPeriod()).thenReturn(period);
-    assertTrue(mockr4Encounter.getPeriod().getStart() == null);
-    assertTrue(mockDetails.getStartDate() != null);
+    assertNull(mockr4Encounter.getPeriod().getStart());
+    assertNotNull(mockDetails.getStartDate());
   }
 
   @Test

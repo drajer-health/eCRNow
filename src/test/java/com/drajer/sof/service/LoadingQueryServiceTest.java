@@ -21,8 +21,6 @@ public class LoadingQueryServiceTest {
 
   private LoadingQueryService loadingQueryService;
 
-  //  @Mock private LoadingQueryDstu2Bundle generateDSTU2Bundle;
-
   @Mock private LoadingQueryR4Bundle generateR4Bundle;
 
   private LaunchDetails launchDetails;

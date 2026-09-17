@@ -161,10 +161,10 @@ public class WorkflowService {
 
     workflowInstance = this;
     ActionRepo.getInstance().setWorkflowService(workflowInstance);
-    this.staticScheduler = scheduler;
-    this.staticTaskConfiguration = taskConfiguration;
-    this.staticSchedulerService = schedulerService;
-    this.staticLaunchDetailsDao = launchDetailsDao;
+    WorkflowService.staticScheduler = scheduler;
+    WorkflowService.staticTaskConfiguration = taskConfiguration;
+    WorkflowService.staticSchedulerService = schedulerService;
+    WorkflowService.staticLaunchDetailsDao = launchDetailsDao;
   }
 
   public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -172,10 +172,12 @@ public class WorkflowService {
     if (type == WorkflowEvent.SOF_LAUNCH) {
 
       // Identify the appropriate actions and execute it from the Action Repo.
-      logger.info(
-          " SOF Launch for Patient : {} and Encounter : {}",
-          StringEscapeUtils.escapeJava(details.getLaunchPatientId()),
-          StringEscapeUtils.escapeJava(details.getEncounterId()));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " SOF Launch for Patient : {} and Encounter : {}",
+            StringEscapeUtils.escapeJava(details.getLaunchPatientId()),
+            StringEscapeUtils.escapeJava(details.getEncounterId()));
+      }
 
       // Setup Execution State.
       PatientExecutionState oldstate =

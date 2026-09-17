@@ -78,8 +78,6 @@ public class CdaHistoryOfPresentIllnessGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
 
     String expectedXml = TestUtils.getFileContentAsString(HISTORY_OF_PHI_CDA_FILE);

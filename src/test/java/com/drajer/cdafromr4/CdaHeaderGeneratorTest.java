@@ -157,26 +157,28 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     List<ContactComponent> contactComponents = r4FhirData1.getPatient().getContact();
 
     String expectedXml =
-        "<participant typeCode=\"IND\">\n"
-            + "<associatedEntity classCode=\"NOK\">\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
-            + "<addr use=\"HP\">\n"
-            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\n"
-            + "<city>PleasantVille</city>\n"
-            + "<county>Rainbow</county>\n"
-            + "<state>Vic</state>\n"
-            + "<postalCode>3999</postalCode>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "<telecom value=\"tel:(323)799-8327\"/>\n"
-            + "<associatedPerson>\n"
-            + "<name>\n"
-            + "<given>B�n�dicte</given>\n"
-            + "<family>du March�</family>\n"
-            + "</name>\n"
-            + "</associatedPerson>\n"
-            + "</associatedEntity>\n"
-            + "</participant>\n";
+        """
+        <participant typeCode="IND">
+        <associatedEntity classCode="NOK">
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>
+        <addr use="HP">
+        <streetAddressLine>534 Erewhon St</streetAddressLine>
+        <city>PleasantVille</city>
+        <county>Rainbow</county>
+        <state>Vic</state>
+        <postalCode>3999</postalCode>
+        <country nullFlavor="NI"/>
+        </addr>
+        <telecom value="tel:(323)799-8327"/>
+        <associatedPerson>
+        <name>
+        <given>B�n�dicte</given>
+        <family>du March�</family>
+        </name>
+        </associatedPerson>
+        </associatedEntity>
+        </participant>
+        """;
 
     String actualXml =
         CdaHeaderGenerator.getParticipantXml(
@@ -221,22 +223,23 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         (Practitioner) loadResourceDataFromFile(Practitioner.class, PRACTITIONER_FILENAME);
 
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.4.6\"/>\r\n"
-            + "<addr use=\"HP\">\r\n"
-            + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
-            + "<city>PleasantVille</city>\r\n"
-            + "<state>Vic</state>\r\n"
-            + "<postalCode>3999</postalCode>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<assignedPerson>\r\n"
-            + "<name>\r\n"
-            + "<given>Adam</given>\r\n"
-            + "<family>Careful</family>\r\n"
-            + "</name>\r\n"
-            + "</assignedPerson>\r\n"
-            + "";
+        """
+        <id root="2.16.840.1.113883.4.6"/>\r
+        <addr use="HP">\r
+        <streetAddressLine>534 Erewhon St</streetAddressLine>\r
+        <city>PleasantVille</city>\r
+        <state>Vic</state>\r
+        <postalCode>3999</postalCode>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        <telecom nullFlavor="NI"/>\r
+        <assignedPerson>\r
+        <name>\r
+        <given>Adam</given>\r
+        <family>Careful</family>\r
+        </name>\r
+        </assignedPerson>\r
+        """;
     String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner, null);
 
     assertThat(actualXml).isNotNull();
@@ -251,18 +254,19 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         (Organization) loadResourceDataFromFile(Organization.class, ORGANIZATION_FILENAME);
 
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"1\"/>\r\n"
-            + "<code nullFlavor=\"NI\"/>\r\n"
-            + "<location>\r\n"
-            + "<name>South Wing, second floor</name>\r\n"
-            + "<addr use=\"WP\">\r\n"
-            + "<streetAddressLine>Galapagosweg 91, Building A</streetAddressLine>\r\n"
-            + "<city>Den Burg</city>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode>9105 PZ</postalCode>\r\n"
-            + "<country>NLD</country>\r\n"
-            + "</addr>\r\n"
-            + "</location>";
+        """
+        <id root="2.16.840.1.113883.1.1.1.1" extension="1"/>\r
+        <code nullFlavor="NI"/>\r
+        <location>\r
+        <name>South Wing, second floor</name>\r
+        <addr use="WP">\r
+        <streetAddressLine>Galapagosweg 91, Building A</streetAddressLine>\r
+        <city>Den Burg</city>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode>9105 PZ</postalCode>\r
+        <country>NLD</country>\r
+        </addr>\r
+        </location>""";
 
     String actualXml = CdaHeaderGenerator.getLocationXml(location, organization, launchDetails);
 
@@ -276,18 +280,19 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         (Organization) loadResourceDataFromFile(Organization.class, ORGANIZATION_FILENAME);
 
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
-            + "<code nullFlavor=\"NI\"/>\r\n"
-            + "<location>\r\n"
-            + "<name>Health Level Seven International</name>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "</location>";
+        """
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>\r
+        <code nullFlavor="NI"/>\r
+        <location>\r
+        <name>Health Level Seven International</name>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        </location>""";
 
     String actualXml = CdaHeaderGenerator.getLocationXml(null, organization, launchDetails);
 
@@ -298,17 +303,19 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateLocationXml_noLocationOrOrganization() {
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"Unknown\"/>\r\n"
-            + "<code nullFlavor=\"NI\"/>\r\n"
-            + "<location>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "</location>\r\n";
+        """
+        <id root="2.16.840.1.113883.1.1.1.1" extension="Unknown"/>\r
+        <code nullFlavor="NI"/>\r
+        <location>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        </location>\r
+        """;
 
     String actualXml = CdaHeaderGenerator.getLocationXml(null, null, launchDetails);
 
@@ -320,23 +327,25 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   public void testGetAdditionalAuthorXml() {
 
     String expectedXml =
-        "<author>\n"
-            + "<time value=\"20230503103307+0000\"/><assignedAuthor>\n"
-            + "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\" extension=\"manfacture-1.0v\"/>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "<telecom nullFlavor=\"NI\"/>\n"
-            + "<assignedAuthoringDevice>\n"
-            + "<manufacturerModelName>manfacture</manufacturerModelName>\n"
-            + "<softwareName>1.0v</softwareName>\n"
-            + "</assignedAuthoringDevice>\n"
-            + "</assignedAuthor>\n"
-            + "</author>\n";
+        """
+        <author>
+        <time value="20230503103307+0000"/><assignedAuthor>
+        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9" extension="manfacture-1.0v"/>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        <telecom nullFlavor="NI"/>
+        <assignedAuthoringDevice>
+        <manufacturerModelName>manfacture</manufacturerModelName>
+        <softwareName>1.0v</softwareName>
+        </assignedAuthoringDevice>
+        </assignedAuthor>
+        </author>
+        """;
 
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForEffectiveTime(any(), any()))
@@ -353,25 +362,27 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateAuthorXml_noPractitionerData() {
     String expectedXml =
-        "<author>\r\n"
-            + "<time value=\"20230503103307+0000\"/><assignedAuthor>\r\n"
-            + "<id root=\"2.16.840.1.113883.4.6\"/>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<assignedPerson>\r\n"
-            + "<name>\r\n"
-            + "<given nullFlavor=\"NI\"/>\r\n"
-            + "<family nullFlavor=\"NI\"/>\r\n"
-            + "</name>\r\n"
-            + "</assignedPerson>\r\n"
-            + "</assignedAuthor>\r\n"
-            + "</author>\r\n";
+        """
+        <author>\r
+        <time value="20230503103307+0000"/><assignedAuthor>\r
+        <id root="2.16.840.1.113883.4.6"/>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        <telecom nullFlavor="NI"/>\r
+        <assignedPerson>\r
+        <name>\r
+        <given nullFlavor="NI"/>\r
+        <family nullFlavor="NI"/>\r
+        </name>\r
+        </assignedPerson>\r
+        </assignedAuthor>\r
+        </author>\r
+        """;
 
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForEffectiveTime(any(), any()))
@@ -401,26 +412,28 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         .thenReturn("<time value=\"20230503103307+0000\"/>");
 
     String expectedXml =
-        "<author>\r\n"
-            + "<time value=\"20200512134056+0000\"/>\r\n"
-            + "<assignedAuthor>\r\n"
-            + "<id root=\"2.16.840.1.113883.4.6\"/>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<assignedPerson>\r\n"
-            + "<name>\r\n"
-            + "<given nullFlavor=\"NI\"/>\r\n"
-            + "<family nullFlavor=\"NI\"/>\r\n"
-            + "</name>\r\n"
-            + "</assignedPerson>\r\n"
-            + "</assignedAuthor>\r\n"
-            + "</author>\r\n";
+        """
+        <author>\r
+        <time value="20200512134056+0000"/>\r
+        <assignedAuthor>\r
+        <id root="2.16.840.1.113883.4.6"/>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        <telecom nullFlavor="NI"/>\r
+        <assignedPerson>\r
+        <name>\r
+        <given nullFlavor="NI"/>\r
+        <family nullFlavor="NI"/>\r
+        </name>\r
+        </assignedPerson>\r
+        </assignedAuthor>\r
+        </author>\r
+        """;
 
     String actualXml = CdaHeaderGenerator.getAuthorXml(r4FhirData, encounter, practitionerMap);
 
@@ -444,26 +457,27 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         .thenReturn("<time value=\"20230503103307+0000\"/>");
 
     String expectedXml =
-        "<author>\r\n"
-            + "<time value=\"20230503103307+0000\"/><assignedAuthor>\r\n"
-            + "<id root=\"2.16.840.1.113883.4.6\"/>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<assignedPerson>\r\n"
-            + "<name>\r\n"
-            + "<given nullFlavor=\"NI\"/>\r\n"
-            + "<family nullFlavor=\"NI\"/>\r\n"
-            + "</name>\r\n"
-            + "</assignedPerson>\r\n"
-            + "</assignedAuthor>\r\n"
-            + "</author>\r\n"
-            + "";
+        """
+        <author>\r
+        <time value="20230503103307+0000"/><assignedAuthor>\r
+        <id root="2.16.840.1.113883.4.6"/>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        <telecom nullFlavor="NI"/>\r
+        <assignedPerson>\r
+        <name>\r
+        <given nullFlavor="NI"/>\r
+        <family nullFlavor="NI"/>\r
+        </name>\r
+        </assignedPerson>\r
+        </assignedAuthor>\r
+        </author>\r
+        """;
 
     String actualXml = CdaHeaderGenerator.getAuthorXml(r4FhirData, null, practMap);
 
@@ -493,16 +507,18 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
         (Organization) loadResourceDataFromFile(Organization.class, ORGANIZATION_FILENAME);
 
     String expectedXml =
-        "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
-            + "<name>Health Level Seven International</name>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n";
+        """
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>\r
+        <name>Health Level Seven International</name>\r
+        <telecom nullFlavor="NI"/>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        """;
 
     String actualXml =
         CdaHeaderGenerator.getOrganizationXml(organization, launchDetails, false, false);
@@ -514,16 +530,17 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateOrganizationXml_withNoOrganizationData() {
     String expectedXml =
-        "<id nullFlavor=\"NI\"/>\r\n"
-            + "<name>Unknown</name>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>";
+        """
+        <id nullFlavor="NI"/>\r
+        <name>Unknown</name>\r
+        <telecom nullFlavor="NI"/>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>""";
     String actualXml = CdaHeaderGenerator.getOrganizationXml(null, launchDetails, false, false);
 
     assertThat(actualXml).isNotNull();
@@ -539,23 +556,24 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     r4FhirData1.setOrganization(organization);
 
     String expectedXml =
-        "<custodian>\r\n"
-            + "<assignedCustodian>\r\n"
-            + "<representedCustodianOrganization>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\r\n"
-            + "<name>Health Level Seven International</name>\r\n"
-            + "<telecom nullFlavor=\"NI\"/>\r\n"
-            + "<addr>\r\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\r\n"
-            + "<city nullFlavor=\"NI\"/>\r\n"
-            + "<state nullFlavor=\"NI\"/>\r\n"
-            + "<postalCode nullFlavor=\"NI\"/>\r\n"
-            + "<country nullFlavor=\"NI\"/>\r\n"
-            + "</addr>\r\n"
-            + "</representedCustodianOrganization>\r\n"
-            + "</assignedCustodian>\r\n"
-            + "</custodian>\r\n"
-            + "";
+        """
+        <custodian>\r
+        <assignedCustodian>\r
+        <representedCustodianOrganization>\r
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>\r
+        <name>Health Level Seven International</name>\r
+        <telecom nullFlavor="NI"/>\r
+        <addr>\r
+        <streetAddressLine nullFlavor="NI"/>\r
+        <city nullFlavor="NI"/>\r
+        <state nullFlavor="NI"/>\r
+        <postalCode nullFlavor="NI"/>\r
+        <country nullFlavor="NI"/>\r
+        </addr>\r
+        </representedCustodianOrganization>\r
+        </assignedCustodian>\r
+        </custodian>\r
+        """;
     String actualXml = CdaHeaderGenerator.getCustodianXml(launchDetails, r4FhirData1);
 
     assertThat(actualXml).isNotNull();
@@ -586,76 +604,78 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     r4FhirData1.setLocation(location);
 
     String expectedXml =
-        "<componentOf>\n"
-            + "<encompassingEncounter>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"97953900\"/>\n"
-            + "<id root=\"2.16.840.1.113883.4.4\" extension=\"98314717\"/>\n"
-            + "<code code=\"IMP\" codeSystem=\"2.16.840.1.113883.5.4\" codeSystemName=\"v3-ActCode\" displayName=\"inpatient encounter\"></code>\n"
-            + "<effectiveTime>\n"
-            + "<low value=\"20200512134056+0000\"/>\n"
-            + "<high value=\"20200512134057+0000\"/>\n"
-            + "</effectiveTime>\n"
-            + "<responsibleParty>\n"
-            + "<assignedEntity>\n"
-            + "<id root=\"2.16.840.1.113883.4.6\"/>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "<telecom nullFlavor=\"NI\"/>\n"
-            + "<assignedPerson>\n"
-            + "<name>\n"
-            + "<given nullFlavor=\"NI\"/>\n"
-            + "<family nullFlavor=\"NI\"/>\n"
-            + "</name>\n"
-            + "</assignedPerson>\n"
-            + "<representedOrganization>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
-            + "<name>Health Level Seven International</name>\n"
-            + "<telecom nullFlavor=\"NI\"/>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "</representedOrganization>\n"
-            + "</assignedEntity>\n"
-            + "</responsibleParty>\n"
-            + "<location>\n"
-            + "<healthCareFacility>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
-            + "<code nullFlavor=\"NI\"/>\n"
-            + "<location>\n"
-            + "<name>Health Level Seven International</name>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "</location>\n"
-            + "<serviceProviderOrganization>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
-            + "<name>Health Level Seven International</name>\n"
-            + "<telecom nullFlavor=\"NI\"/>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "</serviceProviderOrganization>\n"
-            + "</healthCareFacility>\n"
-            + "</location>\n"
-            + "</encompassingEncounter>\n"
-            + "</componentOf>\n";
+        """
+        <componentOf>
+        <encompassingEncounter>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="97953900"/>
+        <id root="2.16.840.1.113883.4.4" extension="98314717"/>
+        <code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"></code>
+        <effectiveTime>
+        <low value="20200512134056+0000"/>
+        <high value="20200512134057+0000"/>
+        </effectiveTime>
+        <responsibleParty>
+        <assignedEntity>
+        <id root="2.16.840.1.113883.4.6"/>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        <telecom nullFlavor="NI"/>
+        <assignedPerson>
+        <name>
+        <given nullFlavor="NI"/>
+        <family nullFlavor="NI"/>
+        </name>
+        </assignedPerson>
+        <representedOrganization>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>
+        <name>Health Level Seven International</name>
+        <telecom nullFlavor="NI"/>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        </representedOrganization>
+        </assignedEntity>
+        </responsibleParty>
+        <location>
+        <healthCareFacility>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>
+        <code nullFlavor="NI"/>
+        <location>
+        <name>Health Level Seven International</name>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        </location>
+        <serviceProviderOrganization>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>
+        <name>Health Level Seven International</name>
+        <telecom nullFlavor="NI"/>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        </serviceProviderOrganization>
+        </healthCareFacility>
+        </location>
+        </encompassingEncounter>
+        </componentOf>
+        """;
     String actualXml =
         CdaHeaderGenerator.getEncompassingEncounter(
             encounter, practMap, launchDetails, r4FhirData1);
@@ -682,71 +702,73 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     r4FhirData1.setLocation(location);
 
     String expectedXml =
-        "<componentOf>\n"
-            + "<encompassingEncounter>\n"
-            + "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/><code nullFlavor=\"NI\"/>\n"
-            + "<effectiveTime nullFlavor=\"NI\"/>\n"
-            + "<responsibleParty>\n"
-            + "<assignedEntity>\n"
-            + "<id root=\"2.16.840.1.113883.4.6\"/>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "<telecom nullFlavor=\"NI\"/>\n"
-            + "<assignedPerson>\n"
-            + "<name>\n"
-            + "<given nullFlavor=\"NI\"/>\n"
-            + "<family nullFlavor=\"NI\"/>\n"
-            + "</name>\n"
-            + "</assignedPerson>\n"
-            + "<representedOrganization>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
-            + "<name>Health Level Seven International</name>\n"
-            + "<telecom nullFlavor=\"NI\"/>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "</representedOrganization>\n"
-            + "</assignedEntity>\n"
-            + "</responsibleParty>\n"
-            + "<location>\n"
-            + "<healthCareFacility>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
-            + "<code nullFlavor=\"NI\"/>\n"
-            + "<location>\n"
-            + "<name>Health Level Seven International</name>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "</location>\n"
-            + "<serviceProviderOrganization>\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"hl7\"/>\n"
-            + "<name>Health Level Seven International</name>\n"
-            + "<telecom nullFlavor=\"NI\"/>\n"
-            + "<addr>\n"
-            + "<streetAddressLine nullFlavor=\"NI\"/>\n"
-            + "<city nullFlavor=\"NI\"/>\n"
-            + "<state nullFlavor=\"NI\"/>\n"
-            + "<postalCode nullFlavor=\"NI\"/>\n"
-            + "<country nullFlavor=\"NI\"/>\n"
-            + "</addr>\n"
-            + "</serviceProviderOrganization>\n"
-            + "</healthCareFacility>\n"
-            + "</location>\n"
-            + "</encompassingEncounter>\n"
-            + "</componentOf>\n";
+        """
+        <componentOf>
+        <encompassingEncounter>
+        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code nullFlavor="NI"/>
+        <effectiveTime nullFlavor="NI"/>
+        <responsibleParty>
+        <assignedEntity>
+        <id root="2.16.840.1.113883.4.6"/>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        <telecom nullFlavor="NI"/>
+        <assignedPerson>
+        <name>
+        <given nullFlavor="NI"/>
+        <family nullFlavor="NI"/>
+        </name>
+        </assignedPerson>
+        <representedOrganization>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>
+        <name>Health Level Seven International</name>
+        <telecom nullFlavor="NI"/>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        </representedOrganization>
+        </assignedEntity>
+        </responsibleParty>
+        <location>
+        <healthCareFacility>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>
+        <code nullFlavor="NI"/>
+        <location>
+        <name>Health Level Seven International</name>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        </location>
+        <serviceProviderOrganization>
+        <id root="2.16.840.1.113883.1.1.1.1" extension="hl7"/>
+        <name>Health Level Seven International</name>
+        <telecom nullFlavor="NI"/>
+        <addr>
+        <streetAddressLine nullFlavor="NI"/>
+        <city nullFlavor="NI"/>
+        <state nullFlavor="NI"/>
+        <postalCode nullFlavor="NI"/>
+        <country nullFlavor="NI"/>
+        </addr>
+        </serviceProviderOrganization>
+        </healthCareFacility>
+        </location>
+        </encompassingEncounter>
+        </componentOf>
+        """;
 
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid())

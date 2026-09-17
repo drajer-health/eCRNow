@@ -163,8 +163,7 @@ public class FhirContextInitializer {
 
     if (accessToken != null && !accessToken.equalsIgnoreCase("")) {
       client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
-      // client.registerInterceptor(new LoggingInterceptor(true));
-    } else {
+    } else if (logger.isDebugEnabled()) {
       logger.debug("AccessToken not supplied for %{}", StringEscapeUtils.escapeJava(url));
     }
 
@@ -178,14 +177,18 @@ public class FhirContextInitializer {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
     if (retryTemplate.isRetryEnabled()) {
-      logger.info(
-          "Initialized the Retryable Client with X-Request-ID: {}",
-          StringEscapeUtils.escapeJava(requestId));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "Initialized the Retryable Client with X-Request-ID: {}",
+            StringEscapeUtils.escapeJava(requestId));
+      }
       return new EcrFhirRetryClient(client, retryTemplate, requestId, EventTypes.QueryType.NONE);
     }
-    logger.trace(
-        "Initialized the Client with X-Request-ID: {}",
-        StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
+    if (logger.isTraceEnabled()) {
+      logger.trace(
+          "Initialized the Client with X-Request-ID: {}",
+          StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
+    }
     return client;
   }
 
@@ -209,15 +212,19 @@ public class FhirContextInitializer {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
     if (retryTemplate.isRetryEnabled()) {
-      logger.info(
-          "Initialized the Retryable Client with X-Request-ID: {}",
-          StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "Initialized the Retryable Client with X-Request-ID: {}",
+            StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
+      }
       return new EcrFhirRetryClient(
           client, retryTemplate, client.getHttpInterceptor().getXReqId(), type);
     }
-    logger.trace(
-        "Initialized the Client with X-Request-ID: {}",
-        StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
+    if (logger.isTraceEnabled()) {
+      logger.trace(
+          "Initialized the Client with X-Request-ID: {}",
+          StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
+    }
 
     return client;
   }
@@ -352,11 +359,13 @@ public class FhirContextInitializer {
 
     IBaseBundle bundleResponse = null;
     try {
-      logger.info(
-          "Getting {} data using Patient Id {} by URL {}",
-          resourceName,
-          StringEscapeUtils.escapeJava(authDetails.getLaunchPatientId()),
-          StringEscapeUtils.escapeJava(url));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "Getting {} data using Patient Id {} by URL {}",
+            resourceName,
+            StringEscapeUtils.escapeJava(authDetails.getLaunchPatientId()),
+            StringEscapeUtils.escapeJava(url));
+      }
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
         Bundle bundle = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         getAllDSTU2RecordsUsingPagination(genericClient, bundle);

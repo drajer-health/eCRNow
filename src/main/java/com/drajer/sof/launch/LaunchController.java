@@ -435,8 +435,10 @@ public class LaunchController {
       HttpServletResponse response)
       throws Exception {
     if (launch != null && iss != null) {
-      logger.info("Received Launch Parameter::::: {}", StringEscapeUtils.escapeJava(launch));
-      logger.info("Received FHIR Server Base URL::::: {}", StringEscapeUtils.escapeJava(iss));
+      if (logger.isInfoEnabled()) {
+        logger.info("Received Launch Parameter::::: {}", StringEscapeUtils.escapeJava(launch));
+        logger.info("Received FHIR Server Base URL::::: {}", StringEscapeUtils.escapeJava(iss));
+      }
       String uri =
           "https"
               + "://"
@@ -470,11 +472,15 @@ public class LaunchController {
           for (int i = 0; i < innerExtension.length(); i++) {
             JSONObject urlExtension = innerExtension.getJSONObject(i);
             if (urlExtension.getString("url").equals("authorize")) {
-              logger.info("Authorize URL::::: {}", urlExtension.getString(VALUE_URI));
+              if (logger.isInfoEnabled()) {
+                logger.info("Authorize URL::::: {}", urlExtension.getString(VALUE_URI));
+              }
               launchDetails.setAuthUrl(urlExtension.getString(VALUE_URI));
             }
             if (urlExtension.getString("url").equals("token")) {
-              logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
+              if (logger.isInfoEnabled()) {
+                logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
+              }
               launchDetails.setTokenUrl(urlExtension.getString(VALUE_URI));
             }
           }
@@ -488,9 +494,11 @@ public class LaunchController {
           launchDetails.setLaunchType("SoF");
           String constructedAuthUrl =
               authorization.createAuthUrl(launchDetails, clientDetails, state);
-          logger.info(
-              "Constructed Authorization URL::::: {}",
-              StringEscapeUtils.escapeJava(constructedAuthUrl));
+          if (logger.isInfoEnabled()) {
+            logger.info(
+                "Constructed Authorization URL::::: {}",
+                StringEscapeUtils.escapeJava(constructedAuthUrl));
+          }
           authDetailsService.saveOrUpdate(launchDetails);
           response.sendRedirect(constructedAuthUrl);
         }
@@ -511,8 +519,10 @@ public class LaunchController {
       HttpServletResponse response)
       throws Exception {
     if (code != null && state != null) {
-      logger.info("Received Code Parameter::::: {}", StringEscapeUtils.escapeJava(code));
-      logger.info("Received State Parameter::::: {}", StringEscapeUtils.escapeJava(state));
+      if (logger.isInfoEnabled()) {
+        logger.info("Received Code Parameter::::: {}", StringEscapeUtils.escapeJava(code));
+        logger.info("Received State Parameter::::: {}", StringEscapeUtils.escapeJava(state));
+      }
       logger.info("Reading the oAuth Details stored in HashMap using state value");
       LaunchDetails currentLaunchDetails =
           authDetailsService.getLaunchDetailsByState(Integer.parseInt(state));
@@ -521,9 +531,11 @@ public class LaunchController {
         currentLaunchDetails.setAuthorizationCode(code);
         JSONObject accessTokenObject = authorization.getAccessToken(currentLaunchDetails);
         if (accessTokenObject != null) {
-          logger.debug(
-              "Received Access Token::::: {}",
-              StringEscapeUtils.escapeJava(accessTokenObject.getString(ACCESS_TOKEN)));
+          if (logger.isDebugEnabled()) {
+            logger.debug(
+                "Received Access Token::::: {}",
+                StringEscapeUtils.escapeJava(accessTokenObject.getString(ACCESS_TOKEN)));
+          }
           if (accessTokenObject.get(PATIENT) != null && accessTokenObject.get(ENCOUNTER) != null) {
             isPatientLaunched =
                 checkWithExistingPatientAndEncounter(
@@ -540,9 +552,11 @@ public class LaunchController {
 
             saveLaunchDetails(currentLaunchDetails);
           } else {
-            logger.error(
-                "Launch Context is already present for Patient::::: {}",
-                accessTokenObject.getString(PATIENT));
+            if (logger.isErrorEnabled()) {
+              logger.error(
+                  "Launch Context is already present for Patient::::: {}",
+                  accessTokenObject.getString(PATIENT));
+            }
             response.sendError(
                 HttpServletResponse.SC_BAD_REQUEST,
                 "Launch Context is already present for Patient:::::"
@@ -565,11 +579,13 @@ public class LaunchController {
     LaunchDetails launchDetails =
         authDetailsService.getLaunchDetailsByPatientAndEncounter(patient, encounter, fhirServerUrl);
     if (launchDetails != null) {
-      logger.info(
-          "Launch context found with Patient:::: {}, Encounter::::: {}, From EHR::::: {}",
-          StringEscapeUtils.escapeJava(patient),
-          StringEscapeUtils.escapeJava(encounter),
-          StringEscapeUtils.escapeJava(fhirServerUrl));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "Launch context found with Patient:::: {}, Encounter::::: {}, From EHR::::: {}",
+            StringEscapeUtils.escapeJava(patient),
+            StringEscapeUtils.escapeJava(encounter),
+            StringEscapeUtils.escapeJava(fhirServerUrl));
+      }
       return true;
     } else {
       logger.info("Launch context not found");
@@ -613,7 +629,9 @@ public class LaunchController {
     IBaseResource encounterResource = null;
     String encounterError = "Error in getting Encounter resource by Id: " + encounterId;
 
-    logger.info("Getting Encounter data by ID {}", StringEscapeUtils.escapeJava(encounterId));
+    if (logger.isInfoEnabled()) {
+      logger.info("Getting Encounter data by ID {}", StringEscapeUtils.escapeJava(encounterId));
+    }
 
     try {
       FhirContext fhirContext = fhirContextInitializer.getFhirContext(fhirVersion);

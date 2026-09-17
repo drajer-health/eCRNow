@@ -209,27 +209,28 @@ public class BsaActionTest {
 
   @Test
   public void testConditionsMet_whenEvaluateExpressionReturnsFalse() {
-    BsaAction action = new TestBsaAction();
+    BsaAction localAction = new TestBsaAction();
     BsaCondition condition = mock(BsaCondition.class);
     BsaConditionProcessor processor = mock(BsaConditionProcessor.class);
     when(condition.getConditionProcessor()).thenReturn(processor);
-    when(processor.evaluateExpression(condition, action, null, null)).thenReturn(Boolean.FALSE);
-    action.addCondition(condition);
-    boolean result = action.conditionsMet(null, null);
+    when(processor.evaluateExpression(condition, localAction, null, null))
+        .thenReturn(Boolean.FALSE);
+    localAction.addCondition(condition);
+    boolean result = localAction.conditionsMet(null, null);
     assertFalse(result);
   }
 
   @Test
   public void testConditionsMet_whenEvaluateExpressionReturnsTrue() {
 
-    BsaAction action = new TestBsaAction();
+    BsaAction localAction = new TestBsaAction();
     BsaCondition condition = mock(BsaCondition.class);
     BsaConditionProcessor processor = mock(BsaConditionProcessor.class);
     when(condition.getConditionProcessor()).thenReturn(processor);
-    when(processor.evaluateExpression(condition, action, null, null)).thenReturn(Boolean.TRUE);
+    when(processor.evaluateExpression(condition, localAction, null, null)).thenReturn(Boolean.TRUE);
 
-    action.addCondition(condition);
-    boolean result = action.conditionsMet(null, null);
+    localAction.addCondition(condition);
+    boolean result = localAction.conditionsMet(null, null);
     assertTrue(result);
   }
 

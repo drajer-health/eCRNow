@@ -47,12 +47,6 @@ public class CdaR31GenerationTest extends BaseGeneratorTest {
 
   @Test
   public void runScenarios() throws IOException {
-
-    // ClassLoader classLoader = getClass().getClassLoader();
-    // File file = new File(classLoader.getResource(SCENARIO_DIRECTORY).getFile());
-    //  File file = ResourceUtils.getFile(this.getClass().getResource(SCENARIO_DIRECTORY));
-    //   System.out.println(file.getAbsolutePath());
-
     // TODO: Implement scenario testing
     assertTrue("Test scenarios not yet implemented", true);
   }

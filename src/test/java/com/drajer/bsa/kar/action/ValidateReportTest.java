@@ -2,6 +2,7 @@ package com.drajer.bsa.kar.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -58,7 +59,6 @@ public class ValidateReportTest {
   @Before
   public void setUp() {
     validateReport = new ValidateReport();
-    //    ehrQueryService = new EhrFhirR4QueryServiceImpl();
     karProcessingData = new KarProcessingData();
 
     NotificationContext notificationContext = getNotificationContext();
@@ -141,7 +141,7 @@ public class ValidateReportTest {
       validateReport.setValidatorEndpoint(baseUrl + "/error");
       ValidateReportStatus status = new ValidateReportStatus();
       validateReport.validateFhirOutput(karProcessingData, status);
-      assertFalse(BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+      assertNotEquals(BsaActionStatusType.FAILED, status.getActionStatus());
       assertTrue(validateReport.getValidateEicrFhirData());
       assertEquals(baseUrl + "/error", validateReport.getValidatorEndpoint());
     } finally {
@@ -385,9 +385,8 @@ public class ValidateReportTest {
     ValidateReportStatus status = new ValidateReportStatus();
     validateReport.validateFhirOutput(karProcessingData, status);
     // Should not fail when endpoint is null
-    assertFalse(
-        "Should not fail with null endpoint",
-        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+    assertNotEquals(
+        "Should not fail with null endpoint", BsaActionStatusType.FAILED, status.getActionStatus());
   }
 
   @Test
@@ -400,9 +399,10 @@ public class ValidateReportTest {
     ValidateReportStatus status = new ValidateReportStatus();
     validateReport.validateFhirOutput(karProcessingData, status);
     // Should skip validation when endpoint is empty
-    assertFalse(
+    assertNotEquals(
         "Should not fail with empty endpoint",
-        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+        BsaActionStatusType.FAILED,
+        status.getActionStatus());
   }
 
   @Test
@@ -414,9 +414,8 @@ public class ValidateReportTest {
     ValidateReportStatus status = new ValidateReportStatus();
     validateReport.validateFhirOutput(karProcessingData, status);
     // Should handle empty input gracefully
-    assertFalse(
-        "Should handle empty input data",
-        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+    assertNotEquals(
+        "Should handle empty input data", BsaActionStatusType.FAILED, status.getActionStatus());
   }
 
   @Test
@@ -428,9 +427,8 @@ public class ValidateReportTest {
     ValidateReportStatus status = new ValidateReportStatus();
     validateReport.validateFhirOutput(karProcessingData, status);
     // Should handle null input gracefully
-    assertFalse(
-        "Should handle null input data",
-        BsaActionStatusType.FAILED.equals(status.getActionStatus()));
+    assertNotEquals(
+        "Should handle null input data", BsaActionStatusType.FAILED, status.getActionStatus());
   }
 
   @Test

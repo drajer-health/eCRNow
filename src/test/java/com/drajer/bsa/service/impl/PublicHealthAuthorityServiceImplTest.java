@@ -134,36 +134,62 @@ public class PublicHealthAuthorityServiceImplTest {
     assertFalse(result.isEmpty());
     assertEquals(2, result.size());
 
-    PublicHealthAuthority resultPha1 = result.get(0);
-    assertEquals("client-001", resultPha1.getClientId());
-    assertEquals("secret1", resultPha1.getClientSecret());
-    assertEquals("user1", resultPha1.getUsername());
-    assertEquals("pass1", resultPha1.getPassword());
-    assertEquals("https://fhir.server1.com", resultPha1.getFhirServerBaseURL());
-    assertEquals("4.0.1", resultPha1.getFhirVersion());
-    assertEquals("https://fhir.server1.com/token", resultPha1.getTokenUrl());
-    assertEquals("openid profile", resultPha1.getScopes());
-    assertTrue(resultPha1.getRequireAud());
-    assertEquals("client_credentials", resultPha1.getAuthType());
-    assertEquals("alias1", resultPha1.getBackendAuthKeyAlias());
-    assertEquals("RS256", resultPha1.getBackendAuthAlg());
-    assertEquals("kid1", resultPha1.getBackendAuthKid());
+    assertPublicHealthAuthorityFields(
+        result.get(0),
+        "client-001",
+        "secret1",
+        "user1",
+        "pass1",
+        "https://fhir.server1.com",
+        "https://fhir.server1.com/token",
+        true,
+        "client_credentials",
+        "alias1",
+        "RS256",
+        "kid1");
 
-    PublicHealthAuthority resultPha2 = result.get(1);
-    assertEquals("client-002", resultPha2.getClientId());
-    assertEquals("secret2", resultPha2.getClientSecret());
-    assertEquals("user2", resultPha2.getUsername());
-    assertEquals("pass2", resultPha2.getPassword());
-    assertEquals("https://fhir.server2.com", resultPha2.getFhirServerBaseURL());
-    assertEquals("4.0.1", resultPha2.getFhirVersion());
-    assertEquals("https://fhir.server2.com/token", resultPha2.getTokenUrl());
-    assertEquals("openid profile", resultPha2.getScopes());
-    assertFalse(resultPha2.getRequireAud());
-    assertEquals("password", resultPha2.getAuthType());
-    assertEquals("alias2", resultPha2.getBackendAuthKeyAlias());
-    assertEquals("ES256", resultPha2.getBackendAuthAlg());
-    assertEquals("kid2", resultPha2.getBackendAuthKid());
+    assertPublicHealthAuthorityFields(
+        result.get(1),
+        "client-002",
+        "secret2",
+        "user2",
+        "pass2",
+        "https://fhir.server2.com",
+        "https://fhir.server2.com/token",
+        false,
+        "password",
+        "alias2",
+        "ES256",
+        "kid2");
 
     verify(phaDao, times(1)).getAllPublicHealthAuthority();
+  }
+
+  private void assertPublicHealthAuthorityFields(
+      PublicHealthAuthority resultPha,
+      String clientId,
+      String clientSecret,
+      String username,
+      String password,
+      String fhirServerBaseURL,
+      String tokenUrl,
+      boolean requireAud,
+      String authType,
+      String backendAuthKeyAlias,
+      String backendAuthAlg,
+      String backendAuthKid) {
+    assertEquals(clientId, resultPha.getClientId());
+    assertEquals(clientSecret, resultPha.getClientSecret());
+    assertEquals(username, resultPha.getUsername());
+    assertEquals(password, resultPha.getPassword());
+    assertEquals(fhirServerBaseURL, resultPha.getFhirServerBaseURL());
+    assertEquals("4.0.1", resultPha.getFhirVersion());
+    assertEquals(tokenUrl, resultPha.getTokenUrl());
+    assertEquals("openid profile", resultPha.getScopes());
+    assertEquals(requireAud, resultPha.getRequireAud());
+    assertEquals(authType, resultPha.getAuthType());
+    assertEquals(backendAuthKeyAlias, resultPha.getBackendAuthKeyAlias());
+    assertEquals(backendAuthAlg, resultPha.getBackendAuthAlg());
+    assertEquals(backendAuthKid, resultPha.getBackendAuthKid());
   }
 }

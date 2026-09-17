@@ -107,12 +107,12 @@ public class SubmitReportTest {
 
     doReturn(true).when(submitReport).submitCdaOutput(data, status, healthcareSetting);
 
-    BsaActionStatus status = submitReport.process(data, ehrService);
+    BsaActionStatus localStatus = submitReport.process(data, ehrService);
 
-    assertNotNull(status);
-    assertEquals(submitReport.getActionId(), status.getActionId());
-    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, status.getActionStatus());
-    assertNotNull(status);
+    assertNotNull(localStatus);
+    assertEquals(submitReport.getActionId(), localStatus.getActionId());
+    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, localStatus.getActionStatus());
+    assertNotNull(localStatus);
   }
 
   @Test
@@ -146,12 +146,12 @@ public class SubmitReportTest {
     submitReport.setDirectSender(directSender);
     doNothing().when(submitReport).submitFhirOutput(data, actStatus, ehrService);
 
-    BsaActionStatus status = submitReport.process(data, ehrService);
+    BsaActionStatus localStatus = submitReport.process(data, ehrService);
 
-    assertNotNull(status);
-    assertEquals(submitReport.getActionId(), status.getActionId());
-    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, status.getActionStatus());
-    assertNotNull(status);
+    assertNotNull(localStatus);
+    assertEquals(submitReport.getActionId(), localStatus.getActionId());
+    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, localStatus.getActionStatus());
+    assertNotNull(localStatus);
 
     verify(submitReport).submitFhirOutput(any(), any(), any());
   }
@@ -190,12 +190,12 @@ public class SubmitReportTest {
     doNothing().when(submitReport).submitFhirOutput(data, actStatus, ehrService);
     doReturn(true).when(submitReport).submitCdaOutput(data, status, healthcareSetting);
 
-    BsaActionStatus status = submitReport.process(data, ehrService);
+    BsaActionStatus localStatus = submitReport.process(data, ehrService);
 
-    assertNotNull(status);
-    assertEquals(submitReport.getActionId(), status.getActionId());
-    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, status.getActionStatus());
-    assertNotNull(status);
+    assertNotNull(localStatus);
+    assertEquals(submitReport.getActionId(), localStatus.getActionId());
+    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, localStatus.getActionStatus());
+    assertNotNull(localStatus);
   }
 
   @Test
@@ -253,7 +253,7 @@ public class SubmitReportTest {
     data.setxRequestId("req123");
     data.setJobType(BsaTypes.BsaJobType.IMMEDIATE_REPORTING);
     MDC.put("xRequestId", "req123");
-    BsaActionStatus status = mock(BsaActionStatus.class);
+    BsaActionStatus localStatus = mock(BsaActionStatus.class);
     data.setSubmittedCdaData("<ClinicalDocument></ClinicalDocument>");
     submitReport.setDirectSender(directSender);
     ReflectionTestUtils.setField(submitReport, "ignoreTimers", false);
@@ -268,7 +268,7 @@ public class SubmitReportTest {
     ReflectionTestUtils.setField(submitReport, "scheduler", scheduler);
     data.setKarExecutionStateService(mockExecutionStateService);
 
-    boolean result = submitReport.submitCdaOutput(data, status, healthcareSetting);
+    boolean result = submitReport.submitCdaOutput(data, localStatus, healthcareSetting);
 
     assertTrue(result);
 
@@ -310,40 +310,6 @@ public class SubmitReportTest {
 
     verify(restSubmitter, times(1)).sendEicrDataUsingRestfulApi(data);
   }
-
-  //  @Test
-  //  public void testSubmitCdaOutput_WithDirectTransport_IsXdrTrue() {
-  //    KnowledgeArtifact kar = new KnowledgeArtifact();
-  //    kar.setKarId("id");
-  //    kar.setKarVersion("r4");
-  //    NotificationContext notificationContext = new NotificationContext();
-  //    notificationContext.setFhirServerBaseUrl("http://example.com/fhir");
-  //    notificationContext.setNotificationResourceType("Encounter");
-  //    KnowledgeArtifactStatus art = new KnowledgeArtifactStatus();
-  //    art.setVersionUniqueKarId("id|r4");
-  //    art.setOutputFormat(BsaTypes.OutputContentType.BOTH);
-  //    Set<KnowledgeArtifactStatus> artifactStatus = new HashSet<>();
-  //    artifactStatus.add(art);
-  //    KarProcessingData data = new KarProcessingData();
-  //    data.setKar(kar);
-  //    data.setNotificationContext(notificationContext);
-  //    HealthcareSettingOperationalKnowledgeArtifacts kars =
-  //        new HealthcareSettingOperationalKnowledgeArtifacts();
-  //    kars.setId(1);
-  //    kars.setArtifactStatus(artifactStatus);
-  //    HealthcareSetting healthcareSetting = new HealthcareSetting();
-  //    healthcareSetting.setFhirServerBaseURL("http://example.com/fhir");
-  //    healthcareSetting.setKars(kars);
-  //    healthcareSetting.setIsXdr(true);
-  //    data.setHealthcareSetting(healthcareSetting);
-  //    data.setSubmittedCdaData("<ClinicalDocument></ClinicalDocument>");
-  //    RestfulTransportImpl restSubmitter = new RestfulTransportImpl();
-  //    ReflectionTestUtils.setField(submitReport, "restSubmitter", restSubmitter);
-  //
-  //    boolean result = submitReport.submitCdaOutput(data, status, healthcareSetting);
-  //
-  //    assertTrue(result);
-  //  }
 
   @Test
   public void testSubmitFhirOutput_ShouldSubmitResourcesToTrustedThirdParty() throws JSONException {

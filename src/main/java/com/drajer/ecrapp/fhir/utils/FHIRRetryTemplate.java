@@ -27,7 +27,7 @@ public class FHIRRetryTemplate implements GenericRetryTemplate, InitializingBean
    */
   @Autowired
   public FHIRRetryTemplate(
-      @Qualifier("ECRRetryTemplate") RetryTemplate retryTemplate,
+      @Qualifier("ecrRetryTemplate") RetryTemplate retryTemplate,
       FHIRRetryTemplateConfig fhirRetryTemplateConfig,
       @Value("${ecr.fhir.retry.enabled:false}") Boolean isRetryEnabled) {
     this.retryTemplate = retryTemplate;

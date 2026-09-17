@@ -39,10 +39,12 @@ public class RRReceiverController {
       HttpServletResponse response) {
     try {
 
-      logger.info(
-          " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
-          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue),
-          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
+            StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue),
+            StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue));
+      }
 
       if (data.getResponseType().contentEquals(Eicr.MDN_RESPONSE_TYPE)) {
         logger.info(" Received MDN instead of RR on the RR API ");
@@ -81,10 +83,12 @@ public class RRReceiverController {
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
     try {
-      logger.info(
-          "Received EicrId:: {}, EicrDocId:: {} in the request",
-          StringEscapeUtils.escapeJava(eicrId),
-          StringEscapeUtils.escapeJava(eicrDocId));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "Received EicrId:: {}, EicrDocId:: {} in the request",
+            StringEscapeUtils.escapeJava(eicrId),
+            StringEscapeUtils.escapeJava(eicrDocId));
+      }
 
       Eicr eicr = null;
       if (eicrId != null) {

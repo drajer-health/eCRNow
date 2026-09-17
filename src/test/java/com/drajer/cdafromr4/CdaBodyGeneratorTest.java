@@ -73,7 +73,7 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
     String version = "CDA_R31";
 
     PowerMockito.mockStatic(CdaProblemGenerator.class);
-    PowerMockito.when(CdaProblemGenerator.generateProblemSection(data, details, version))
+    PowerMockito.when(CdaProblemGenerator.generateProblemSection(data, details))
         .thenReturn("<problem/>");
 
     PowerMockito.mockStatic(CdaEncounterGenerator.class);
@@ -82,8 +82,7 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
 
     PowerMockito.mockStatic(CdaMedicationGenerator.class);
     PowerMockito.when(
-            CdaMedicationGenerator.generateR31MedicationsAdministeredSection(
-                data, details, version))
+            CdaMedicationGenerator.generateR31MedicationsAdministeredSection(data, details))
         .thenReturn("<medAdmin/>");
     PowerMockito.when(CdaMedicationGenerator.generateR31MedicationsSection(data, details, version))
         .thenReturn("<meds/>");

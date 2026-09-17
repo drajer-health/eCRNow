@@ -57,7 +57,6 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
   // Constants
   private static final String R4_DUPLICATE_SOC_HISTORY_ENTRIES_FILE =
       "SampleTestData/LoadingQueryBundle_DuplicateSocialHistory.json";
-  private static final String PATIENT_SAMPLE_CDA_FILE = "CdaTestData/Cda/sample/PatientSample.xml";
 
   private static final String LAB_SECTION_FILE = "CdaTestData/cda/Result/result-section.xml";
 
@@ -87,8 +86,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
           uniqueResourceIdsByType);
       resourceSet.clear();
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
+
     data.setData(bundle);
 
     String labSection = TestUtils.getFileContentAsString(LAB_SECTION_FILE);
@@ -126,9 +124,6 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data, launchDetails, eicr, 0, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
-    // saveDataToFile(actualXml,
-    // "C://codebase/eCRNow/src/test/resources/CdaTestData/Eicr/eicr.xml");
-    // assertXmlEquals(expectedXml, actualXml);
     assertNotNull("Generated XML should not be null", actualXml);
     assertThat(actualXml).isNotEmpty();
     assertThat(actualXml).contains("ClinicalDocument");
@@ -142,9 +137,6 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     launchDetails.setStatus(
         TestUtils.toJsonString(
             createPatientExecutionState("Condition", "http://loinc.org|68518-0")));
-
-    // Read expected CDA content from file
-    // String expectedXml = TestUtils.getFileContentAsString(PATIENT_SAMPLE_CDA_FILE);
 
     // Mock static methods
     PowerMockito.mockStatic(ActionRepo.class);
@@ -167,8 +159,6 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
             r4Data, launchDetails, eicr, 0, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     ApplicationUtils.saveDataToFile(actualXml, "./Eicr.xml");
-
-    // assertXmlEquals(expectedXml, actualXml);
     assertNotNull("Generated EICR XML should not be null", actualXml);
     assertThat(actualXml).isNotEmpty();
     assertThat(actualXml).contains("ClinicalDocument");

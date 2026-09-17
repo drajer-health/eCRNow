@@ -42,15 +42,15 @@ public class NotificationContextServiceImplTest {
   @Test
   public void testGetNotificationContext() {
     UUID mockId = UUID.randomUUID();
-    NotificationContext context = new NotificationContext();
-    context.setId(mockId);
-    context.setFhirServerBaseUrl("http://hosp.fhir.server");
-    context.setNotificationResourceId("resource123");
-    context.setPatientId("patient456");
-    context.setTriggerEvent("trigger_event_test");
-    context.setNotificationProcessingStatus("IN_PROGRESS");
+    NotificationContext localContext = new NotificationContext();
+    localContext.setId(mockId);
+    localContext.setFhirServerBaseUrl("http://hosp.fhir.server");
+    localContext.setNotificationResourceId("resource123");
+    localContext.setPatientId("patient456");
+    localContext.setTriggerEvent("trigger_event_test");
+    localContext.setNotificationProcessingStatus("IN_PROGRESS");
 
-    when(ncDao.getNotificationContextById(mockId)).thenReturn(context);
+    when(ncDao.getNotificationContextById(mockId)).thenReturn(localContext);
 
     NotificationContext result = service.getNotificationContext(mockId);
 
@@ -67,14 +67,14 @@ public class NotificationContextServiceImplTest {
 
   @Test
   public void testGetNotificationContextData() {
-    NotificationContext context = new NotificationContext();
-    context.setId(UUID.randomUUID());
-    context.setFhirServerBaseUrl("http://hosp.fhir.server");
-    context.setNotificationResourceId("resource123");
-    context.setPatientId("patient456");
-    context.setTriggerEvent("trigger_event_test");
+    NotificationContext localContext = new NotificationContext();
+    localContext.setId(UUID.randomUUID());
+    localContext.setFhirServerBaseUrl("http://hosp.fhir.server");
+    localContext.setNotificationResourceId("resource123");
+    localContext.setPatientId("patient456");
+    localContext.setTriggerEvent("trigger_event_test");
 
-    List<NotificationContext> mockList = Arrays.asList(context);
+    List<NotificationContext> mockList = Arrays.asList(localContext);
 
     when(ncDao.getNotificationContextData(
             id, "http://hosp.fhir.server", "resource123", "patient456"))

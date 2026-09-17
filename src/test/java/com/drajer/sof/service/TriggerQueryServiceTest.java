@@ -21,8 +21,6 @@ public class TriggerQueryServiceTest {
 
   private TriggerQueryService triggerQueryService;
 
-  //  @Mock private TriggerQueryDstu2Bundle generateDstu2Bundles;
-
   @Mock private TriggerQueryR4Bundle generateR4Bundles;
 
   private LaunchDetails launchDetails;

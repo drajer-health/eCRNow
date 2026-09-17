@@ -30,18 +30,15 @@ public class ITPageRetry extends BaseIntegrationTest {
   private Map<String, String> testData;
   private Map<String, ?> allResourceMapping;
   private Map<String, ?> allOtherMapping;
-  private List<Map<String, String>> fieldsToValidate;
 
   public ITPageRetry(
       String testCaseId,
       Map<String, String> testData,
-      List<Map<String, String>> validateFields,
       Map<String, ?> resourceMapping,
       Map<String, ?> otherMapping) {
 
     this.testCaseId = testCaseId;
     this.testData = testData;
-    this.fieldsToValidate = validateFields;
     this.allResourceMapping = resourceMapping;
     this.allOtherMapping = otherMapping;
   }
@@ -81,7 +78,7 @@ public class ITPageRetry extends BaseIntegrationTest {
       totalTestCount = totalTestCount + testData.getAllTestCases().size();
     }
 
-    Object[][] data = new Object[totalTestCount][5];
+    Object[][] data = new Object[totalTestCount][4];
 
     int count = 0;
     for (TestDataGenerator testData : testDataGenerator) {
@@ -89,9 +86,8 @@ public class ITPageRetry extends BaseIntegrationTest {
       for (String testCase : testCaseSet) {
         data[count][0] = testCase;
         data[count][1] = testData.getTestCaseByID(testCase).getTestData();
-        data[count][2] = testData.getValidate(testCase);
-        data[count][3] = testData.getResourceMappings(testCase);
-        data[count][4] = testData.getOtherMappings(testCase);
+        data[count][2] = testData.getResourceMappings(testCase);
+        data[count][3] = testData.getOtherMappings(testCase);
         count++;
       }
     }
@@ -107,7 +103,7 @@ public class ITPageRetry extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
-    Eicr createEicr = getCreateEicrDocument();
+    getCreateEicrDocument();
     wireMockServer.verify(
         moreThanOrExactly(9),
         getRequestedFor(

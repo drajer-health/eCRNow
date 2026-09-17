@@ -251,7 +251,9 @@ public class R4ResourcesData {
     // If Encounter Id is present in Launch Details
     if (encounterID != null) {
       try {
-        logger.info("Getting Encounter data by ID {}", StringEscapeUtils.escapeJava(encounterID));
+        if (logger.isInfoEnabled()) {
+          logger.info("Getting Encounter data by ID {}", StringEscapeUtils.escapeJava(encounterID));
+        }
         encounter = (Encounter) client.read().resource(ENCOUNTER).withId(encounterID).execute();
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
@@ -423,17 +425,16 @@ public class R4ResourcesData {
       problemConditions.add(condition);
       conditionCodes.addAll(findConditionCodes(condition));
     } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
-        && !foundPregnancyCondition) {
-      if (condition.hasEncounter()
-          && condition
-              .getEncounter()
-              .getReference()
-              .equals("Encounter/" + launchDetails.getEncounterId())) {
-        logger.info(ATTACHMENT_CONTENT_TYPE);
-        logger.debug("Added condition to Encounter Diagnosis list {}", condition.getId());
-        encounterDiagnosisConditions.add(condition);
-        conditionCodes.addAll(findConditionCodes(condition));
-      }
+        && !foundPregnancyCondition
+        && condition.hasEncounter()
+        && condition
+            .getEncounter()
+            .getReference()
+            .equals("Encounter/" + launchDetails.getEncounterId())) {
+      logger.info(ATTACHMENT_CONTENT_TYPE);
+      logger.debug("Added condition to Encounter Diagnosis list {}", condition.getId());
+      encounterDiagnosisConditions.add(condition);
+      conditionCodes.addAll(findConditionCodes(condition));
     }
   }
 

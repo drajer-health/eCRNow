@@ -377,14 +377,13 @@ public class CdaFhirUtilities {
 
       for (Extension ext : exts) {
 
-        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+        // if the top level extension has Coding then we will use it.
+        if (ext.getUrl() != null
+            && ext.getUrl().contentEquals(extUrl)
+            && ext.getValue() instanceof Coding) {
 
-          // if the top level extension has Coding then we will use it.
-          if (ext.getValue() instanceof Coding) {
-
-            logger.debug(FOUND_EXTENSION_TOP_LEVEL);
-            return (Coding) ext.getValue();
-          }
+          logger.debug(FOUND_EXTENSION_TOP_LEVEL);
+          return (Coding) ext.getValue();
         }
       }
     }
@@ -400,14 +399,13 @@ public class CdaFhirUtilities {
 
       for (Extension ext : exts) {
 
-        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+        // if the top level extension has Coding then we will use it.
+        if (ext.getUrl() != null
+            && ext.getUrl().contentEquals(extUrl)
+            && ext.getValue() instanceof CodeableConcept) {
 
-          // if the top level extension has Coding then we will use it.
-          if (ext.getValue() instanceof CodeableConcept) {
-
-            logger.debug("Found Extension ");
-            return (CodeableConcept) ext.getValue();
-          }
+          logger.debug("Found Extension ");
+          return (CodeableConcept) ext.getValue();
         }
       }
     }
@@ -3690,7 +3688,7 @@ public class CdaFhirUtilities {
 
   public static String getRaceOrEthnicityXml(List<Extension> exts, String elName, String extUrl) {
 
-    StringBuffer str = new StringBuffer(200);
+    StringBuilder str = new StringBuilder(200);
     Coding re =
         CdaFhirUtilities.getCodingExtension(
             exts, extUrl, CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
@@ -4114,11 +4112,9 @@ public class CdaFhirUtilities {
           medId = medId.substring(11);
         }
         for (Medication m : medList) {
-          if (m.getIdElement().getIdPart().equals(medId)) {
-            if (m.hasCode()) {
-              cc = m.getCode();
-              break;
-            }
+          if (m.getIdElement().getIdPart().equals(medId) && m.hasCode()) {
+            cc = m.getCode();
+            break;
           }
         }
       }

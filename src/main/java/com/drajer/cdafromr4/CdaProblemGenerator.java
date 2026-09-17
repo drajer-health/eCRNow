@@ -30,8 +30,7 @@ public class CdaProblemGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaProblemGenerator.class);
 
-  public static String generateProblemSection(
-      R4FhirData data, LaunchDetails details, String version) {
+  public static String generateProblemSection(R4FhirData data, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(2000);
 

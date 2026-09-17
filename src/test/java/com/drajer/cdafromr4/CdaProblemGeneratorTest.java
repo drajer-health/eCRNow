@@ -2,7 +2,6 @@ package com.drajer.cdafromr4;
 
 import static org.junit.Assert.assertNotNull;
 
-import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.LaunchDetails;
@@ -38,9 +37,7 @@ public class CdaProblemGeneratorTest extends BaseGeneratorTest {
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
-    String actualXml =
-        CdaProblemGenerator.generateProblemSection(
-            r4Data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+    String actualXml = CdaProblemGenerator.generateProblemSection(r4Data, launchDetails);
 
     assertXmlEquals(expectedXml, actualXml);
   }

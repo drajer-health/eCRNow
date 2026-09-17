@@ -513,15 +513,10 @@ public class BaseGeneratorTest {
 
   public String getAbsoluteFilePath(String partialPath) {
 
-    // URL res = getClass().getClassLoader().getResource(partialPath);
-
     File file = null;
     try {
-      // 	file = Paths.get(res.toURI()).toFile();
 
       file = new ClassPathResource(partialPath).getFile();
-      // } catch (URISyntaxException e) {
-      //	e.printStackTrace();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

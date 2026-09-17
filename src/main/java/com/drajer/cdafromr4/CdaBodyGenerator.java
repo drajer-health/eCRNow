@@ -26,15 +26,14 @@ public class CdaBodyGenerator {
       if (version.contentEquals("CDA_R31")) {
 
         logger.info("Starting Problem generation ");
-        eICRBody.append(CdaProblemGenerator.generateProblemSection(data, details, version));
+        eICRBody.append(CdaProblemGenerator.generateProblemSection(data, details));
 
         logger.info("Starting Encounter generation ");
         eICRBody.append(CdaEncounterGenerator.generateEncounterSection(data, details));
 
         logger.info("Starting R31 Medication Administered Section generation ");
         eICRBody.append(
-            CdaMedicationGenerator.generateR31MedicationsAdministeredSection(
-                data, details, version));
+            CdaMedicationGenerator.generateR31MedicationsAdministeredSection(data, details));
 
         logger.info("Starting R31 Medications Section generation ");
         eICRBody.append(
@@ -62,7 +61,6 @@ public class CdaBodyGenerator {
         eICRBody.append(CdaPregnancyGenerator.generatePregnancySection(data, details));
 
         logger.info("Starting R31 ODH Data Section generation ");
-        // eICRBody.append(CdaOdhDataGenerator.generateOdhSection(data, details, version));
 
         logger.info("Starting R31 Procedure Section generation ");
         eICRBody.append(CdaProcedureGenerator.generateProcedureSection(data, details));
@@ -73,7 +71,7 @@ public class CdaBodyGenerator {
       } else {
 
         logger.info("Starting Problem generation ");
-        eICRBody.append(CdaProblemGenerator.generateProblemSection(data, details, version));
+        eICRBody.append(CdaProblemGenerator.generateProblemSection(data, details));
 
         logger.info("Starting Encounter generation ");
         eICRBody.append(CdaEncounterGenerator.generateEncounterSection(data, details));

@@ -479,10 +479,8 @@ public class CdaSocialHistoryGenerator {
       if (onsetPeriod.hasEnd()) {
         estimatedDate = onsetPeriod.getEndElement();
       }
-    } else if (cond.hasAbatement()) {
-      if (cond.getAbatement() instanceof DateTimeType) {
-        estimatedDate = (DateTimeType) cond.getAbatement();
-      }
+    } else if (cond.hasAbatement() && cond.getAbatement() instanceof DateTimeType) {
+      estimatedDate = (DateTimeType) cond.getAbatement();
     }
 
     if (estimatedDate != null) {
@@ -1817,13 +1815,6 @@ public class CdaSocialHistoryGenerator {
   }
 
   public static String generateOdhSectionEndHeader() {
-
-    StringBuilder sb = new StringBuilder();
-
-    // Complete the section end tags.
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
-
-    return sb.toString();
+    return generateSocialHistorySectionEndHeader();
   }
 }

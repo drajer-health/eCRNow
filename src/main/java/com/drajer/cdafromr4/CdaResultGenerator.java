@@ -821,16 +821,11 @@ public class CdaResultGenerator {
       obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths);
     }
 
-    if (obsCodeXml.getValue0() || (obsValueXml != null && obsValueXml.getValue0())) {
-
-      lrEntry.append(getTriggerCodeTemplateXml(version));
-
-    } else if (altObsCodeXml != null && altObsCodeXml.getValue0()) {
-
-      // this will catch the case the DiagnosticReport.code is matched and the
-      // Observation.code does
-      // not exist
-      // or is not the same.
+    if (obsCodeXml.getValue0()
+        || (obsValueXml != null && obsValueXml.getValue0())
+        || (altObsCodeXml != null && altObsCodeXml.getValue0())) {
+      // this will catch the case the DiagnosticReport.code is matched and the Observation.code does
+      // not exist or is not the same.
       lrEntry.append(getTriggerCodeTemplateXml(version));
     }
 

@@ -32,7 +32,6 @@ public class FhirPathTest extends BaseKarsTest {
 
   @Test
   public void test() throws Exception {
-    // super.testScenarioAndValidate();
 
     assertNotNull("Test case info should be loaded", this.testCaseInfo);
   }
@@ -42,7 +41,6 @@ public class FhirPathTest extends BaseKarsTest {
   @Ignore("FhirPath scenario test data incomplete - enable when ready")
   public void testScenarioAndValidate() throws Exception {
     // Override parent - don't run it
-    // super.testScenarioAndValidate();
     assertNotNull("Test case info should be available", this.testCaseInfo);
   }
 

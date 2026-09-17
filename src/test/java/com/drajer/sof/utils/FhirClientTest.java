@@ -47,8 +47,6 @@ public class FhirClientTest {
   @Before
   public void setUp() {
 
-    FhirHttpHeaderInterceptor realInterceptor = new FhirHttpHeaderInterceptor(testRequestId);
-
     fhirClient = new FhirClient(mockClient, testRequestId, testQueryType);
 
     fhirClient.interceptor = mockInterceptor;
@@ -182,13 +180,13 @@ public class FhirClientTest {
 
   @Test
   public void testReadWithClassAndUriDt() {
-    IBaseResource mockResource = mock(IBaseResource.class);
+    IBaseResource localMockResource = mock(IBaseResource.class);
     UriDt uri = new UriDt("http://test.com");
-    when(mockClient.read(any(Class.class), any(UriDt.class))).thenReturn(mockResource);
+    when(mockClient.read(any(Class.class), any(UriDt.class))).thenReturn(localMockResource);
 
     IBaseResource result = fhirClient.read(IBaseResource.class, uri);
     verify(mockInterceptor).reset();
-    assertSame(mockResource, result);
+    assertSame(localMockResource, result);
   }
 
   @Test

@@ -118,7 +118,6 @@ public class CdaPregnancyGenerator {
     } else {
 
       return sb.toString();
-      // sb.append(generateEmptyPregnancySection());
     }
 
     return sb.toString();
@@ -848,10 +847,8 @@ public class CdaPregnancyGenerator {
       if (onsetPeriod.hasEnd()) {
         estimatedDate = onsetPeriod.getEndElement();
       }
-    } else if (cond.hasAbatement()) {
-      if (cond.getAbatement() instanceof DateTimeType) {
-        estimatedDate = (DateTimeType) cond.getAbatement();
-      }
+    } else if (cond.hasAbatement() && cond.getAbatement() instanceof DateTimeType) {
+      estimatedDate = (DateTimeType) cond.getAbatement();
     }
 
     if (estimatedDate != null) {

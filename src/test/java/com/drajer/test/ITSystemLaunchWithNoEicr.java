@@ -1,21 +1,13 @@
 package com.drajer.test;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 import com.drajer.eca.model.*;
-import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;
-import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import java.io.IOException;
 import java.util.*;
-import org.hibernate.query.Query;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +39,6 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
 
   private static final Logger logger = LoggerFactory.getLogger(ITSystemLaunchWithNoEicr.class);
   private String systemLaunchPayload;
-  private LaunchDetails launchDetails;
-  private PatientExecutionState state;
 
   WireMockHelper stubHelper;
 
@@ -98,71 +88,6 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     assertNotNull("Test case ID should not be null", testCaseId);
     assertNotNull("Test data should not be null", testData);
     assertNotNull("System launch payload should not be null", systemLaunchPayload);
-
-    /*   ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
-
-    assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
-    assertTrue(response.getBody().contains("App is launched successfully"));
-
-    logger.info("Received success response, waiting for EICR generation.....");
-    waitForCreateEicrCompletion();
-    getLaunchDetailAndStatus();
-    validateNoMatchedTriggerStatus(JobStatus.COMPLETED);
-    validateCreateEICR(JobStatus.COMPLETED, false);
-    List<Eicr> allEICRDocuments = getAllEICRDocuments();
-    assertEquals(0, allEICRDocuments != null ? allEICRDocuments.size() : ""); */
-
-  }
-
-  private void getLaunchDetailAndStatus() {
-    try {
-      EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-      CriteriaBuilder cb = em.getCriteriaBuilder();
-      CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
-      Root<LaunchDetails> root = cq.from(LaunchDetails.class);
-      cq.where(cb.equal(root.get("xRequestId"), testCaseId));
-
-      Query<LaunchDetails> q = getSession().createQuery(cq);
-
-      launchDetails = q.uniqueResult();
-
-      state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
-      session.refresh(launchDetails);
-    } catch (Exception e) {
-      logger.error("Exception occurred retrieving launchDetail and status", e);
-      fail("Something went wrong with launch status, check the log");
-    }
-  }
-
-  private void validateNoMatchedTriggerStatus(JobStatus status) {
-    MatchTriggerStatus matchTriggerStatus = state.getMatchTriggerStatus();
-
-    assertNotNull(matchTriggerStatus.getMatchedCodes());
-    assertTrue(matchTriggerStatus.getMatchedCodes().size() == 0);
-  }
-
-  private void validateCreateEICR(JobStatus status, Boolean validateEICR) {
-    CreateEicrStatus createEicrStatus = state.getCreateEicrStatus();
-
-    if (validateEICR) {
-      assertTrue(createEicrStatus.getEicrCreated());
-      validateEICR(createEicrStatus.geteICRId());
-    } else {
-      assertFalse(createEicrStatus.getEicrCreated());
-    }
-  }
-
-  private void validateEICR(String eICRId) {
-    assertNotNull(eICRId);
-    assertFalse(eICRId.isEmpty());
-    Eicr eicr = getEICRDocument(eICRId);
-    if (eicr != null) {
-      assertNotNull(eicr);
-      assertNotNull(eicr.getEicrData());
-      assertFalse(eicr.getEicrData().isEmpty());
-    } else {
-      fail("Eicr Not Found");
-    }
   }
 
   private Eicr getEICRDocument(String eicrId) {
@@ -178,39 +103,5 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
       fail("Something went wrong retrieving EICR, check the log");
     }
     return null;
-  }
-
-  private List<Eicr> getAllEICRDocuments() {
-    try {
-
-      EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-      CriteriaBuilder cb = em.getCriteriaBuilder();
-      CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
-
-      Root<Eicr> root = cq.from(Eicr.class);
-      cq.select(root);
-      Query<Eicr> query = session.createQuery(cq);
-      return query.getResultList();
-
-    } catch (Exception e) {
-      logger.error("Exception retrieving EICR ", e);
-      fail("Something went wrong retrieving EICR, check the log");
-    }
-    return null;
-  }
-
-  private void waitForCreateEicrCompletion() {
-    try {
-      do {
-        // Minimum 2 sec is required as App will execute
-        // createEicr workflow after 2 sec as per eRSD.
-        Thread.sleep(2000);
-        getLaunchDetailAndStatus();
-
-      } while (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED);
-    } catch (InterruptedException e) {
-      logger.warn("Issue with thread sleep", e);
-      Thread.currentThread().interrupt();
-    }
   }
 }

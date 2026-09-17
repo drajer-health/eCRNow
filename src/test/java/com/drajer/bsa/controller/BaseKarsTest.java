@@ -92,30 +92,6 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected WireMockHelper stubHelper;
 
-  //  @Before
-  //  public void setupNotificationMocking() throws IOException {
-  //    this.notificationReceiver =
-  // applicationContext.getBean(SubscriptionNotificationReceiver.class);
-  //    this.ap = applicationContext.getBean(ApplicationUtils.class);
-  //    this.hsDao = applicationContext.getBean(HealthcareSettingsDao.class);
-  //    this.wireMockServer.resetAll();
-  //    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
-  //    logger.info("Creating WireMock stubs..");
-  //    stubHelper.mockFhirRead("/fhir/metadata", getCapabilityStatement());
-  //    logger.info("Set up Test: {}", this.testCaseInfo.getName());
-  //    setupHealthCareSettings();
-  //    mockAccessToken();
-  //    mockScenarioFolder(
-  //        new File(
-  //            classLoader
-  //                .getResource(
-  //                    "Bsa/Scenarios/"
-  //                        + this.testCaseInfo.getPlanDef()
-  //                        + "/"
-  //                        + this.testCaseInfo.getName())
-  //                .getPath()));
-  //  }
-
   @Before
   public void setupNotificationMocking() throws IOException {
     this.notificationReceiver = applicationContext.getBean(SubscriptionNotificationReceiver.class);
@@ -267,11 +243,10 @@ public class BaseKarsTest extends BaseIntegrationTest {
         if (resource instanceof Parameters) {
           Parameters params = (Parameters) resource;
           for (ParametersParameterComponent parameter : params.getParameter()) {
-            if (parameter.getName().equals("content")) {
-              if (parameter.getResource() != null
-                  && parameter.getResource().fhirType().equals("Bundle")) {
-                return (Bundle) parameter.getResource();
-              }
+            if (parameter.getName().equals("content")
+                && parameter.getResource() != null
+                && parameter.getResource().fhirType().equals("Bundle")) {
+              return (Bundle) parameter.getResource();
             }
           }
         } else if (resource instanceof Bundle) {

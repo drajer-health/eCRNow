@@ -257,9 +257,9 @@ public class BsaServiceUtilsTest {
     BundleEntryComponent bundleEntryComponent =
         new BundleEntryComponent().setResource(messageHeader);
 
-    Bundle bundle = new Bundle().setType(BundleType.MESSAGE).addEntry(bundleEntry);
-    bundle.addEntry(bundleEntryComponent);
-    Boolean cdaData = BsaServiceUtils.hasCdaData(bundle);
+    Bundle localBundle = new Bundle().setType(BundleType.MESSAGE).addEntry(bundleEntry);
+    localBundle.addEntry(bundleEntryComponent);
+    Boolean cdaData = BsaServiceUtils.hasCdaData(localBundle);
     assertTrue(cdaData);
   }
 
@@ -289,7 +289,6 @@ public class BsaServiceUtilsTest {
 
   @Test
   public void saveFhirResourceToFile() throws Exception {
-    FhirContext fhirContext = FhirContext.forR4();
     Patient patient = new Patient();
     patient.setId("1");
     patient.addName().setFamily("Doe").addGiven("John");
@@ -312,7 +311,6 @@ public class BsaServiceUtilsTest {
 
   @Test
   public void saveCdaDocumentFromDocumentBundleToFile() {
-    FhirContext fhirContext = FhirContext.forR4();
     Bundle messageHeader = TestUtils.loadBundleFromFile("/Bsa/DocumentReferenceResource.json");
     List<Pair<String, String>> cdaDocument =
         bsaServiceUtils.saveCdaDocumentFromDocumentBundleToFile(
@@ -322,11 +320,10 @@ public class BsaServiceUtilsTest {
 
   @Test
   public void findMessageHeaderAndDocumentReferences() {
-    FhirContext fhirContext = FhirContext.forR4();
-    Bundle bundle = TestUtils.loadBundleFromFile("/Bsa/MessageHeader.json");
+    Bundle localBundle = TestUtils.loadBundleFromFile("/Bsa/MessageHeader.json");
     List<DocumentReference> documentReferenceList = new ArrayList<>();
     MessageHeader messageHeader =
-        bsaServiceUtils.findMessageHeaderAndDocumentReferences(bundle, documentReferenceList);
+        bsaServiceUtils.findMessageHeaderAndDocumentReferences(localBundle, documentReferenceList);
     assertNotNull(messageHeader);
   }
 

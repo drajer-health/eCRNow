@@ -488,8 +488,6 @@ public class EhrFhirR4QueryServiceImplTest {
     Mockito.lenient().when(karProcessingData.getContextEncounter()).thenReturn(encoounter);
     ehrFhirR4QueryService.substituteContextParams(karProcessingData, queryToExecute, true);
     verify(karProcessingData, times(2)).getContextEncounter();
-    //        assertTrue(actual.contains("ge2025-09-08"));
-
   }
 
   @Test

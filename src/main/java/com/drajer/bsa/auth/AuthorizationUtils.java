@@ -41,13 +41,10 @@ public class AuthorizationUtils {
       case USER_NAME_PWD:
         token = passwordAuthorizationService.getAuthorizationToken(fsd);
         break;
-      case SOF_BACKEND:
-      case SOF_PROVIDER:
+      case SOF_BACKEND, SOF_PROVIDER:
         token = backendAuthorizationService.getAuthorizationToken(fsd);
         break;
-      case SYSTEM:
-      case SOF_SYSTEM:
-      case MULTI_TENANT_SYSTEM_LAUNCH:
+      case SYSTEM, SOF_SYSTEM, MULTI_TENANT_SYSTEM_LAUNCH:
         token = ehrAuthorizationService.getAuthorizationToken(fsd);
         break;
       case UNKNOWN:

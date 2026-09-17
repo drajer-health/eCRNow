@@ -200,7 +200,7 @@ public class SpringConfiguration {
     return ctx.newJsonParser().setPrettyPrint(true);
   }
 
-  @Bean(name = "ECRRetryTemplate")
+  @Bean(name = "ecrRetryTemplate")
   public RetryTemplate retryTemplate(RetryStatusCode retryStatusCode) {
 
     RetryTemplate template = retryStatusCode.configureRetryTemplate();

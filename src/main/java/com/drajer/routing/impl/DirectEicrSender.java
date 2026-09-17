@@ -65,13 +65,18 @@ public class DirectEicrSender extends EicrSender {
 
       try {
 
-        logger.info(
-            " Sending Mail from {} to {}",
-            StringEscapeUtils.escapeJava(details.getDirectUser()),
-            StringEscapeUtils.escapeJava(details.getDirectRecipient()));
-        if (details.getSmtpUrl() != null) {
+        if (logger.isInfoEnabled()) {
           logger.info(
-              "Using SMTP URL to send:::::{}", StringEscapeUtils.escapeJava(details.getSmtpUrl()));
+              " Sending Mail from {} to {}",
+              StringEscapeUtils.escapeJava(details.getDirectUser()),
+              StringEscapeUtils.escapeJava(details.getDirectRecipient()));
+        }
+        if (details.getSmtpUrl() != null) {
+          if (logger.isInfoEnabled()) {
+            logger.info(
+                "Using SMTP URL to send:::::{}",
+                StringEscapeUtils.escapeJava(details.getSmtpUrl()));
+          }
           sendMail(
               details.getSmtpUrl(),
               details.getDirectUser(),
@@ -82,9 +87,11 @@ public class DirectEicrSender extends EicrSender {
               DirectEicrSender.FILE_NAME,
               correlationId);
         } else {
-          logger.info(
-              "Using Direct Host to send:::::{}",
-              StringEscapeUtils.escapeJava(details.getDirectHost()));
+          if (logger.isInfoEnabled()) {
+            logger.info(
+                "Using Direct Host to send:::::{}",
+                StringEscapeUtils.escapeJava(details.getDirectHost()));
+          }
           sendMail(
               details.getDirectHost(),
               details.getDirectUser(),
@@ -130,7 +137,9 @@ public class DirectEicrSender extends EicrSender {
 
     DirectMimeMessage message = new DirectMimeMessage(session, correlationId, host);
 
-    logger.info("Setting From Address {}", StringEscapeUtils.escapeJava(username));
+    if (logger.isInfoEnabled()) {
+      logger.info("Setting From Address {}", StringEscapeUtils.escapeJava(username));
+    }
     message.setFrom(new InternetAddress(username));
 
     String toAddr = StringUtils.deleteWhitespace(receipientAddr);
@@ -157,7 +166,10 @@ public class DirectEicrSender extends EicrSender {
     Transport transport = session.getTransport("smtp");
     transport.connect(host, Integer.parseInt(port), username, password);
 
-    logger.info(" Connection successful to the direct host {}", StringEscapeUtils.escapeJava(host));
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          " Connection successful to the direct host {}", StringEscapeUtils.escapeJava(host));
+    }
     transport.sendMessage(message, message.getAllRecipients());
 
     logger.info("Finished sending Direct message successfully, closing connection ");

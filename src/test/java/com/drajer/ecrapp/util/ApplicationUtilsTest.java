@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.parser.IParser;
-import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.service.PlanDefinitionProcessor;
@@ -203,8 +202,6 @@ public class ApplicationUtilsTest {
   @Test
   public void testHandleException() {
 
-    Exception e = new Exception("msg");
-
     ObjectDeletedException ode = new ObjectDeletedException("MyEntity", 1L, "Entity was deleted");
     assertThrows(
         ObjectDeletedException.class,
@@ -374,7 +371,7 @@ public class ApplicationUtilsTest {
   public void testGetDetailStatus_EmptyJson() {
     LaunchDetails ld = new LaunchDetails();
     ld.setStatus("{}");
-    PatientExecutionState result = assertDoesNotThrow(() -> ApplicationUtils.getDetailStatus(ld));
+    assertDoesNotThrow(() -> ApplicationUtils.getDetailStatus(ld));
   }
 
   @Test

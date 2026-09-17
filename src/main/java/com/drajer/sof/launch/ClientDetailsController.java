@@ -119,10 +119,12 @@ public class ClientDetailsController {
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      logger.info(
-          "X-Request-ID: {} and X-Correlation-ID: {} received for deleting clientDetail",
-          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
-          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "X-Request-ID: {} and X-Correlation-ID: {} received for deleting clientDetail",
+            StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+            StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      }
 
       if (url == null || url.isEmpty()) {
         return new ResponseEntity<>(

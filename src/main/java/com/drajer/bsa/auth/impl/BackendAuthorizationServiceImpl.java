@@ -2,7 +2,6 @@ package com.drajer.bsa.auth.impl;
 
 import com.drajer.bsa.auth.AuthorizationService;
 import com.drajer.bsa.model.FhirServerDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -74,8 +73,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    * @return the token response from the auth server
    * @throws KeyStoreException in case of invalid public/private keys
    */
-  public JSONObject connectToServer(String url, FhirServerDetails fsd)
-      throws KeyStoreException, JsonProcessingException {
+  public JSONObject connectToServer(String url, FhirServerDetails fsd) throws KeyStoreException {
     RestTemplate resTemplate = new RestTemplate();
     String tokenEndpoint;
 
@@ -112,7 +110,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     ResponseEntity<String> response =
         resTemplate.postForEntity(tokenEndpoint, request, String.class);
     logger.info(" Response Body = {}", response.getBody());
-    String responseObj = (String) Objects.requireNonNull(response.getBody());
+    String responseObj = Objects.requireNonNull(response.getBody());
 
     return new JSONObject(responseObj);
   }

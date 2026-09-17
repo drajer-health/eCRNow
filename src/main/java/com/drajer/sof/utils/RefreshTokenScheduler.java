@@ -98,10 +98,12 @@ public class RefreshTokenScheduler {
     String cronExpression = "0 " + "0/" + minutes + " * * * ?";
     CronTrigger cronTrigger = new CronTrigger(cronExpression);
     taskScheduler.schedule(new RunnableTask(authDetails), cronTrigger);
-    logger.info(
-        "Job Scheduled to get AccessToken for every {} minutes for Client: {}",
-        minutes,
-        StringEscapeUtils.escapeJava(authDetails.getClientId()));
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "Job Scheduled to get AccessToken for every {} minutes for Client: {}",
+          minutes,
+          StringEscapeUtils.escapeJava(authDetails.getClientId()));
+    }
   }
 
   /** The Class RunnableTask. */
@@ -139,9 +141,11 @@ public class RefreshTokenScheduler {
    */
   public JSONObject getAccessTokenUsingLaunchDetails(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
-    logger.trace(
-        "Getting AccessToken for Client: {}",
-        StringEscapeUtils.escapeJava(authDetails.getClientId()));
+    if (logger.isTraceEnabled()) {
+      logger.trace(
+          "Getting AccessToken for Client: {}",
+          StringEscapeUtils.escapeJava(authDetails.getClientId()));
+    }
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -204,9 +208,11 @@ public class RefreshTokenScheduler {
           tokenResponse = new JSONObject(responseBody);
         }
       }
-      logger.trace(
-          "Received AccessToken for Client {}",
-          StringEscapeUtils.escapeJava(authDetails.getClientId()));
+      if (logger.isTraceEnabled()) {
+        logger.trace(
+            "Received AccessToken for Client {}",
+            StringEscapeUtils.escapeJava(authDetails.getClientId()));
+      }
       if (Boolean.TRUE.equals(authDetails.getIsMultiTenantSystemLaunch())) {
         ClientDetails clientDetails =
             ActionRepo.getInstance()
@@ -351,9 +357,11 @@ public class RefreshTokenScheduler {
         }
       }
 
-      logger.trace(
-          "Received AccessToken for Client: {}",
-          StringEscapeUtils.escapeJava(clientDetails.getClientId()));
+      if (logger.isTraceEnabled()) {
+        logger.trace(
+            "Received AccessToken for Client: {}",
+            StringEscapeUtils.escapeJava(clientDetails.getClientId()));
+      }
       ClientDetails existingClientDetails =
           ActionRepo.getInstance()
               .getClientDetailsService()

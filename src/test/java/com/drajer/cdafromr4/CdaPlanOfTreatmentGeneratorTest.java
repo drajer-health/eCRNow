@@ -125,8 +125,6 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
     String expectedXml = TestUtils.getFileContentAsString(PLANNED_PROCEDURE_ENTRY_CDA_FILE);
 
@@ -184,8 +182,6 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
     String expectedXml = TestUtils.getFileContentAsString(PLANNED_ACT_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);

@@ -297,7 +297,7 @@ public class R4ResourcesDataTest {
     return bundle;
   }
 
-  private Bundle createBundleWithConditions(int count, String encounterId, Date date) {
+  private Bundle createBundleWithConditions(int count, String encounterId) {
     Bundle bundle = new Bundle();
     for (int i = 0; i < count; i++) {
       Condition cond = new Condition();
@@ -1355,7 +1355,7 @@ public class R4ResourcesDataTest {
 
     when(resourceDataMock.getResourceByPatientId(
             eq(launchDetails), eq(client), eq(context), eq("Condition")))
-        .thenReturn(createBundleWithConditions(2, "E123456", now()));
+        .thenReturn(createBundleWithConditions(2, "E123456"));
 
     // 1 lab observation with a Quantity value, plus 1 with a CodeableConcept value so
     // r4FhirData.getLabResultValueObservations() is populated and its own bundle branch runs.

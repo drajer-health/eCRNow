@@ -51,24 +51,27 @@ public class EicrController {
       @RequestParam(name = "endDate", required = false) String endDate) {
     List<JSONObject> eicrData = new ArrayList<>();
     try {
-      logger.info(
-          "Retrieving EICR based on request\n"
-              + "eicrId = {}\n"
-              + "eicrDocId = {}\n"
-              + "setId = {}\n"
-              + "patientId = {}\n"
-              + "encounterId = {}\n"
-              + "version = {}\n"
-              + "fhirServerUrl = {}\n"
-              + "xRequestId = {}",
-          StringEscapeUtils.escapeJava(eicrId),
-          StringEscapeUtils.escapeJava(eicrDocId),
-          StringEscapeUtils.escapeJava(setId),
-          StringEscapeUtils.escapeJava(patientId),
-          StringEscapeUtils.escapeJava(encounterId),
-          StringEscapeUtils.escapeJava(version),
-          StringEscapeUtils.escapeJava(fhirServerUrl),
-          StringEscapeUtils.escapeJava(xRequestId));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            """
+                Retrieving EICR based on request
+                eicrId = {}
+                eicrDocId = {}
+                setId = {}
+                patientId = {}
+                encounterId = {}
+                version = {}
+                fhirServerUrl = {}
+                xRequestId = {}""",
+            StringEscapeUtils.escapeJava(eicrId),
+            StringEscapeUtils.escapeJava(eicrDocId),
+            StringEscapeUtils.escapeJava(setId),
+            StringEscapeUtils.escapeJava(patientId),
+            StringEscapeUtils.escapeJava(encounterId),
+            StringEscapeUtils.escapeJava(version),
+            StringEscapeUtils.escapeJava(fhirServerUrl),
+            StringEscapeUtils.escapeJava(xRequestId));
+      }
 
       Map<String, String> searchParams = new HashMap<>();
       if (eicrId != null && !eicrId.isEmpty()) {
@@ -124,14 +127,15 @@ public class EicrController {
     List<JSONObject> rrData = new ArrayList<>();
     try {
       logger.info(
-          "Retrieving EICR based on request\n"
-              + "responseDocId = {}\n"
-              + "eicrDocId = {}\n"
-              + "setId = {}\n"
-              + "patientId = {}\n"
-              + "encounterId = {}\n"
-              + "version = {}\n"
-              + "fhirServerUrl = {}",
+          """
+              Retrieving EICR based on request
+              responseDocId = {}
+              eicrDocId = {}
+              setId = {}
+              patientId = {}
+              encounterId = {}
+              version = {}
+              fhirServerUrl = {}""",
           responseDocId,
           eicrDocId,
           setId,
@@ -181,10 +185,12 @@ public class EicrController {
           String xCorrelationIdHttpHeaderValue) {
     List<JSONObject> eicrList = new ArrayList<>();
     try {
-      logger.info(
-          "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
-          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
-          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
+            StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+            StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      }
       eicrList = eicrRRService.getEicrAndRRByXRequestId(xRequestId);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -238,10 +244,12 @@ public class EicrController {
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      logger.info(
-          "X-Request-ID: {} and X-Correlation-ID: {} received for deleting ECR",
-          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
-          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "X-Request-ID: {} and X-Correlation-ID: {} received for deleting ECR",
+            StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+            StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
+      }
 
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         return new ResponseEntity<>(

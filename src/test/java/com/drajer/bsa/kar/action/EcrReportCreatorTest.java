@@ -293,7 +293,7 @@ public class EcrReportCreatorTest {
     Pair<Boolean, ReportableMatchedTriggerCode> result =
         execute(obs, "http://loinc.org", "1234-5", ObservationCategory.LABORATORY);
 
-    assertMatched(result, "1234-5");
+    assertMatched(result);
   }
 
   @Test
@@ -305,7 +305,7 @@ public class EcrReportCreatorTest {
     Pair<Boolean, ReportableMatchedTriggerCode> result =
         execute(dr, "http://loinc.org", "1234-5", null);
 
-    assertMatched(result, "1234-5");
+    assertMatched(result);
   }
 
   @Test
@@ -315,7 +315,7 @@ public class EcrReportCreatorTest {
     imm.setVaccineCode(createConcept("http://loinc.org", "1234-5"));
     Pair<Boolean, ReportableMatchedTriggerCode> result =
         execute(imm, "http://loinc.org", "1234-5", null);
-    assertMatched(result, "1234-5");
+    assertMatched(result);
   }
 
   @Test
@@ -337,7 +337,7 @@ public class EcrReportCreatorTest {
 
     Pair<Boolean, ReportableMatchedTriggerCode> result =
         execute(mr, "http://loinc.org", "1234-5", null);
-    assertMatched(result, "1234-5");
+    assertMatched(result);
   }
 
   @Test
@@ -419,19 +419,6 @@ public class EcrReportCreatorTest {
     status.setOutputFormat(BsaTypes.OutputContentType.FHIR);
     status.setKarVersion("1.0.0");
     status.setKarId("rctc-release-2023-02-03-Bundle-rctc");
-    status.setLastActivationDate(new Date());
-    status.setSubscriptionsEnabled(false);
-    status.setCovidOnly(false);
-    return status;
-  }
-
-  private KnowledgeArtifactStatus getKnowledgeArtifactStatus_R31() {
-    KnowledgeArtifactStatus status = new KnowledgeArtifactStatus();
-    status.setId(1);
-    status.setIsActive(true);
-    status.setOutputFormat(BsaTypes.OutputContentType.CDA_R31);
-    status.setKarVersion("3.0.1");
-    status.setKarId("rctc-release-3.0.1-Bundle-rctc");
     status.setLastActivationDate(new Date());
     status.setSubscriptionsEnabled(false);
     status.setCovidOnly(false);
@@ -545,8 +532,7 @@ public class EcrReportCreatorTest {
     return ecrReportCreator.resourceHasMatchedCode(resource, ctcs, category);
   }
 
-  private void assertMatched(
-      Pair<Boolean, ReportableMatchedTriggerCode> result, String expectedCode) {
+  private void assertMatched(Pair<Boolean, ReportableMatchedTriggerCode> result) {
 
     assertTrue(result.getValue0());
     assertNotNull(result.getValue1());

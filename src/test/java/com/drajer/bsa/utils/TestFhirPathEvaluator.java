@@ -83,206 +83,210 @@ public class TestFhirPathEvaluator {
 
   private static Patient createPatient() {
     String patientJson =
-        "{\n"
-            + "  \"resourceType\": \"Patient\",\n"
-            + "  \"id\": \"example\",\n"
-            + "  \"address\": [\n"
-            + "    {\n"
-            + "      \"use\": \"home\",\n"
-            + "      \"city\": \"PleasantVille\",\n"
-            + "      \"type\": \"both\",\n"
-            + "      \"state\": \"Vic\",\n"
-            + "      \"line\": [\n"
-            + "        \"534 Erewhon St\"\n"
-            + "      ],\n"
-            + "      \"postalCode\": \"3999\",\n"
-            + "      \"period\": {\n"
-            + "        \"start\": \"1974-12-25\"\n"
-            + "      },\n"
-            + "      \"district\": \"Rainbow\",\n"
-            + "      \"text\": \"534 Erewhon St PeasantVille, Rainbow, Vic  3999\"\n"
-            + "    }\n"
-            + "  ],\n"
-            + "  \"managingOrganization\": {\n"
-            + "    \"reference\": \"Organization/1\"\n"
-            + "  },\n"
-            + "  \"name\": [\n"
-            + "    {\n"
-            + "      \"use\": \"official\",\n"
-            + "      \"given\": [\n"
-            + "        \"Peter\",\n"
-            + "        \"James\"\n"
-            + "      ],\n"
-            + "      \"family\": \"Chalmers\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"use\": \"usual\",\n"
-            + "      \"given\": [\n"
-            + "        \"Jim\"\n"
-            + "      ]\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"use\": \"maiden\",\n"
-            + "      \"given\": [\n"
-            + "        \"Peter\",\n"
-            + "        \"James\"\n"
-            + "      ],\n"
-            + "      \"family\": \"Windsor\",\n"
-            + "      \"period\": {\n"
-            + "        \"end\": \"2002\"\n"
-            + "      }\n"
-            + "    }\n"
-            + "  ],\n"
-            + "  \"birthDate\": \"1974-12-25\",\n"
-            + "  \"deceased\": {\n"
-            + "    \"boolean\": false\n"
-            + "  },\n"
-            + "  \"active\": true,\n"
-            + "  \"identifier\": [\n"
-            + "    {\n"
-            + "      \"use\": \"usual\",\n"
-            + "      \"type\": {\n"
-            + "        \"coding\": [\n"
-            + "          {\n"
-            + "            \"code\": \"MR\",\n"
-            + "            \"system\": \"http://hl7.org/fhir/v2/0203\"\n"
-            + "          }\n"
-            + "        ]\n"
-            + "      },\n"
-            + "      \"value\": \"12345\",\n"
-            + "      \"period\": {\n"
-            + "        \"start\": \"2001-05-06\"\n"
-            + "      },\n"
-            + "      \"system\": \"urn:oid:1.2.36.146.595.217.0.1\",\n"
-            + "      \"assigner\": {\n"
-            + "        \"display\": \"Acme Healthcare\"\n"
-            + "      }\n"
-            + "    }\n"
-            + "  ],\n"
-            + "  \"telecom\": [\n"
-            + "    {\n"
-            + "      \"use\": \"home\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"use\": \"work\",\n"
-            + "      \"rank\": 1,\n"
-            + "      \"value\": \"(03) 5555 6473\",\n"
-            + "      \"system\": \"phone\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"use\": \"mobile\",\n"
-            + "      \"rank\": 2,\n"
-            + "      \"value\": \"(03) 3410 5613\",\n"
-            + "      \"system\": \"phone\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"use\": \"old\",\n"
-            + "      \"value\": \"(03) 5555 8834\",\n"
-            + "      \"period\": {\n"
-            + "        \"end\": \"2014\"\n"
-            + "      },\n"
-            + "      \"system\": \"phone\"\n"
-            + "    }\n"
-            + "  ],\n"
-            + "  \"gender\": \"male\",\n"
-            + "  \"contact\": [\n"
-            + "    {\n"
-            + "      \"name\": {\n"
-            + "        \"given\": [\n"
-            + "          \"Bénédicte\"\n"
-            + "        ],\n"
-            + "        \"family\": \"du Marché\",\n"
-            + "        \"_family\": {\n"
-            + "          \"extension\": [\n"
-            + "            {\n"
-            + "              \"url\": \"http://hl7.org/fhir/StructureDefinition/humanname-own-prefix\",\n"
-            + "              \"valueString\": \"VV\"\n"
-            + "            }\n"
-            + "          ]\n"
-            + "        }\n"
-            + "      },\n"
-            + "      \"gender\": \"female\",\n"
-            + "      \"period\": {\n"
-            + "        \"start\": \"2012\"\n"
-            + "      },\n"
-            + "      \"address\": {\n"
-            + "        \"use\": \"home\",\n"
-            + "        \"city\": \"PleasantVille\",\n"
-            + "        \"line\": [\n"
-            + "          \"534 Erewhon St\"\n"
-            + "        ],\n"
-            + "        \"type\": \"both\",\n"
-            + "        \"state\": \"Vic\",\n"
-            + "        \"period\": {\n"
-            + "          \"start\": \"1974-12-25\"\n"
-            + "        },\n"
-            + "        \"district\": \"Rainbow\",\n"
-            + "        \"postalCode\": \"3999\"\n"
-            + "      },\n"
-            + "      \"telecom\": [\n"
-            + "        {\n"
-            + "          \"value\": \"+33 (237) 998327\",\n"
-            + "          \"system\": \"phone\"\n"
-            + "        }\n"
-            + "      ],\n"
-            + "      \"relationship\": [\n"
-            + "        {\n"
-            + "          \"coding\": [\n"
-            + "            {\n"
-            + "              \"code\": \"N\",\n"
-            + "              \"system\": \"http://hl7.org/fhir/v2/0131\"\n"
-            + "            }\n"
-            + "          ]\n"
-            + "        }\n"
-            + "      ]\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}";
+        """
+        {
+          "resourceType": "Patient",
+          "id": "example",
+          "address": [
+            {
+              "use": "home",
+              "city": "PleasantVille",
+              "type": "both",
+              "state": "Vic",
+              "line": [
+                "534 Erewhon St"
+              ],
+              "postalCode": "3999",
+              "period": {
+                "start": "1974-12-25"
+              },
+              "district": "Rainbow",
+              "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999"
+            }
+          ],
+          "managingOrganization": {
+            "reference": "Organization/1"
+          },
+          "name": [
+            {
+              "use": "official",
+              "given": [
+                "Peter",
+                "James"
+              ],
+              "family": "Chalmers"
+            },
+            {
+              "use": "usual",
+              "given": [
+                "Jim"
+              ]
+            },
+            {
+              "use": "maiden",
+              "given": [
+                "Peter",
+                "James"
+              ],
+              "family": "Windsor",
+              "period": {
+                "end": "2002"
+              }
+            }
+          ],
+          "birthDate": "1974-12-25",
+          "deceased": {
+            "boolean": false
+          },
+          "active": true,
+          "identifier": [
+            {
+              "use": "usual",
+              "type": {
+                "coding": [
+                  {
+                    "code": "MR",
+                    "system": "http://hl7.org/fhir/v2/0203"
+                  }
+                ]
+              },
+              "value": "12345",
+              "period": {
+                "start": "2001-05-06"
+              },
+              "system": "urn:oid:1.2.36.146.595.217.0.1",
+              "assigner": {
+                "display": "Acme Healthcare"
+              }
+            }
+          ],
+          "telecom": [
+            {
+              "use": "home"
+            },
+            {
+              "use": "work",
+              "rank": 1,
+              "value": "(03) 5555 6473",
+              "system": "phone"
+            },
+            {
+              "use": "mobile",
+              "rank": 2,
+              "value": "(03) 3410 5613",
+              "system": "phone"
+            },
+            {
+              "use": "old",
+              "value": "(03) 5555 8834",
+              "period": {
+                "end": "2014"
+              },
+              "system": "phone"
+            }
+          ],
+          "gender": "male",
+          "contact": [
+            {
+              "name": {
+                "given": [
+                  "Bénédicte"
+                ],
+                "family": "du Marché",
+                "_family": {
+                  "extension": [
+                    {
+                      "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-prefix",
+                      "valueString": "VV"
+                    }
+                  ]
+                }
+              },
+              "gender": "female",
+              "period": {
+                "start": "2012"
+              },
+              "address": {
+                "use": "home",
+                "city": "PleasantVille",
+                "line": [
+                  "534 Erewhon St"
+                ],
+                "type": "both",
+                "state": "Vic",
+                "period": {
+                  "start": "1974-12-25"
+                },
+                "district": "Rainbow",
+                "postalCode": "3999"
+              },
+              "telecom": [
+                {
+                  "value": "+33 (237) 998327",
+                  "system": "phone"
+                }
+              ],
+              "relationship": [
+                {
+                  "coding": [
+                    {
+                      "code": "N",
+                      "system": "http://hl7.org/fhir/v2/0131"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+        """;
     IBaseResource resource = fhirContext.newJsonParser().parseResource(patientJson);
     return (Patient) resource;
   }
 
   private static Bundle createBundle() {
     String json =
-        "{\n"
-            + "          \"resourceType\": \"Bundle\",\n"
-            + "          \"type\": \"collection\",\n"
-            + "          \"entry\": [\n"
-            + "            {\n"
-            + "              \"resource\": {\n"
-            + "                \"resourceType\": \"Patient\",\n"
-            + "                \"id\": \"patient-1\",\n"
-            + "                \"name\": [\n"
-            + "                  {\n"
-            + "                    \"family\": \"Smith\",\n"
-            + "                    \"given\": [\"Jane\"]\n"
-            + "                  }\n"
-            + "                ],\n"
-            + "                \"gender\": \"female\"\n"
-            + "              }\n"
-            + "            },\n"
-            + "            {\n"
-            + "              \"resource\": {\n"
-            + "                \"resourceType\": \"Patient\",\n"
-            + "                \"id\": \"patient-2\",\n"
-            + "                \"name\": [\n"
-            + "                  {\n"
-            + "                    \"family\": \"Doe\",\n"
-            + "                    \"given\": [\"John\"]\n"
-            + "                  }\n"
-            + "                ],\n"
-            + "                \"gender\": \"male\"\n"
-            + "              }\n"
-            + "            },\n"
-            + "            {\n"
-            + "              \"resource\": {\n"
-            + "                \"resourceType\": \"Observation\",\n"
-            + "                \"id\": \"obs-1\",\n"
-            + "                \"status\": \"final\"\n"
-            + "              }\n"
-            + "            }\n"
-            + "          ]\n"
-            + "        }";
+        """
+        {
+          "resourceType": "Bundle",
+          "type": "collection",
+          "entry": [
+            {
+              "resource": {
+                "resourceType": "Patient",
+                "id": "patient-1",
+                "name": [
+                  {
+                    "family": "Smith",
+                    "given": ["Jane"]
+                  }
+                ],
+                "gender": "female"
+              }
+            },
+            {
+              "resource": {
+                "resourceType": "Patient",
+                "id": "patient-2",
+                "name": [
+                  {
+                    "family": "Doe",
+                    "given": ["John"]
+                  }
+                ],
+                "gender": "male"
+              }
+            },
+            {
+              "resource": {
+                "resourceType": "Observation",
+                "id": "obs-1",
+                "status": "final"
+              }
+            }
+          ]
+        }
+        """;
     IBaseResource resource = fhirContext.newJsonParser().parseResource(json);
     return (Bundle) resource;
   }

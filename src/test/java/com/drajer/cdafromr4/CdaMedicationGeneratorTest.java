@@ -144,7 +144,7 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     String actualXml =
-        CdaMedicationGenerator.generateR31MedicationsAdministeredSection(data, launchDetails, "");
+        CdaMedicationGenerator.generateR31MedicationsAdministeredSection(data, launchDetails);
 
     assertXmlEquals(expectedXml, actualXml);
   }

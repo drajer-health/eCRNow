@@ -147,12 +147,11 @@ public class CdaProcedureGenerator {
 
   private static Boolean isProcedureActivityObservation(Procedure proc) {
 
-    if (proc != null && proc.hasCode()) {
-
-      if (CdaFhirUtilities.isCodeableConceptPresentForCodeSystem(
-          proc.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
-        return true;
-      }
+    if (proc != null
+        && proc.hasCode()
+        && CdaFhirUtilities.isCodeableConceptPresentForCodeSystem(
+            proc.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+      return true;
     }
 
     return false;
@@ -219,18 +218,15 @@ public class CdaProcedureGenerator {
 
   private static Boolean isProcedureActivityProcedure(Procedure proc) {
 
-    if (proc != null && proc.hasCode()) {
-
-      if (CdaFhirUtilities.isCodeableConceptPresentForCodeSystem(
-          proc.getCode(), CdaGeneratorConstants.FHIR_CPT_URL)) {
-        return true;
-      } else if (CdaFhirUtilities.isCodeableConceptPresentForCodeSystem(
-          proc.getCode(), CdaGeneratorConstants.FHIR_SNOMED_URL)) {
-        return true;
-      }
-      // Add HCPCS and CDT URLs in the future.
-
+    if (proc != null
+        && proc.hasCode()
+        && (CdaFhirUtilities.isCodeableConceptPresentForCodeSystem(
+                proc.getCode(), CdaGeneratorConstants.FHIR_CPT_URL)
+            || CdaFhirUtilities.isCodeableConceptPresentForCodeSystem(
+                proc.getCode(), CdaGeneratorConstants.FHIR_SNOMED_URL))) {
+      return true;
     }
+    // Add HCPCS and CDT URLs in the future.
 
     return false;
   }

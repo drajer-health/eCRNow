@@ -1012,39 +1012,40 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetCodingXmlForValueWithEmptyCodeList() {
-    List<Coding> codes = new ArrayList<>();
+    List<Coding> localCodes = new ArrayList<>();
     String cdName = "testCd";
     String contentRef = "testRef";
-    String result = CdaFhirUtilities.getCodingXmlForValue(codes, cdName, contentRef);
+    String result = CdaFhirUtilities.getCodingXmlForValue(localCodes, cdName, contentRef);
     assertEquals("<testCd xsi:type=\"CD\" nullFlavor=\"NI\"/>", result.trim());
   }
 
   @Test
   public void testGetCodingXmlForValueWithSingleCode() {
-    List<Coding> codes = new ArrayList<>();
-    codes.add(new Coding("http://example.com/codeSystem", "123", "Test Code"));
+    List<Coding> localCodes = new ArrayList<>();
+    localCodes.add(new Coding("http://example.com/codeSystem", "123", "Test Code"));
     String cdName = CdaGeneratorConstants.VAL_EL_NAME;
 
     String expected = "<value xsi:type=\"CD\" nullFlavor=\"NI\"/>";
-    String result = CdaFhirUtilities.getCodingXmlForValue(codes, cdName, null);
+    String result = CdaFhirUtilities.getCodingXmlForValue(localCodes, cdName, null);
     result = result.replaceAll("\n", "");
     assertEquals(expected.trim(), result.trim());
   }
 
   @Test
   public void testGetCodingXmlForValueWithMultipleCodes() {
-    List<Coding> codes = new ArrayList<>();
-    codes.add(new Coding("http://snomed.info/sct", "260385009", "Test Code 1"));
-    codes.add(new Coding("http://snomed.info/sct", "260385009", "Test Code 2"));
+    List<Coding> localCodes = new ArrayList<>();
+    localCodes.add(new Coding("http://snomed.info/sct", "260385009", "Test Code 1"));
+    localCodes.add(new Coding("http://snomed.info/sct", "260385009", "Test Code 2"));
     String cdName = "testCd";
     String contentRef = "testRef";
     String expected =
-        "<value xsi:type=\"CD\" code=\"260385009\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Test Code 1\"><originalText>\r\n"
-            + "<reference value=\"#testRef\"/>\r\n"
-            + "</originalText>\r\n"
-            + "<translation code=\"260385009\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Test Code 2\"/>\r\n"
-            + "</value>";
-    String result = CdaFhirUtilities.getCodingXmlForValue(codes, cdName, contentRef);
+        """
+        <value xsi:type="CD" code="260385009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Test Code 1"><originalText>\r
+        <reference value="#testRef"/>\r
+        </originalText>\r
+        <translation code="260385009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Test Code 2"/>\r
+        </value>""";
+    String result = CdaFhirUtilities.getCodingXmlForValue(localCodes, cdName, contentRef);
 
     assertXmlEquals(expected, result);
   }
@@ -1491,12 +1492,12 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @Test
   public void testIsCodePresent() {
 
-    List<String> codes = Arrays.asList("code1", "code2", "code3");
+    List<String> localCodes = Arrays.asList("code1", "code2", "code3");
     String code = "code2";
-    Boolean result = CdaFhirUtilities.isCodePresent(codes, code);
+    Boolean result = CdaFhirUtilities.isCodePresent(localCodes, code);
     assertEquals(true, result);
 
-    Boolean result1 = CdaFhirUtilities.isCodePresent(codes, "code4");
+    Boolean result1 = CdaFhirUtilities.isCodePresent(localCodes, "code4");
     assertEquals(false, result1);
   }
 
@@ -1712,18 +1713,18 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @Test
   public void testGetGenderXml() {
 
-    Map<String, String> testData = new HashMap<>();
-    testData.put(
+    Map<String, String> localTestData = new HashMap<>();
+    localTestData.put(
         "male",
         "<administrativeGenderCode code=\"M\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"male\"/>");
-    testData.put(
+    localTestData.put(
         "female",
         "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>");
-    testData.put(
+    localTestData.put(
         "other",
         "<administrativeGenderCode code=\"UN\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"unknown\"/>");
 
-    for (Map.Entry<String, String> entry : testData.entrySet()) {
+    for (Map.Entry<String, String> entry : localTestData.entrySet()) {
       String actualXml =
           CdaFhirUtilities.getGenderXml(AdministrativeGender.fromCode(entry.getKey()));
       String expectedXml = entry.getValue();
@@ -1814,10 +1815,11 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expectedValue.trim(), actualValue.trim());
 
     expectedValue =
-        "<effectiveTime>\r\n"
-            + "<low nullFlavor=\"NI\"/>\r\n"
-            + "<high nullFlavor=\"NI\"/>\r\n"
-            + "</effectiveTime>";
+        """
+        <effectiveTime>\r
+        <low nullFlavor="NI"/>\r
+        <high nullFlavor="NI"/>\r
+        </effectiveTime>""";
     actualValue =
         CdaFhirUtilities.getXmlForType(timing, CdaGeneratorConstants.EFF_TIME_EL_NAME, false);
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
@@ -2173,9 +2175,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     exts.add(extension);
 
     expectedXml =
-        "<raceCode nullFlavor=\"OTH\">\n"
-            + "<originalText>Latin American</originalText>\n"
-            + "</raceCode>";
+        """
+        <raceCode nullFlavor="OTH">
+        <originalText>Latin American</originalText>
+        </raceCode>""";
 
     retVal =
         CdaFhirUtilities.getRaceOrEthnicityXml(
@@ -2202,9 +2205,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     exts.add(extension);
 
     expectedXml =
-        "<raceCode nullFlavor=\"OTH\">\n"
-            + "<originalText>LatinAmerican</originalText>\n"
-            + "</raceCode>";
+        """
+        <raceCode nullFlavor="OTH">
+        <originalText>LatinAmerican</originalText>
+        </raceCode>""";
 
     retVal =
         CdaFhirUtilities.getRaceOrEthnicityXml(
@@ -2307,9 +2311,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     exts.add(extension);
 
     expectedXml =
-        "<ethnicGroupCode nullFlavor=\"OTH\">\n"
-            + "<originalText>Latin American</originalText>\n"
-            + "</ethnicGroupCode>";
+        """
+        <ethnicGroupCode nullFlavor="OTH">
+        <originalText>Latin American</originalText>
+        </ethnicGroupCode>""";
 
     retVal =
         CdaFhirUtilities.getRaceOrEthnicityXml(
@@ -2336,9 +2341,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     exts.add(extension);
 
     expectedXml =
-        "<ethnicGroupCode nullFlavor=\"OTH\">\n"
-            + "<originalText>LatinAmerican</originalText>\n"
-            + "</ethnicGroupCode>";
+        """
+        <ethnicGroupCode nullFlavor="OTH">
+        <originalText>LatinAmerican</originalText>
+        </ethnicGroupCode>""";
 
     retVal =
         CdaFhirUtilities.getRaceOrEthnicityXml(
@@ -2504,12 +2510,14 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     TimeZone timeZone = TimeZone.getTimeZone("UTC");
 
     String expectedXml =
-        "<author>\n"
-            + "<time value=\"20250201000000+0000\"/>\n"
-            + "<assignedAuthor>\n"
-            + "<id nullFlavor=\"NA\"/>\n"
-            + "</assignedAuthor>\n"
-            + "</author>\n";
+        """
+        <author>
+        <time value="20250201000000+0000"/>
+        <assignedAuthor>
+        <id nullFlavor="NA"/>
+        </assignedAuthor>
+        </author>
+        """;
     String actualXml =
         CdaFhirUtilities.getXmlForAuthorTimeValues(dateTimeType.getValue(), timeZone);
     assertNotNull(actualXml);
@@ -2525,12 +2533,14 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     // Expected XML when date is null
     String expectedXml =
-        "<author>\n"
-            + "<time nullFlavor=\"NI\"/>\n"
-            + "<assignedAuthor>\n"
-            + "<id nullFlavor=\"NA\"/>\n"
-            + "</assignedAuthor>\n"
-            + "</author>\n";
+        """
+        <author>
+        <time nullFlavor="NI"/>
+        <assignedAuthor>
+        <id nullFlavor="NA"/>
+        </assignedAuthor>
+        </author>
+        """;
 
     // Act
     String result = CdaFhirUtilities.getXmlForAuthorTimeValues(date, timeZone);
@@ -2547,14 +2557,16 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     TimeZone timeZone = null; // No TimeZone provided (null)
 
     // Expected XML when TimeZone is null, it will likely default to the system's TimeZone
+    // Assuming default UTC handling
     String expectedXml =
-        "<author>\n"
-            + "<time value=\"20230202\"/>\n"
-            + // Assuming default UTC handling
-            "<assignedAuthor>\n"
-            + "<id nullFlavor=\"NA\"/>\n"
-            + "</assignedAuthor>\n"
-            + "</author>\n";
+        """
+        <author>
+        <time value="20230202"/>
+        <assignedAuthor>
+        <id nullFlavor="NA"/>
+        </assignedAuthor>
+        </author>
+        """;
 
     // Act
     String result = CdaFhirUtilities.getXmlForAuthorTimeValues(date, timeZone);
@@ -3021,50 +3033,50 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testIsCodeContained_withMatchingLOINCCode() {
-    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
     String code = "12334-3";
 
-    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
 
     assertTrue(result); // The code should be found in the set
   }
 
   @Test
   public void testIsCodeContained_withPartiallyMatchingSNOMEDCode() {
-    Set<String> codes = new HashSet<>(Arrays.asList("12345", "67890"));
+    Set<String> localCodes = new HashSet<>(Arrays.asList("12345", "67890"));
     String code = "123"; // Substring that matches part of "12345"
 
-    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
 
     assertTrue(result); // The partial match should return true
   }
 
   @Test
   public void testIsCodeContained_withNonMatchingCode() {
-    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
     String code = "78901"; // Not in the set
 
-    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
 
     assertFalse(result); // The code should not be found
   }
 
   @Test
   public void testIsCodeContained_withNullCode() {
-    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
     String code = null;
 
-    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
 
     assertFalse(result); // Null code should return false
   }
 
   @Test
   public void testIsCodeContained_withEmptyCode() {
-    Set<String> codes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
+    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
     String code = ""; // Empty string code
 
-    boolean result = CdaFhirUtilities.isCodeContained(codes, code);
+    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
 
     assertTrue(result); // Empty code should return false
   }

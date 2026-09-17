@@ -34,9 +34,6 @@ public class ScheduledTaskUtilTest {
 
   private String MOCK_FILE_PATH = "ecrTestData/ScheduleUtils/schedule.json";
 
-  private static final TypeReference<List<Map<String, Object>>> LIST_MAP_TYPE_REF =
-      new TypeReference<List<Map<String, Object>>>() {};
-
   private static class SampleObject {
     public String name = "John";
     public int age = 30;
@@ -463,7 +460,7 @@ public class ScheduledTaskUtilTest {
   @Test
   public void testConvertObjectToMap_WithNull_HandlesGracefully() {
     try {
-      Map<String, Object> result = scheduledTaskUtil.convertObjectToMap(null);
+      scheduledTaskUtil.convertObjectToMap(null);
       assertTrue("Should handle null input", true);
     } catch (Exception e) {
       assertTrue("Exception acceptable for null", true);

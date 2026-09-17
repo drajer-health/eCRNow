@@ -107,36 +107,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).uniqueResultOptional();
   }
 
-  //    @Test
-  //    public void testgetMaxVersionId() {
-  //      PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //      publicHealthMessage.setFhirServerBaseUrl("fhirServerBaseUrl");
-  //      publicHealthMessage.setNotifiedResourceId("notifiedResourceId");
-  //      publicHealthMessage.setNotifiedResourceType("notifiedResourceType");
-  //      publicHealthMessage.setPatientId("patientId");
-  //      publicHealthMessage.setKarUniqueId("karUniqueId");
-  //
-  //      publicHealthMessage.setSubmittedVersionNumber(1);
-  //
-  //      Session mocksession = mock(Session.class);
-  //      Criteria mockCriteria = mock(Criteria.class);
-  //
-  //      when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //      when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //
-  // when(mockCriteria.addOrder(Order.desc("submittedVersionNumber"))).thenReturn(mockCriteria);
-  //      when(mockCriteria.setMaxResults(1)).thenReturn(mockCriteria);
-  //      when(mockCriteria.uniqueResult()).thenReturn(publicHealthMessage);
-  //
-  //      Integer result = publicHealthMessagesDao.getMaxVersionId(publicHealthMessage);
-  //
-  //      assertNotNull(result);
-  //      assertEquals(publicHealthMessage.getSubmittedVersionNumber(), result);
-  //
-  //      verify(mockCriteria).setMaxResults(1);
-  //      verify(mockCriteria).uniqueResult();
-  //    }
-
   @Test
   public void testgetByCorrelationId() {
 
@@ -177,34 +147,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(em).getCriteriaBuilder();
     verify(cb).createQuery(PublicHealthMessage.class);
   }
-
-  //  @Test
-  //  public void testgetByCorrelationId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setId(UUID.randomUUID());
-  //    publicHealthMessage.setxCorrelationId("xCorrelationId");
-  //
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //
-  //    when(mockCriteria.add(Restrictions.eq(X_CORRELATION_ID,
-  // "coorelId"))).thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(publicHealthMessage);
-  //
-  //    PublicHealthMessage result =
-  //        publicHealthMessagesDao.getByCorrelationId(publicHealthMessage.getxCorrelationId());
-  //    assertNotNull(result);
-  //    assertEquals(publicHealthMessage.getId(), result.getId());
-  //    assertEquals(publicHealthMessage.getxCorrelationId(), result.getxCorrelationId());
-  //
-  //    verify(mockCriteria).uniqueResult();
-  //  }
-  //
 
   @Test
   public void testgetPublicHealthMessage() {
@@ -278,25 +220,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).getResultList();
   }
 
-  //  @Test
-  //  public void testgetPublicHealthMessage() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    HashMap<String, String> searchParams = new HashMap<>();
-  //    searchParams.put("key", "value");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.addOrder(Order.desc(any()))).thenReturn(mockCriteria);
-  //    List<PublicHealthMessage> result =
-  // publicHealthMessagesDao.getPublicHealthMessage(searchParams);
-  //
-  //    assertNotNull(result);
-  //    verify(sessionFactory).getCurrentSession();
-  //    verify(mocksession).createCriteria(PublicHealthMessage.class);
-  //  }
-
   @Test
   public void testgetByXRequestId() {
 
@@ -342,29 +265,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).getResultList();
   }
 
-  //  @Test
-  //  public void testgetByXRequestId() {
-  //    String Id = "xRequestId";
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setId(UUID.randomUUID());
-  //    publicHealthMessage.setNotificationId("notificationId");
-  //    List<PublicHealthMessage> publicHealthMessageList = new ArrayList<>();
-  //    publicHealthMessageList.add(publicHealthMessage);
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //
-  //    when(mockCriteria.add(Restrictions.eq(X_REQUEST_ID,
-  // "xRequestId"))).thenReturn(mockCriteria);
-  //    when(mockCriteria.addOrder(Order.desc(any()))).thenReturn(mockCriteria);
-  //
-  //    List<PublicHealthMessage> result = publicHealthMessagesDao.getByXRequestId(Id);
-  //    assertNotNull(result);
-  //    verify(mockCriteria).list();
-  //  }
-  //
-
   @Test
   public void testgetBySubmittedMessageId() {
     String submittedMessageId = "submittedMessageId";
@@ -405,49 +305,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).uniqueResult();
   }
 
-  //  @Test
-  //  public void testgetBySubmittedMessageId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setSubmittedMessageId("submittedMessageId");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.add(Restrictions.eq(SUBMITTED_MESSAGE_ID, "submittedMessageId")))
-  //        .thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(new PublicHealthMessage());
-  //    PublicHealthMessage result =
-  //        publicHealthMessagesDao.getBySubmittedMessageId(
-  //            publicHealthMessage.getSubmittedMessageId());
-  //     assertEquals(publicHealthMessage.getSubmittedMessageId(),result.getSubmittedMessageId());
-  //    assertNotNull(result);
-  //
-  //    verify(mockCriteria).uniqueResult();
-  //    verify(sessionFactory).getCurrentSession();
-  //    verify(mocksession).createCriteria(PublicHealthMessage.class);
-  //  }
-
-  //  @Test
-  //  public void testgetByResponseMessageId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setResponseMessageId("responseMessageId");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.add(Restrictions.eq(RESPONSE_MESSAGE_ID, "responseMessageId")))
-  //        .thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(new PublicHealthMessage());
-  //    PublicHealthMessage result =
-  //
-  // publicHealthMessagesDao.getByResponseMessageId(publicHealthMessage.getResponseMessageId());
-  //    assertNotNull(result);
-  //
-  //    verify(mockCriteria).uniqueResult();
-  //    verify(sessionFactory).getCurrentSession();
-  //    verify(mocksession).createCriteria(PublicHealthMessage.class);
-  //  }
-
   @Test
   public void testgetByResponseMessageId() {
     String responseMessageId = "responseMessageId";
@@ -487,16 +344,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).uniqueResult();
   }
 
-  //  @Test
-  //  public void testdelete() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    Session mocksession = mock(Session.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    doNothing().when(mocksession).delete(any());
-  //    publicHealthMessagesDao.delete(publicHealthMessage);
-  //    verify(mocksession).delete(publicHealthMessage);
-  //  }
-
   @Test
   public void testdelete() {
 
@@ -510,28 +357,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(sessionFactory).getCurrentSession();
     verify(session).delete(publicHealthMessage);
   }
-
-  //
-  //  @Test
-  //  public void testgetBySubmittedDataId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setSubmittedDataId("submittedDataId");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.add(Restrictions.eq(SUBMITTED_DATA_ID,
-  // "subId"))).thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(new PublicHealthMessage());
-  //
-  //    PublicHealthMessage result =
-  //        publicHealthMessagesDao.getBySubmittedDataId(publicHealthMessage.getSubmittedDataId());
-  //
-  //    assertNotNull(result);
-  //    verify(mockCriteria).uniqueResult();
-  //    verify(sessionFactory).getCurrentSession();
-  //  }
 
   @Test
   public void testgetBySubmittedDataId() {

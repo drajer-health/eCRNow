@@ -351,16 +351,18 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlHeaderForClinicalDocumentTest() {
     String expectedResult =
-        "<?xml version=\"1.0\"?>\n"
-            + "<ClinicalDocument xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-            + " xmlns=\"urn:hl7-org:v3\"\n"
-            + " xmlns:cda=\"urn:hl7-org:v3\"\n"
-            + " xmlns:sdtc=\"urn:hl7-org:sdtc\">\n"
-            + "<realmCode code=\"US\"/>\n"
-            + "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.1.1\"/>\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.1.1\" extension=\"2015-08-01\"/>\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.15.2\" extension=\"2016-12-01\"/>\n";
+        """
+        <?xml version="1.0"?>
+        <ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="urn:hl7-org:v3"
+         xmlns:cda="urn:hl7-org:v3"
+         xmlns:sdtc="urn:hl7-org:sdtc">
+        <realmCode code="US"/>
+        <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+        <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.1.1" extension="2015-08-01"/>
+        <templateId root="2.16.840.1.113883.10.20.15.2" extension="2016-12-01"/>
+        """;
     String version = CdaGeneratorConstants.CDA_EICR_VERSION_R11;
     String actualResult = CdaGeneratorUtils.getXmlHeaderForClinicalDocument(version);
     assertEquals(expectedResult, actualResult);
@@ -442,7 +444,10 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForPartialValueIVLWithTSTest_low() {
     String expectedResult =
-        "<elName xsi:type=\"IVL_TS\"><low value=\"valueText\"/>\n" + "</elName>\n";
+        """
+        <elName xsi:type="IVL_TS"><low value="valueText"/>
+        </elName>
+        """;
     String actualResult =
         CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "low");
     assertEquals(expectedResult, actualResult);
@@ -451,7 +456,10 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForPartialValueIVLWithTSTest_high() {
     String expectedResult =
-        "<elName xsi:type=\"IVL_TS\"><high value=\"valueText\"/>\n" + "</elName>\n";
+        """
+        <elName xsi:type="IVL_TS"><high value="valueText"/>
+        </elName>
+        """;
     String actualResult =
         CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "high");
     assertEquals(expectedResult, actualResult);
@@ -460,9 +468,11 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForPIVLWithTSTest() {
     String expectedResult =
-        "<elName xsi:type=\"PIVL_TS\" institutionSpecified=\"true\" operator=\"A\">\n"
-            + "<period value=\"0\" unit=\"h\"/>\n"
-            + "</elName>\n";
+        """
+        <elName xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+        <period value="0" unit="h"/>
+        </elName>
+        """;
     String actualResult = CdaGeneratorUtils.getXmlForPIVLWithTS("elName", 1000);
     assertEquals(expectedResult, actualResult);
   }
@@ -654,9 +664,10 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getNFXMLForValueWithTextTest() {
     String expectedResult =
-        "<value xsi:type=\"CD\" nullFlavor=\"NF\"><originalText>COVID-19</originalText>\n"
-            + "</value>"
-            + "\n";
+        """
+        <value xsi:type="CD" nullFlavor="NF"><originalText>COVID-19</originalText>
+        </value>
+        """;
     String actualResult = CdaGeneratorUtils.getNFXMLForValueWithText("NF", "COVID-19");
     assertEquals(expectedResult, actualResult);
   }
@@ -664,9 +675,10 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForValueCDTranslationTest() {
     String expectedResult =
-        "<value xsi:type=\"CD\" nullFlavor=\"OTH\"><translation code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n"
-            + "</value>"
-            + "\n";
+        """
+        <value xsi:type="CD" nullFlavor="OTH"><translation code="codeName" codeSystem="CodeSystem" codeSystemName="CodeSystemName" displayName="DisplayName"/>
+        </value>
+        """;
     String actualResult =
         CdaGeneratorUtils.getXmlForValueCDTranslation(
             "codeName", "CodeSystem", "CodeSystemName", "DisplayName");
@@ -860,7 +872,12 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForIVLWithTSTest() {
     String expectedResult =
-        "<EL>\n" + "<low value=\"LO\"/>\n" + "<high value=\"HIGH\"/>\n" + "</EL>\n";
+        """
+        <EL>
+        <low value="LO"/>
+        <high value="HIGH"/>
+        </EL>
+        """;
     String actualResult = CdaGeneratorUtils.getXmlForIVLWithTS("EL", "LO", "HIGH");
     assertEquals(expectedResult, actualResult);
   }
@@ -915,7 +932,11 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForValueIVLWithTSTest() {
     String expectedResult =
-        "<EL xsi:type=\"IVL_TS\"><low value=\"LO\"/>\n" + "<high value=\"HIGH\"/>\n" + "</EL>\n";
+        """
+        <EL xsi:type="IVL_TS"><low value="LO"/>
+        <high value="HIGH"/>
+        </EL>
+        """;
     String actualResult = CdaGeneratorUtils.getXmlForValueIVLWithTS("EL", "LO", "HIGH");
     assertEquals(expectedResult, actualResult);
   }
@@ -923,10 +944,12 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForLowIVLWithTSWithNFHighTest() {
     String expectedResult =
-        "<EL xsi:type=\"IVL_TS\">\n"
-            + "<low value=\"VALUE\"/>\n"
-            + "<high nullFlavor=\"UNK\"/>\n"
-            + "</EL>\n";
+        """
+        <EL xsi:type="IVL_TS">
+        <low value="VALUE"/>
+        <high nullFlavor="UNK"/>
+        </EL>
+        """;
     String actualResult = CdaGeneratorUtils.getXmlForLowIVLWithTSWithNFHigh("EL", "VALUE");
     assertEquals(expectedResult, actualResult);
   }
@@ -1014,9 +1037,11 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void testGetXmlForPIVLWithTS() {
     String expectedXmlForPIVLWithTS =
-        "<Period xsi:type=\"PIVL_TS\" institutionSpecified=\"true\" operator=\"A\">\n"
-            + "<period value=\"1000\" unit=\"h\"/>\n"
-            + "</Period>\n";
+        """
+        <Period xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+        <period value="1000" unit="h"/>
+        </Period>
+        """;
     String actualXmlForPIVLWithTS = CdaGeneratorUtils.getXmlForPIVLWithTS("Period", "1000");
     assertEquals(expectedXmlForPIVLWithTS, actualXmlForPIVLWithTS);
   }
@@ -1024,9 +1049,11 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForPIVLWithTS() {
     String expectedXmlForPIVLWithTS =
-        "<Period xsi:type=\"PIVL_TS\" institutionSpecified=\"true\" operator=\"A\">\n"
-            + "<period value=\"0\" unit=\"h\"/>\n"
-            + "</Period>\n";
+        """
+        <Period xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+        <period value="0" unit="h"/>
+        </Period>
+        """;
     String actualXmlForPIVLWithTS = CdaGeneratorUtils.getXmlForPIVLWithTS("Period", 1000);
     assertEquals(expectedXmlForPIVLWithTS, actualXmlForPIVLWithTS);
   }
@@ -1099,11 +1126,13 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForCDWithValueSetAndVersionNegationDisplayName() {
     String expectedXmlForCDWithValueSetAndVersion =
-        "<Coding code=\"19162977\" codeSystem=\"https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200\" codeSystemName=\"coding\" sdtc:valueSet=\"valueSet\" sdtc:valueSetVersion=\"1.0.0\">\n"
-            + "<originalText>\n"
-            + "<reference value=\"#Location/29598629\"/>\n"
-            + "</originalText>\n"
-            + "</Coding>\n";
+        """
+        <Coding code="19162977" codeSystem="https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200" codeSystemName="coding" sdtc:valueSet="valueSet" sdtc:valueSetVersion="1.0.0">
+        <originalText>
+        <reference value="#Location/29598629"/>
+        </originalText>
+        </Coding>
+        """;
     String actualXmlForCDWithValueSetAndVersion =
         CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
             "Coding",
@@ -1120,14 +1149,16 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForTableHeader() {
     String expectedXmlForTableHeader =
-        "<table border=\"1\" width=\"200%\">\n"
-            + "<thead>\n"
-            + "<tr>\n"
-            + "<th>Name</th>\n"
-            + "<th>Date of Birth</th>\n"
-            + "<th>Gender</th>\n"
-            + "</tr>\n"
-            + "</thead>\n";
+        """
+        <table border="1" width="200%">
+        <thead>
+        <tr>
+        <th>Name</th>
+        <th>Date of Birth</th>
+        <th>Gender</th>
+        </tr>
+        </thead>
+        """;
     List<String> headerValues = Arrays.asList("Name", "Date of Birth", "Gender");
     String actualXmlForTableHeader = CdaGeneratorUtils.getXmlForTableHeader(headerValues, 1, 200);
     assertEquals(expectedXmlForTableHeader, actualXmlForTableHeader);
@@ -1141,17 +1172,19 @@ public class CdaGeneratorUtilsTest {
     values.put(
         "system", "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200");
     String expectedTableRow =
-        "<tr>\n"
-            + "<td>\n"
-            + "<content ID=\"code3\">19162977</content>\n"
-            + "</td>\n"
-            + "<td>\n"
-            + "<content ID=\"system3\">https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200</content>\n"
-            + "</td>\n"
-            + "<td>\n"
-            + "<content ID=\"display3\">Spouse</content>\n"
-            + "</td>\n"
-            + "</tr>\n";
+        """
+        <tr>
+        <td>
+        <content ID="code3">19162977</content>
+        </td>
+        <td>
+        <content ID="system3">https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200</content>
+        </td>
+        <td>
+        <content ID="display3">Spouse</content>
+        </td>
+        </tr>
+        """;
     String actualTableRow = CdaGeneratorUtils.addTableRow(values, 3);
     assertEquals(expectedTableRow, actualTableRow);
   }

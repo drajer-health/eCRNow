@@ -64,7 +64,6 @@ public class PasswordAuthorizationServiceImplTest {
   @Test
   public void testGetAuthorizationToken_returnsNullOnException() throws IOException {
     String healthCareSettings = "R4/Misc/HealthCareSettings/Hcs.json";
-    //        File file = new File(classLoader.getResource(healthCareSettings).getFile());
     InputStream is = classLoader.getResourceAsStream(healthCareSettings);
     HealthcareSetting hcs = mapper.readValue(is, HealthcareSetting.class);
     JSONObject result = passwordAuthorizationService.getAuthorizationToken(hcs);

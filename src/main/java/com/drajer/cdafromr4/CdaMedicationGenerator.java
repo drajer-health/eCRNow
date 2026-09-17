@@ -258,7 +258,6 @@ public class CdaMedicationGenerator {
       List<MedicationStatement> meds,
       List<Medication> medList,
       LaunchDetails details,
-      String version,
       StringBuilder sb,
       StringBuilder medEntries,
       int[] rowNum) {
@@ -304,8 +303,7 @@ public class CdaMedicationGenerator {
               null,
               CdaGeneratorConstants.MOOD_CODE_DEF,
               med,
-              medList,
-              version));
+              medList));
     }
   }
 
@@ -314,7 +312,6 @@ public class CdaMedicationGenerator {
       List<MedicationAdministration> medAdms,
       List<Medication> medList,
       LaunchDetails details,
-      String version,
       StringBuilder sb,
       StringBuilder medEntries,
       int[] rowNum) {
@@ -360,8 +357,7 @@ public class CdaMedicationGenerator {
               null,
               CdaGeneratorConstants.MOOD_CODE_DEF,
               medAdm,
-              medList,
-              version));
+              medList));
     }
   }
 
@@ -370,7 +366,6 @@ public class CdaMedicationGenerator {
       List<MedicationRequest> medReqs,
       List<Medication> medList,
       LaunchDetails details,
-      String version,
       StringBuilder sb,
       StringBuilder medEntries,
       int[] rowNum) {
@@ -399,8 +394,7 @@ public class CdaMedicationGenerator {
               reqInfo.startDate,
               statusInfo.moodCode,
               medReq,
-              medList,
-              version));
+              medList));
     }
   }
 
@@ -461,12 +455,9 @@ public class CdaMedicationGenerator {
       int[] rowNum = {1};
       StringBuilder medEntries = new StringBuilder();
 
-      processMedicationStatementsForSection(
-          meds, medList, details, version, sb, medEntries, rowNum);
-      processMedicationAdministrationsForSection(
-          medAdms, medList, details, version, sb, medEntries, rowNum);
-      processMedicationRequestsForSection(
-          medReqs, medList, details, version, sb, medEntries, rowNum);
+      processMedicationStatementsForSection(meds, medList, details, sb, medEntries, rowNum);
+      processMedicationAdministrationsForSection(medAdms, medList, details, sb, medEntries, rowNum);
+      processMedicationRequestsForSection(medReqs, medList, details, sb, medEntries, rowNum);
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
@@ -500,8 +491,7 @@ public class CdaMedicationGenerator {
       DateTimeType startDate,
       String moodCode,
       DomainResource res,
-      List<Medication> medList,
-      String version) {
+      List<Medication> medList) {
 
     logger.info(" Adding medication entry ");
     StringBuilder sb = new StringBuilder();
@@ -597,12 +587,10 @@ public class CdaMedicationGenerator {
     }
 
     // Add Route Code
-    if (dosage != null) {
-      if (dosage.hasRoute() && dosage.getRoute().hasCoding()) {
-        sb.append(
-            CdaFhirUtilities.getCodeableConceptXml(
-                dosage.getRoute(), CdaGeneratorConstants.ROUTE_CODE_EL_NAME, ""));
-      }
+    if (dosage != null && dosage.hasRoute() && dosage.getRoute().hasCoding()) {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXml(
+              dosage.getRoute(), CdaGeneratorConstants.ROUTE_CODE_EL_NAME, ""));
     }
     // add Dose quantity
     sb.append(ds);
@@ -787,7 +775,7 @@ public class CdaMedicationGenerator {
   }
 
   public static String generateR31MedicationsAdministeredSection(
-      R4FhirData data, LaunchDetails details, String version) {
+      R4FhirData data, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(2000);
     List<Medication> medList = data.getMedicationList();
@@ -905,8 +893,7 @@ public class CdaMedicationGenerator {
                 null,
                 CdaGeneratorConstants.MOOD_CODE_DEF,
                 medAdm,
-                medList,
-                version));
+                medList));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -935,7 +922,6 @@ public class CdaMedicationGenerator {
       List<MedicationStatement> meds,
       List<Medication> medList,
       LaunchDetails details,
-      String version,
       StringBuilder sb,
       StringBuilder medEntries,
       int[] rowNum) {
@@ -985,8 +971,7 @@ public class CdaMedicationGenerator {
               null,
               CdaGeneratorConstants.MOOD_CODE_DEF,
               med,
-              medList,
-              version));
+              medList));
     }
   }
 
@@ -995,7 +980,6 @@ public class CdaMedicationGenerator {
       List<MedicationRequest> medReqs,
       List<Medication> medList,
       LaunchDetails details,
-      String version,
       StringBuilder sb,
       StringBuilder medEntries,
       int[] rowNum) {
@@ -1024,8 +1008,7 @@ public class CdaMedicationGenerator {
               medInfo.startDate,
               CdaGeneratorConstants.MOOD_CODE_DEF,
               medReq,
-              medList,
-              version));
+              medList));
     }
   }
 
@@ -1104,10 +1087,8 @@ public class CdaMedicationGenerator {
       int[] rowNum = {1};
       StringBuilder medEntries = new StringBuilder();
 
-      processMedicationStatementsForR31Section(
-          meds, medList, details, version, sb, medEntries, rowNum);
-      processMedicationRequestsForR31Section(
-          medReqs, medList, details, version, sb, medEntries, rowNum);
+      processMedicationStatementsForR31Section(meds, medList, details, sb, medEntries, rowNum);
+      processMedicationRequestsForR31Section(medReqs, medList, details, sb, medEntries, rowNum);
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
@@ -1230,11 +1211,11 @@ public class CdaMedicationGenerator {
     // Check ingredients
     if (med.hasIngredient()) {
       for (Medication.MedicationIngredientComponent ing : med.getIngredient()) {
-        if (ing.hasItem() && ing.getItem() instanceof CodeableConcept) {
-          if (hasRxNormCoding((CodeableConcept) ing.getItem())) {
-            if (cmeds != null) cmeds.add(med);
-            return true;
-          }
+        if (ing.hasItem()
+            && ing.getItem() instanceof CodeableConcept
+            && hasRxNormCoding((CodeableConcept) ing.getItem())) {
+          if (cmeds != null) cmeds.add(med);
+          return true;
         }
       }
     }

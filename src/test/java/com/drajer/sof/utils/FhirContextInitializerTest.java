@@ -33,7 +33,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class FhirContextInitializerTest {
 
   private IUntypedQuery mockIUntypedQuery;
-  private IBaseBundle mockIBase;
   private IQuery mockIquery;
   private IQuery mockIquery2;
   private Bundle mockBundle;
@@ -53,7 +52,6 @@ public class FhirContextInitializerTest {
     context = Mockito.mock(FhirContext.class);
     client = Mockito.mock(IGenericClient.class);
     mockIUntypedQuery = Mockito.mock(IUntypedQuery.class);
-    mockIBase = Mockito.mock(IBaseBundle.class);
     mockIquery = Mockito.mock(IQuery.class);
     mockIquery2 = Mockito.mock(IQuery.class);
     mockBundle = Mockito.mock(Bundle.class);

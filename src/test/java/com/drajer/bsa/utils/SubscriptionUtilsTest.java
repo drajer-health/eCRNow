@@ -63,30 +63,30 @@ public class SubscriptionUtilsTest {
 
   @Test
   public void getNotificationContextWithoutPeriod() throws Exception {
-    Bundle bundle =
+    Bundle localBundle =
         TestUtils.loadBundleFromFile("Bsa/NotificationBundleEncounterCloseWithoutPeriord.json");
 
     Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
-    encounterEntry.setResource(bundle);
-    bundle.addEntry(encounterEntry);
-    bundle.setType(BundleType.HISTORY);
+    encounterEntry.setResource(localBundle);
+    localBundle.addEntry(encounterEntry);
+    localBundle.setType(BundleType.HISTORY);
     PatientLaunchContext launchContext = new PatientLaunchContext();
 
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, false, false, launchContext);
+            localBundle, mockHttpServletRequest, false, false, launchContext);
     assertNotNull(notificationContext);
   }
 
   @Test
   public void getNotificationContextWithEmptyBundle()
       throws InvalidLaunchContext, InvalidNotification {
-    Bundle bundle = new Bundle();
+    Bundle localBundle = new Bundle();
     PatientLaunchContext launchContext = new PatientLaunchContext();
 
     try {
       SubscriptionUtils.getNotificationContext(
-          bundle, mockHttpServletRequest, false, false, launchContext);
+          localBundle, mockHttpServletRequest, false, false, launchContext);
     } catch (InvalidNotification e) {
       assertTrue(true);
     }
@@ -94,21 +94,21 @@ public class SubscriptionUtilsTest {
 
   @Test
   public void testGetNotificationContextForElse() throws Exception {
-    MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
+    MockHttpServletRequest localMockHttpServletRequest = new MockHttpServletRequest();
     List<Map<String, String>> headersList = new ArrayList<>();
     headersList.add(createHeaderMap("X-Correlation-ID", "ecrUnitTestCorrelationID"));
     headersList.add(createHeaderMap("X-Request-ID", "ecrunittest_id"));
 
     for (Map<String, String> headers : headersList) {
       for (Map.Entry<String, String> entry : headers.entrySet()) {
-        mockHttpServletRequest.addHeader(entry.getKey(), entry.getValue());
+        localMockHttpServletRequest.addHeader(entry.getKey(), entry.getValue());
       }
       PatientLaunchContext launchContext = new PatientLaunchContext();
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, false, false, launchContext);
-      mockHttpServletRequest.removeHeader("X-Correlation-ID");
-      mockHttpServletRequest.removeHeader("X-Request-ID");
+              bundle, localMockHttpServletRequest, false, false, launchContext);
+      localMockHttpServletRequest.removeHeader("X-Correlation-ID");
+      localMockHttpServletRequest.removeHeader("X-Request-ID");
 
       assertNotNull(notificationContext);
     }
@@ -129,15 +129,15 @@ public class SubscriptionUtilsTest {
 
   @Test
   public void testGetNotificationContextWithInvalidBundle() throws Exception {
-    Bundle bundle = TestUtils.loadBundleFromFile("Bsa/NotificationBundle.json");
+    Bundle localBundle = TestUtils.loadBundleFromFile("Bsa/NotificationBundle.json");
     Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
-    encounterEntry.setResource(bundle);
-    bundle.addEntry(encounterEntry);
-    bundle.setType(BundleType.HISTORY);
+    encounterEntry.setResource(localBundle);
+    localBundle.addEntry(encounterEntry);
+    localBundle.setType(BundleType.HISTORY);
     PatientLaunchContext launchContext = new PatientLaunchContext();
     try {
       SubscriptionUtils.getNotificationContext(
-          bundle, mockHttpServletRequest, false, false, launchContext);
+          localBundle, mockHttpServletRequest, false, false, launchContext);
     } catch (InvalidNotification e) {
       assertTrue(true);
     }
