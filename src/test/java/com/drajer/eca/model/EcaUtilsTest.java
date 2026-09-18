@@ -482,8 +482,8 @@ public class EcaUtilsTest {
     when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
     when(mockActionRepo.getEicrRRService()).thenReturn(mockRRSrvc);
 
-    R4FhirData mockR4Data = mock(R4FhirData.class);
-    when(mockQuerySrvc.getData(eq(mockDetails), any(), any())).thenReturn(mockR4Data);
+    R4FhirData localMockR4Data = mock(R4FhirData.class);
+    when(mockQuerySrvc.getData(eq(mockDetails), any(), any())).thenReturn(localMockR4Data);
 
     PowerMockito.mockStatic(CdaEicrGeneratorFromR4.class);
     when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
@@ -549,8 +549,8 @@ public class EcaUtilsTest {
     when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
     when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
 
-    R4FhirData mockR4Data = mock(R4FhirData.class);
-    when(mockQuerySrvc.getData(eq(mockDetails), any(), any())).thenReturn(mockR4Data);
+    R4FhirData localMockR4Data = mock(R4FhirData.class);
+    when(mockQuerySrvc.getData(eq(mockDetails), any(), any())).thenReturn(localMockR4Data);
 
     PowerMockito.mockStatic(CdaEicrGeneratorFromR4.class);
     when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
@@ -574,8 +574,8 @@ public class EcaUtilsTest {
     when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
     when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
 
-    R4FhirData mockR4Data = mock(R4FhirData.class);
-    when(mockQuerySrvc.getData(eq(mockDetails), any(), any())).thenReturn(mockR4Data);
+    R4FhirData localMockR4Data = mock(R4FhirData.class);
+    when(mockQuerySrvc.getData(eq(mockDetails), any(), any())).thenReturn(localMockR4Data);
 
     PowerMockito.mockStatic(CdaEicrGeneratorFromR4.class);
     when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(

@@ -349,9 +349,11 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       Bundle notificationBundle,
       NotificationProcessingStatusType processingStatus,
       PatientLaunchContext launchContext) {
-    logger.info(
-        " Notification Context exists for {} the notification ",
-        processingStatus.toString().toLowerCase());
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          " Notification Context exists for {} the notification ",
+          processingStatus.toString().toLowerCase());
+    }
     nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
     nc.setNotificationProcessingStatus(processingStatus.toString());
 

@@ -132,8 +132,10 @@ public class EicrServiceImpl implements EicrRRService {
 
     if (ecr != null) {
 
-      logger.info(
-          " Found the Eicr for correlation Id: {}", StringEscapeUtils.escapeJava(xCorrelationId));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Found the Eicr for correlation Id: {}", StringEscapeUtils.escapeJava(xCorrelationId));
+      }
       ecr.setResponseType(EicrTypes.RrType.FAILURE_MDN.toString());
       ecr.setResponseXRequestId(xRequestId);
       ecr.setResponseData(data.getRrXml());

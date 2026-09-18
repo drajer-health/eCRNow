@@ -504,8 +504,8 @@ public class SubmitReportTest {
     hs.setIsDirect(false);
     hs.setIsRestAPI(false);
     hs.setIsXdr(false);
-    BsaActionStatus status = mock(BsaActionStatus.class);
-    boolean result = submitReport.submitCdaOutput(data, status, hs);
+    BsaActionStatus localStatus = mock(BsaActionStatus.class);
+    boolean result = submitReport.submitCdaOutput(data, localStatus, hs);
     assertTrue(result);
   }
 }

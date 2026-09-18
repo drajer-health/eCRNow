@@ -835,7 +835,6 @@ public class CcrrReportCreator extends ReportCreator {
   }
 
   public void populateDefaultNarrative(SectionComponent sc) {
-    logger.info("KarProcessingData:{}");
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);

@@ -214,6 +214,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     return data;
   }
 
+  @Override
   public Patient getPatientData() {
 
     Patient p = new Patient();

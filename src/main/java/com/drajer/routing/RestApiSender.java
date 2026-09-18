@@ -52,11 +52,13 @@ public class RestApiSender {
       headers.add("X-Request-ID", newXReqId);
       headers.add("X-Correlation-ID", ecr.getxCorrelationId());
 
-      logger.info(
-          " Launch ReqId: {} X-Request-ID for Eicr Submission: {} X-Correlation-ID for Eicr Submission: {}",
-          StringEscapeUtils.escapeJava(ecr.getxRequestId()),
-          StringEscapeUtils.escapeJava(newXReqId),
-          StringEscapeUtils.escapeJava(ecr.getxCorrelationId()));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Launch ReqId: {} X-Request-ID for Eicr Submission: {} X-Correlation-ID for Eicr Submission: {}",
+            StringEscapeUtils.escapeJava(ecr.getxRequestId()),
+            StringEscapeUtils.escapeJava(newXReqId),
+            StringEscapeUtils.escapeJava(ecr.getxCorrelationId()));
+      }
 
       final String json = constructJson(eicrXml, ecr);
 

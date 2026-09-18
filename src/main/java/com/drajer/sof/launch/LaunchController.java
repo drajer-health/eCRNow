@@ -190,10 +190,12 @@ public class LaunchController {
       HttpServletResponse response)
       throws IOException {
 
-    logger.info(
-        "System launch request received for patientId: {} and encounterId: {}",
-        StringEscapeUtils.escapeJava(systemLaunch.getPatientId()),
-        StringEscapeUtils.escapeJava(systemLaunch.getEncounterId()));
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "System launch request received for patientId: {} and encounterId: {}",
+          StringEscapeUtils.escapeJava(systemLaunch.getPatientId()),
+          StringEscapeUtils.escapeJava(systemLaunch.getEncounterId()));
+    }
 
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
@@ -238,11 +240,13 @@ public class LaunchController {
 
     response.setStatus(HttpServletResponse.SC_ACCEPTED);
 
-    logger.info(
-        "System launch was successful for patientId: {} and encounterId: {} with launchId: {}",
-        StringEscapeUtils.escapeJava(launchDetails.getLaunchPatientId()),
-        StringEscapeUtils.escapeJava(launchDetails.getEncounterId()),
-        launchDetails.getId());
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "System launch was successful for patientId: {} and encounterId: {} with launchId: {}",
+          StringEscapeUtils.escapeJava(launchDetails.getLaunchPatientId()),
+          StringEscapeUtils.escapeJava(launchDetails.getEncounterId()),
+          launchDetails.getId());
+    }
 
     return "App is launched successfully";
   }

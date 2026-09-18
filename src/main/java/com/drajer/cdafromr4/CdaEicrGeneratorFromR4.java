@@ -37,7 +37,9 @@ public class CdaEicrGeneratorFromR4 {
         eICR.append(CdaBodyGenerator.generateCdaBody(data, details, version));
         eICR.append(CdaGeneratorUtils.getEndXMLHeaderForCdaDocument());
 
-        logger.debug("Created new eICR {}", StringEscapeUtils.escapeXml11(eICR.toString()));
+        if (logger.isDebugEnabled()) {
+          logger.debug("Created new eICR {}", StringEscapeUtils.escapeXml11(eICR.toString()));
+        }
 
       } else {
         String msg = "Fhir Data not ready/missing to be used for creating a CDA Document";

@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu2016may.model.codesystems.V3ParticipationType;
 import org.hl7.fhir.r4.model.*;
@@ -39,7 +39,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -333,7 +335,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
         String value = testMap.get(key);
 
-        List<String> valueList = Arrays.stream(value.split("\\|")).collect(Collectors.toList());
+        List<String> valueList = Arrays.stream(value.split("\\|")).toList();
 
         testData.put(key, valueList);
       }
@@ -1858,8 +1860,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     DateTimeType dt = new DateTimeType("2023-04-19T12:30:00-07:00");
 
     String result = CdaFhirUtilities.getXmlForTypeForValueIvlTsEffectiveTime("effectiveTime", dt);
-
-    // assertEquals(expected.trim(), result.trim());
     assertNotNull("Result should not be null", result);
     assertThat(result).isNotEmpty();
     assertThat(result).contains("effectiveTime");
@@ -3032,54 +3032,26 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expected, result, "Expected formatted date without milliseconds.");
   }
 
-  @Test
-  public void testIsCodeContained_withMatchingLOINCCode() {
-    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
-    String code = "12334-3";
-
-    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
-
-    assertTrue(result); // The code should be found in the set
+  private static Stream<Arguments> provideIsCodeContainedTestCases() {
+    return Stream.of(
+        // The code should be found in the set
+        Arguments.of(new HashSet<>(Arrays.asList("12334-3", "45678-9")), "12334-3", true),
+        // Substring that matches part of "12345" should return true
+        Arguments.of(new HashSet<>(Arrays.asList("12345", "67890")), "123", true),
+        // Not in the set
+        Arguments.of(new HashSet<>(Arrays.asList("12334-3", "45678-9")), "78901", false),
+        // Null code should return false
+        Arguments.of(new HashSet<>(Arrays.asList("12334-3", "45678-9")), null, false),
+        // Empty string code
+        Arguments.of(new HashSet<>(Arrays.asList("12334-3", "45678-9")), "", true));
   }
 
-  @Test
-  public void testIsCodeContained_withPartiallyMatchingSNOMEDCode() {
-    Set<String> localCodes = new HashSet<>(Arrays.asList("12345", "67890"));
-    String code = "123"; // Substring that matches part of "12345"
-
+  @ParameterizedTest
+  @MethodSource("provideIsCodeContainedTestCases")
+  public void testIsCodeContained(Set<String> localCodes, String code, boolean expected) {
     boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
 
-    assertTrue(result); // The partial match should return true
-  }
-
-  @Test
-  public void testIsCodeContained_withNonMatchingCode() {
-    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
-    String code = "78901"; // Not in the set
-
-    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
-
-    assertFalse(result); // The code should not be found
-  }
-
-  @Test
-  public void testIsCodeContained_withNullCode() {
-    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
-    String code = null;
-
-    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
-
-    assertFalse(result); // Null code should return false
-  }
-
-  @Test
-  public void testIsCodeContained_withEmptyCode() {
-    Set<String> localCodes = new HashSet<>(Arrays.asList("12334-3", "45678-9"));
-    String code = ""; // Empty string code
-
-    boolean result = CdaFhirUtilities.isCodeContained(localCodes, code);
-
-    assertTrue(result); // Empty code should return false
+    assertEquals(expected, result);
   }
 
   @Test

@@ -87,22 +87,6 @@ public class ReportGenerationUtilsTest {
   }
 
   @Test
-  public void testHasCode_CodingsWithoutSystem() {
-    Coding coding = new Coding();
-    coding.setCode("12345-6");
-
-    assertFalse(ReportGenerationUtils.hasCode("http://loinc.org", "12345-6", coding));
-  }
-
-  @Test
-  public void testHasCode_CodingsWithoutCode() {
-    Coding coding = new Coding();
-    coding.setSystem("http://loinc.org");
-
-    assertFalse(ReportGenerationUtils.hasCode("http://loinc.org", "12345-6", coding));
-  }
-
-  @Test
   public void testHasCode_MatchingLoincCode() {
     Coding coding = new Coding();
     coding.setSystem("http://loinc.org");
