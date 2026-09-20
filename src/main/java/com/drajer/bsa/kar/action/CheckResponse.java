@@ -6,6 +6,7 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,21 +45,27 @@ public class CheckResponse extends BsaAction {
     BsaActionStatus actStatus = new CheckResponseStatus();
     actStatus.setActionId(this.getActionId());
 
-    // Check Timing constraints and handle them before we evaluate conditions.
-    BsaActionStatusType status = processTimingData(data);
+    Profiler profiler = Profiler.get();
+    try (Profiler.Step total = profiler.step("Total Check Response Processing")) {
 
-    if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
+      // Check Timing constraints and handle them before we evaluate conditions.
+      BsaActionStatusType status = processTimingData(data);
 
-      HealthcareSetting hs = data.getHealthcareSetting();
+      if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
 
-      if (hs != null && hs.getIsDirect()) {
+        HealthcareSetting hs = data.getHealthcareSetting();
 
-        directReceiver.receiveRrDataUsingDirect(data);
+        if (hs != null && hs.getIsDirect()) {
 
-      } else {
+          try (Profiler.Step recv = profiler.step("Receive RR via Direct")) {
+            directReceiver.receiveRrDataUsingDirect(data);
+          }
 
-        logger.info(
-            " Not a Direct Interface, so the response will be received via API, nothing to do here ");
+        } else {
+
+          logger.info(
+              " Not a Direct Interface, so the response will be received via API, nothing to do here ");
+        }
       }
     }
 

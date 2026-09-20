@@ -8,6 +8,7 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import com.drajer.cda.utils.CdaValidatorUtil;
 import java.util.HashSet;
 import java.util.List;
@@ -56,53 +57,69 @@ public class ValidateReport extends BsaAction {
     BsaActionStatus actStatus = new ValidateReportStatus();
     actStatus.setActionId(this.getActionId());
 
-    // Check Timing constraints and handle them before we evaluate conditions.
-    BsaActionStatusType status = processTimingData(data);
+    Profiler profiler = Profiler.get();
+    try (Profiler.Step total = profiler.step("Total Validate Report Processing")) {
 
-    // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
+      // Check Timing constraints and handle them before we evaluate conditions.
+      BsaActionStatusType status = processTimingData(data);
 
-      // Get the Kar.
-      KnowledgeArtifact art = data.getKar();
-      KnowledgeArtifactStatus artStatus =
-          data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
+      // Ensure the activity is In-Progress and the Conditions are met.
+      if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
 
-      if (artStatus != null
-          && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
-              || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
+        // Get the Kar.
+        KnowledgeArtifact art = data.getKar();
+        KnowledgeArtifactStatus artStatus =
+            data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
 
-        logger.info(" Validating CDA Output ");
-        validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
+        if (artStatus != null
+            && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
+                || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
 
-        logger.info(" Validating FHIR Output ");
-        // by default it is FHIR Payload and validate accordingly.
-        validateFhirOutput(data, actStatus);
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
+          logger.info(" Validating CDA Output ");
+          try (Profiler.Step v = profiler.step("Validate CDA Output")) {
+            validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
+          }
+        } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
 
-        logger.info(" Validating Both CDA and FHIR Output ");
-        validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
-        validateFhirOutput(data, actStatus);
+          logger.info(" Validating FHIR Output ");
+          // by default it is FHIR Payload and validate accordingly.
+          try (Profiler.Step v = profiler.step("Validate FHIR Output")) {
+            validateFhirOutput(data, actStatus);
+          }
+        } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
+
+          logger.info(" Validating Both CDA and FHIR Output ");
+          try (Profiler.Step v = profiler.step("Validate CDA Output")) {
+            validateCdaOutput(data, actStatus, artStatus.getOutputFormat());
+          }
+          try (Profiler.Step v = profiler.step("Validate FHIR Output")) {
+            validateFhirOutput(data, actStatus);
+          }
+        }
+
+        // Execute Sub and related actions
+        boolean conditionsSatisfied;
+        try (Profiler.Step cond = profiler.step("Condition Evaluation")) {
+          conditionsSatisfied = Boolean.TRUE.equals(conditionsMet(data, ehrService));
+        }
+        if (conditionsSatisfied) {
+          // Execute sub Actions
+          executeSubActions(data, ehrService);
+          // Execute Related Actions.
+          executeRelatedActions(data, ehrService);
+        }
+        actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+
+      } // Action to be executed
+      else {
+        logger.info(
+            " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+            status);
+        actStatus.setActionStatus(status);
       }
 
-      // Execute Sub and related actions
-      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
-        // Execute sub Actions
-        executeSubActions(data, ehrService);
-        // Execute Related Actions.
-        executeRelatedActions(data, ehrService);
-      }
-      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
-
-    } // Action to be executed
-    else {
-      logger.info(
-          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
-          status);
-      actStatus.setActionStatus(status);
+      data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     }
-
-    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     return actStatus;
   }
 
@@ -208,8 +225,10 @@ public class ValidateReport extends BsaAction {
 
         try {
           if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
-            ResponseEntity<String> response =
-                restTemplate.postForEntity(validatorEndpoint, request, String.class);
+            ResponseEntity<String> response;
+            try (Profiler.Step call = Profiler.get().step("FHIR Validator Call")) {
+              response = restTemplate.postForEntity(validatorEndpoint, request, String.class);
+            }
             logger.debug(response.getBody());
             outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
           } else {

@@ -39,7 +39,7 @@ public class EvaluateMeasure extends BsaAction {
     return periodEnd;
   }
 
-  public void setPeriodEnd(ZonedDateTime ZonedDateTime) {
+  public void setPeriodEnd(ZonedDateTime periodEnd) {
     this.periodEnd = periodEnd;
   }
 
@@ -65,7 +65,6 @@ public class EvaluateMeasure extends BsaAction {
         ZonedDateTime.of(LocalDateTime.of(year, 01, 01, 0, 0), ZoneId.of("America/Vancouver"));
     periodEnd =
         ZonedDateTime.of(LocalDateTime.of(year, 12, 31, 23, 59), ZoneId.of("America/Vancouver"));
-    ;
     measureReportId = "";
   }
 
@@ -75,13 +74,17 @@ public class EvaluateMeasure extends BsaAction {
     EvaluateMeasureStatus actStatus = new EvaluateMeasureStatus();
     actStatus.setActionId(this.getActionId());
 
-    // Check Timing constraints and handle them before we evaluate conditions.
-    BsaActionStatusType status = processTimingData(data);
-
     // Start an overall profiler step for this action run. Per-run report will be logged when
     // the root step is closed.
     Profiler profiler = Profiler.get();
     try (Profiler.Step total = profiler.step("Total Measure Processing")) {
+
+      // Check Timing constraints and handle them before we evaluate conditions.
+      BsaActionStatusType status;
+      try (Profiler.Step timing = profiler.step("Timing Processing")) {
+        status = processTimingData(data);
+      }
+
       // Ensure the activity is In-Progress and the Conditions are met.
       if (status != BsaActionStatusType.SCHEDULED) {
 
@@ -118,7 +121,10 @@ public class EvaluateMeasure extends BsaAction {
         String measureUri = getMeasureUri();
         String patientId = data.getNotificationContext().getPatientId();
 
-        Bundle additionalData = data.getInputResourcesAsBundle();
+        Bundle additionalData;
+        try (Profiler.Step bundle = profiler.step("Assemble Input Bundle")) {
+          additionalData = data.getInputResourcesAsBundle();
+        }
 
         logger.info(
             "evaluating Measure {} for Patient {} for period {} - {} with {} resource(s). Content / terminology bundle is {}.",
@@ -134,24 +140,22 @@ public class EvaluateMeasure extends BsaAction {
         // Evaluate Measure by passing the required parameters
         // Set up and evaluate the measure.
         MeasureReport result = null;
-        try (Profiler.Step cql = profiler.step("CQL Processing")) {
-          try (Profiler.Step exec = profiler.step("Execute CQL")) {
-            result =
-                measureService.evaluate(
-                    Eithers.forLeft3(measureCanonical), // measureUri,
-                    periodStart,
-                    periodEnd,
-                    "subject",
-                    patientId,
-                    null, // practitioner
-                    null, // received on
-                    null, // Terminology Bundle
-                    null, // Library Bundle
-                    additionalData, // Endpoint for data
-                    null,
-                    null,
-                    null); // Data Bundle
-          }
+        try (Profiler.Step exec = profiler.step("Execute CQL")) {
+          result =
+              measureService.evaluate(
+                  Eithers.forLeft3(measureCanonical), // measureUri,
+                  periodStart,
+                  periodEnd,
+                  "subject",
+                  patientId,
+                  null, // practitioner
+                  null, // received on
+                  null, // Terminology Bundle
+                  null, // Library Bundle
+                  additionalData, // Endpoint for data
+                  null,
+                  null,
+                  null); // Data Bundle
         }
 
         if (result != null) {
@@ -169,7 +173,11 @@ public class EvaluateMeasure extends BsaAction {
           data.addResourcesById(measureReportId, measureReports);
           data.addResourcesByType(ResourceType.MeasureReport, measureReports);
         }
-        if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
+        boolean conditionsSatisfied;
+        try (Profiler.Step cond = profiler.step("Condition Evaluation")) {
+          conditionsSatisfied = Boolean.TRUE.equals(conditionsMet(data, ehrService));
+        }
+        if (conditionsSatisfied) {
           // Execute sub Actions
           executeSubActions(data, ehrService);
           // Execute Related Actions.
