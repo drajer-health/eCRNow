@@ -18,6 +18,7 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthAuthority;
+import com.drajer.bsa.profiler.Profiler;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import com.drajer.bsa.routing.impl.RestfulTransportImpl;
 import com.drajer.bsa.service.PublicHealthAuthorityService;
@@ -115,54 +116,70 @@ public class SubmitReport extends BsaAction {
     BsaActionStatus actStatus = new SubmitReportStatus();
     actStatus.setActionId(this.getActionId());
 
-    // Check Timing constraints and handle them before we evaluate conditions.
-    BsaActionStatusType status = processTimingData(data);
+    Profiler profiler = Profiler.get();
+    try (Profiler.Step total = profiler.step("Total Submit Report Processing")) {
 
-    if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
+      // Check Timing constraints and handle them before we evaluate conditions.
+      BsaActionStatusType status = processTimingData(data);
 
-      logger.info("Action is not timed going through to submission");
+      if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
 
-      // Get the Kar.
-      KnowledgeArtifact art = data.getKar();
-      KnowledgeArtifactStatus artStatus =
-          data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
+        logger.info("Action is not timed going through to submission");
 
-      if (artStatus != null
-              && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
-                  || artStatus.getOutputFormat() == OutputContentType.CDA_R30)
-          || artStatus.getOutputFormat() == OutputContentType.CDA_R31) {
+        // Get the Kar.
+        KnowledgeArtifact art = data.getKar();
+        KnowledgeArtifactStatus artStatus =
+            data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
 
-        logger.info(" Submitting CDA Output ");
-        submitCdaOutput(data, actStatus, data.getHealthcareSetting());
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
+        if (artStatus != null
+                && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
+                    || artStatus.getOutputFormat() == OutputContentType.CDA_R30)
+            || artStatus.getOutputFormat() == OutputContentType.CDA_R31) {
 
-        logger.info(" Submitting FHIR Output ");
-        // by default it is FHIR Payload and validate accordingly.
-        submitFhirOutput(data, actStatus, ehrService);
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
+          logger.info(" Submitting CDA Output ");
+          try (Profiler.Step s = profiler.step("Submit CDA Output")) {
+            submitCdaOutput(data, actStatus, data.getHealthcareSetting());
+          }
+        } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
 
-        logger.info(" Submitting Both CDA and FHIR Output ");
-        submitCdaOutput(data, actStatus, data.getHealthcareSetting());
-        submitFhirOutput(data, actStatus, ehrService);
+          logger.info(" Submitting FHIR Output ");
+          // by default it is FHIR Payload and validate accordingly.
+          try (Profiler.Step s = profiler.step("Submit FHIR Output")) {
+            submitFhirOutput(data, actStatus, ehrService);
+          }
+        } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
+
+          logger.info(" Submitting Both CDA and FHIR Output ");
+          try (Profiler.Step s = profiler.step("Submit CDA Output")) {
+            submitCdaOutput(data, actStatus, data.getHealthcareSetting());
+          }
+          try (Profiler.Step s = profiler.step("Submit FHIR Output")) {
+            submitFhirOutput(data, actStatus, ehrService);
+          }
+        }
+
+        boolean conditionsSatisfied;
+        try (Profiler.Step cond = profiler.step("Condition Evaluation")) {
+          conditionsSatisfied = Boolean.TRUE.equals(conditionsMet(data, ehrService));
+        }
+        if (conditionsSatisfied) {
+          // Execute sub Actions
+          executeSubActions(data, ehrService);
+          // Execute Related Actions.
+          executeRelatedActions(data, ehrService);
+        }
+
+        actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+
+      } else {
+        logger.info(
+            " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+            status);
+        actStatus.setActionStatus(status);
       }
 
-      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
-        // Execute sub Actions
-        executeSubActions(data, ehrService);
-        // Execute Related Actions.
-        executeRelatedActions(data, ehrService);
-      }
-
-      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
-
-    } else {
-      logger.info(
-          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
-          status);
-      actStatus.setActionStatus(status);
+      data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     }
-
-    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     return actStatus;
   }
 
@@ -332,7 +349,10 @@ public class SubmitReport extends BsaAction {
           StringEscapeUtils.escapeJava(pha.getTokenUrl()),
           StringEscapeUtils.escapeJava(pha.getTokenUrl()));
 
-      JSONObject obj = authorizationUtils.getToken(pha);
+      JSONObject obj;
+      try (Profiler.Step tok = Profiler.get().step("Get Auth Token")) {
+        obj = authorizationUtils.getToken(pha);
+      }
 
       if (obj != null) {
         token = obj.getString("access_token");
@@ -382,7 +402,9 @@ public class SubmitReport extends BsaAction {
       try {
 
         logger.info(" Trying to invoke $process-message to: {}", submissionEndpoint);
-        response = operation.encodedJson().execute();
+        try (Profiler.Step call = Profiler.get().step("Submit $process-message")) {
+          response = operation.encodedJson().execute();
+        }
         logger.info(" Response Received from process message ");
         responseBundle = (Bundle) response;
       } catch (InvalidRequestException ex) {

@@ -4,6 +4,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.profiler.Profiler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,35 +17,47 @@ public class ExecuteReportingActions extends BsaAction {
     BsaActionStatus actStatus = new ExecuteReportingActionsStatus();
     actStatus.setActionId(this.getActionId());
 
-    // Check Timing constraints and handle them before we evaluate conditions.
-    BsaActionStatusType status = processTimingData(data);
+    Profiler profiler = Profiler.get();
+    try (Profiler.Step total = profiler.step("Total Execute Reporting Actions Processing")) {
 
-    // Get the Resources that need to be retrieved.
-    ehrService.getFilteredData(data, getInputData());
+      // Check Timing constraints and handle them before we evaluate conditions.
+      BsaActionStatusType status = processTimingData(data);
 
-    // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.SCHEDULED
-        && Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
+      // Get the Resources that need to be retrieved.
+      try (Profiler.Step input = profiler.step("Input Loading")) {
+        ehrService.getFilteredData(data, getInputData());
+      }
 
-      logger.info(" All conditions in the Actions have been met for {}", this.getActionId());
+      // Ensure the activity is In-Progress and the Conditions are met.
+      boolean conditionsSatisfied = false;
+      if (status != BsaActionStatusType.SCHEDULED) {
+        try (Profiler.Step cond = profiler.step("Condition Evaluation")) {
+          conditionsSatisfied = Boolean.TRUE.equals(conditionsMet(data, ehrService));
+        }
+      }
 
-      // Execute sub Actions
-      executeSubActions(data, ehrService);
+      if (conditionsSatisfied) {
 
-      // Execute Related Actions.
-      executeRelatedActions(data, ehrService);
+        logger.info(" All conditions in the Actions have been met for {}", this.getActionId());
 
-      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+        // Execute sub Actions
+        executeSubActions(data, ehrService);
 
-    } else {
+        // Execute Related Actions.
+        executeRelatedActions(data, ehrService);
 
-      logger.info(
-          " Action may be executed in the future or Conditions have not been met, so cannot proceed any further. ");
-      logger.info(" Setting Action Status : {}", status);
-      actStatus.setActionStatus(status);
+        actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+
+      } else {
+
+        logger.info(
+            " Action may be executed in the future or Conditions have not been met, so cannot proceed any further. ");
+        logger.info(" Setting Action Status : {}", status);
+        actStatus.setActionStatus(status);
+      }
+
+      data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     }
-
-    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
 
     return actStatus;
   }
