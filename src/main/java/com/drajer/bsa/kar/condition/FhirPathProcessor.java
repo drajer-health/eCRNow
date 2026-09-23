@@ -9,17 +9,19 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.javatuples.Pair;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
+import org.opencds.cqf.fhir.cr.cql.CqlProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
-  private Supplier<R4CqlExecutionService> evaluatorFactory;
+  private Supplier<CqlProcessor> evaluatorFactory;
 
   @Override
   public Boolean evaluateExpression(
@@ -55,16 +57,67 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
 
-    Parameters result =
-        (Parameters)
-            newEvaluator()
-                .evaluate(
-                    null, logicExpression, params, null, null, null, null, null, null, null, null);
+    // Strip resolved variables that the expression doesn't reference. Each leftover param
+    // generates a `parameter` declaration in the synthesized CQL library, which (a) adds
+    // compile overhead and (b) can surface translator overload ambiguity for unused types.
+    // The opencds engine has no equivalent stripping pass; doing it here keeps the
+    // generated library minimal. See docs/phase1-fhirpath-workarounds.md §6.
+    String exprText = cond.getLogicExpression().getExpression();
+    List<ParametersParameterComponent> toRemove = new ArrayList<>();
+    for (ParametersParameterComponent p : params.getParameter()) {
+      String pName = p.getName();
+      if (pName != null && pName.startsWith("%") && !exprText.contains(pName)) {
+        toRemove.add(p);
+      }
+    }
+    for (ParametersParameterComponent p : toRemove) {
+      params.getParameter().remove(p);
+      logger.debug("Stripped unused parameter: {}", p.getName());
+    }
+
+    // Pass the patient ID so the synthesized CQL library's "context Patient" can resolve.
+    // Without this, the engine's Patient context retrieval fails silently.
+    String patientId = kd.getNotificationContext() != null
+        ? kd.getNotificationContext().getPatientId() : null;
+
+    Parameters result;
+    try {
+      result =
+          (Parameters)
+              newEvaluator()
+                  .evaluate(
+                      patientId,
+                      logicExpression,
+                      params,
+                      null,
+                      false,
+                      null,
+                      null,
+                      null,
+                      (IBaseResource) null,
+                      (IBaseResource) null,
+                      (IBaseResource) null);
+    } catch (Exception e) {
+      logger.error(
+          "FHIR Path Expression Evaluator threw for expression: {}", logicExpression, e);
+      return false;
+    }
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
+      // Extract OperationOutcome from "evaluation error" part if present
+      ParametersParameterComponent errorPart = result.getParameter("evaluation error");
+      String errorDetail = "none";
+      if (errorPart != null && errorPart.hasResource()) {
+        errorDetail = ca.uhn.fhir.context.FhirContext.forR4Cached().newJsonParser().setPrettyPrint(false)
+            .encodeResourceToString(errorPart.getResource());
+      } else if (errorPart != null && errorPart.hasValue()) {
+        errorDetail = errorPart.getValue().toString();
+      }
       logger.error(
-          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+          "Null value returned from FHIR Path Expression Evaluator (no 'return' parameter). Expression: {}. Error detail: {}",
+          cond.getLogicExpression().getExpression(),
+          errorDetail);
       return false;
     } else {
       if (!(ppc.getValue() instanceof BooleanType)) {
@@ -118,7 +171,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             Parameters variableResult =
                 (Parameters)
                     newEvaluator()
-                        .evaluate(null, expr, null, null, null, null, null, null, null, null, null);
+                        .evaluate(null, expr, null, null, false, null, null, null, (IBaseResource) null, (IBaseResource) null, (IBaseResource) null);
 
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
@@ -138,8 +191,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               paramComponent.setValue(val);
 
             } else {
-
-              // TODO: Fix how this should be treated in the case the getParameter(PARAM) is null
 
               if (variableResult.getParameter(PARAM) == null) {
                 logger.error(
@@ -566,13 +617,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                     cond.getLogicExpression().getExpression(),
                     params,
                     null,
+                    false,
                     null,
                     null,
                     null,
-                    null,
-                    null,
-                    null,
-                    null);
+                    (IBaseResource) null,
+                    (IBaseResource) null,
+                    (IBaseResource) null);
     ParametersParameterComponent ppc = result.getParameter(PARAM);
 
     if (ppc == null) {
@@ -600,12 +651,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     }
   }
 
-  public void setExpressionEvaluatorFactory(Supplier<R4CqlExecutionService> evaluatorFactory) {
+  public void setExpressionEvaluatorFactory(Supplier<CqlProcessor> evaluatorFactory) {
     this.evaluatorFactory = evaluatorFactory;
   }
 
-  R4CqlExecutionService newEvaluator() {
-    R4CqlExecutionService ev = evaluatorFactory.get();
+  CqlProcessor newEvaluator() {
+    CqlProcessor ev = evaluatorFactory.get();
     logger.info("Evaluator instance: " + System.identityHashCode(ev));
     return ev;
   }

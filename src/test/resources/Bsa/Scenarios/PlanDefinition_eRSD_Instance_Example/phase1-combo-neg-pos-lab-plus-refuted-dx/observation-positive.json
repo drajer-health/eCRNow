@@ -1,0 +1,9 @@
+{
+    "resourceType": "Observation",
+    "id": "obs-combo-mixed-pos",
+    "status": "final",
+    "code": { "coding": [{ "system": "http://loinc.org", "code": "100114-8", "display": "Toxoplasma gondii 30kD Ab [Presence] in Serum by Immunoblot" }] },
+    "valueCodeableConcept": { "coding": [{ "system": "http://snomed.info/sct", "code": "10828004", "display": "Positive" }] },
+    "subject": { "reference": "Patient/combo-mixed-ref" },
+    "effectiveDateTime": "2026-03-01T11:00:00-05:00"
+}

@@ -7,7 +7,9 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -45,22 +47,23 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
+import org.opencds.cqf.fhir.cr.cql.CqlProcessor;
 
 public class FhirPathProcessorTest {
 
   private FhirPathProcessor processor;
-  private R4CqlExecutionService expressionEvaluator;
+  private CqlProcessor expressionEvaluator;
 
   @Before
   public void setUp() {
     processor = new FhirPathProcessor();
-    expressionEvaluator = mock(R4CqlExecutionService.class);
+    expressionEvaluator = mock(CqlProcessor.class);
     processor.setExpressionEvaluatorFactory(() -> expressionEvaluator);
   }
 
@@ -81,7 +84,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(result);
 
     Boolean actual = processor.evaluateExpression(condition, action, kd, ehrService);
@@ -102,7 +105,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(new Parameters());
 
     Boolean actual = processor.evaluateExpression(condition, action, kd, ehrService);
@@ -120,7 +123,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(result);
 
     RuntimeException ex =
@@ -157,7 +160,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(result);
 
     Boolean actual =
@@ -189,7 +192,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(result);
 
     Boolean actual = processor.evaluateExpression(condition, action, kd, ehrService);
@@ -233,7 +236,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(new Parameters());
 
     Parameters params = new Parameters();
@@ -267,7 +270,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(variableResult);
 
     Parameters params = new Parameters();
@@ -359,10 +362,10 @@ public class FhirPathProcessorTest {
 
   @Test
   public void newEvaluator_WhenFactoryConfigured_ReturnsFactoryInstance() {
-    R4CqlExecutionService otherEvaluator = mock(R4CqlExecutionService.class);
+    CqlProcessor otherEvaluator = mock(CqlProcessor.class);
     processor.setExpressionEvaluatorFactory(() -> otherEvaluator);
 
-    R4CqlExecutionService actual = processor.newEvaluator();
+    CqlProcessor actual = processor.newEvaluator();
 
     assertSame(otherEvaluator, actual);
   }
@@ -383,7 +386,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(new Parameters());
 
     Parameters params = new Parameters();
@@ -618,7 +621,7 @@ public class FhirPathProcessorTest {
     Mockito.lenient()
         .when(
             expressionEvaluator.evaluate(
-                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                any(), anyString(), any(), any(), anyBoolean(), any(), any(), any(), nullable(IBaseResource.class), nullable(IBaseResource.class), nullable(IBaseResource.class)))
         .thenReturn(result);
 
     assertThrows(

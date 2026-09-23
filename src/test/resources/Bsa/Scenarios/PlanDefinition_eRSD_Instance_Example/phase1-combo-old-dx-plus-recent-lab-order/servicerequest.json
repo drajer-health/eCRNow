@@ -1,0 +1,15 @@
+{
+    "resourceType": "ServiceRequest",
+    "id": "sr-combo-recent",
+    "status": "active",
+    "intent": "order",
+    "code": {
+        "coding": [{
+            "system": "http://loinc.org",
+            "code": "33964-8",
+            "display": "SARS coronavirus Urbani RNA [Presence] in Specimen by NAA with probe detection"
+        }]
+    },
+    "subject": { "reference": "Patient/combo-old-order" },
+    "authoredOn": "2026-03-01T08:30:00-05:00"
+}

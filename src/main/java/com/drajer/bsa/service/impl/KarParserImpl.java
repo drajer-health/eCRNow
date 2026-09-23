@@ -77,9 +77,8 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
-import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
-import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.cr.cql.CqlProcessor;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
 import org.opencds.cqf.fhir.utility.repository.InMemoryFhirRepository;
 import org.opencds.cqf.fhir.utility.search.Searches;
 import org.slf4j.Logger;
@@ -168,15 +167,13 @@ public class KarParserImpl implements KarParser {
 
   // TODO: instantiate meassureService, executionService and libraryEvaluationService in class
   // constructor
-  @Autowired R4MeasureService measureService;
-
-  // @Autowired R4CqlExecutionService executionService;
+  @Autowired R4MeasureProcessor measureService;
 
   @Autowired
   @Qualifier("R4CqlExecutionEvaluator")
-  ObjectProvider<R4CqlExecutionService> expressionEvaluators;
+  ObjectProvider<CqlProcessor> expressionEvaluators;
 
-  @Autowired R4LibraryEvaluationService libraryEvaluationService;
+  @Autowired CqlProcessor libraryEvaluationService;
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;

@@ -22,19 +22,19 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
 
 public class EvaluateMeasureTest {
 
   private EhrQueryService ehrService;
-  private R4MeasureService measureService;
+  private R4MeasureProcessor measureService;
   private EvaluateMeasure evaluateMeasure;
 
   @Before
   public void setup() {
 
     ehrService = mock(EhrQueryService.class);
-    measureService = mock(R4MeasureService.class);
+    measureService = mock(R4MeasureProcessor.class);
 
     evaluateMeasure = new EvaluateMeasure();
     evaluateMeasure.setActionId("eval-measure-1");
@@ -109,17 +109,12 @@ public class EvaluateMeasureTest {
 
     Mockito.lenient()
         .when(
-            measureService.evaluate(
-                any(),
-                any(),
-                any(),
+            measureService.evaluateMeasure(
+                Mockito.any(org.opencds.cqf.fhir.utility.monad.Either3.class),
+                Mockito.any(java.time.ZonedDateTime.class),
+                Mockito.any(java.time.ZonedDateTime.class),
                 anyString(),
-                anyString(),
                 any(),
-                any(),
-                any(),
-                any(),
-                any(Bundle.class),
                 any(),
                 any(),
                 any()))
@@ -149,17 +144,12 @@ public class EvaluateMeasureTest {
         .thenReturn(ehrData);
     Mockito.lenient()
         .when(
-            measureService.evaluate(
-                any(),
-                any(),
-                any(),
+            measureService.evaluateMeasure(
+                Mockito.any(org.opencds.cqf.fhir.utility.monad.Either3.class),
+                Mockito.any(java.time.ZonedDateTime.class),
+                Mockito.any(java.time.ZonedDateTime.class),
                 anyString(),
-                anyString(),
                 any(),
-                any(),
-                any(),
-                any(),
-                any(Bundle.class),
                 any(),
                 any(),
                 any()))

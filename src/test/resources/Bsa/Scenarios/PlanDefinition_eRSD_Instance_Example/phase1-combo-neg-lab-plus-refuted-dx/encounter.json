@@ -1,0 +1,11 @@
+{
+    "resourceType": "Encounter",
+    "id": "combo-neg-ref-enc",
+    "meta": { "profile": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"] },
+    "status": "finished",
+    "class": { "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode", "code": "IMP", "display": "inpatient encounter" },
+    "type": [{ "coding": [{ "system": "http://snomed.info/sct", "code": "185389009", "display": "Follow-up visit (procedure)" }] }],
+    "subject": { "reference": "Patient/combo-neg-ref" },
+    "period": { "start": "2026-03-01T08:00:00-05:00", "end": "2026-03-01T17:00:00-05:00" },
+    "serviceProvider": { "reference": "Organization/org-1", "display": "Test Hospital" }
+}

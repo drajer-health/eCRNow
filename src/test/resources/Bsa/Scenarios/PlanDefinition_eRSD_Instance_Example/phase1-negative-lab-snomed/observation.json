@@ -1,0 +1,28 @@
+{
+    "resourceType": "Observation",
+    "id": "obs-negative-snomed",
+    "status": "final",
+    "code": {
+        "coding": [{
+            "system": "http://loinc.org",
+            "code": "100114-8",
+            "display": "Toxoplasma gondii 30kD Ab [Presence] in Serum by Immunoblot"
+        }]
+    },
+    "valueCodeableConcept": {
+        "coding": [{
+            "system": "http://snomed.info/sct",
+            "code": "260385009",
+            "display": "Negative (qualifier value)"
+        }]
+    },
+    "interpretation": [{
+        "coding": [{
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+            "code": "NEG",
+            "display": "Negative"
+        }]
+    }],
+    "subject": { "reference": "Patient/phase1-neg-snomed" },
+    "effectiveDateTime": "2026-03-01T10:00:00-05:00"
+}
