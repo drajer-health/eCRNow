@@ -36,6 +36,7 @@ import com.drajer.bsa.utils.SubscriptionUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.sof.utils.FhirContextInitializer;
 import jakarta.annotation.PostConstruct;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -98,7 +100,7 @@ import org.springframework.web.client.RestTemplate;
  *
  *
  * <h1>KarParserImpl</h1>
- *
+ * <p>
  * This is an implementation class for the KarParser Interface.
  *
  * @author nbashyam
@@ -107,7 +109,9 @@ import org.springframework.web.client.RestTemplate;
 @Transactional
 public class KarParserImpl implements KarParser {
 
-    /** */
+    /**
+     *
+     */
     private static final String VARIABLE_EXTENSION_URL =
             "http://hl7.org/fhir/StructureDefinition/variable";
 
@@ -121,7 +125,8 @@ public class KarParserImpl implements KarParser {
     private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
     private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
 
-    @Autowired AutowireCapableBeanFactory beanFactory;
+    @Autowired
+    AutowireCapableBeanFactory beanFactory;
 
     @Value("${kar.directory:default}")
     String karDirectory;
@@ -159,16 +164,20 @@ public class KarParserImpl implements KarParser {
     @Value("${eicr.R31.schematron.file.location}")
     String eicrCdaR31SchematronPath;
 
-    @Autowired BsaServiceUtils utils;
+    @Autowired
+    BsaServiceUtils utils;
 
     // Autowired to pass to action processors.
-    @Autowired BsaScheduler scheduler;
+    @Autowired
+    BsaScheduler scheduler;
 
-    @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+    @Autowired
+    KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
     // TODO: instantiate meassureService, executionService and libraryEvaluationService in class
     // constructor
-    @Autowired R4MeasureService measureService;
+    @Autowired
+    R4MeasureService measureService;
 
     // @Autowired R4CqlExecutionService executionService;
 
@@ -176,35 +185,48 @@ public class KarParserImpl implements KarParser {
     @Qualifier("R4CqlExecutionEvaluator")
     ObjectProvider<R4CqlExecutionService> expressionEvaluators;
 
-    @Autowired R4LibraryEvaluationService libraryEvaluationService;
+    @Autowired
+    R4LibraryEvaluationService libraryEvaluationService;
 
     // Autowired to pass to Actions
-    @Autowired PublicHealthMessagesDao phDao;
+    @Autowired
+    PublicHealthMessagesDao phDao;
 
     // The healthcare setting data access object
-    @Autowired HealthcareSettingsDao hsDao;
+    @Autowired
+    HealthcareSettingsDao hsDao;
 
-    @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
+    @Autowired
+    SubscriptionGeneratorService subscriptionGeneratorService;
 
     // The EHR query interface
-    @Autowired EhrQueryService ehrInterface;
+    @Autowired
+    EhrQueryService ehrInterface;
 
-    @Autowired DirectTransportImpl directInterface;
+    @Autowired
+    DirectTransportImpl directInterface;
 
-    @Autowired RestfulTransportImpl restSubmitter;
+    @Autowired
+    RestfulTransportImpl restSubmitter;
 
-    @Autowired AuthorizationUtils authUtils;
+    @Autowired
+    AuthorizationUtils authUtils;
 
-    @Autowired FhirContextInitializer fhirContextInitializer;
+    @Autowired
+    FhirContextInitializer fhirContextInitializer;
 
-    @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
+    @Autowired
+    PublicHealthAuthorityService publicHealthAuthorityService;
 
-    @Autowired TimeZoneDao timezoneDao;
+    @Autowired
+    TimeZoneDao timezoneDao;
 
-    @Autowired InMemoryFhirRepository repository;
+    @Autowired
+    InMemoryFhirRepository repository;
 
     // Autowired to update Persistent Kar Repos
-    @Autowired KarService karService;
+    @Autowired
+    KarService karService;
     HashMap<String, Set<KnowledgeArtifact>> localKars;
     HashMap<String, String> localKarRepoUrlToName;
 
@@ -213,7 +235,8 @@ public class KarParserImpl implements KarParser {
     @Qualifier("jsonParser")
     IParser jsonParser;
 
-    @Autowired RestTemplate restTemplate;
+    @Autowired
+    RestTemplate restTemplate;
 
     @Value("${report-validator.endpoint}")
     private String validatorEndpoint;
