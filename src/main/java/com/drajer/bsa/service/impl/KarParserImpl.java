@@ -36,6 +36,7 @@ import com.drajer.bsa.utils.SubscriptionUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.sof.utils.FhirContextInitializer;
 import jakarta.annotation.PostConstruct;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -98,7 +100,7 @@ import org.springframework.web.client.RestTemplate;
  *
  *
  * <h1>KarParserImpl</h1>
- *
+ * <p>
  * This is an implementation class for the KarParser Interface.
  *
  * @author nbashyam
@@ -107,1020 +109,1066 @@ import org.springframework.web.client.RestTemplate;
 @Transactional
 public class KarParserImpl implements KarParser {
 
-  /** */
-  private static final String VARIABLE_EXTENSION_URL =
-      "http://hl7.org/fhir/StructureDefinition/variable";
+    /**
+     *
+     */
+    private static final String VARIABLE_EXTENSION_URL =
+            "http://hl7.org/fhir/StructureDefinition/variable";
 
-  private static final String US_SPECIFICATION_LIBRARY_PROFILE =
-      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library";
+    private static final String US_SPECIFICATION_LIBRARY_PROFILE =
+            "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library";
 
-  private static final String RCTC_DEFAULT_SYSTEM = "urn:ietf:rfc:3986";
+    private static final String RCTC_DEFAULT_SYSTEM = "urn:ietf:rfc:3986";
 
-  private static final String VERSION3_ERSD = "3.";
+    private static final String VERSION3_ERSD = "3.";
 
-  private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
-  private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
+    private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
 
-  @Autowired AutowireCapableBeanFactory beanFactory;
+    @Autowired
+    AutowireCapableBeanFactory beanFactory;
 
-  @Value("${kar.directory:default}")
-  String karDirectory;
+    @Value("${kar.directory:default}")
+    String karDirectory;
 
-  @Value("${ignore.timers}")
-  Boolean ignoreTimers;
+    @Value("${ignore.timers}")
+    Boolean ignoreTimers;
 
-  @Value("${measure-reporting-period.start}")
-  ZonedDateTime measurePeriodStart;
+    @Value("${measure-reporting-period.start}")
+    ZonedDateTime measurePeriodStart;
 
-  @Value("${measure-reporting-period.end}")
-  ZonedDateTime measurePeriodEnd;
+    @Value("${measure-reporting-period.end}")
+    ZonedDateTime measurePeriodEnd;
 
-  @Value("${cql.enabled:false}")
-  boolean cqlEnabled;
+    @Value("${cql.enabled:false}")
+    boolean cqlEnabled;
 
-  @Value("${fhirpath.enabled:true}")
-  boolean fhirpathEnabled;
+    @Value("${fhirpath.enabled:true}")
+    boolean fhirpathEnabled;
 
-  @Value("${validate.eicr.cdar11:false}")
-  boolean eicrCdaR11ValidationEnabled;
+    @Value("${validate.eicr.cdar11:false}")
+    boolean eicrCdaR11ValidationEnabled;
 
-  @Value("${validate.eicr.cdar31:false}")
-  boolean eicrCdaR31ValidationEnabled;
+    @Value("${validate.eicr.cdar31:false}")
+    boolean eicrCdaR31ValidationEnabled;
 
-  @Value("${validate.eicr.fhir:false}")
-  boolean eicrFhirValidationEnabled;
+    @Value("${validate.eicr.fhir:false}")
+    boolean eicrFhirValidationEnabled;
 
-  @Value("${bsa.output.directory:bsa-output}")
-  String logDirectory;
+    @Value("${bsa.output.directory:bsa-output}")
+    String logDirectory;
 
-  @Value("${schematron.file.location}")
-  String eicrCdaR11SchematronPath;
+    @Value("${schematron.file.location}")
+    String eicrCdaR11SchematronPath;
 
-  @Value("${eicr.R31.schematron.file.location}")
-  String eicrCdaR31SchematronPath;
+    @Value("${eicr.R31.schematron.file.location}")
+    String eicrCdaR31SchematronPath;
 
-  @Autowired BsaServiceUtils utils;
+    @Autowired
+    BsaServiceUtils utils;
 
-  // Autowired to pass to action processors.
-  @Autowired BsaScheduler scheduler;
+    // Autowired to pass to action processors.
+    @Autowired
+    BsaScheduler scheduler;
 
-  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+    @Autowired
+    KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
-  // TODO: instantiate meassureService, executionService and libraryEvaluationService in class
-  // constructor
-  @Autowired R4MeasureService measureService;
+    // TODO: instantiate meassureService, executionService and libraryEvaluationService in class
+    // constructor
+    @Autowired
+    R4MeasureService measureService;
 
-  // @Autowired R4CqlExecutionService executionService;
+    // @Autowired R4CqlExecutionService executionService;
 
-  @Autowired
-  @Qualifier("R4CqlExecutionEvaluator")
-  ObjectProvider<R4CqlExecutionService> expressionEvaluators;
+    @Autowired
+    @Qualifier("R4CqlExecutionEvaluator")
+    ObjectProvider<R4CqlExecutionService> expressionEvaluators;
 
-  @Autowired R4LibraryEvaluationService libraryEvaluationService;
+    @Autowired
+    R4LibraryEvaluationService libraryEvaluationService;
 
-  // Autowired to pass to Actions
-  @Autowired PublicHealthMessagesDao phDao;
+    // Autowired to pass to Actions
+    @Autowired
+    PublicHealthMessagesDao phDao;
 
-  // The healthcare setting data access object
-  @Autowired HealthcareSettingsDao hsDao;
+    // The healthcare setting data access object
+    @Autowired
+    HealthcareSettingsDao hsDao;
 
-  @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
+    @Autowired
+    SubscriptionGeneratorService subscriptionGeneratorService;
 
-  // The EHR query interface
-  @Autowired EhrQueryService ehrInterface;
+    // The EHR query interface
+    @Autowired
+    EhrQueryService ehrInterface;
 
-  @Autowired DirectTransportImpl directInterface;
+    @Autowired
+    DirectTransportImpl directInterface;
 
-  @Autowired RestfulTransportImpl restSubmitter;
+    @Autowired
+    RestfulTransportImpl restSubmitter;
 
-  @Autowired AuthorizationUtils authUtils;
+    @Autowired
+    AuthorizationUtils authUtils;
 
-  @Autowired FhirContextInitializer fhirContextInitializer;
+    @Autowired
+    FhirContextInitializer fhirContextInitializer;
 
-  @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
+    @Autowired
+    PublicHealthAuthorityService publicHealthAuthorityService;
 
-  @Autowired TimeZoneDao timezoneDao;
+    @Autowired
+    TimeZoneDao timezoneDao;
 
-  @Autowired InMemoryFhirRepository repository;
+    @Autowired
+    InMemoryFhirRepository repository;
 
-  // Autowired to update Persistent Kar Repos
-  @Autowired KarService karService;
-  HashMap<String, Set<KnowledgeArtifact>> localKars;
-  HashMap<String, String> localKarRepoUrlToName;
+    // Autowired to update Persistent Kar Repos
+    @Autowired
+    KarService karService;
+    HashMap<String, Set<KnowledgeArtifact>> localKars;
+    HashMap<String, String> localKarRepoUrlToName;
 
-  // Autowired to pass to actions
-  @Autowired
-  @Qualifier("jsonParser")
-  IParser jsonParser;
+    // Autowired to pass to actions
+    @Autowired
+    @Qualifier("jsonParser")
+    IParser jsonParser;
 
-  @Autowired RestTemplate restTemplate;
+    @Autowired
+    RestTemplate restTemplate;
 
-  @Value("${report-validator.endpoint}")
-  private String validatorEndpoint;
+    @Value("${report-validator.endpoint}")
+    private String validatorEndpoint;
 
-  @Value("${report-submission.endpoint}")
-  private String reportSubmissionEndpoint;
+    @Value("${report-submission.endpoint}")
+    private String reportSubmissionEndpoint;
 
-  private List<Expression> planVariableExpressions;
+    private List<Expression> planVariableExpressions;
 
-  private static final String JSON_KAR_EXT = "json";
-  private static final String RECEIVER_ADDRESS_URL =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-receiver-endpoint";
+    private static final String JSON_KAR_EXT = "json";
+    private static final String RECEIVER_ADDRESS_URL =
+            "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-receiver-endpoint";
 
-  private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
-  private static final String LOCAL_HOST_REPO_NAME = "local-repo";
-  private static final String ECR_QUERY_EXTENSION_URL =
-      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
-  private static final String PH_QUERY_EXTENSION_URL =
-      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
-  private static final String MEDMORPH_QUERY_EXTENSION_URL =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
-  private static final String ECR_RELATED_DATA_EXTENSION_URL =
-      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
-  private static final String PH_RELATED_DATA_EXTENSION_URL =
-      "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
-  private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
+    private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
+    private static final String LOCAL_HOST_REPO_NAME = "local-repo";
+    private static final String ECR_QUERY_EXTENSION_URL =
+            "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
+    private static final String PH_QUERY_EXTENSION_URL =
+            "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-fhirquerypattern-extension";
+    private static final String MEDMORPH_QUERY_EXTENSION_URL =
+            "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
+    private static final String ECR_RELATED_DATA_EXTENSION_URL =
+            "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
+    private static final String PH_RELATED_DATA_EXTENSION_URL =
+            "http://hl7.org/fhir/us/ph-library/StructureDefinition/us-ph-relateddata-extension";
+    private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
+            "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
 
-  private static HashMap<String, String> actionClasses = new HashMap<>();
+    private static HashMap<String, String> actionClasses = new HashMap<>();
 
-  // Load the Topic to Named Event Map.
-  static {
-    try (InputStream input =
-        SubscriptionUtils.class.getClassLoader().getResourceAsStream("action-classes.properties")) {
+    // Load the Topic to Named Event Map.
+    static {
+        try (InputStream input =
+                     SubscriptionUtils.class.getClassLoader().getResourceAsStream("action-classes.properties")) {
 
-      Properties prop = new Properties();
-      prop.load(input);
+            Properties prop = new Properties();
+            prop.load(input);
 
-      prop.forEach((key, value) -> actionClasses.put((String) key, (String) value));
+            prop.forEach((key, value) -> actionClasses.put((String) key, (String) value));
 
-    } catch (IOException ex) {
-      logger2.error("Error while loading Action Classes from Properties File ");
-    }
-  }
-
-  /**
-   * The method is used to find the specific Action class for an action id present in the
-   * PlanDefinition instance in accordance with the IG.
-   *
-   * @param actionId
-   * @return Action class for the specific type of action defined in the IG.
-   */
-  public BsaAction getAction(String actionId) {
-
-    BsaAction instance = null;
-    if (actionClasses != null && actionClasses.containsKey(actionId)) {
-      try {
-        instance = (BsaAction) (Class.forName(actionClasses.get(actionId)).newInstance());
-        BsaAction instanceBean = null;
-        try {
-          instanceBean = beanFactory.getBean(instance.getClass());
-        } catch (NoSuchBeanDefinitionException e) {
-          logger.debug(
-              String.format(
-                  "No such bean definition found for action %s, so creating a new instance",
-                  actionId));
+        } catch (IOException ex) {
+            logger2.error("Error while loading Action Classes from Properties File ");
         }
-        if (instanceBean != null) {
-          beanFactory.destroyBean(beanFactory.getBean(instance.getClass()));
-        }
-        beanFactory.autowireBean(instance);
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-        logger.error("Error instantiating the object.", e);
-      }
     }
-
-    return instance;
-  }
-
-  @PostConstruct
-  public void initializeRepository() {
-    localKarRepoUrlToName = new HashMap<>();
-    localKars = new HashMap<>();
-    loadKars();
-  }
-
-  @Override
-  public void loadKars() {
-    loadKarsFromDirectory(karDirectory, LOCAL_HOST_REPO_BASE_URL, LOCAL_HOST_REPO_NAME);
-    persistAndSyncLocalKars();
-  }
-
-  public void persistAndSyncLocalKars() {
-
-    logger.info(" Persisting Kars for each Repo ");
-
-    List<KnowledgeArtifactRepository> inActiveRepos = karService.getAllKARs();
-    Set<KnowledgeArtifactSummaryInfo> kars = new HashSet<>();
-
-    for (Map.Entry<String, String> entry : localKarRepoUrlToName.entrySet()) {
-
-      // Clear before doing anything
-      kars.clear();
-
-      logger.info("Adding entry for Url {} and Name {}", entry.getKey(), entry.getValue());
-
-      KnowledgeArtifactRepository repo = karService.getKARByUrl(entry.getKey());
-
-      if (repo != null) {
-        logger.info(" Adding Artifacts to existing repo {}", entry.getKey());
-        repo.addKars(localKars.get(entry.getKey()));
-        kars = repo.getKarsInfo();
-        repo.setRepoStatus(true);
-      } else {
-
-        logger.info(" Repository for Url {} does not exist ", entry.getKey());
-        repo = new KnowledgeArtifactRepository();
-        repo.setFhirServerURL(entry.getKey());
-        repo.setRepoName(entry.getValue());
-        repo.addKars(localKars.get(entry.getKey()));
-        kars = repo.getKarsInfo();
-        repo.setRepoStatus(true);
-      }
-
-      // Update non existing KARS in the Repo.
-      kars.stream()
-          .forEach(
-              art -> {
-                if (!isArtifactLoaded(art, localKars.get(entry.getKey()))) {
-                  art.setKarAvailable(false);
-                }
-              });
-
-      // Remove the repos that are found since they will be active.
-      inActiveRepos.removeIf(
-          repoEntry -> {
-            String repoUrl = entry.getKey();
-            if (repoEntry.getFhirServerURL().contentEquals(repoUrl)) {
-              logger.info("Removing repo with Url {} since they are existing", repoUrl);
-              return true;
-            } else {
-              return false;
-            }
-          });
-
-      // Save the repo.
-      karService.saveOrUpdate(repo);
-    }
-
-    logger.info(" Number of Repos to be disabled {}", inActiveRepos.size());
-    for (KnowledgeArtifactRepository r : inActiveRepos) {
-      r.setRepoStatus(false);
-      karService.saveOrUpdate(r);
-    }
-  }
-
-  private boolean isArtifactLoaded(KnowledgeArtifactSummaryInfo kar, Set<KnowledgeArtifact> arts) {
-
-    for (KnowledgeArtifact ka : arts) {
-      if (ka.getVersionUniqueId().contentEquals(kar.getVersionUniqueId())) return true;
-    }
-    return false;
-  }
-
-  public void loadKarsFromDirectory(String dirName, String repoUrl, String repoName) {
-
-    // Load each of the Knowledge Artifact Bundles.
-    File folder = new File(dirName);
-
-    File[] files = folder.listFiles((FileFilter) FileFilterUtils.fileFileFilter());
-
-    if (files != null) {
-      for (File kar : files) {
-
-        if (kar.isFile() && JSON_KAR_EXT.contentEquals(FilenameUtils.getExtension(kar.getName()))) {
-
-          logger.info(" Processing KAR {}", kar.getName());
-          processKar(kar, repoUrl, repoName);
-        } // For a File
-      }
-    }
-
-    // Recursively process the directories also.
-    File[] dirs = folder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
-
-    if (dirs != null) {
-      for (File dir : dirs) {
-
-        logger.info(" About to process directory : {}", dir.getName());
-        String url = repoUrl + "/" + dir.getName();
-        String name = repoName + "-" + dir.getName();
-
-        loadKarsFromDirectory(dir.getPath(), url, name);
-      }
-    }
-  }
-
-  private void processKar(File kar, String repoUrl, String repoName) {
-
-    logger.info(" Processing File : {}", kar);
-
-    Bundle karBundle = utils.readKarFromFile(kar.getPath());
-
-    if (karBundle != null && (karBundle.getType() == Bundle.BundleType.COLLECTION)) {
-
-      logger.info(" Successfully read the KAR from File ");
-
-      KnowledgeArtifact art = new KnowledgeArtifact();
-
-      // Setup the Id.
-      art.setKarId(karBundle.getIdPart());
-
-      // Setup Version.
-      if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
-        art.setKarVersion(karBundle.getMeta().getVersionId());
-
-      // Set Bundle
-      art.setOriginalKarBundle(karBundle);
-      art.setKarPath(kar.getPath());
-
-      List<BundleEntryComponent> entries = karBundle.getEntry();
-
-      for (BundleEntryComponent comp : entries) {
-
-        if (Optional.ofNullable(comp).isPresent()
-            && comp.getResource().getResourceType() == ResourceType.ValueSet) {
-          logger.debug(" Processing ValueSet ");
-          processValueSet((ValueSet) comp.getResource(), art);
-        } else if (Optional.ofNullable(comp).isPresent()
-            && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
-          logger.info(" Processing PlanDefinition ");
-          processPlanDefinition((PlanDefinition) comp.getResource(), art, kar);
-          art.initializeRelatedActions();
-          art.initializeRelatedDataIds();
-        } else if (Optional.ofNullable(comp).isPresent()
-            && comp.getResource().getResourceType() == ResourceType.Library) {
-          logger.info(" Processing Library");
-
-          Library lib = (Library) comp.getResource();
-
-          // Add Version
-          if (lib.hasMeta() && lib.getMeta().hasProfile()) {
-
-            List<CanonicalType> profiles = lib.getMeta().getProfile();
-
-            for (CanonicalType prof : profiles) {
-
-              if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
-                  && lib.getMeta().hasVersionId()
-                  && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
-                logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
-                art.setKarVersion(lib.getMeta().getVersionId());
-                break;
-              } else if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
-                  && lib.hasVersion()
-                  && lib.getVersion().startsWith(VERSION3_ERSD)) {
-                logger.info(" Adding Version {} to KAR", lib.getVersion());
-                art.setKarVersion(lib.getVersion());
-                break;
-              }
-            }
-          }
-
-          if (art.getKarName() == null) {
-            art.setKarName(lib.getName());
-          }
-          if (art.getKarPublisher() == null) {
-            art.setKarPublisher(lib.getPublisher());
-          }
-
-          if (lib.getId().contains("rctc")) {
-
-            logger.info(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
-            art.setRctcVersion(lib.getVersion());
-            art.setRctcOid(getRctcOid(lib));
-          }
-        } else if (Optional.ofNullable(comp).isPresent()) {
-          logger.info(" Adding resource to dependencies");
-          art.addDependentResource(comp.getResource());
-        }
-
-        addKarResourceToFhirRepository(comp.getResource());
-      }
-
-      /**
-       * for (HealthcareSetting healthcareSetting : allHealthcareSettings) { KarProcessingData kd =
-       * makeData(healthcareSetting, art); subscriptionGeneratorService.createSubscriptions(kd); }
-       */
-      addArtifactForPersistence(art, repoUrl, repoName);
-      knowledgeArtifactRepositorySystem.add(art);
-      art.printKarSummary();
-
-    } else {
-
-      logger.error(
-          " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
-          kar);
-    }
-  }
-
-  /**
-   * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing. Resources
-   * are only inserted if they are not already present.
-   *
-   * @param resource the resource to store.
-   */
-  private void addKarResourceToFhirRepository(Resource resource) {
-    Bundle bundle;
-    if (resource instanceof Library library) {
-      bundle =
-          this.repository.search(
-              Bundle.class,
-              library.getClass(),
-              Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
-    } else if (resource instanceof PlanDefinition planDef) {
-      bundle =
-          this.repository.search(
-              Bundle.class,
-              planDef.getClass(),
-              Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
-    } else if (resource instanceof Measure measure) {
-      bundle =
-          this.repository.search(
-              Bundle.class,
-              measure.getClass(),
-              Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
-    } else if (resource instanceof ValueSet valueSet) {
-      bundle =
-          this.repository.search(
-              Bundle.class,
-              valueSet.getClass(),
-              Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
-    } else {
-      logger.info("Unexpected Resource Type - attempting to retrieve by ID");
-      bundle =
-          this.repository.search(
-              Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
-    }
-
-    if (!bundle.hasEntry()) {
-      this.repository.create(resource);
-    }
-  }
-
-  /**
-   * Method to extract the RCTC OID from the library.
-   *
-   * @param lib
-   * @return
-   */
-  private String getRctcOid(Library lib) {
-
-    if (lib != null && lib.getId().contains("rctc")) {
-
-      if (lib.hasIdentifier()) {
-
-        List<Identifier> ids = lib.getIdentifier();
-
-        for (Identifier id : ids) {
-
-          if (id.hasSystem()
-              && id.getSystem().contentEquals("RCTC_DEFAULT_SYSTEM")
-              && id.hasValue()) {
-
-            return id.getValue();
-          }
-        }
-      }
-    }
-
-    return CdaGeneratorConstants.RCTC_OID;
-  }
-
-  private void addArtifactForPersistence(KnowledgeArtifact art, String repoUrl, String repoName) {
-
-    if (localKars == null) {
-      localKars = new HashMap<>();
-    }
-
-    if (localKars.containsKey(repoUrl)) {
-
-      Set<KnowledgeArtifact> arts = localKars.get(repoUrl);
-
-      if (arts != null) {
-        arts.add(art);
-      } else {
-        arts = new HashSet<>();
-        arts.add(art);
-      }
-
-      localKars.put(repoUrl, arts);
-    } else {
-      Set<KnowledgeArtifact> arts = new HashSet<>();
-      arts.add(art);
-      localKars.put(repoUrl, arts);
-    }
-
-    if (localKarRepoUrlToName != null) {
-
-      localKarRepoUrlToName.put(repoUrl, repoName);
-    } else {
-      localKarRepoUrlToName = new HashMap<>();
-      localKarRepoUrlToName.put(repoUrl, repoName);
-    }
-  }
-
-  private void processPlanDefinition(
-      PlanDefinition plan, KnowledgeArtifact art, File karBundleFile) {
-
-    art.setKarName(plan.getName());
-    art.setKarPublisher(plan.getPublisher());
-    processExtensions(plan, art);
 
     /**
-     * if (plan.hasExtension(VARIABLE_EXTENSION_URL)) { Extension variableExtension =
-     * plan.getExtensionByUrl(VARIABLE_EXTENSION_URL); Type variable = variableExtension.getValue();
-     * if (variable instanceof Expression) { planVariableExpression = (Expression) variable;
-     * logger.debug("Found Variable Extension Expression"); } else { logger.debug("Found Variable
-     * Extension, but expected Expression."); } }
+     * The method is used to find the specific Action class for an action id present in the
+     * PlanDefinition instance in accordance with the IG.
+     *
+     * @param actionId
+     * @return Action class for the specific type of action defined in the IG.
      */
-    List<PlanDefinitionActionComponent> actions = plan.getAction();
+    public BsaAction getAction(String actionId) {
 
-    for (PlanDefinitionActionComponent act : actions) {
+        BsaAction instance = null;
+        if (actionClasses != null && actionClasses.containsKey(actionId)) {
+            try {
+                instance = (BsaAction) (Class.forName(actionClasses.get(actionId)).newInstance());
+                BsaAction instanceBean = null;
+                try {
+                    instanceBean = beanFactory.getBean(instance.getClass());
+                } catch (NoSuchBeanDefinitionException e) {
+                    logger.debug(
+                            String.format(
+                                    "No such bean definition found for action %s, so creating a new instance",
+                                    actionId));
+                }
+                if (instanceBean != null) {
+                    beanFactory.destroyBean(beanFactory.getBean(instance.getClass()));
+                }
+                beanFactory.autowireBean(instance);
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                logger.error("Error instantiating the object.", e);
+            }
+        }
 
-      if (act.getCodeFirstRep() != null && act.getCodeFirstRep().getCodingFirstRep() != null) {
+        return instance;
+    }
 
-        Coding cd = act.getCodeFirstRep().getCodingFirstRep();
+    @PostConstruct
+    public void initializeRepository() {
+        localKarRepoUrlToName = new HashMap<>();
+        localKars = new HashMap<>();
+        loadKars();
+    }
 
-        BsaAction action = getAction(cd.getCode());
-        action.setActionId(act.getId(), plan.getUrl());
+    @Override
+    public void loadKars() {
+        loadKarsFromDirectory(karDirectory, LOCAL_HOST_REPO_BASE_URL, LOCAL_HOST_REPO_NAME);
+        persistAndSyncLocalKars();
+    }
+
+    public void persistAndSyncLocalKars() {
+
+        logger.info(" Persisting Kars for each Repo ");
+
+        List<KnowledgeArtifactRepository> inActiveRepos = karService.getAllKARs();
+        Set<KnowledgeArtifactSummaryInfo> kars = new HashSet<>();
+
+        for (Map.Entry<String, String> entry : localKarRepoUrlToName.entrySet()) {
+
+            // Clear before doing anything
+            kars.clear();
+
+            logger.info("Adding entry for Url {} and Name {}", entry.getKey(), entry.getValue());
+
+            KnowledgeArtifactRepository repo = karService.getKARByUrl(entry.getKey());
+
+            // Snapshot of the previously persisted state, used to detect whether this repo actually
+            // needs to be saved again. Null means the repo is new, so it must always be saved.
+            Map<String, Boolean> previousAvailability = null;
+            Boolean previousStatus = null;
+
+            if (repo != null) {
+                logger.info(" Adding Artifacts to existing repo {}", entry.getKey());
+                previousStatus = repo.getRepoStatus();
+                previousAvailability = new HashMap<>();
+                for (KnowledgeArtifactSummaryInfo info : repo.getKarsInfo()) {
+                    previousAvailability.put(info.getVersionUniqueId(), info.getKarAvailable());
+                }
+                repo.addKars(localKars.get(entry.getKey()));
+                kars = repo.getKarsInfo();
+                repo.setRepoStatus(true);
+            } else {
+
+                logger.info(" Repository for Url {} does not exist ", entry.getKey());
+                repo = new KnowledgeArtifactRepository();
+                repo.setFhirServerURL(entry.getKey());
+                repo.setRepoName(entry.getValue());
+                repo.addKars(localKars.get(entry.getKey()));
+                kars = repo.getKarsInfo();
+                repo.setRepoStatus(true);
+            }
+
+            // Update non existing KARS in the Repo.
+            kars.stream()
+                    .forEach(
+                            art -> {
+                                if (!isArtifactLoaded(art, localKars.get(entry.getKey()))) {
+                                    art.setKarAvailable(false);
+                                }
+                            });
+
+            // Remove the repos that are found since they will be active.
+            inActiveRepos.removeIf(
+                    repoEntry -> {
+                        String repoUrl = entry.getKey();
+                        if (repoEntry.getFhirServerURL().contentEquals(repoUrl)) {
+                            logger.info("Removing repo with Url {} since they are existing", repoUrl);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+
+            // Only save if the repo is new, or its status/KAR availability actually changed. This
+            // avoids issuing redundant UPDATE statements when the KAR is already loaded and unchanged,
+            // e.g. on every app restart when the KAR file on disk hasn't changed.
+            Map<String, Boolean> currentAvailability = new HashMap<>();
+            for (KnowledgeArtifactSummaryInfo info : kars) {
+                currentAvailability.put(info.getVersionUniqueId(), info.getKarAvailable());
+            }
+            boolean unchanged =
+                    previousAvailability != null
+                            && Boolean.TRUE.equals(previousStatus)
+                            && previousAvailability.equals(currentAvailability);
+
+            if (!unchanged) {
+                karService.saveOrUpdate(repo);
+            } else {
+                logger.info(" KAR repository {} is unchanged, skipping database update ", entry.getKey());
+            }
+        }
+
+        logger.info(" Number of Repos to be disabled {}", inActiveRepos.size());
+        for (KnowledgeArtifactRepository r : inActiveRepos) {
+            r.setRepoStatus(false);
+            karService.saveOrUpdate(r);
+        }
+    }
+
+    private boolean isArtifactLoaded(KnowledgeArtifactSummaryInfo kar, Set<KnowledgeArtifact> arts) {
+
+        for (KnowledgeArtifact ka : arts) {
+            if (ka.getVersionUniqueId().contentEquals(kar.getVersionUniqueId())) return true;
+        }
+        return false;
+    }
+
+    public void loadKarsFromDirectory(String dirName, String repoUrl, String repoName) {
+
+        // Load each of the Knowledge Artifact Bundles.
+        File folder = new File(dirName);
+
+        File[] files = folder.listFiles((FileFilter) FileFilterUtils.fileFileFilter());
+
+        if (files != null) {
+            for (File kar : files) {
+
+                if (kar.isFile() && JSON_KAR_EXT.contentEquals(FilenameUtils.getExtension(kar.getName()))) {
+
+                    logger.info(" Processing KAR {}", kar.getName());
+                    processKar(kar, repoUrl, repoName);
+                } // For a File
+            }
+        }
+
+        // Recursively process the directories also.
+        File[] dirs = folder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
+
+        if (dirs != null) {
+            for (File dir : dirs) {
+
+                logger.info(" About to process directory : {}", dir.getName());
+                String url = repoUrl + "/" + dir.getName();
+                String name = repoName + "-" + dir.getName();
+
+                loadKarsFromDirectory(dir.getPath(), url, name);
+            }
+        }
+    }
+
+    private void processKar(File kar, String repoUrl, String repoName) {
+
+        logger.info(" Processing File : {}", kar);
+
+        Bundle karBundle = utils.readKarFromFile(kar.getPath());
+
+        if (karBundle != null && (karBundle.getType() == Bundle.BundleType.COLLECTION)) {
+
+            logger.info(" Successfully read the KAR from File ");
+
+            KnowledgeArtifact art = new KnowledgeArtifact();
+
+            // Setup the Id.
+            art.setKarId(karBundle.getIdPart());
+
+            // Setup Version.
+            if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
+                art.setKarVersion(karBundle.getMeta().getVersionId());
+
+            // Set Bundle
+            art.setOriginalKarBundle(karBundle);
+            art.setKarPath(kar.getPath());
+
+            List<BundleEntryComponent> entries = karBundle.getEntry();
+
+            for (BundleEntryComponent comp : entries) {
+
+                if (Optional.ofNullable(comp).isPresent()
+                        && comp.getResource().getResourceType() == ResourceType.ValueSet) {
+                    logger.debug(" Processing ValueSet ");
+                    processValueSet((ValueSet) comp.getResource(), art);
+                } else if (Optional.ofNullable(comp).isPresent()
+                        && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
+                    logger.info(" Processing PlanDefinition ");
+                    processPlanDefinition((PlanDefinition) comp.getResource(), art, kar);
+                    art.initializeRelatedActions();
+                    art.initializeRelatedDataIds();
+                } else if (Optional.ofNullable(comp).isPresent()
+                        && comp.getResource().getResourceType() == ResourceType.Library) {
+                    logger.info(" Processing Library");
+
+                    Library lib = (Library) comp.getResource();
+
+                    // Add Version
+                    if (lib.hasMeta() && lib.getMeta().hasProfile()) {
+
+                        List<CanonicalType> profiles = lib.getMeta().getProfile();
+
+                        for (CanonicalType prof : profiles) {
+
+                            if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                                    && lib.getMeta().hasVersionId()
+                                    && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
+                                logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
+                                art.setKarVersion(lib.getMeta().getVersionId());
+                                break;
+                            } else if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                                    && lib.hasVersion()
+                                    && lib.getVersion().startsWith(VERSION3_ERSD)) {
+                                logger.info(" Adding Version {} to KAR", lib.getVersion());
+                                art.setKarVersion(lib.getVersion());
+                                break;
+                            }
+                        }
+                    }
+
+                    if (art.getKarName() == null) {
+                        art.setKarName(lib.getName());
+                    }
+                    if (art.getKarPublisher() == null) {
+                        art.setKarPublisher(lib.getPublisher());
+                    }
+
+                    if (lib.getId().contains("rctc")) {
+
+                        logger.info(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
+                        art.setRctcVersion(lib.getVersion());
+                        art.setRctcOid(getRctcOid(lib));
+                    }
+                } else if (Optional.ofNullable(comp).isPresent()) {
+                    logger.info(" Adding resource to dependencies");
+                    art.addDependentResource(comp.getResource());
+                }
+
+                addKarResourceToFhirRepository(comp.getResource());
+            }
+
+            /**
+             * for (HealthcareSetting healthcareSetting : allHealthcareSettings) { KarProcessingData kd =
+             * makeData(healthcareSetting, art); subscriptionGeneratorService.createSubscriptions(kd); }
+             */
+            addArtifactForPersistence(art, repoUrl, repoName);
+            knowledgeArtifactRepositorySystem.add(art);
+            art.printKarSummary();
+
+        } else {
+
+            logger.error(
+                    " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
+                    kar);
+        }
+    }
+
+    /**
+     * Method to insert Kar Resources into inMemoryFhirRepository, for measure processing. Resources
+     * are only inserted if they are not already present.
+     *
+     * @param resource the resource to store.
+     */
+    private void addKarResourceToFhirRepository(Resource resource) {
+        Bundle bundle;
+        if (resource instanceof Library library) {
+            bundle =
+                    this.repository.search(
+                            Bundle.class,
+                            library.getClass(),
+                            Searches.byUrlAndVersion(library.getUrl(), library.getVersion()));
+        } else if (resource instanceof PlanDefinition planDef) {
+            bundle =
+                    this.repository.search(
+                            Bundle.class,
+                            planDef.getClass(),
+                            Searches.byUrlAndVersion(planDef.getUrl(), planDef.getVersion()));
+        } else if (resource instanceof Measure measure) {
+            bundle =
+                    this.repository.search(
+                            Bundle.class,
+                            measure.getClass(),
+                            Searches.byUrlAndVersion(measure.getUrl(), measure.getVersion()));
+        } else if (resource instanceof ValueSet valueSet) {
+            bundle =
+                    this.repository.search(
+                            Bundle.class,
+                            valueSet.getClass(),
+                            Searches.byUrlAndVersion(valueSet.getUrl(), valueSet.getVersion()));
+        } else {
+            logger.info("Unexpected Resource Type - attempting to retrieve by ID");
+            bundle =
+                    this.repository.search(
+                            Bundle.class, resource.getClass(), Searches.byId(resource.getId()));
+        }
+
+        if (!bundle.hasEntry()) {
+            this.repository.create(resource);
+        }
+    }
+
+    /**
+     * Method to extract the RCTC OID from the library.
+     *
+     * @param lib
+     * @return
+     */
+    private String getRctcOid(Library lib) {
+
+        if (lib != null && lib.getId().contains("rctc")) {
+
+            if (lib.hasIdentifier()) {
+
+                List<Identifier> ids = lib.getIdentifier();
+
+                for (Identifier id : ids) {
+
+                    if (id.hasSystem()
+                            && id.getSystem().contentEquals("RCTC_DEFAULT_SYSTEM")
+                            && id.hasValue()) {
+
+                        return id.getValue();
+                    }
+                }
+            }
+        }
+
+        return CdaGeneratorConstants.RCTC_OID;
+    }
+
+    private void addArtifactForPersistence(KnowledgeArtifact art, String repoUrl, String repoName) {
+
+        if (localKars == null) {
+            localKars = new HashMap<>();
+        }
+
+        if (localKars.containsKey(repoUrl)) {
+
+            Set<KnowledgeArtifact> arts = localKars.get(repoUrl);
+
+            if (arts != null) {
+                arts.add(art);
+            } else {
+                arts = new HashSet<>();
+                arts.add(art);
+            }
+
+            localKars.put(repoUrl, arts);
+        } else {
+            Set<KnowledgeArtifact> arts = new HashSet<>();
+            arts.add(art);
+            localKars.put(repoUrl, arts);
+        }
+
+        if (localKarRepoUrlToName != null) {
+
+            localKarRepoUrlToName.put(repoUrl, repoName);
+        } else {
+            localKarRepoUrlToName = new HashMap<>();
+            localKarRepoUrlToName.put(repoUrl, repoName);
+        }
+    }
+
+    private void processPlanDefinition(
+            PlanDefinition plan, KnowledgeArtifact art, File karBundleFile) {
+
+        art.setKarName(plan.getName());
+        art.setKarPublisher(plan.getPublisher());
+        processExtensions(plan, art);
+
+        /**
+         * if (plan.hasExtension(VARIABLE_EXTENSION_URL)) { Extension variableExtension =
+         * plan.getExtensionByUrl(VARIABLE_EXTENSION_URL); Type variable = variableExtension.getValue();
+         * if (variable instanceof Expression) { planVariableExpression = (Expression) variable;
+         * logger.debug("Found Variable Extension Expression"); } else { logger.debug("Found Variable
+         * Extension, but expected Expression."); } }
+         */
+        List<PlanDefinitionActionComponent> actions = plan.getAction();
+
+        for (PlanDefinitionActionComponent act : actions) {
+
+            if (act.getCodeFirstRep() != null && act.getCodeFirstRep().getCodingFirstRep() != null) {
+
+                Coding cd = act.getCodeFirstRep().getCodingFirstRep();
+
+                BsaAction action = getAction(cd.getCode());
+                action.setActionId(act.getId(), plan.getUrl());
+                action.setScheduler(scheduler);
+                action.setTimeZoneDao(timezoneDao);
+                action.setJsonParser(jsonParser);
+                action.setXmlParser(FhirContext.forR4().newXmlParser());
+                action.setRestTemplate(restTemplate);
+                action.setIgnoreTimers(ignoreTimers);
+                action.setType(BsaTypes.getActionType(cd.getCode()));
+                action.setLogDirectory(logDirectory);
+
+                populateAction(plan, act, action, karBundleFile, art);
+
+                // This is being done currently since CheckResponse Action is not supported as of yet in the
+                // KARs. Once it is supported this is not needed.
+                if (action.getType() == ActionType.SUBMIT_REPORT) {
+
+                    populateCheckResponseAction((SubmitReport) action, art, plan);
+                }
+
+                // Setup the artifact details.
+                art.addAction(action);
+                art.addFirstLevelAction(action);
+                art.addTriggerEvent(action);
+            }
+        }
+    }
+
+    public void populateCheckResponseAction(
+            SubmitReport baseAction, KnowledgeArtifact art, PlanDefinition plan) {
+
+        CheckResponse action = (CheckResponse) getAction("check-response");
+        action.setActionId("check-response", plan.getUrl());
         action.setScheduler(scheduler);
         action.setTimeZoneDao(timezoneDao);
         action.setJsonParser(jsonParser);
         action.setXmlParser(FhirContext.forR4().newXmlParser());
         action.setRestTemplate(restTemplate);
         action.setIgnoreTimers(ignoreTimers);
-        action.setType(BsaTypes.getActionType(cd.getCode()));
+        action.setType(ActionType.CHECK_RESPONSE);
         action.setLogDirectory(logDirectory);
+        action.setPhDao(phDao);
+        action.setDirectReceiver(directInterface);
+        baseAction.setCheckResponseActionId(action.getActionId());
 
-        populateAction(plan, act, action, karBundleFile, art);
-
-        // This is being done currently since CheckResponse Action is not supported as of yet in the
-        // KARs. Once it is supported this is not needed.
-        if (action.getType() == ActionType.SUBMIT_REPORT) {
-
-          populateCheckResponseAction((SubmitReport) action, art, plan);
-        }
-
-        // Setup the artifact details.
         art.addAction(action);
         art.addFirstLevelAction(action);
         art.addTriggerEvent(action);
-      }
     }
-  }
 
-  public void populateCheckResponseAction(
-      SubmitReport baseAction, KnowledgeArtifact art, PlanDefinition plan) {
+    public void processExtensions(PlanDefinition plan, KnowledgeArtifact art) {
 
-    CheckResponse action = (CheckResponse) getAction("check-response");
-    action.setActionId("check-response", plan.getUrl());
-    action.setScheduler(scheduler);
-    action.setTimeZoneDao(timezoneDao);
-    action.setJsonParser(jsonParser);
-    action.setXmlParser(FhirContext.forR4().newXmlParser());
-    action.setRestTemplate(restTemplate);
-    action.setIgnoreTimers(ignoreTimers);
-    action.setType(ActionType.CHECK_RESPONSE);
-    action.setLogDirectory(logDirectory);
-    action.setPhDao(phDao);
-    action.setDirectReceiver(directInterface);
-    baseAction.setCheckResponseActionId(action.getActionId());
+        planVariableExpressions = new ArrayList<>();
 
-    art.addAction(action);
-    art.addFirstLevelAction(action);
-    art.addTriggerEvent(action);
-  }
+        if (plan.hasExtension()) {
 
-  public void processExtensions(PlanDefinition plan, KnowledgeArtifact art) {
+            List<Extension> extensions = plan.getExtension();
 
-    planVariableExpressions = new ArrayList<>();
+            for (Extension ext : extensions) {
 
-    if (plan.hasExtension()) {
+                if (ext.hasValue() && ext.getUrl().contentEquals(RECEIVER_ADDRESS_URL)) {
+                    logger.info(" Processing Receiver URL extension ");
+                    Type t = ext.getValue();
+                    if (t instanceof PrimitiveType) {
+                        PrimitiveType<?> i = (PrimitiveType<?>) t;
+                        if (i instanceof UriType) {
 
-      List<Extension> extensions = plan.getExtension();
+                            logger.info(" Found Receiver Address {}", i.getValueAsString());
+                            art.addReceiverAddress((UriType) i);
+                        }
+                    } else if (t instanceof Reference) {
+                        Endpoint endpoint =
+                                (Endpoint)
+                                        art.getDependentResource(ResourceType.Endpoint, ((Reference) t).getReference());
+                        if (endpoint != null && endpoint.hasAddressElement()) {
+                            art.addReceiverAddress(endpoint.getAddressElement());
+                        } else {
+                            Reference r = (Reference) t;
+                            art.addReceiverAddress(new UriType(r.getReference()));
+                        }
+                    }
+                } else if (ext.hasValue() && ext.getUrl().contentEquals(VARIABLE_EXTENSION_URL)) {
+                    logger.info(" Processing Variables ");
 
-      for (Extension ext : extensions) {
-
-        if (ext.hasValue() && ext.getUrl().contentEquals(RECEIVER_ADDRESS_URL)) {
-          logger.info(" Processing Receiver URL extension ");
-          Type t = ext.getValue();
-          if (t instanceof PrimitiveType) {
-            PrimitiveType<?> i = (PrimitiveType<?>) t;
-            if (i instanceof UriType) {
-
-              logger.info(" Found Receiver Address {}", i.getValueAsString());
-              art.addReceiverAddress((UriType) i);
+                    Type variable = ext.getValue();
+                    if (variable instanceof Expression) {
+                        Expression exp = (Expression) variable;
+                        logger.info(
+                                "Found Variable Extension Expression with Name {} and expression {}",
+                                exp.getName(),
+                                exp.getExpression());
+                        planVariableExpressions.add(exp);
+                    }
+                }
             }
-          } else if (t instanceof Reference) {
-            Endpoint endpoint =
-                (Endpoint)
-                    art.getDependentResource(ResourceType.Endpoint, ((Reference) t).getReference());
-            if (endpoint != null && endpoint.hasAddressElement()) {
-              art.addReceiverAddress(endpoint.getAddressElement());
+        }
+    }
+
+    private void populateOutputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
+
+        List<DataRequirement> drs = ac.getOutput();
+        action.setOutputData(drs);
+    }
+
+    private void populateInputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
+
+        logger.info(" Action Id {}", action.getActionId());
+        List<DataRequirement> drs = ac.getInput();
+        action.setInputData(drs);
+
+        for (DataRequirement dr : drs) {
+            try {
+                ResourceType rt = ResourceType.fromCode(dr.getType());
+                action.addInputResourceType(dr.getId(), rt);
+
+                // Get Query Extensions to identify default queries.
+                Extension queryExt = dr.getExtensionByUrl(ECR_QUERY_EXTENSION_URL);
+
+                if (queryExt == null) {
+                    queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+                }
+
+                if (queryExt == null) {
+                    queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
+                }
+
+                FhirQueryFilter query = new FhirQueryFilter();
+                query.setResourceType(rt);
+                query.setDataReqId(dr.getId());
+
+                if (queryExt != null && queryExt.getValue() != null) {
+
+                    logger.info(" Found a query extension for action Id {}", action.getActionId());
+                    String st = queryExt.getValueAsPrimitive().getValueAsString();
+
+                    query.setQueryString(st);
+                    action.addQueryFilter(dr.getId(), query);
+                }
+
+                // Get Related Data Ids to reuse data already accessed.
+                Extension relatedDataExt = dr.getExtensionByUrl(ECR_RELATED_DATA_EXTENSION_URL);
+
+                if (relatedDataExt == null) {
+                    relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+                }
+
+                if (relatedDataExt == null) {
+                    relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
+                }
+
+                if (relatedDataExt != null && relatedDataExt.getValue() != null) {
+
+                    logger.info(" Found a related data extension ");
+                    String st = relatedDataExt.getValueAsPrimitive().getValueAsString();
+
+                    query.setRelatedDataId(st);
+                    action.addRelatedDataId(dr.getId(), st);
+                }
+
+            } catch (FHIRException ex) {
+                logger.error(" Type specified is not a resource Type {}", dr.getType());
+            }
+        }
+    }
+
+    private void populateAction(
+            PlanDefinition plan,
+            PlanDefinitionActionComponent act,
+            BsaAction action,
+            File karBundleFile,
+            KnowledgeArtifact art) {
+
+        if (act.hasTrigger()) {
+            action.setNamedEventTriggers(getNamedEvents(act));
+        }
+
+        if (act.hasInput()) {
+            populateInputDataReq(act, action);
+        }
+
+        if (act.hasOutput()) {
+            populateOutputDataReq(act, action);
+        }
+
+        CanonicalType libraryCanonical = plan.hasLibrary() ? plan.getLibrary().get(0) : null;
+        if (act.hasCondition()) {
+            populateCondition(act, action, libraryCanonical, karBundleFile);
+        }
+
+        if (act.hasRelatedAction()) {
+            populateRelatedAction(plan, act, action);
+        }
+
+        if (act.hasAction()) {
+            populateSubActions(plan, act, action, karBundleFile, art);
+        }
+
+        if (act.hasDefinitionUriType()) {
+            action.setMeasureUri(act.getDefinitionUriType().getValue());
+        }
+
+        if (act.hasTiming()) {
+
+            logger.info("PlanDefinitionActionComponent have time");
+        }
+
+        action.setJsonParser(this.jsonParser);
+        action.setXmlParser(FhirContext.forR4().newXmlParser());
+        action.setIgnoreTimers(this.ignoreTimers);
+
+        if (action.getType() == ActionType.EVALUATE_MEASURE) {
+            setMeasureParameters(act, action);
+        } else if (action.getType() == ActionType.VALIDATE_REPORT) {
+            ValidateReport vr = (ValidateReport) (action);
+            vr.setValidatorEndpoint(validatorEndpoint);
+            vr.setPhDao(phDao);
+            vr.setValidateEicrR11Data(eicrCdaR11ValidationEnabled);
+            vr.setValidateEicrR31Data(eicrCdaR31ValidationEnabled);
+            vr.setValidateEicrFhirData(eicrFhirValidationEnabled);
+            vr.setEicrR11SchematronPath(eicrCdaR11SchematronPath);
+            vr.setEicrR31SchematronPath(eicrCdaR31SchematronPath);
+        } else if (action.getType() == ActionType.SUBMIT_REPORT) {
+            SubmitReport sr = (SubmitReport) (action);
+            sr.setSubmissionEndpoint(reportSubmissionEndpoint);
+            sr.setPhDao(phDao);
+            sr.setDirectSender(directInterface);
+            sr.setRestSubmitter(restSubmitter);
+            sr.setFhirContextInitializer(fhirContextInitializer);
+            sr.setAuthorizationUtils(authUtils);
+            sr.setPublicHealthAuthorityService(publicHealthAuthorityService);
+            populateCheckResponseAction(sr, art, plan);
+        } else if (action.getType() == ActionType.CREATE_REPORT) {
+            CreateReport cr = (CreateReport) action;
+            cr.setPhDao(phDao);
+        }
+
+        art.populateDefaultQueries(action);
+    }
+
+    private void setMeasureParameters(PlanDefinitionActionComponent act, BsaAction action) {
+
+        // Setup the MeasureReportId that is generated.
+        if (act.hasOutput()) {
+
+            for (DataRequirement dr : act.getOutput()) {
+
+                if (dr.getType() != null
+                        && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
+                    EvaluateMeasure em = (EvaluateMeasure) (action);
+                    em.setMeasureReportId(dr.getId());
+
+                    if (measurePeriodStart != null) {
+                        em.setPeriodStart(measurePeriodStart);
+                    }
+
+                    if (measurePeriodEnd != null) {
+                        em.setPeriodEnd(measurePeriodEnd);
+                    }
+
+                    // setup the Measure service
+                    em.setMeasureService(measureService);
+                }
+            }
+        }
+    }
+
+    private void populateSubActions(
+            PlanDefinition plan,
+            PlanDefinitionActionComponent ac,
+            BsaAction action,
+            File karBundleFile,
+            KnowledgeArtifact art) {
+
+        List<PlanDefinitionActionComponent> actions = ac.getAction();
+
+        if (actions != null && !actions.isEmpty()) {
+            for (PlanDefinitionActionComponent act : actions) {
+
+                if (act.getCodeFirstRep() != null && act.getCodeFirstRep().getCodingFirstRep() != null) {
+
+                    Coding cd = act.getCodeFirstRep().getCodingFirstRep();
+
+                    BsaAction subAction = getAction(cd.getCode());
+                    subAction.setActionId(act.getId(), plan.getUrl());
+                    subAction.setScheduler(scheduler);
+                    subAction.setTimeZoneDao(timezoneDao);
+                    subAction.setJsonParser(jsonParser);
+                    subAction.setXmlParser(FhirContext.forR4().newXmlParser());
+                    subAction.setRestTemplate(restTemplate);
+                    subAction.setIgnoreTimers(ignoreTimers);
+                    subAction.setType(BsaTypes.getActionType(cd.getCode()));
+                    subAction.setLogDirectory(logDirectory);
+
+                    populateAction(plan, act, subAction, karBundleFile, art);
+
+                    // Setup the artifact details.
+                    action.addAction(subAction);
+                }
+            }
+        }
+    }
+
+    private void populateCondition(
+            PlanDefinitionActionComponent ac,
+            BsaAction action,
+            CanonicalType libraryCanonical,
+            File karBundleFile) {
+
+        List<PlanDefinitionActionConditionComponent> conds = ac.getCondition();
+
+        for (PlanDefinitionActionConditionComponent con : conds) {
+
+            if (con.getExpression() != null
+                    // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
+                    // so using
+                    // local fromCode for now
+                    && (fromCode(con.getExpression().getLanguage())
+                    .equals(Expression.ExpressionLanguage.TEXT_CQL))
+                    && cqlEnabled) {
+
+                logger.info(" Found a CQL Expression ");
+                BsaCqlCondition bc = new BsaCqlCondition();
+                bc.setUrl(libraryCanonical.getValue());
+
+                // Set location of eRSD bundle for loading terminology and library logic
+                Endpoint karEndpoint =
+                        new Endpoint()
+                                // get the kar directory so that the Providers will bundle everything together i.e.
+                                // All Kar bundles
+                                .setAddress(karBundleFile.getParentFile().getAbsolutePath())
+                                .setConnectionType(new Coding().setCode("hl7-fhir-files"));
+                bc.setLibraryEndpoint(karEndpoint);
+                bc.setTerminologyEndpoint(karEndpoint);
+                // Necessary for Cql Evaluation because of CodeSystem Retrieve
+                bc.setDataEndpoint(karEndpoint);
+                bc.setLogicExpression(con.getExpression());
+                bc.setLibraryEvaluationService(libraryEvaluationService);
+                bc.setNormalReportingDuration(null);
+                action.addCondition(bc);
+            } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+                    || con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+                    && (cqlEnabled || fhirpathEnabled)) {
+                Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+                if (ext == null) {
+                    ext =
+                            con.getExpression()
+                                    .getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+                }
+                Expression exp = (Expression) ext.getValue();
+                if (exp != null
+                        // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
+                        // so using
+                        // local fromCode for now
+                        && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_CQL))
+                        && cqlEnabled) {
+
+                    logger.info(" Found a CQL Expression from an alternative expression extension");
+                    BsaCqlCondition bc = new BsaCqlCondition();
+                    if (libraryCanonical == null && exp.hasReferenceElement()) {
+                        libraryCanonical = new CanonicalType(exp.getReference());
+                    }
+                    bc.setUrl(libraryCanonical.getValue());
+
+                    // Set location of eRSD bundle for loading terminology and library logic
+                    Endpoint karEndpoint =
+                            new Endpoint()
+                                    // get the kar directory so that the Providers will bundle everything together
+                                    // i.e. All Kar bundles
+                                    .setAddress(karBundleFile.getParentFile().getAbsolutePath())
+                                    .setConnectionType(new Coding().setCode("hl7-fhir-files"));
+                    bc.setLibraryEndpoint(karEndpoint);
+                    bc.setTerminologyEndpoint(karEndpoint);
+                    // Necessary for Cql Evaluation because of CodeSystem Retrieve
+                    bc.setDataEndpoint(karEndpoint);
+                    bc.setLogicExpression(exp);
+                    bc.setLibraryEvaluationService(libraryEvaluationService);
+                    action.addCondition(bc);
+                } else if (exp != null
+                        && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+                        && fhirpathEnabled) {
+
+                    logger.info(" Found a FHIR Path Expression from an alternative expression extension");
+                    BsaFhirPathCondition bc = new BsaFhirPathCondition();
+                    if (planVariableExpressions != null) {
+                        bc.setVariables(planVariableExpressions);
+                    }
+                    bc.setLogicExpression(exp);
+                    bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
+                    action.addCondition(bc);
+                } else if (con.getExpression() != null
+                        && (fromCode(con.getExpression().getLanguage())
+                        .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+                        && fhirpathEnabled) {
+                    logger.info(
+                            " Cql disabled and found alternative cql expression therefor using primary fhirpath expression");
+                    BsaFhirPathCondition bc = new BsaFhirPathCondition();
+                    if (planVariableExpressions != null) {
+                        bc.setVariables(planVariableExpressions);
+                    }
+                    bc.setLogicExpression(con.getExpression());
+                    bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
+                    action.addCondition(bc);
+                } else {
+                    logger.error(" Unknown type of Alternative Expression passed, cannot process ");
+                }
+            } else if (con.getExpression() != null
+                    && (fromCode(con.getExpression().getLanguage())
+                    .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+                    && fhirpathEnabled) {
+
+                logger.info(" Found a FHIR Path Expression ");
+                BsaFhirPathCondition bc = new BsaFhirPathCondition();
+                if (planVariableExpressions != null) {
+                    bc.setVariables(planVariableExpressions);
+                }
+                bc.setLogicExpression(con.getExpression());
+                bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
+                action.addCondition(bc);
             } else {
-              Reference r = (Reference) t;
-              art.addReceiverAddress(new UriType(r.getReference()));
+                logger.error(" Unknown type of Expression passed, cannot process ");
             }
-          }
-        } else if (ext.hasValue() && ext.getUrl().contentEquals(VARIABLE_EXTENSION_URL)) {
-          logger.info(" Processing Variables ");
-
-          Type variable = ext.getValue();
-          if (variable instanceof Expression) {
-            Expression exp = (Expression) variable;
-            logger.info(
-                "Found Variable Extension Expression with Name {} and expression {}",
-                exp.getName(),
-                exp.getExpression());
-            planVariableExpressions.add(exp);
-          }
         }
-      }
     }
-  }
 
-  private void populateOutputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
-
-    List<DataRequirement> drs = ac.getOutput();
-    action.setOutputData(drs);
-  }
-
-  private void populateInputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
-
-    logger.info(" Action Id {}", action.getActionId());
-    List<DataRequirement> drs = ac.getInput();
-    action.setInputData(drs);
-
-    for (DataRequirement dr : drs) {
-      try {
-        ResourceType rt = ResourceType.fromCode(dr.getType());
-        action.addInputResourceType(dr.getId(), rt);
-
-        // Get Query Extensions to identify default queries.
-        Extension queryExt = dr.getExtensionByUrl(ECR_QUERY_EXTENSION_URL);
-
-        if (queryExt == null) {
-          queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+    private Expression.ExpressionLanguage fromCode(String language) {
+        switch (language) {
+            case "text/cql":
+            case "text/cql.expression":
+            case "text/cql-expression":
+            case "text/cql-identifier":
+            case "text/cql.identifier":
+            case "text/cql.name":
+            case "text/cql-name":
+                return Expression.ExpressionLanguage.TEXT_CQL;
+            case "text/fhirpath":
+                return Expression.ExpressionLanguage.TEXT_FHIRPATH;
+            case "application/x-fhir-query":
+                return Expression.ExpressionLanguage.APPLICATION_XFHIRQUERY;
+            default:
+                throw new FHIRException("Unknown ExpressionLanguage code '" + language + "'");
         }
+    }
 
-        if (queryExt == null) {
-          queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
+    private void populateRelatedAction(
+            PlanDefinition plan, PlanDefinitionActionComponent ac, BsaAction action) {
+
+        List<PlanDefinitionActionRelatedActionComponent> racts = ac.getRelatedAction();
+
+        for (PlanDefinitionActionRelatedActionComponent ract : racts) {
+
+            if (ract.getRelationship() == ActionRelationshipType.BEFORESTART) {
+
+                BsaRelatedAction bract = new BsaRelatedAction();
+                bract.setRelationship(ract.getRelationship());
+                bract.setRelatedActionId(ract.getActionId(), plan.getUrl());
+
+                if (ract.getOffsetDuration() != null) {
+                    bract.setDuration(ract.getOffsetDuration());
+                }
+                action.addRelatedAction(bract);
+            }
         }
+    }
 
-        FhirQueryFilter query = new FhirQueryFilter();
-        query.setResourceType(rt);
-        query.setDataReqId(dr.getId());
+    private Set<String> getNamedEvents(PlanDefinitionActionComponent ac) {
 
-        if (queryExt != null && queryExt.getValue() != null) {
+        Set<String> events = new HashSet<>();
 
-          logger.info(" Found a query extension for action Id {}", action.getActionId());
-          String st = queryExt.getValueAsPrimitive().getValueAsString();
+        List<TriggerDefinition> triggers = ac.getTrigger();
 
-          query.setQueryString(st);
-          action.addQueryFilter(dr.getId(), query);
+        for (TriggerDefinition td : triggers) {
+            if (td.getType() == TriggerType.NAMEDEVENT) events.add(td.getName());
         }
 
-        // Get Related Data Ids to reuse data already accessed.
-        Extension relatedDataExt = dr.getExtensionByUrl(ECR_RELATED_DATA_EXTENSION_URL);
-
-        if (relatedDataExt == null) {
-          relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
-        }
-
-        if (relatedDataExt == null) {
-          relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
-        }
-
-        if (relatedDataExt != null && relatedDataExt.getValue() != null) {
-
-          logger.info(" Found a related data extension ");
-          String st = relatedDataExt.getValueAsPrimitive().getValueAsString();
-
-          query.setRelatedDataId(st);
-          action.addRelatedDataId(dr.getId(), st);
-        }
-
-      } catch (FHIRException ex) {
-        logger.error(" Type specified is not a resource Type {}", dr.getType());
-      }
-    }
-  }
-
-  private void populateAction(
-      PlanDefinition plan,
-      PlanDefinitionActionComponent act,
-      BsaAction action,
-      File karBundleFile,
-      KnowledgeArtifact art) {
-
-    if (act.hasTrigger()) {
-      action.setNamedEventTriggers(getNamedEvents(act));
+        return events;
     }
 
-    if (act.hasInput()) {
-      populateInputDataReq(act, action);
+    private void processValueSet(ValueSet vs, KnowledgeArtifact art) {
+
+        art.addDependentValueSet(vs);
     }
-
-    if (act.hasOutput()) {
-      populateOutputDataReq(act, action);
-    }
-
-    CanonicalType libraryCanonical = plan.hasLibrary() ? plan.getLibrary().get(0) : null;
-    if (act.hasCondition()) {
-      populateCondition(act, action, libraryCanonical, karBundleFile);
-    }
-
-    if (act.hasRelatedAction()) {
-      populateRelatedAction(plan, act, action);
-    }
-
-    if (act.hasAction()) {
-      populateSubActions(plan, act, action, karBundleFile, art);
-    }
-
-    if (act.hasDefinitionUriType()) {
-      action.setMeasureUri(act.getDefinitionUriType().getValue());
-    }
-
-    if (act.hasTiming()) {
-
-      logger.info("PlanDefinitionActionComponent have time");
-    }
-
-    action.setJsonParser(this.jsonParser);
-    action.setXmlParser(FhirContext.forR4().newXmlParser());
-    action.setIgnoreTimers(this.ignoreTimers);
-
-    if (action.getType() == ActionType.EVALUATE_MEASURE) {
-      setMeasureParameters(act, action);
-    } else if (action.getType() == ActionType.VALIDATE_REPORT) {
-      ValidateReport vr = (ValidateReport) (action);
-      vr.setValidatorEndpoint(validatorEndpoint);
-      vr.setPhDao(phDao);
-      vr.setValidateEicrR11Data(eicrCdaR11ValidationEnabled);
-      vr.setValidateEicrR31Data(eicrCdaR31ValidationEnabled);
-      vr.setValidateEicrFhirData(eicrFhirValidationEnabled);
-      vr.setEicrR11SchematronPath(eicrCdaR11SchematronPath);
-      vr.setEicrR31SchematronPath(eicrCdaR31SchematronPath);
-    } else if (action.getType() == ActionType.SUBMIT_REPORT) {
-      SubmitReport sr = (SubmitReport) (action);
-      sr.setSubmissionEndpoint(reportSubmissionEndpoint);
-      sr.setPhDao(phDao);
-      sr.setDirectSender(directInterface);
-      sr.setRestSubmitter(restSubmitter);
-      sr.setFhirContextInitializer(fhirContextInitializer);
-      sr.setAuthorizationUtils(authUtils);
-      sr.setPublicHealthAuthorityService(publicHealthAuthorityService);
-      populateCheckResponseAction(sr, art, plan);
-    } else if (action.getType() == ActionType.CREATE_REPORT) {
-      CreateReport cr = (CreateReport) action;
-      cr.setPhDao(phDao);
-    }
-
-    art.populateDefaultQueries(action);
-  }
-
-  private void setMeasureParameters(PlanDefinitionActionComponent act, BsaAction action) {
-
-    // Setup the MeasureReportId that is generated.
-    if (act.hasOutput()) {
-
-      for (DataRequirement dr : act.getOutput()) {
-
-        if (dr.getType() != null
-            && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
-          EvaluateMeasure em = (EvaluateMeasure) (action);
-          em.setMeasureReportId(dr.getId());
-
-          if (measurePeriodStart != null) {
-            em.setPeriodStart(measurePeriodStart);
-          }
-
-          if (measurePeriodEnd != null) {
-            em.setPeriodEnd(measurePeriodEnd);
-          }
-
-          // setup the Measure service
-          em.setMeasureService(measureService);
-        }
-      }
-    }
-  }
-
-  private void populateSubActions(
-      PlanDefinition plan,
-      PlanDefinitionActionComponent ac,
-      BsaAction action,
-      File karBundleFile,
-      KnowledgeArtifact art) {
-
-    List<PlanDefinitionActionComponent> actions = ac.getAction();
-
-    if (actions != null && !actions.isEmpty()) {
-      for (PlanDefinitionActionComponent act : actions) {
-
-        if (act.getCodeFirstRep() != null && act.getCodeFirstRep().getCodingFirstRep() != null) {
-
-          Coding cd = act.getCodeFirstRep().getCodingFirstRep();
-
-          BsaAction subAction = getAction(cd.getCode());
-          subAction.setActionId(act.getId(), plan.getUrl());
-          subAction.setScheduler(scheduler);
-          subAction.setTimeZoneDao(timezoneDao);
-          subAction.setJsonParser(jsonParser);
-          subAction.setXmlParser(FhirContext.forR4().newXmlParser());
-          subAction.setRestTemplate(restTemplate);
-          subAction.setIgnoreTimers(ignoreTimers);
-          subAction.setType(BsaTypes.getActionType(cd.getCode()));
-          subAction.setLogDirectory(logDirectory);
-
-          populateAction(plan, act, subAction, karBundleFile, art);
-
-          // Setup the artifact details.
-          action.addAction(subAction);
-        }
-      }
-    }
-  }
-
-  private void populateCondition(
-      PlanDefinitionActionComponent ac,
-      BsaAction action,
-      CanonicalType libraryCanonical,
-      File karBundleFile) {
-
-    List<PlanDefinitionActionConditionComponent> conds = ac.getCondition();
-
-    for (PlanDefinitionActionConditionComponent con : conds) {
-
-      if (con.getExpression() != null
-          // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
-          // so using
-          // local fromCode for now
-          && (fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_CQL))
-          && cqlEnabled) {
-
-        logger.info(" Found a CQL Expression ");
-        BsaCqlCondition bc = new BsaCqlCondition();
-        bc.setUrl(libraryCanonical.getValue());
-
-        // Set location of eRSD bundle for loading terminology and library logic
-        Endpoint karEndpoint =
-            new Endpoint()
-                // get the kar directory so that the Providers will bundle everything together i.e.
-                // All Kar bundles
-                .setAddress(karBundleFile.getParentFile().getAbsolutePath())
-                .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-        bc.setLibraryEndpoint(karEndpoint);
-        bc.setTerminologyEndpoint(karEndpoint);
-        // Necessary for Cql Evaluation because of CodeSystem Retrieve
-        bc.setDataEndpoint(karEndpoint);
-        bc.setLogicExpression(con.getExpression());
-        bc.setLibraryEvaluationService(libraryEvaluationService);
-        bc.setNormalReportingDuration(null);
-        action.addCondition(bc);
-      } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
-          || con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
-              && (cqlEnabled || fhirpathEnabled)) {
-        Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
-        if (ext == null) {
-          ext =
-              con.getExpression()
-                  .getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
-        }
-        Expression exp = (Expression) ext.getValue();
-        if (exp != null
-            // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
-            // so using
-            // local fromCode for now
-            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_CQL))
-            && cqlEnabled) {
-
-          logger.info(" Found a CQL Expression from an alternative expression extension");
-          BsaCqlCondition bc = new BsaCqlCondition();
-          if (libraryCanonical == null && exp.hasReferenceElement()) {
-            libraryCanonical = new CanonicalType(exp.getReference());
-          }
-          bc.setUrl(libraryCanonical.getValue());
-
-          // Set location of eRSD bundle for loading terminology and library logic
-          Endpoint karEndpoint =
-              new Endpoint()
-                  // get the kar directory so that the Providers will bundle everything together
-                  // i.e. All Kar bundles
-                  .setAddress(karBundleFile.getParentFile().getAbsolutePath())
-                  .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-          bc.setLibraryEndpoint(karEndpoint);
-          bc.setTerminologyEndpoint(karEndpoint);
-          // Necessary for Cql Evaluation because of CodeSystem Retrieve
-          bc.setDataEndpoint(karEndpoint);
-          bc.setLogicExpression(exp);
-          bc.setLibraryEvaluationService(libraryEvaluationService);
-          action.addCondition(bc);
-        } else if (exp != null
-            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-            && fhirpathEnabled) {
-
-          logger.info(" Found a FHIR Path Expression from an alternative expression extension");
-          BsaFhirPathCondition bc = new BsaFhirPathCondition();
-          if (planVariableExpressions != null) {
-            bc.setVariables(planVariableExpressions);
-          }
-          bc.setLogicExpression(exp);
-          bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-          action.addCondition(bc);
-        } else if (con.getExpression() != null
-            && (fromCode(con.getExpression().getLanguage())
-                .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-            && fhirpathEnabled) {
-          logger.info(
-              " Cql disabled and found alternative cql expression therefor using primary fhirpath expression");
-          BsaFhirPathCondition bc = new BsaFhirPathCondition();
-          if (planVariableExpressions != null) {
-            bc.setVariables(planVariableExpressions);
-          }
-          bc.setLogicExpression(con.getExpression());
-          bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-          action.addCondition(bc);
-        } else {
-          logger.error(" Unknown type of Alternative Expression passed, cannot process ");
-        }
-      } else if (con.getExpression() != null
-          && (fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-          && fhirpathEnabled) {
-
-        logger.info(" Found a FHIR Path Expression ");
-        BsaFhirPathCondition bc = new BsaFhirPathCondition();
-        if (planVariableExpressions != null) {
-          bc.setVariables(planVariableExpressions);
-        }
-        bc.setLogicExpression(con.getExpression());
-        bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
-        action.addCondition(bc);
-      } else {
-        logger.error(" Unknown type of Expression passed, cannot process ");
-      }
-    }
-  }
-
-  private Expression.ExpressionLanguage fromCode(String language) {
-    switch (language) {
-      case "text/cql":
-      case "text/cql.expression":
-      case "text/cql-expression":
-      case "text/cql-identifier":
-      case "text/cql.identifier":
-      case "text/cql.name":
-      case "text/cql-name":
-        return Expression.ExpressionLanguage.TEXT_CQL;
-      case "text/fhirpath":
-        return Expression.ExpressionLanguage.TEXT_FHIRPATH;
-      case "application/x-fhir-query":
-        return Expression.ExpressionLanguage.APPLICATION_XFHIRQUERY;
-      default:
-        throw new FHIRException("Unknown ExpressionLanguage code '" + language + "'");
-    }
-  }
-
-  private void populateRelatedAction(
-      PlanDefinition plan, PlanDefinitionActionComponent ac, BsaAction action) {
-
-    List<PlanDefinitionActionRelatedActionComponent> racts = ac.getRelatedAction();
-
-    for (PlanDefinitionActionRelatedActionComponent ract : racts) {
-
-      if (ract.getRelationship() == ActionRelationshipType.BEFORESTART) {
-
-        BsaRelatedAction bract = new BsaRelatedAction();
-        bract.setRelationship(ract.getRelationship());
-        bract.setRelatedActionId(ract.getActionId(), plan.getUrl());
-
-        if (ract.getOffsetDuration() != null) {
-          bract.setDuration(ract.getOffsetDuration());
-        }
-        action.addRelatedAction(bract);
-      }
-    }
-  }
-
-  private Set<String> getNamedEvents(PlanDefinitionActionComponent ac) {
-
-    Set<String> events = new HashSet<>();
-
-    List<TriggerDefinition> triggers = ac.getTrigger();
-
-    for (TriggerDefinition td : triggers) {
-      if (td.getType() == TriggerType.NAMEDEVENT) events.add(td.getName());
-    }
-
-    return events;
-  }
-
-  private void processValueSet(ValueSet vs, KnowledgeArtifact art) {
-
-    art.addDependentValueSet(vs);
-  }
 }
