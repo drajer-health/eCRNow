@@ -101,42 +101,52 @@ public class KarProcessorImpl implements KarProcessor {
   @Override
   public void applyKarForNotification(KarProcessingData data) {
 
-    // Get Kar for processing.
-    KnowledgeArtifact kar = data.getKar();
-    NotificationContext nc = data.getNotificationContext();
-    String namedEvent = nc.getActualTriggerEvent();
-    data.setExecutionSequenceId(nc.getId().toString());
-    data.setEhrQueryService(ehrInterface);
-    data.setKarExecutionStateService(karExecutionStateService);
-    data.setJobType(BsaJobType.IMMEDIATE_REPORTING);
+        // Get Kar for processing.
+        KnowledgeArtifact kar = data.getKar();
+        NotificationContext nc = data.getNotificationContext();
+        String namedEvent = nc.getActualTriggerEvent();
+        data.setExecutionSequenceId(nc.getId().toString());
+        data.setEhrQueryService(ehrInterface);
+        data.setKarExecutionStateService(karExecutionStateService);
+        data.setJobType(BsaJobType.IMMEDIATE_REPORTING);
 
-    // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
-    PublicHealthMessage phm = getPublicHealthMessage(nc, data);
-    if (phm != null && phm.getTriggerMatchStatus() != null) {
-      data.setPhm(phm);
-      data.setPreviousTriggerMatchStatus(
-          BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
-    }
+        // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
+        PublicHealthMessage phm = getPublicHealthMessage(nc, data);
+        if (phm != null && phm.getTriggerMatchStatus() != null) {
+            data.setPhm(phm);
+            data.setPreviousTriggerMatchStatus(
+                    BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
+        }
 
-    logger.info(" *** START Executing Trigger Actions *** ");
-    Set<BsaAction> actions = kar.getActionsForTriggerEvent(namedEvent);
+        // Remember the message loaded from the DB, so only a NEW one created by CreateReport is saved.
+        PublicHealthMessage previousPhm = data.getPhm();
 
-    for (BsaAction action : actions) {
+        logger.info(" *** START Executing Trigger Actions *** ");
+        Set<BsaAction> actions = kar.getActionsForTriggerEvent(namedEvent);
+
+        for (BsaAction action : actions) {
 
       logger.info(" **** Executing Action Id {} **** ", action.getActionId());
 
-      try {
-        action.process(data, ehrInterface);
-      } catch (Exception e) {
-        logger.error(e.getMessage());
-        throw e;
-      }
+            try {
+                action.process(data, ehrInterface);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                throw e;
+            }
 
-      logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
+            logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
+        }
+
+        // Persist the new PublicHealthMessage created during immediate processing (relaunch),
+        // same as applyKarForScheduledJob does for scheduled jobs, so the next run increments.
+        if (data.getPhm() != null && data.getPhm() != previousPhm) {
+            logger.info("Updating database with PhMessage data (immediate processing)");
+            phDao.saveOrUpdate(data.getPhm());
+        }
+
+        logger.info(" *** END Executing Trigger Actions *** ");
     }
-
-    logger.info(" *** END Executing Trigger Actions *** ");
-  }
 
   /**
    * The method is used to save the data to a file so that it can help in debugging. This can be
