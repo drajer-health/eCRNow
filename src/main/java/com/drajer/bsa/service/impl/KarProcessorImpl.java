@@ -24,14 +24,12 @@ import com.drajer.bsa.service.NotificationContextService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.github.kagkarlsson.scheduler.task.ExecutionContext;
 import com.github.kagkarlsson.scheduler.task.TaskInstance;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Encounter;
@@ -49,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  *
  * <h1>KarProcessorImpl</h1>
- * <p>
+ *
  * This interface declares methods to apply a (Knowledge Artifact) KAR to notifications received.
  *
  * @author nbashyam
@@ -58,106 +56,50 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class KarProcessorImpl implements KarProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(KarProcessorImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(KarProcessorImpl.class);
 
-    @Autowired
-    KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
-    @Autowired
-    EhrQueryService ehrInterface;
+  @Autowired EhrQueryService ehrInterface;
 
-    @Autowired
-    BsaServiceUtils serviceUtils;
+  @Autowired BsaServiceUtils serviceUtils;
 
-    @Autowired
-    KarExecutionStateService karExecutionStateService;
+  @Autowired KarExecutionStateService karExecutionStateService;
 
-    @Autowired
-    NotificationContextService ncService;
+  @Autowired NotificationContextService ncService;
 
-    @Autowired
-    NotificationContextDao ncDao;
+  @Autowired NotificationContextDao ncDao;
 
-    @Autowired
-    HealthcareSettingsService hsService;
+  @Autowired HealthcareSettingsService hsService;
 
-    @Autowired
-    PublicHealthMessagesDaoImpl phDao;
+  @Autowired PublicHealthMessagesDaoImpl phDao;
 
-    @Autowired
-    InfrastructureLoadManagerInterface loadManager;
+  @Autowired InfrastructureLoadManagerInterface loadManager;
 
-    @Value("${enable.throttling:false}")
-    Boolean throttlingEnabled;
+  @Value("${enable.throttling:false}")
+  Boolean throttlingEnabled;
 
-    @Value("${throttle.recheck.interval:5}")
-    Integer throttleRecheckInterval;
+  @Value("${throttle.recheck.interval:5}")
+  Integer throttleRecheckInterval;
 
-    @Value("${timer.retries:3}")
-    private Integer timerRetries;
+  @Value("${timer.retries:3}")
+  private Integer timerRetries;
 
-    @Autowired
-    @Qualifier("jsonParser")
-    IParser jsonParser;
+  @Autowired
+  @Qualifier("jsonParser")
+  IParser jsonParser;
 
-    /**
-     * The token refresh threshold value for refreshing access tokens
-     */
-    @Value("${token.refresh.threshold:25}")
-    private Integer tokenRefreshThreshold;
+  /** The token refresh threshold value for refreshing access tokens */
+  @Value("${token.refresh.threshold:25}")
+  private Integer tokenRefreshThreshold;
 
-//  /**
-//   * The method that applies a KAR to a specific notification context.
-//   *
-//   * @param data The complete context required including the KAR to be applied for the notification.
-//   */
-//  @Override
-//  public void applyKarForNotification(KarProcessingData data) {
-//
-//    // Get Kar for processing.
-//    KnowledgeArtifact kar = data.getKar();
-//    NotificationContext nc = data.getNotificationContext();
-//    String namedEvent = nc.getActualTriggerEvent();
-//    data.setExecutionSequenceId(nc.getId().toString());
-//    data.setEhrQueryService(ehrInterface);
-//    data.setKarExecutionStateService(karExecutionStateService);
-//    data.setJobType(BsaJobType.IMMEDIATE_REPORTING);
-//
-//    // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
-//    PublicHealthMessage phm = getPublicHealthMessage(nc, data);
-//    if (phm != null && phm.getTriggerMatchStatus() != null) {
-//      data.setPhm(phm);
-//      data.setPreviousTriggerMatchStatus(
-//          BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
-//    }
-//
-//    logger.info(" *** START Executing Trigger Actions *** ");
-//    Set<BsaAction> actions = kar.getActionsForTriggerEvent(namedEvent);
-//
-//    for (BsaAction action : actions) {
-//
-//      logger.info(" **** Executing Action Id {} **** ", action.getActionId());
-//
-//      try {
-//        action.process(data, ehrInterface);
-//      } catch (Exception e) {
-//        logger.error(e.getMessage());
-//        throw e;
-//      }
-//
-//      logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
-//    }
-//
-//    logger.info(" *** END Executing Trigger Actions *** ");
-//  }
-
-    /**
-     * The method that applies a KAR to a specific notification context.
-     *
-     * @param data The complete context required including the KAR to be applied for the notification.
-     */
-    @Override
-    public void applyKarForNotification(KarProcessingData data) {
+  /**
+   * The method that applies a KAR to a specific notification context.
+   *
+   * @param data The complete context required including the KAR to be applied for the notification.
+   */
+  @Override
+  public void applyKarForNotification(KarProcessingData data) {
 
         // Get Kar for processing.
         KnowledgeArtifact kar = data.getKar();
@@ -184,7 +126,7 @@ public class KarProcessorImpl implements KarProcessor {
 
         for (BsaAction action : actions) {
 
-            logger.info(" **** Executing Action Id {} **** ", action.getActionId());
+      logger.info(" **** Executing Action Id {} **** ", action.getActionId());
 
             try {
                 action.process(data, ehrInterface);
@@ -206,293 +148,293 @@ public class KarProcessorImpl implements KarProcessor {
         logger.info(" *** END Executing Trigger Actions *** ");
     }
 
-    /**
-     * The method is used to save the data to a file so that it can help in debugging. This can be
-     * turned on only during development and is not to be used for production purposes.
-     *
-     * @param kd The processing state captured during Knowledge Artifact processing.
-     */
-    public void saveDataForDebug(KarProcessingData kd) {
+  /**
+   * The method is used to save the data to a file so that it can help in debugging. This can be
+   * turned on only during development and is not to be used for production purposes.
+   *
+   * @param kd The processing state captured during Knowledge Artifact processing.
+   */
+  public void saveDataForDebug(KarProcessingData kd) {
 
-        HashMap<String, HashMap<String, Resource>> res = kd.getActionOutputData();
+    HashMap<String, HashMap<String, Resource>> res = kd.getActionOutputData();
 
-        for (Map.Entry<String, HashMap<String, Resource>> entry : res.entrySet()) {
+    for (Map.Entry<String, HashMap<String, Resource>> entry : res.entrySet()) {
 
-            logger.info("Saving data to file for {}", entry.getKey());
+      logger.info("Saving data to file for {}", entry.getKey());
 
-            HashMap<String, Resource> resOutput = entry.getValue();
+      HashMap<String, Resource> resOutput = entry.getValue();
 
-            for (Map.Entry<String, Resource> resEnt : resOutput.entrySet()) {
+      for (Map.Entry<String, Resource> resEnt : resOutput.entrySet()) {
 
-                logger.info(" Saving Data to file for {}", resEnt.getKey());
-                serviceUtils.saveResourceToFile(resEnt.getValue());
-            }
-        }
+        logger.info(" Saving Data to file for {}", resEnt.getKey());
+        serviceUtils.saveResourceToFile(resEnt.getValue());
+      }
     }
+  }
 
-    /**
-     * This method is the call back method that is provided for persistent timers that are scheduled
-     * by the BSA. The timers provide the necessary contextual data from which the KarProcessingData
-     * can be created and then the KAR can be applied based on the actions that need to be executed.
-     *
-     * @param data This is the ScheduledJobData context that is provided to the timer scheduler and
-     *             retrieved as part of the call back.
-     */
-    @Override
-    public void applyKarForScheduledJob(
-            ScheduledJobData data, TaskInstance<ScheduledJobData> inst, ExecutionContext ctx) {
+  /**
+   * This method is the call back method that is provided for persistent timers that are scheduled
+   * by the BSA. The timers provide the necessary contextual data from which the KarProcessingData
+   * can be created and then the KAR can be applied based on the actions that need to be executed.
+   *
+   * @param data This is the ScheduledJobData context that is provided to the timer scheduler and
+   *     retrieved as part of the call back.
+   */
+  @Override
+  public void applyKarForScheduledJob(
+      ScheduledJobData data, TaskInstance<ScheduledJobData> inst, ExecutionContext ctx) {
 
-        logger.info(" Scheduled Job invoked via scheduler, Job Id : {}", data.getJobId());
+    logger.info(" Scheduled Job invoked via scheduler, Job Id : {}", data.getJobId());
 
-        NotificationContext nc = null;
-        PublicHealthMessage publicHealthMessage = null;
-        try {
+    NotificationContext nc = null;
+    PublicHealthMessage publicHealthMessage = null;
+    try {
 
-            KarProcessingData kd = new KarProcessingData();
-            KarExecutionState state =
-                    karExecutionStateService.getKarExecutionStateById(data.getKarExecutionStateId());
+      KarProcessingData kd = new KarProcessingData();
+      KarExecutionState state =
+          karExecutionStateService.getKarExecutionStateById(data.getKarExecutionStateId());
 
-            if (state != null) {
+      if (state != null) {
 
-                nc = ncService.getNotificationContext(state.getNcId());
+        nc = ncService.getNotificationContext(state.getNcId());
 
-                if (nc != null) {
+        if (nc != null) {
 
-                    // Setup Processing data
-                    kd.setExecutionSequenceId(data.getJobId());
-                    kd.setNotificationContext(nc);
-                    kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
-                    kd.setKar(knowledgeArtifactRepositorySystem.getById(state.getKarUniqueId()));
-                    kd.setxRequestId(data.getxRequestId());
-                    kd.setxCorrelationId(nc.getxCorrelationId());
-                    kd.setJobType(data.getJobType());
-                    kd.setTokenRefreshThreshold(tokenRefreshThreshold);
+          // Setup Processing data
+          kd.setExecutionSequenceId(data.getJobId());
+          kd.setNotificationContext(nc);
+          kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
+          kd.setKar(knowledgeArtifactRepositorySystem.getById(state.getKarUniqueId()));
+          kd.setxRequestId(data.getxRequestId());
+          kd.setxCorrelationId(nc.getxCorrelationId());
+          kd.setJobType(data.getJobType());
+          kd.setTokenRefreshThreshold(tokenRefreshThreshold);
 
-                    // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
-                    PublicHealthMessage phm = getPublicHealthMessage(nc, kd);
-                    if (phm != null && phm.getTriggerMatchStatus() != null) {
-                        kd.setPhm(phm);
-                        kd.setPreviousTriggerMatchStatus(
-                                BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
+          // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
+          PublicHealthMessage phm = getPublicHealthMessage(nc, kd);
+          if (phm != null && phm.getTriggerMatchStatus() != null) {
+            kd.setPhm(phm);
+            kd.setPreviousTriggerMatchStatus(
+                BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
+          }
+
+          // Setup the Kar Status for the specific job.
+          if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {
+
+            // Get the Active Kars and process it.
+            HealthcareSettingOperationalKnowledgeArtifacts arfts =
+                kd.getHealthcareSetting().getKars();
+
+            logger.info(
+                " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
+                arfts.getId());
+
+            Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
+
+            for (KnowledgeArtifactStatus ks : stat) {
+
+              if ( // ks.getIsActive().booleanValue() && -- Do not check to allow inactive KAR based
+              // timers to execute.
+              ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
+
+                logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
+                kd.setKarStatus(ks);
+              }
+            }
+
+            if (kd.getKarStatus() != null) {
+
+              // Setup Notification Data
+              Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
+              kd.setNotificationBundle(nb);
+              nc.setNotifiedResource(nb.getEntry().get(1).getResource());
+
+              // Setup context Encounter
+              if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
+                kd.setContextEncounter(
+                    (Encounter)
+                        ehrInterface.getResourceById(
+                            kd, "Encounter", nc.getNotificationResourceId(), true));
+                nc.setNotifiedResource(kd.getContextEncounter());
+              }
+
+              kd.setEhrQueryService(ehrInterface);
+              kd.setKarExecutionStateService(karExecutionStateService);
+              kd.setScheduledJobData(data);
+
+              // Get the action that needs to be executed.
+              BsaAction action = kd.getKar().getAction(data.getActionId());
+
+              if (action != null) {
+
+                try {
+
+                  if (Boolean.TRUE.equals(!throttlingEnabled)
+                      || Boolean.TRUE.equals(
+                          loadManager.canExecuteJob(nc.getThrottleContext(), data.getJobType()))) {
+
+                    logger.info(
+                        " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
+                        action.getActionId(),
+                        action.getType());
+                    action.process(kd, ehrInterface);
+
+                    // persist relevant outputs
+                    if (kd.getPhm() != null) {
+                      logger.info("Updating database with PhMesssage data ");
+                      phDao.saveOrUpdate(kd.getPhm());
                     }
 
-                    // Setup the Kar Status for the specific job.
-                    if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {
+                    saveDataForDebug(kd);
+                    logger.info(
+                        " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
+                        action.getActionId());
 
-                        // Get the Active Kars and process it.
-                        HealthcareSettingOperationalKnowledgeArtifacts arfts =
-                                kd.getHealthcareSetting().getKars();
+                    // Get rid of the KarExecutionState entry that was created for the job.
+                    karExecutionStateService.delete(state);
+                  } else {
+                    logger.info(
+                        "Cannot process job since the  infrastructure is busy, reschedule the job {} after {} minutes",
+                        data.getKarExecutionStateId(),
+                        throttleRecheckInterval);
 
-                        logger.info(
-                                " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
-                                arfts.getId());
+                    Instant jobTime =
+                        Instant.now().plus(throttleRecheckInterval, ChronoUnit.MINUTES);
+                    action.scheduleJob(
+                        data.getKarExecutionStateId(),
+                        action.getActionId(),
+                        action.getType(),
+                        jobTime,
+                        data.getxRequestId(),
+                        data.getJobType(),
+                        data.getMdcContext());
+                  }
 
-                        Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
+                } catch (Exception e) {
 
-                        for (KnowledgeArtifactStatus ks : stat) {
+                  if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
+                    publicHealthMessage = createPublicHealthMessage(kd, kd.getSubmittedCdaData());
+                  }
 
-                            if ( // ks.getIsActive().booleanValue() && -- Do not check to allow inactive KAR based
-                                // timers to execute.
-                                    ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
-
-                                logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
-                                kd.setKarStatus(ks);
-                            }
-                        }
-
-                        if (kd.getKarStatus() != null) {
-
-                            // Setup Notification Data
-                            Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
-                            kd.setNotificationBundle(nb);
-                            nc.setNotifiedResource(nb.getEntry().get(1).getResource());
-
-                            // Setup context Encounter
-                            if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
-                                kd.setContextEncounter(
-                                        (Encounter)
-                                                ehrInterface.getResourceById(
-                                                        kd, "Encounter", nc.getNotificationResourceId(), true));
-                                nc.setNotifiedResource(kd.getContextEncounter());
-                            }
-
-                            kd.setEhrQueryService(ehrInterface);
-                            kd.setKarExecutionStateService(karExecutionStateService);
-                            kd.setScheduledJobData(data);
-
-                            // Get the action that needs to be executed.
-                            BsaAction action = kd.getKar().getAction(data.getActionId());
-
-                            if (action != null) {
-
-                                try {
-
-                                    if (Boolean.TRUE.equals(!throttlingEnabled)
-                                            || Boolean.TRUE.equals(
-                                            loadManager.canExecuteJob(nc.getThrottleContext(), data.getJobType()))) {
-
-                                        logger.info(
-                                                " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
-                                                action.getActionId(),
-                                                action.getType());
-                                        action.process(kd, ehrInterface);
-
-                                        // persist relevant outputs
-                                        if (kd.getPhm() != null) {
-                                            logger.info("Updating database with PhMesssage data ");
-                                            phDao.saveOrUpdate(kd.getPhm());
-                                        }
-
-                                        saveDataForDebug(kd);
-                                        logger.info(
-                                                " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
-                                                action.getActionId());
-
-                                        // Get rid of the KarExecutionState entry that was created for the job.
-                                        karExecutionStateService.delete(state);
-                                    } else {
-                                        logger.info(
-                                                "Cannot process job since the  infrastructure is busy, reschedule the job {} after {} minutes",
-                                                data.getKarExecutionStateId(),
-                                                throttleRecheckInterval);
-
-                                        Instant jobTime =
-                                                Instant.now().plus(throttleRecheckInterval, ChronoUnit.MINUTES);
-                                        action.scheduleJob(
-                                                data.getKarExecutionStateId(),
-                                                action.getActionId(),
-                                                action.getType(),
-                                                jobTime,
-                                                data.getxRequestId(),
-                                                data.getJobType(),
-                                                data.getMdcContext());
-                                    }
-
-                                } catch (Exception e) {
-
-                                    if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
-                                        publicHealthMessage = createPublicHealthMessage(kd, kd.getSubmittedCdaData());
-                                    }
-
-                                    logger.error("Exception encountered during processing of the scheduled job ");
-                                    throw e;
-                                }
-                            } else {
-                                String msg =
-                                        "Cannot apply KAR for the scheduled job notification because action with id "
-                                                + data.getActionId()
-                                                + " does not exist ";
-
-                                logger.error(msg);
-                                // throw new BadProcessingState(msg);
-                            }
-                        } else {
-
-                            String msg =
-                                    "Cannot apply KAR for the scheduled job notification because KAR Status for Healthcare Setting "
-                                            + state.getHsFhirServerUrl()
-                                            + " does not exist ";
-
-                            logger.error(msg);
-                            // throw new BadProcessingState(msg);
-                        }
-                    } else {
-
-                        String msg =
-                                "Cannot apply KAR for the scheduled job notification because Healthcare Setting and its KAR Status for "
-                                        + state.getHsFhirServerUrl()
-                                        + " are invalid ";
-
-                        logger.error(msg);
-                        //  throw new BadProcessingState(msg);
-                    }
-
-                } // nc != null
-                else {
-                    logger.error(
-                            "Cannot process job properly as Notification Context {} is not found.",
-                            data.getKarExecutionStateId());
+                  logger.error("Exception encountered during processing of the scheduled job ");
+                  throw e;
                 }
+              } else {
+                String msg =
+                    "Cannot apply KAR for the scheduled job notification because action with id "
+                        + data.getActionId()
+                        + " does not exist ";
+
+                logger.error(msg);
+                // throw new BadProcessingState(msg);
+              }
             } else {
-                logger.error(
-                        "Cannot process job properly as KarExecutionState {} is not found.",
-                        data.getKarExecutionStateId());
+
+              String msg =
+                  "Cannot apply KAR for the scheduled job notification because KAR Status for Healthcare Setting "
+                      + state.getHsFhirServerUrl()
+                      + " does not exist ";
+
+              logger.error(msg);
+              // throw new BadProcessingState(msg);
             }
+          } else {
 
-        } catch (Exception e) {
-            if ((ctx.getExecution().consecutiveFailures + 1) >= timerRetries) {
-                logger.error(
-                        "Error in executing Task for {}, Action Id : {}, KarExecutionStateId : {}, xRequestId : {} setting notification context to FAILED",
-                        inst.getTaskAndInstance(),
-                        inst.getData().getActionId(),
-                        inst.getData().getKarExecutionStateId(),
-                        inst.getData().getxRequestId());
+            String msg =
+                "Cannot apply KAR for the scheduled job notification because Healthcare Setting and its KAR Status for "
+                    + state.getHsFhirServerUrl()
+                    + " are invalid ";
 
-                if (publicHealthMessage != null
-                        && !StringUtils.isBlank(publicHealthMessage.getSubmittedCdaData())) {
-                    publicHealthMessage.setSubmissionMessageStatus("FAILED");
-                    phDao.saveOrUpdate(publicHealthMessage);
-                }
+            logger.error(msg);
+            //  throw new BadProcessingState(msg);
+          }
 
-                if (nc != null) {
-                    logger.error(" Updating Notification Context {} Status to FAILED ", nc.getId());
-                    nc.setNotificationProcessingStatus(NotificationProcessingStatusType.FAILED.toString());
-                    ncDao.saveOrUpdate(nc);
-                }
-            } else {
-                logger.error("Retrhowing exception since the retries have not maxed out ");
-                throw e;
-            }
+        } // nc != null
+        else {
+          logger.error(
+              "Cannot process job properly as Notification Context {} is not found.",
+              data.getKarExecutionStateId());
+        }
+      } else {
+        logger.error(
+            "Cannot process job properly as KarExecutionState {} is not found.",
+            data.getKarExecutionStateId());
+      }
+
+    } catch (Exception e) {
+      if ((ctx.getExecution().consecutiveFailures + 1) >= timerRetries) {
+        logger.error(
+            "Error in executing Task for {}, Action Id : {}, KarExecutionStateId : {}, xRequestId : {} setting notification context to FAILED",
+            inst.getTaskAndInstance(),
+            inst.getData().getActionId(),
+            inst.getData().getKarExecutionStateId(),
+            inst.getData().getxRequestId());
+
+        if (publicHealthMessage != null
+            && !StringUtils.isBlank(publicHealthMessage.getSubmittedCdaData())) {
+          publicHealthMessage.setSubmissionMessageStatus("FAILED");
+          phDao.saveOrUpdate(publicHealthMessage);
         }
 
-        // Save Data only if everything is good
-    }
-
-    private PublicHealthMessage getPublicHealthMessage(
-            NotificationContext nc, KarProcessingData data) {
-
-        Map<String, String> searchParams = new HashMap<>();
-        searchParams.put(PublicHealthMessagesDaoImpl.FHIR_SERVER_URL, nc.getFhirServerBaseUrl());
-        searchParams.put(PublicHealthMessagesDaoImpl.PATIENT_ID, nc.getPatientId());
-        searchParams.put(
-                PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_ID, nc.getNotificationResourceId());
-        searchParams.put(
-                PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
-        searchParams.put(PublicHealthMessagesDaoImpl.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
-        searchParams.put(PublicHealthMessagesDaoImpl.SUBMISSION_MESSAGE_STATUS, "FAILED");
-        List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);
-
-        if (messages != null && !messages.isEmpty()) return messages.get(0);
-        else return null;
-    }
-
-    private PublicHealthMessage createPublicHealthMessage(KarProcessingData kd, String cdaOutput) {
-        PublicHealthMessage msg = new PublicHealthMessage();
-
-        msg.setFhirServerBaseUrl(kd.getNotificationContext().getFhirServerBaseUrl());
-        msg.setPatientId(kd.getNotificationContext().getPatientId());
-        msg.setNotifiedResourceId(kd.getNotificationContext().getNotificationResourceId());
-        msg.setNotifiedResourceType(kd.getNotificationContext().getNotificationResourceType());
-        msg.setNotificationId(kd.getNotificationContext().getId().toString());
-        msg.setxCorrelationId(kd.getxCorrelationId());
-        msg.setxRequestId(kd.getxRequestId());
-
-        if (kd.getNotificationContext()
-                .getNotificationResourceType()
-                .equals(ResourceType.Encounter.toString())) {
-            msg.setEncounterId(msg.getNotifiedResourceId());
-        } else {
-            msg.setEncounterId("Unknown");
+        if (nc != null) {
+          logger.error(" Updating Notification Context {} Status to FAILED ", nc.getId());
+          nc.setNotificationProcessingStatus(NotificationProcessingStatusType.FAILED.toString());
+          ncDao.saveOrUpdate(nc);
         }
-
-        msg.setSubmittedCdaData(cdaOutput);
-        msg.setSubmissionMessageStatus("FAILED");
-
-        if (kd.getPhm() != null) {
-            msg.setSubmittedVersionNumber(kd.getPhm().getSubmittedVersionNumber());
-        } else {
-            msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
-        }
-        return msg;
+      } else {
+        logger.error("Retrhowing exception since the retries have not maxed out ");
+        throw e;
+      }
     }
+
+    // Save Data only if everything is good
+  }
+
+  private PublicHealthMessage getPublicHealthMessage(
+      NotificationContext nc, KarProcessingData data) {
+
+    Map<String, String> searchParams = new HashMap<>();
+    searchParams.put(PublicHealthMessagesDaoImpl.FHIR_SERVER_URL, nc.getFhirServerBaseUrl());
+    searchParams.put(PublicHealthMessagesDaoImpl.PATIENT_ID, nc.getPatientId());
+    searchParams.put(
+        PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_ID, nc.getNotificationResourceId());
+    searchParams.put(
+        PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
+    searchParams.put(PublicHealthMessagesDaoImpl.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
+    searchParams.put(PublicHealthMessagesDaoImpl.SUBMISSION_MESSAGE_STATUS, "FAILED");
+    List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);
+
+    if (messages != null && !messages.isEmpty()) return messages.get(0);
+    else return null;
+  }
+
+  private PublicHealthMessage createPublicHealthMessage(KarProcessingData kd, String cdaOutput) {
+    PublicHealthMessage msg = new PublicHealthMessage();
+
+    msg.setFhirServerBaseUrl(kd.getNotificationContext().getFhirServerBaseUrl());
+    msg.setPatientId(kd.getNotificationContext().getPatientId());
+    msg.setNotifiedResourceId(kd.getNotificationContext().getNotificationResourceId());
+    msg.setNotifiedResourceType(kd.getNotificationContext().getNotificationResourceType());
+    msg.setNotificationId(kd.getNotificationContext().getId().toString());
+    msg.setxCorrelationId(kd.getxCorrelationId());
+    msg.setxRequestId(kd.getxRequestId());
+
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
+      msg.setEncounterId(msg.getNotifiedResourceId());
+    } else {
+      msg.setEncounterId("Unknown");
+    }
+
+    msg.setSubmittedCdaData(cdaOutput);
+    msg.setSubmissionMessageStatus("FAILED");
+
+    if (kd.getPhm() != null) {
+      msg.setSubmittedVersionNumber(kd.getPhm().getSubmittedVersionNumber());
+    } else {
+      msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
+    }
+    return msg;
+  }
 }
