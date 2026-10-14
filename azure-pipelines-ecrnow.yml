@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - origin/1141-upgrade-ecrnow-from-spring-boot-3x-to-spring-boot-4x
+      - 1141-upgrade-ecrnow-from-spring-boot-3x-to-spring-boot-4x
 
 pr: none
 
