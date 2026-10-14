@@ -220,6 +220,71 @@ public class PublicHealthMessage {
     logger.info("PublicHealthMessage initiated.");
   }
 
+  /**
+   * Summary projection constructor. It is invoked by Hibernate through a JPA constructor expression
+   * (CriteriaBuilder.construct) when a PhMessageDao query runs with summaryFlag = true, and the
+   * argument order must match PhMessageDaoImpl.SUMMARY_PROPERTIES.
+   *
+   * <p>Instances created this way are never managed by the persistence context. The large payload
+   * columns (submittedFhirData, submittedCdaData, fhirResponseData, cdaResponseData,
+   * failureResponseData and triggerMatchStatus) are not loaded and stay null, so such an instance
+   * is read-only data and must not be merged or saved back.
+   */
+  public PublicHealthMessage(
+      UUID id,
+      String fhirServerBaseUrl,
+      String patientId,
+      String encounterId,
+      String notifiedResourceId,
+      String notifiedResourceType,
+      String karUniqueId,
+      String notificationId,
+      String xCorrelationId,
+      String xRequestId,
+      String submittedMessageType,
+      String submittedDataId,
+      Integer submittedVersionNumber,
+      String submittedMessageId,
+      String submissionMessageStatus,
+      Date submissionTime,
+      String responseMessageType,
+      String responseDataId,
+      String responseMessageId,
+      String responseProcessingInstruction,
+      String responseProcessingStatus,
+      Date responseReceivedTime,
+      String responseEhrDocRefId,
+      String initiatingAction,
+      String patientLinkerId,
+      Date lastUpdated) {
+    this.id = id;
+    this.fhirServerBaseUrl = fhirServerBaseUrl;
+    this.patientId = patientId;
+    this.encounterId = encounterId;
+    this.notifiedResourceId = notifiedResourceId;
+    this.notifiedResourceType = notifiedResourceType;
+    this.karUniqueId = karUniqueId;
+    this.notificationId = notificationId;
+    this.xCorrelationId = xCorrelationId;
+    this.xRequestId = xRequestId;
+    this.submittedMessageType = submittedMessageType;
+    this.submittedDataId = submittedDataId;
+    this.submittedVersionNumber = submittedVersionNumber;
+    this.submittedMessageId = submittedMessageId;
+    this.submissionMessageStatus = submissionMessageStatus;
+    this.submissionTime = submissionTime;
+    this.responseMessageType = responseMessageType;
+    this.responseDataId = responseDataId;
+    this.responseMessageId = responseMessageId;
+    this.responseProcessingInstruction = responseProcessingInstruction;
+    this.responseProcessingStatus = responseProcessingStatus;
+    this.responseReceivedTime = responseReceivedTime;
+    this.responseEhrDocRefId = responseEhrDocRefId;
+    this.initiatingAction = initiatingAction;
+    this.patientLinkerId = patientLinkerId;
+    this.lastUpdated = lastUpdated;
+  }
+
   public UUID getId() {
     return id;
   }

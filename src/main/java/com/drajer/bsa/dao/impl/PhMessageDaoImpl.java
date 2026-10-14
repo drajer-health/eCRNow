@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -47,46 +48,58 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   public static final String SUBMITTED_VERSION_NUMBER = "submittedVersionNumber";
   public static final String SUMMARY_FLAG = "summaryFlag";
 
+  /**
+   * Properties selected when summaryFlag is true. The order must match the arguments of the
+   * PublicHealthMessage summary projection constructor; the large payload columns are left out.
+   */
+  static final List<String> SUMMARY_PROPERTIES =
+      List.of(
+          ID,
+          FHIR_SERVER_BASE_URL,
+          PATIENT_ID,
+          ENCOUNTER_ID,
+          NOTIFIED_RESOURCE_ID,
+          NOTIFIED_RESOURCE_TYPE,
+          KAR_UNIQUE_ID,
+          NOTIFICATION_ID,
+          X_CORRELATION_ID,
+          X_REQUEST_ID,
+          "submittedMessageType",
+          SUBMITTED_DATA_ID,
+          SUBMITTED_VERSION_NUMBER,
+          "submittedMessageId",
+          "submissionMessageStatus",
+          SUBMISSION_TIME,
+          "responseMessageType",
+          RESPONSE_DATA_ID,
+          "responseMessageId",
+          RESPONSE_PROCESSING_INSTRUCTION,
+          "responseProcessingStatus",
+          RESPONSE_RECEIVED_TIME,
+          "responseEhrDocRefId",
+          "initiatingAction",
+          "patientLinkerId",
+          "lastUpdated");
+
   public List<PublicHealthMessage> getPhMessageData(
       Map<String, String> searchParams, boolean summaryFlag) {
-    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
-      CriteriaBuilder cb = em.getCriteriaBuilder();
-      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
-      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
-      List<Predicate> predicates = preparePredicate(cb, root, searchParams);
-
-      if (StringUtils.isNotBlank(searchParams.getOrDefault(RESPONSE_DOC_ID, ""))) {
-        predicates.add(
-            cb.equal(
-                root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
-      }
-      Predicate[] predArr = new Predicate[predicates.size()];
-      predArr = predicates.toArray(predArr);
-      Predicate criteria = cb.and(predArr);
-      cq.where(criteria);
-      cq.orderBy(cb.desc(root.get("id")));
-      Query<PublicHealthMessage> q = getSession().createQuery(cq);
-
-      return q.getResultList();
-    }
+    return executeQuery(
+        summaryFlag,
+        (cb, root) -> {
+          List<Predicate> predicates = preparePredicate(cb, root, searchParams);
+          if (StringUtils.isNotBlank(searchParams.getOrDefault(RESPONSE_DOC_ID, ""))) {
+            predicates.add(
+                cb.equal(
+                    root.get(RESPONSE_DOC_ID),
+                    Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+          }
+          return predicates;
+        });
   }
 
   public List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams) {
-
-    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
-      CriteriaBuilder cb = em.getCriteriaBuilder();
-      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
-      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
-      List<Predicate> predicates = preparePredicate(cb, root, searchParams);
-      Predicate[] predArr = new Predicate[predicates.size()];
-      predArr = predicates.toArray(predArr);
-      Predicate criteria = cb.and(predArr);
-      cq.where(criteria);
-      cq.orderBy(cb.desc(root.get("id")));
-      Query<PublicHealthMessage> q = getSession().createQuery(cq);
-
-      return q.getResultList();
-    }
+    // This API is always a summary, as it was with the Hibernate 5 projection.
+    return executeQuery(true, (cb, root) -> preparePredicate(cb, root, searchParams));
   }
 
   public static List<Predicate> preparePredicate(
@@ -172,54 +185,58 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   @Override
   public List<PublicHealthMessage> getPhMessageByXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
-
-    try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
-      CriteriaBuilder cb = em.getCriteriaBuilder();
-      CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
-      Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
-      Expression<String> xRequestIdExpression = root.get(X_REQUEST_ID);
-      Predicate xRequestIdPredicate = xRequestIdExpression.in(xRequestIds);
-      cq.where(xRequestIdPredicate);
-      cq.orderBy(cb.desc(root.get("id")));
-
-      Query<PublicHealthMessage> q = getSession().createQuery(cq);
-
-      return q.getResultList();
-    }
+    return executeQuery(
+        summaryFlag,
+        (cb, root) -> {
+          Expression<String> xRequestIdExpression = root.get(X_REQUEST_ID);
+          List<Predicate> predicates = new ArrayList<>();
+          predicates.add(xRequestIdExpression.in(xRequestIds));
+          return predicates;
+        });
   }
 
   // @Override
   public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
+    return executeQuery(
+        summaryFlag,
+        (cb, root) -> {
+          List<Predicate> predicates = new ArrayList<>();
+          for (String xRequestId : xRequestIds) {
+            predicates.add(cb.like(cb.lower(root.get(X_REQUEST_ID)), xRequestId));
+          }
+          return predicates;
+        });
+  }
+
+  /**
+   * Runs a PublicHealthMessage query ordered by id descending, filtered by the predicates from
+   * predicateBuilder.
+   *
+   * <p>summaryFlag = false returns managed, fully loaded entities. summaryFlag = true selects only
+   * SUMMARY_PROPERTIES and lets Hibernate build each result through the PublicHealthMessage summary
+   * constructor, so the large payload columns are never read. Those instances are not managed by
+   * the persistence context and must not be merged or saved back.
+   */
+  private List<PublicHealthMessage> executeQuery(
+      boolean summaryFlag,
+      BiFunction<CriteriaBuilder, Root<PublicHealthMessage>, List<Predicate>> predicateBuilder) {
 
     try (EntityManager em = getSession().getEntityManagerFactory().createEntityManager()) {
       CriteriaBuilder cb = em.getCriteriaBuilder();
       CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
       Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
-      List<Predicate> predicates = new ArrayList<Predicate>();
-      for (String xRequestId : xRequestIds) {
-        predicates.add(cb.like(cb.lower(root.get(X_REQUEST_ID)), xRequestId));
+
+      if (summaryFlag) {
+        cq.select(getSummarySelection(cb, root));
       }
-      Predicate[] predArr = new Predicate[predicates.size()];
-      predArr = predicates.toArray(predArr);
-
-      Predicate criteria = cb.and(predArr);
-      cq.where(criteria);
-      cq.orderBy(cb.desc(root.get("id")));
-
+      cq.where(cb.and(predicateBuilder.apply(cb, root).toArray(new Predicate[0])));
+      cq.orderBy(cb.desc(root.get(ID)));
       Query<PublicHealthMessage> q = getSession().createQuery(cq);
 
       return q.getResultList();
     }
   }
-
-  /*private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
-    ProjectionList projectionList = Projections.projectionList();
-    for (String propertyName : selectedProperties) {
-      projectionList.add(Projections.property(propertyName), propertyName);
-    }
-    return projectionList;
-  }*/
 
   @Override
   public List<PublicHealthMessage> getPhMessageByParameters(
@@ -273,45 +290,12 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     remove(message);
   }
 
-  private CompoundSelection<Object[]> getSelectedProperties(
+  private CompoundSelection<PublicHealthMessage> getSummarySelection(
       CriteriaBuilder cb, Root<PublicHealthMessage> root) {
-    return cb.array(
-        root.get("id"),
-        root.get("fhirServerBaseUrl"),
-        root.get("patientId"),
-        root.get("encounterId"),
-        root.get("notifiedResourceId"),
-        root.get("notifiedResourceType"),
-        root.get("karUniqueId"),
-        root.get("notificationId"),
-        root.get("xCorrelationId"),
-        root.get("xRequestId"),
-        root.get("submittedMessageType"),
-        root.get("submittedDataId"),
-        root.get("submittedVersionNumber"),
-        root.get("submittedMessageId"),
-        root.get("submissionMessageStatus"),
-        root.get("submissionTime"),
-        root.get("responseMessageType"),
-        root.get("responseDataId"),
-        root.get("responseMessageId"),
-        root.get("responseProcessingInstruction"),
-        root.get("responseProcessingStatus"),
-        root.get("responseReceivedTime"),
-        root.get("responseEhrDocRefId"),
-        root.get("initiatingAction"),
-        root.get("patientLinkerId"),
-        root.get("lastUpdated"));
-  }
-
-  /*private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {
-    if (summaryFlag) {
-      List<String> selectedProperties = getSelectedProperties();
-      ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
-
-      criteria.setProjection(projectionList);
-
-      criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
+    Selection<?>[] selections = new Selection<?>[SUMMARY_PROPERTIES.size()];
+    for (int i = 0; i < selections.length; i++) {
+      selections[i] = root.get(SUMMARY_PROPERTIES.get(i));
     }
-  }*/
+    return cb.construct(PublicHealthMessage.class, selections);
+  }
 }

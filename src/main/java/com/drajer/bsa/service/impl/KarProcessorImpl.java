@@ -93,6 +93,8 @@ public class KarProcessorImpl implements KarProcessor {
   @Value("${token.refresh.threshold:25}")
   private Integer tokenRefreshThreshold;
 
+  private static final String SUBMISSION_STATUS_FAILED = "FAILED";
+
   /**
    * The method that applies a KAR to a specific notification context.
    *
@@ -111,6 +113,7 @@ public class KarProcessorImpl implements KarProcessor {
     data.setJobType(BsaJobType.IMMEDIATE_REPORTING);
 
     // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
+
     PublicHealthMessage phm = getPublicHealthMessage(nc, data);
     if (phm != null && phm.getTriggerMatchStatus() != null) {
       data.setPhm(phm);
@@ -127,6 +130,10 @@ public class KarProcessorImpl implements KarProcessor {
 
       try {
         action.process(data, ehrInterface);
+
+        if (StringUtils.isNotBlank(data.getSubmittedCdaData())) {
+          phDao.saveOrUpdate(data.getPhm());
+        }
       } catch (Exception e) {
         logger.error(e.getMessage());
         throw e;
@@ -303,7 +310,9 @@ public class KarProcessorImpl implements KarProcessor {
                 } catch (Exception e) {
 
                   if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
-                    publicHealthMessage = createPublicHealthMessage(kd, kd.getSubmittedCdaData());
+                    publicHealthMessage =
+                        createPublicHealthMessage(
+                            kd, kd.getSubmittedCdaData(), SUBMISSION_STATUS_FAILED);
                   }
 
                   logger.error("Exception encountered during processing of the scheduled job ");
@@ -316,7 +325,6 @@ public class KarProcessorImpl implements KarProcessor {
                         + " does not exist ";
 
                 logger.error(msg);
-                // throw new BadProcessingState(msg);
               }
             } else {
 
@@ -326,7 +334,6 @@ public class KarProcessorImpl implements KarProcessor {
                       + " does not exist ";
 
               logger.error(msg);
-              // throw new BadProcessingState(msg);
             }
           } else {
 
@@ -336,7 +343,6 @@ public class KarProcessorImpl implements KarProcessor {
                     + " are invalid ";
 
             logger.error(msg);
-            //  throw new BadProcessingState(msg);
           }
 
         } // nc != null
@@ -362,7 +368,7 @@ public class KarProcessorImpl implements KarProcessor {
 
         if (publicHealthMessage != null
             && !StringUtils.isBlank(publicHealthMessage.getSubmittedCdaData())) {
-          publicHealthMessage.setSubmissionMessageStatus("FAILED");
+          publicHealthMessage.setSubmissionMessageStatus(SUBMISSION_STATUS_FAILED);
           phDao.saveOrUpdate(publicHealthMessage);
         }
 
@@ -398,7 +404,8 @@ public class KarProcessorImpl implements KarProcessor {
     else return null;
   }
 
-  private PublicHealthMessage createPublicHealthMessage(KarProcessingData kd, String cdaOutput) {
+  private PublicHealthMessage createPublicHealthMessage(
+      KarProcessingData kd, String cdaOutput, String messageStatus) {
     PublicHealthMessage msg = new PublicHealthMessage();
 
     msg.setFhirServerBaseUrl(kd.getNotificationContext().getFhirServerBaseUrl());
@@ -418,7 +425,7 @@ public class KarProcessorImpl implements KarProcessor {
     }
 
     msg.setSubmittedCdaData(cdaOutput);
-    msg.setSubmissionMessageStatus("FAILED");
+    msg.setSubmissionMessageStatus(messageStatus);
 
     if (kd.getPhm() != null) {
       msg.setSubmittedVersionNumber(kd.getPhm().getSubmittedVersionNumber());
