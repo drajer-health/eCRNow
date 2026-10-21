@@ -506,9 +506,10 @@ public class EhrFhirR4QueryServiceImplTest {
   public void fetchResourcesTest() {
     Bundle bundle = TestUtils.loadBundleFromFile(ENCOUNTER_BUNDLE_JSON);
     when(iQuery.execute()).thenReturn(bundle);
+    KarProcessingData kd = new KarProcessingData();
     Set<Resource> actual =
         ehrFhirR4QueryService.fetchResources(
-            fhirClient, fhirContext, "Encounter?patient=Patient/1234");
+            fhirClient, kd, fhirContext, "Encounter?patient=Patient/1234");
     assertNotNull(actual);
     verify(fhirClient, times(1)).search();
     verify(iUntypedQuery, times(1)).byUrl(anyString());
