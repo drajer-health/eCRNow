@@ -757,12 +757,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info("Getting data for Resource : {} with Id : {}", resourceName, resourceId);
 
-   resource= (Resource) fhirOperationExecutor.execute(
-          kd,
-          context,
-          client -> {
-            return client.read().resource(resourceName).withId(resourceId).execute();
-          });
+      resource =
+          (Resource)
+              fhirOperationExecutor.execute(
+                  kd,
+                  context,
+                  client -> {
+                    return client.read().resource(resourceName).withId(resourceId).execute();
+                  });
 
       if (applyFiltering && !isValidResource(resource)) resource = null;
 

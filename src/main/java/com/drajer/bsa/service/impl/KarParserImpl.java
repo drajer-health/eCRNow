@@ -3,6 +3,7 @@ package com.drajer.bsa.service.impl;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.auth.AuthorizationUtils;
+import com.drajer.bsa.cache.KarResolvedVariableCache;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.dao.TimeZoneDao;
@@ -176,6 +177,8 @@ public class KarParserImpl implements KarParser {
   @Qualifier("R4CqlExecutionEvaluator")
   ObjectProvider<R4CqlExecutionService> expressionEvaluators;
 
+  @Autowired KarResolvedVariableCache karResolvedVariableCache;
+
   @Autowired R4LibraryEvaluationService libraryEvaluationService;
 
   // Autowired to pass to Actions
@@ -298,6 +301,7 @@ public class KarParserImpl implements KarParser {
     localKarRepoUrlToName = new HashMap<>();
     localKars = new HashMap<>();
     loadKars();
+    logger.info("finished loading knowledge airfacts file");
   }
 
   @Override
@@ -1030,6 +1034,7 @@ public class KarParserImpl implements KarParser {
           }
           bc.setLogicExpression(exp);
           bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
+          bc.setKarVariableCache(karResolvedVariableCache);
           action.addCondition(bc);
         } else if (con.getExpression() != null
             && (fromCode(con.getExpression().getLanguage())
@@ -1043,6 +1048,7 @@ public class KarParserImpl implements KarParser {
           }
           bc.setLogicExpression(con.getExpression());
           bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
+          bc.setKarVariableCache(karResolvedVariableCache);
           action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
@@ -1059,6 +1065,7 @@ public class KarParserImpl implements KarParser {
         }
         bc.setLogicExpression(con.getExpression());
         bc.setExpressionEvaluator(() -> expressionEvaluators.getObject());
+        bc.setKarVariableCache(karResolvedVariableCache);
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");

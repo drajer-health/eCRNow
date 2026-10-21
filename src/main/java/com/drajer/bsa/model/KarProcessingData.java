@@ -174,6 +174,13 @@ public class KarProcessingData {
   /** The token refresh threshold value for refreshing access tokens */
   private Integer tokenRefreshThreshold;
 
+  /**
+   * The merged PlanDefinition variables (STATIC variables read from the KAR resolved variable cache
+   * plus CONTEXT variables resolved for this patient/encounter) resolved once for the first action
+   * of this KAR and reused by every subsequent action processed for this same patient/notification.
+   */
+  private Parameters resolvedPlanVariables;
+
   public void addActionOutput(String actionId, Resource res) {
 
     if (actionOutputData.containsKey(actionId)) {
@@ -866,6 +873,14 @@ public class KarProcessingData {
 
       BsaServiceUtils.saveFhirResourceToFile(bund, outputFileName);
     }
+  }
+
+  public Parameters getResolvedPlanVariables() {
+    return resolvedPlanVariables;
+  }
+
+  public void setResolvedPlanVariables(Parameters resolvedPlanVariables) {
+    this.resolvedPlanVariables = resolvedPlanVariables;
   }
 
   public boolean containsResourceWithId(String resourceId, ResourceType type) {
