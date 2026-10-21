@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
@@ -116,21 +117,20 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
       logger.info(" Found a FhirPath Condition for action  {}", act.getActionId());
 
-      // If a prior action for this same patient/KAR has already resolved the merged set of plan
-      // variables (STATIC + CONTEXT), reuse it directly with zero evaluator/context calls.
-      Parameters alreadyResolved = kd.getResolvedPlanVariables();
+      String logicExpression =
+          cond.getLogicExpression() != null ? cond.getLogicExpression().getExpression() : null;
 
-      if (alreadyResolved != null && !alreadyResolved.isEmpty()) {
+      // Plan variables (STATIC + CONTEXT) already resolved by a prior condition for this same
+      // patient/KAR. Each variable is resolved the first time a condition references it.
+      Parameters resolvedParams = kd.getResolvedPlanVariables();
 
-        logger.info(" Reusing previously resolved plan variables for this patient/KAR ");
-        alreadyResolved.getParameter().forEach(params::addParameter);
-        return;
+      if (resolvedParams == null) {
+        resolvedParams = new Parameters();
+        kd.setResolvedPlanVariables(resolvedParams);
       }
 
       // Resolve conditions that are present at the PlanDefinition level.
       List<Expression> expressions = ((BsaFhirPathCondition) cond).getVariables();
-
-      Parameters resolvedParams = new Parameters();
 
       if (expressions != null && !expressions.isEmpty()) {
 
@@ -141,6 +141,22 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         for (Expression exp : expressions) {
 
           if (exp.hasLanguage() && exp.getLanguage().contentEquals("text/fhirpath")) {
+
+            if (!isVariableReferenced(logicExpression, exp.getName())) {
+              logger.debug(
+                  " Skipping plan variable {} as it is not used in the logic expression",
+                  exp.getName());
+              continue;
+            }
+
+            ParametersParameterComponent alreadyResolved =
+                resolvedParams.getParameter("%" + exp.getName());
+
+            if (alreadyResolved != null) {
+              logger.debug(" Reusing previously resolved plan variable {}", exp.getName());
+              params.addParameter(alreadyResolved.copy());
+              continue;
+            }
 
             ParametersParameterComponent paramComponent = new ParametersParameterComponent();
             paramComponent.setName("%" + exp.getName());
@@ -204,14 +220,26 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         logger.info(" No Plan Definition Variables to resolve ");
       }
 
-      // Cache the merged result so subsequent actions for this same patient/KAR do not need to
-      // resolve any of these variables again.
-      kd.setResolvedPlanVariables(resolvedParams);
-
     } else {
 
       logger.info(" Not a FhirPath Condition, so ignored ");
     }
+  }
+
+  /**
+   * Returns true when the logic expression references the variable as %name or %`name`. When there
+   * is no logic expression the references are unknown, so the variable is treated as referenced.
+   */
+  private boolean isVariableReferenced(String logicExpression, String variableName) {
+
+    if (logicExpression == null || variableName == null) {
+      return true;
+    }
+
+    // The negative lookahead stops %encounterStart from matching %encounterStartDate.
+    return Pattern.compile("%`?" + Pattern.quote(variableName) + "(?![A-Za-z0-9_])")
+        .matcher(logicExpression)
+        .find();
   }
 
   /**
