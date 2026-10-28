@@ -2,6 +2,8 @@ package com.drajer.bsa.kar.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -263,5 +265,130 @@ public class CreateReportTest {
 
     verify(attachment).getData();
     verify(scheduledJobData).getJobId();
+  }
+
+  private static final String CDA_PAYLOAD = "<ClinicalDocument xmlns=\"urn:hl7-org:v3\"/>";
+
+  private KarProcessingData prepare(String profile, String notifiedResourceType) {
+    createReport.setActionId("A-id");
+    KnowledgeArtifact kar = new KnowledgeArtifact();
+    kar.setKarId("id");
+    kar.setKarName("kar name");
+    kar.setKarVersion("r4");
+    NotificationContext context = new NotificationContext();
+    context.setFhirServerBaseUrl("http://localhost:9011/fhir");
+    context.setPatientId("patient-123");
+    context.setNotificationResourceId("97953900");
+    context.setNotificationResourceType(notifiedResourceType);
+    context.setId(UUID.randomUUID());
+    KarProcessingData data = new KarProcessingData();
+    data.setKar(kar);
+    data.setNotificationContext(context);
+    data.setxRequestId("x-request-12345");
+
+    DataRequirement output = new DataRequirement();
+    output.setId("eicr-report");
+    output.setType("Bundle");
+    output.addProfile(profile);
+    ReflectionTestUtils.setField(
+        createReport, "outputData", new ArrayList<>(Collections.singletonList(output)));
+    return data;
+  }
+
+  @Test
+  public void testProcess_withCdaReportCreatesThePublicHealthMessage() {
+    KarProcessingData data =
+        prepare("http://example.org/fhir/StructureDefinition/overridden-profile", "Condition");
+
+    MessageHeader header = new MessageHeader();
+    header.setId("header-123");
+    header
+        .getEventCoding()
+        .setCode(BsaTypes.getMessageTypeString(BsaTypes.MessageType.CDA_EICR_MESSAGE));
+    DocumentReference docRef = new DocumentReference();
+    docRef.setId("DocumentReference/doc-123");
+    docRef.setSubject(new Reference("Patient/patient-123"));
+    docRef.addContent().setAttachment(new Attachment().setData(CDA_PAYLOAD.getBytes()));
+    Bundle cdaReport = new Bundle();
+    cdaReport.setType(Bundle.BundleType.MESSAGE);
+    cdaReport.addEntry().setResource(header);
+    cdaReport.addEntry().setResource(docRef);
+
+    CheckTriggerCodeStatus triggerStatus = new CheckTriggerCodeStatus();
+    triggerStatus.setActionId("A-id");
+    triggerStatus.setTriggerMatchStatus(true);
+    CheckTriggerCodeStatusList statusList = new CheckTriggerCodeStatusList();
+    statusList.addCheckTriggerCodeStatus(triggerStatus);
+    data.setCurrentTriggerMatchStatus(statusList);
+
+    when(mockReportCreator.createReport(any(), any(), any(), anyString(), anyString(), any()))
+        .thenReturn(cdaReport);
+
+    BsaActionStatus result = createReport.process(data, ehrService);
+
+    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, result.getActionStatus());
+    PublicHealthMessage message = data.getPhm();
+    assertNotNull("a CDA report must produce a public health message", message);
+    assertEquals(CDA_PAYLOAD, message.getSubmittedCdaData());
+    assertEquals(CDA_PAYLOAD, data.getSubmittedCdaData());
+    assertEquals("DocumentReference/doc-123", message.getSubmittedDataId());
+    assertEquals("97953900", message.getNotifiedResourceId());
+    assertEquals(
+        "only an Encounter notification carries its own encounter id",
+        "Unknown",
+        message.getEncounterId());
+    assertTrue(
+        "no scheduled job, so the action id builds the initiator",
+        message.getInitiatingAction().startsWith("A-id"));
+    assertEquals(
+        "the first message of a run is version 1", 1, (int) message.getSubmittedVersionNumber());
+  }
+
+  @Test
+  public void testProcess_whenTheCreatorReturnsNothingNoMessageIsProduced() {
+    KarProcessingData data =
+        prepare("http://example.org/fhir/StructureDefinition/overridden-profile", "Encounter");
+    when(mockReportCreator.createReport(any(), any(), any(), anyString(), anyString(), any()))
+        .thenReturn(null);
+
+    BsaActionStatus result = createReport.process(data, ehrService);
+
+    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, result.getActionStatus());
+    assertNull(data.getPhm());
+    assertTrue(data.getOutputDataById("eicr-report").isEmpty());
+  }
+
+  @Test
+  public void testProcess_withAnUnregisteredProfileNeverCallsACreator() {
+    KarProcessingData data =
+        prepare("http://example.org/fhir/StructureDefinition/unregistered-profile", "Encounter");
+
+    BsaActionStatus result = createReport.process(data, ehrService);
+
+    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, result.getActionStatus());
+    verify(mockReportCreator, never())
+        .createReport(any(), any(), any(), anyString(), anyString(), any());
+    assertNull(data.getPhm());
+  }
+
+  @Test
+  public void testCreatePublicHealthMessageForCda_skipsIncompleteDocumentReferences() {
+    DocumentReference noContent = new DocumentReference();
+    noContent.setId("DocumentReference/no-content");
+    noContent.setSubject(new Reference("Patient/patient-123"));
+    DocumentReference noHeader = new DocumentReference();
+    noHeader.setId("DocumentReference/no-header");
+    noHeader.setSubject(new Reference("Patient/patient-123"));
+    noHeader.addContent().setAttachment(new Attachment().setData(CDA_PAYLOAD.getBytes()));
+
+    Bundle report = new Bundle();
+    report.addEntry().setResource(noContent);
+    report.addEntry().setResource(noHeader);
+    KarProcessingData data = new KarProcessingData();
+
+    createReport.createPublicHealthMessageForCda(data, "CreateReport", report, "A-id");
+
+    assertNull("nothing complete enough to save, so no message", data.getPhm());
+    assertNull(data.getSubmittedCdaData());
   }
 }

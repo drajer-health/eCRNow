@@ -42,7 +42,7 @@ public class TestUtils {
       stream.close();
       writer.close();
     } catch (Exception e) {
-      logger.error("File not found::" + fileName);
+      logger.error("File not found:: {}", fileName);
     }
 
     return fileContent;
@@ -55,7 +55,7 @@ public class TestUtils {
       obj = mapper.readValue(classLoader.getResourceAsStream(fileName), clazz);
     } catch (Exception e) {
 
-      logger.info("Error in parsing : " + fileName + " to Object");
+      logger.info("Error in parsing : {} to Object", fileName);
     }
     return obj;
   }
@@ -68,7 +68,7 @@ public class TestUtils {
       object = mapper.readValue(inputStream, typeReference);
     } catch (Exception e) {
 
-      logger.info("Error in parsing : " + filename + " to Object");
+      logger.info("Error in parsing : {} to Object", filename);
     }
 
     return object;

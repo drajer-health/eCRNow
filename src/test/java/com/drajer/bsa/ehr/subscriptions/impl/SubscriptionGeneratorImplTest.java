@@ -11,7 +11,10 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
@@ -234,5 +237,72 @@ public class SubscriptionGeneratorImplTest {
         assertTrue(e instanceof java.lang.reflect.InvocationTargetException);
       }
     }
+  }
+
+  @Test
+  public void testSubscriptionsFromPlanDef_MapsEachNamedEventToItsCriteria() {
+    String planDefinitionId = "plandefinition-ersd-instance-example";
+    Map<String, String> expectedCriteria = new HashMap<>();
+    expectedCriteria.put("encounter-start", "Encounter?");
+    expectedCriteria.put("encounter-close", "Encounter?");
+    expectedCriteria.put("encounter-change", "Encounter?");
+    expectedCriteria.put("new-diagnosis", "Condition?");
+    expectedCriteria.put("modified-diagnosis", "Condition?");
+    expectedCriteria.put("new-medication", "Medication?");
+    expectedCriteria.put("new-labresult", "Observation?category=laboratory");
+    expectedCriteria.put("new-order", "ServiceRequest?");
+    expectedCriteria.put("new-procedure", "Procedure?");
+    expectedCriteria.put("new-immunization", "Immunization?");
+    expectedCriteria.put("modified-demographic", "Patient?");
+
+    PlanDefinition planDefinition = new PlanDefinition();
+    planDefinition.setId(planDefinitionId);
+    PlanDefinition.PlanDefinitionActionComponent action = planDefinition.addAction();
+    Set<String> namedEvents = new HashSet<>(expectedCriteria.keySet());
+    namedEvents.addAll(Set.of("new-allergy", "outbreak-alert"));
+    for (String namedEvent : namedEvents) {
+      action
+          .addTrigger()
+          .addExtension()
+          .setUrl("http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType")
+          .setValue(
+              new CodeableConcept()
+                  .addCoding(
+                      new Coding()
+                          .setSystem(
+                              "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents")
+                          .setCode(namedEvent)));
+    }
+
+    Map<String, String> actualCriteria = new HashMap<>();
+    List<Subscription> subscriptions =
+        subscriptionGenerator.subscriptionsFromPlanDef(planDefinition);
+    for (Subscription subscription : subscriptions) {
+      actualCriteria.put(
+          subscription.getIdElement().getIdPart().replace("sub" + planDefinitionId, ""),
+          subscription.getCriteria());
+    }
+
+    assertEquals(expectedCriteria, actualCriteria);
+  }
+
+  @Test
+  public void testGenerateSubscription_PostsFullResourcesToTheNotificationEndpoint() {
+    Subscription subscription =
+        subscriptionGenerator.generateSubscription(
+            "Encounter", "http://localhost/notify", "subencounter-close", "encounter-close");
+
+    assertEquals(Subscription.SubscriptionStatus.REQUESTED, subscription.getStatus());
+    assertEquals("Encounter?", subscription.getCriteria());
+    assertEquals("http://localhost/notify", subscription.getChannel().getEndpoint());
+    assertEquals(
+        Subscription.SubscriptionChannelType.RESTHOOK, subscription.getChannel().getType());
+    assertEquals(
+        "http://example.org/medmorph/subscriptiontopic/encounter-close",
+        subscription
+            .getExtensionByUrl(
+                "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-topic-canonical")
+            .getValue()
+            .primitiveValue());
   }
 }

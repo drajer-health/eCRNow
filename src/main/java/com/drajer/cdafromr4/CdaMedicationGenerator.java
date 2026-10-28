@@ -28,9 +28,13 @@ public class CdaMedicationGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
     List<Medication> medList = data.getMedicationList();
-    List<MedicationStatement> meds = data.getMedicationStatements();
-    List<MedicationAdministration> medAdms = data.getMedicationAdministrations();
-    List<MedicationRequest> medReqs = getValidMedicationRequests(data, medList);
+    // Sort most recent first for a consistent display order (issue #1152).
+    List<MedicationStatement> meds =
+        CdaSortUtils.sortMedicationStatements(data.getMedicationStatements());
+    List<MedicationAdministration> medAdms =
+        CdaSortUtils.sortMedicationAdministrations(data.getMedicationAdministrations());
+    List<MedicationRequest> medReqs =
+        CdaSortUtils.sortMedicationRequests(getValidMedicationRequests(data, medList));
 
     if ((meds != null && !meds.isEmpty())
         || (medAdms != null && !medAdms.isEmpty())
@@ -276,7 +280,8 @@ public class CdaMedicationGenerator {
           dt = CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
         } else {
           logger.error(
-              " Dosage field does not have a valid period either due to datetime or timezone being null ");
+              " Dosage field does not have a valid period either due to datetime or timezone being"
+                  + " null ");
         }
         String medicationDosagePeriodText =
             CdaFhirUtilities.getStringForQuantity(dose) + CdaGeneratorConstants.PIPE + periodText;
@@ -1103,7 +1108,9 @@ public class CdaMedicationGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
     List<Medication> medList = data.getMedicationList();
-    List<MedicationAdministration> medAdms = getValidMedicationAdministrations(data, medList);
+    List<MedicationAdministration> medAdms =
+        CdaSortUtils.sortMedicationAdministrations(
+            getValidMedicationAdministrations(data, medList));
 
     if (medAdms != null && !medAdms.isEmpty()) {
 
@@ -1247,8 +1254,10 @@ public class CdaMedicationGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
     List<Medication> medList = data.getMedicationList();
-    List<MedicationStatement> meds = getValidMedicationStatements(data, medList);
-    List<MedicationRequest> medReqs = getValidMedicationRequestsForMedSection(data, medList);
+    List<MedicationStatement> meds =
+        CdaSortUtils.sortMedicationStatements(getValidMedicationStatements(data, medList));
+    List<MedicationRequest> medReqs =
+        CdaSortUtils.sortMedicationRequests(getValidMedicationRequestsForMedSection(data, medList));
 
     if (meds != null && !meds.isEmpty() || medReqs != null && !medReqs.isEmpty()) {
 
@@ -1441,7 +1450,8 @@ public class CdaMedicationGenerator {
           dt = CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
         } else {
           logger.error(
-              " Dosage field does not have a valid period either due to datetime or timezone being null ");
+              " Dosage field does not have a valid period either due to datetime or timezone being"
+                  + " null ");
         }
         String medicationDosagePeriodText =
             CdaFhirUtilities.getStringForQuantity(dose) + CdaGeneratorConstants.PIPE + periodText;
@@ -1743,7 +1753,8 @@ public class CdaMedicationGenerator {
     }
 
     logger.info(
-        "getValidMedicationRequestsForMedSection: {} MedicationRequest(s) qualify for Medications Section",
+        "getValidMedicationRequestsForMedSection: {} MedicationRequest(s) qualify for Medications"
+            + " Section",
         result.size());
     return result;
   }
@@ -1822,7 +1833,8 @@ public class CdaMedicationGenerator {
     }
 
     logger.info(
-        "getValidMedicationRequestsForPlanOfTreatment: {} MedicationRequest(s) qualify for Plan of Treatment Section",
+        "getValidMedicationRequestsForPlanOfTreatment: {} MedicationRequest(s) qualify for Plan of"
+            + " Treatment Section",
         result.size());
     return result;
   }

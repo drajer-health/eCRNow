@@ -1,7 +1,6 @@
 package com.drajer.sof.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +32,7 @@ public class ResourceUtilsTest {
     p2.setMeta(new Meta().setVersionId("1"));
     List<Patient> result = ResourceUtils.deduplicate(Arrays.asList(p1, p2));
     assertEquals(1, result.size());
-    assertTrue(result.get(0).getMeta().getVersionId().equals("1"));
+    assertEquals("1", result.get(0).getMeta().getVersionId());
   }
 
   @Test

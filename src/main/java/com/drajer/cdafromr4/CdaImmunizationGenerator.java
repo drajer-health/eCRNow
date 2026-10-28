@@ -35,7 +35,8 @@ public class CdaImmunizationGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
 
-    List<Immunization> imms = data.getImmunizations();
+    // Sort most recent first for a consistent display order (issue #1152).
+    List<Immunization> imms = CdaSortUtils.sortImmunizations(data.getImmunizations());
 
     if (imms != null && !imms.isEmpty()) {
 

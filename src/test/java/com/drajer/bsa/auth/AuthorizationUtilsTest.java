@@ -18,12 +18,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class AuthorizationUtilsTest {
 
   @Mock AuthorizationService backendAuthorizationService;
-
   @Mock AuthorizationService ehrAuthorizationService;
-
   @Mock AuthorizationService passwordAuthorizationService;
 
-  @InjectMocks AuthorizationUtils authorizationUtils;
+  @InjectMocks private AuthorizationUtils authorizationUtils;
 
   @Test
   public void testGetToken_UserNamePwd() throws JSONException {

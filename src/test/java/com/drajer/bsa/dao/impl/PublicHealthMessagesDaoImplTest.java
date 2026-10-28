@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.*;
 import org.hibernate.Session;
@@ -106,35 +107,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).uniqueResultOptional();
   }
 
-  //  @Test
-  //  public void testgetMaxVersionId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setFhirServerBaseUrl("fhirServerBaseUrl");
-  //    publicHealthMessage.setNotifiedResourceId("notifiedResourceId");
-  //    publicHealthMessage.setNotifiedResourceType("notifiedResourceType");
-  //    publicHealthMessage.setPatientId("patientId");
-  //    publicHealthMessage.setKarUniqueId("karUniqueId");
-  //
-  //    publicHealthMessage.setSubmittedVersionNumber(1);
-  //
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.addOrder(Order.desc("submittedVersionNumber"))).thenReturn(mockCriteria);
-  //    when(mockCriteria.setMaxResults(1)).thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(publicHealthMessage);
-  //
-  //    Integer result = publicHealthMessagesDao.getMaxVersionId(publicHealthMessage);
-  //
-  //    assertNotNull(result);
-  //    assertEquals(publicHealthMessage.getSubmittedVersionNumber(), result);
-  //
-  //    verify(mockCriteria).setMaxResults(1);
-  //    verify(mockCriteria).uniqueResult();
-  //  }
-
   @Test
   public void testgetByCorrelationId() {
 
@@ -176,34 +148,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(cb).createQuery(PublicHealthMessage.class);
   }
 
-  //  @Test
-  //  public void testgetByCorrelationId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setId(UUID.randomUUID());
-  //    publicHealthMessage.setxCorrelationId("xCorrelationId");
-  //
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //
-  //    when(mockCriteria.add(Restrictions.eq(X_CORRELATION_ID,
-  // "coorelId"))).thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(publicHealthMessage);
-  //
-  //    PublicHealthMessage result =
-  //        publicHealthMessagesDao.getByCorrelationId(publicHealthMessage.getxCorrelationId());
-  //    assertNotNull(result);
-  //    assertEquals(publicHealthMessage.getId(), result.getId());
-  //    assertEquals(publicHealthMessage.getxCorrelationId(), result.getxCorrelationId());
-  //
-  //    verify(mockCriteria).uniqueResult();
-  //  }
-  //
-
   @Test
   public void testgetPublicHealthMessage() {
     Map<String, String> searchParams = new HashMap<>();
@@ -242,24 +186,39 @@ public class PublicHealthMessagesDaoImplTest {
     verify(cq).from(PublicHealthMessage.class);
   }
 
-  //  @Test
-  //  public void testgetPublicHealthMessage() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    HashMap<String, String> searchParams = new HashMap<>();
-  //    searchParams.put("key", "value");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.addOrder(Order.desc(any()))).thenReturn(mockCriteria);
-  //    List<PublicHealthMessage> result =
-  // publicHealthMessagesDao.getPublicHealthMessage(searchParams);
-  //
-  //    assertNotNull(result);
-  //    verify(sessionFactory).getCurrentSession();
-  //    verify(mocksession).createCriteria(PublicHealthMessage.class);
-  //  }
+  @Test
+  public void testgetPublicHealthMessage_withSubmissionMessageStatus_line107() {
+    Map<String, String> searchParams = new HashMap<>();
+    searchParams.put("submissionMessageStatus", "SUBMITTED");
+    List<PublicHealthMessage> expectedList = new ArrayList<>();
+    expectedList.add(new PublicHealthMessage());
+
+    Session session = mock(Session.class);
+    EntityManagerFactory emf = mock(EntityManagerFactory.class);
+    EntityManager em = mock(EntityManager.class);
+    CriteriaBuilder cb = mock(CriteriaBuilder.class);
+    CriteriaQuery<PublicHealthMessage> cq = mock(CriteriaQuery.class);
+    Root<PublicHealthMessage> root = mock(Root.class);
+    Query<PublicHealthMessage> query = mock(Query.class);
+
+    when(sessionFactory.getCurrentSession()).thenReturn(session);
+    when(session.getEntityManagerFactory()).thenReturn(emf);
+    when(emf.createEntityManager()).thenReturn(em);
+
+    when(em.getCriteriaBuilder()).thenReturn(cb);
+    when(cb.createQuery(PublicHealthMessage.class)).thenReturn(cq);
+    when(cq.from(PublicHealthMessage.class)).thenReturn(root);
+
+    when(session.createQuery(cq)).thenReturn(query);
+    when(query.getResultList()).thenReturn(expectedList);
+
+    List<PublicHealthMessage> result = publicHealthMessagesDao.getPublicHealthMessage(searchParams);
+
+    assertNotNull("Result should not be null", result);
+    assertEquals(expectedList, result);
+    verify(sessionFactory, times(2)).getCurrentSession();
+    verify(query).getResultList();
+  }
 
   @Test
   public void testgetByXRequestId() {
@@ -306,29 +265,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).getResultList();
   }
 
-  //  @Test
-  //  public void testgetByXRequestId() {
-  //    String Id = "xRequestId";
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setId(UUID.randomUUID());
-  //    publicHealthMessage.setNotificationId("notificationId");
-  //    List<PublicHealthMessage> publicHealthMessageList = new ArrayList<>();
-  //    publicHealthMessageList.add(publicHealthMessage);
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //
-  //    when(mockCriteria.add(Restrictions.eq(X_REQUEST_ID,
-  // "xRequestId"))).thenReturn(mockCriteria);
-  //    when(mockCriteria.addOrder(Order.desc(any()))).thenReturn(mockCriteria);
-  //
-  //    List<PublicHealthMessage> result = publicHealthMessagesDao.getByXRequestId(Id);
-  //    assertNotNull(result);
-  //    verify(mockCriteria).list();
-  //  }
-  //
-
   @Test
   public void testgetBySubmittedMessageId() {
     String submittedMessageId = "submittedMessageId";
@@ -369,49 +305,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).uniqueResult();
   }
 
-  //  @Test
-  //  public void testgetBySubmittedMessageId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setSubmittedMessageId("submittedMessageId");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.add(Restrictions.eq(SUBMITTED_MESSAGE_ID, "submittedMessageId")))
-  //        .thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(new PublicHealthMessage());
-  //    PublicHealthMessage result =
-  //        publicHealthMessagesDao.getBySubmittedMessageId(
-  //            publicHealthMessage.getSubmittedMessageId());
-  //     assertEquals(publicHealthMessage.getSubmittedMessageId(),result.getSubmittedMessageId());
-  //    assertNotNull(result);
-  //
-  //    verify(mockCriteria).uniqueResult();
-  //    verify(sessionFactory).getCurrentSession();
-  //    verify(mocksession).createCriteria(PublicHealthMessage.class);
-  //  }
-
-  //  @Test
-  //  public void testgetByResponseMessageId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setResponseMessageId("responseMessageId");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.add(Restrictions.eq(RESPONSE_MESSAGE_ID, "responseMessageId")))
-  //        .thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(new PublicHealthMessage());
-  //    PublicHealthMessage result =
-  //
-  // publicHealthMessagesDao.getByResponseMessageId(publicHealthMessage.getResponseMessageId());
-  //    assertNotNull(result);
-  //
-  //    verify(mockCriteria).uniqueResult();
-  //    verify(sessionFactory).getCurrentSession();
-  //    verify(mocksession).createCriteria(PublicHealthMessage.class);
-  //  }
-
   @Test
   public void testgetByResponseMessageId() {
     String responseMessageId = "responseMessageId";
@@ -451,16 +344,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).uniqueResult();
   }
 
-  //  @Test
-  //  public void testdelete() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    Session mocksession = mock(Session.class);
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    doNothing().when(mocksession).delete(any());
-  //    publicHealthMessagesDao.delete(publicHealthMessage);
-  //    verify(mocksession).delete(publicHealthMessage);
-  //  }
-
   @Test
   public void testdelete() {
 
@@ -474,28 +357,6 @@ public class PublicHealthMessagesDaoImplTest {
     verify(sessionFactory).getCurrentSession();
     verify(session).remove(publicHealthMessage);
   }
-
-  //
-  //  @Test
-  //  public void testgetBySubmittedDataId() {
-  //    PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
-  //    publicHealthMessage.setSubmittedDataId("submittedDataId");
-  //    Session mocksession = mock(Session.class);
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //
-  //    when(sessionFactory.getCurrentSession()).thenReturn(mocksession);
-  //    when(mocksession.createCriteria(PublicHealthMessage.class)).thenReturn(mockCriteria);
-  //    when(mockCriteria.add(Restrictions.eq(SUBMITTED_DATA_ID,
-  // "subId"))).thenReturn(mockCriteria);
-  //    when(mockCriteria.uniqueResult()).thenReturn(new PublicHealthMessage());
-  //
-  //    PublicHealthMessage result =
-  //        publicHealthMessagesDao.getBySubmittedDataId(publicHealthMessage.getSubmittedDataId());
-  //
-  //    assertNotNull(result);
-  //    verify(mockCriteria).uniqueResult();
-  //    verify(sessionFactory).getCurrentSession();
-  //  }
 
   @Test
   public void testgetBySubmittedDataId() {
@@ -535,42 +396,60 @@ public class PublicHealthMessagesDaoImplTest {
     verify(query).uniqueResult();
   }
 
-  //
-  //  @Test
-  //  public void testprepareCriteria() {
-  //    Criteria mockCriteria = mock(Criteria.class);
-  //    HashMap<String, String> searchParams = new HashMap<>();
-  //    searchParams.put(SUBMITTED_DATA_ID, "submittedDataId");
-  //    searchParams.put(SUBMITTED_VERSION_NUMBER, "submittedVersionNumber");
-  //    searchParams.put(RESPONSE_DATA_ID, "responseDataId");
-  //    searchParams.put(FHIR_SERVER_URL, "fhirServerBaseUrl");
-  //    searchParams.put(PATIENT_ID, "patientId");
-  //    searchParams.put(ENCOUNTER_ID, "encounterId");
-  //    searchParams.put(NOTIFIED_RESOURCE_ID, "notifiedResourceId");
-  //    searchParams.put(NOTIFIED_RESOURCE_TYPE, "notifiedResourceType");
-  //    searchParams.put(KAR_UNIQUE_ID, "karUniqueId");
-  //    searchParams.put(SUBMITTED_MESSAGE_ID, "submittedMessageId");
-  //    searchParams.put(X_REQUEST_ID, "xRequestId");
-  //    searchParams.put(X_CORRELATION_ID, "xCorrelationId");
-  //    searchParams.put(RESPONSE_MESSAGE_ID, "responseMessageId");
-  //    searchParams.put(RESPONSE_PROCESSING_INS, "responseProcessingInstruction");
-  //    searchParams.put(RESPONSE_PROCESSING_STATUS, "responseProcessingStatus");
-  //
-  //    publicHealthMessagesDao.prepareCriteria(mockCriteria, searchParams);
+  @Test
+  public void testPreparePredicate_allSearchParams() {
+    CriteriaBuilder cb = mock(CriteriaBuilder.class);
+    Root<PublicHealthMessage> root = mock(Root.class);
+    Map<String, String> searchParams = new HashMap<>();
 
-  //        ArgumentCaptor<org.hibernate.criterion.Criterion> captor =
-  // ArgumentCaptor.forClass(org.hibernate.criterion.Criterion.class);
-  //
-  //        // Verify that criteria.add() was called and capture the arguments
-  //        verify(mockCriteria, times(16)).add(captor.capture());
-  //
-  //        // Get all captured arguments
-  //        java.util.List<org.hibernate.criterion.Criterion> capturedArguments =
-  // captor.getAllValues();
-  //        // Check the captured arguments for the correct values
-  //        assertEquals(16, capturedArguments.size());
-  //        assertEquals(Restrictions.eq(SUBMITTED_DATA_ID, "submittedDataId"),
-  // capturedArguments.get(0));
-  // }
+    searchParams.put("submittedDataId", "subId");
+    searchParams.put("submittedVersionNumber", "1");
+    searchParams.put("responseDataId", "respId");
+    searchParams.put("fhirServerBaseUrl", "http://fhir");
+    searchParams.put("patientId", "patient123");
+    searchParams.put("encounterId", "enc123");
+    searchParams.put("notifiedResourceId", "resource123");
+    searchParams.put("notifiedResourceType", "resourceType");
+    searchParams.put("karUniqueId", "kar123");
+    searchParams.put("submittedMessageId", "msg123");
+    searchParams.put("xRequestId", "req123");
+    searchParams.put("xCorrelationId", "corr123");
+    searchParams.put("responseMessageId", "respMsg123");
+    searchParams.put("responseProcessingInstruction", "instruction");
+    searchParams.put("responseProcessingStatus", "status");
 
+    List<Predicate> predicates =
+        PublicHealthMessagesDaoImpl.preparePredicate(cb, root, searchParams);
+
+    assertNotNull(predicates);
+    assertEquals(15, predicates.size());
+  }
+
+  @Test
+  public void testPreparePredicate_withSingleParam() {
+    CriteriaBuilder cb = mock(CriteriaBuilder.class);
+    Root<PublicHealthMessage> root = mock(Root.class);
+    Map<String, String> searchParams = new HashMap<>();
+
+    searchParams.put("submittedDataId", "subId");
+
+    List<Predicate> predicates =
+        PublicHealthMessagesDaoImpl.preparePredicate(cb, root, searchParams);
+
+    assertNotNull(predicates);
+    assertEquals(1, predicates.size());
+  }
+
+  @Test
+  public void testPreparePredicate_emptyParams() {
+    CriteriaBuilder cb = mock(CriteriaBuilder.class);
+    Root<PublicHealthMessage> root = mock(Root.class);
+    Map<String, String> searchParams = new HashMap<>();
+
+    List<Predicate> predicates =
+        PublicHealthMessagesDaoImpl.preparePredicate(cb, root, searchParams);
+
+    assertNotNull(predicates);
+    assertEquals(0, predicates.size());
+  }
 }

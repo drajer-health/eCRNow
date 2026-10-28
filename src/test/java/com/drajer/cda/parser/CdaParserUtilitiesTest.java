@@ -28,7 +28,7 @@ public class CdaParserUtilitiesTest {
 
   @Test
   public void testReadTemplateId() {
-    // Mocking the behavior of the Element object
+
     Mockito.when(mockElement.getAttribute("root")).thenReturn("rootValue");
     Mockito.when(mockElement.getAttribute("extension")).thenReturn("extValue");
 
@@ -45,7 +45,6 @@ public class CdaParserUtilitiesTest {
     Mockito.when(nodeList.getLength()).thenReturn(1);
     Mockito.when(nodeList.item(0)).thenReturn(mockElement);
 
-    CdaIi cdaIi = new CdaIi();
     Mockito.when(mockElement.getAttribute("root")).thenReturn("root");
     Mockito.when(mockElement.getAttribute("extension")).thenReturn("ext");
 

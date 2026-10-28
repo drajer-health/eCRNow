@@ -1,6 +1,7 @@
 package com.drajer.cdafromr4;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
@@ -138,20 +139,21 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   public void testGenerateTravelHistoryEntry() {
 
     String expectedXml =
-        "<entry>\r\n"
-            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
-            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
-            + "<text>Travel history</text>\r\n"
-            + "<statusCode code=\"completed\"/>\r\n"
-            + "<effectiveTime>\r\n"
-            + "<low value=\"20220403153000-0400\"/>\r\n"
-            + "<high value=\"20230403153000-0400\"/>\r\n"
-            + "</effectiveTime>\r\n"
-            + "</act>\r\n"
-            + "</entry>\r\n"
-            + "";
+        """
+                <entry>\r
+                <act classCode="ACT" moodCode="EVN">\r
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>\r
+                <id root="2.16.840.1.113883.1.1.1.1" extension="null"/>\r
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>\r
+                <text>Travel history</text>\r
+                <statusCode code="completed"/>\r
+                <effectiveTime>\r
+                <low value="20220403153000-0400"/>\r
+                <high value="20230403153000-0400"/>\r
+                </effectiveTime>\r
+                </act>\r
+                </entry>\r
+                """;
 
     Observation observation = new Observation();
     Period period = new Period();
@@ -172,17 +174,18 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
   public void testGenerateTravelHistoryEntry1() {
 
     String expectedXml =
-        "<entry>\r\n"
-            + "<act classCode=\"ACT\" moodCode=\"EVN\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n"
-            + "<id root=\"2.16.840.1.113883.1.1.1.1\" extension=\"null\"/>\r\n"
-            + "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n"
-            + "<text>Travel history</text>\r\n"
-            + "<statusCode code=\"completed\"/>\r\n"
-            + "<effectiveTime value=\"20230403153000-0400\"/>\r\n"
-            + "</act>\r\n"
-            + "</entry>\r\n"
-            + "";
+        """
+                <entry>\r
+                <act classCode="ACT" moodCode="EVN">\r
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>\r
+                <id root="2.16.840.1.113883.1.1.1.1" extension="null"/>\r
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>\r
+                <text>Travel history</text>\r
+                <statusCode code="completed"/>\r
+                <effectiveTime value="20230403153000-0400"/>\r
+                </act>\r
+                </entry>\r
+                """;
 
     Observation observation = new Observation();
     DateTimeType dateTimeType = new DateTimeType("2023-04-03T15:30:00-04:00");
@@ -250,5 +253,73 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     String participantXml =
         CdaSocialHistoryGenerator.generateParticipant(r4FhirData.getTravelObs().get(0));
     assertNotNull(participantXml);
+  }
+
+  private Type snomed(String code) {
+    return new CodeableConcept()
+        .addCoding(new Coding().setSystem(CdaGeneratorConstants.FHIR_SNOMED_URL).setCode(code));
+  }
+
+  @Test
+  public void testGetDisabilityBooleanValue_allArms() {
+    assertTrue(
+        "a null type must yield a nullFlavor BL",
+        CdaSocialHistoryGenerator.getDisabilityBooleanValue(null)
+            .contains(CdaGeneratorConstants.NF_NI));
+
+    assertTrue(
+        "SNOMED 373066001 (yes) must yield true",
+        CdaSocialHistoryGenerator.getDisabilityBooleanValue(snomed("373066001")).contains("true"));
+
+    assertTrue(
+        "SNOMED 373067005 (no) must yield false",
+        CdaSocialHistoryGenerator.getDisabilityBooleanValue(snomed("373067005")).contains("false"));
+
+    assertTrue(
+        "free text yes must yield true",
+        CdaSocialHistoryGenerator.getDisabilityBooleanValue(new StringType("Yes"))
+            .contains("true"));
+
+    assertTrue(
+        "free text no must yield false",
+        CdaSocialHistoryGenerator.getDisabilityBooleanValue(new StringType("NO"))
+            .contains("false"));
+
+    assertTrue(
+        "an unrecognised value must fall through to nullFlavor",
+        CdaSocialHistoryGenerator.getDisabilityBooleanValue(new StringType("maybe"))
+            .contains(CdaGeneratorConstants.NF_NI));
+
+    assertTrue(
+        "an unmatched coding must fall through to nullFlavor",
+        CdaSocialHistoryGenerator.getDisabilityBooleanValue(snomed("000000"))
+            .contains(CdaGeneratorConstants.NF_NI));
+  }
+
+  @Test
+  public void testGenerateTribalAffiliationEntry_withAndWithoutExtension() {
+    Extension tribal = new Extension();
+    tribal.setUrl("http://hl7.org/fhir/us/odh/StructureDefinition/tribal-affiliation");
+    tribal.addExtension(
+        new Extension(
+            "tribalAffiliation",
+            new CodeableConcept().addCoding(new Coding().setCode("338").setDisplay("Cherokee"))));
+
+    assertNotNull(
+        "A tribal affiliation entry must be produced",
+        CdaSocialHistoryGenerator.generateTribalAffiliationEntry(tribal, "Cherokee", "ref1"));
+
+    assertNotNull(
+        "An extension with no sub-extensions must not throw",
+        CdaSocialHistoryGenerator.generateTribalAffiliationEntry(new Extension(), null, "ref2"));
+  }
+
+  @Test
+  public void testGenerateOdhSectionEndHeader() {
+    String xml = CdaSocialHistoryGenerator.generateOdhSectionEndHeader();
+
+    assertNotNull("an end header must be produced", xml);
+    assertTrue("section must be closed", xml.contains("</section>"));
+    assertTrue("component must be closed", xml.contains("</component>"));
   }
 }

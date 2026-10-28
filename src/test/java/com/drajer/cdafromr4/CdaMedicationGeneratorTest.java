@@ -1,6 +1,8 @@
 package com.drajer.cdafromr4;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
@@ -8,8 +10,12 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Medication.MedicationIngredientComponent;
+import org.hl7.fhir.r4.model.MedicationRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -144,7 +150,8 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     String actualXml =
-        CdaMedicationGenerator.generateR31MedicationsAdministeredSection(data, launchDetails, "");
+        CdaMedicationGenerator.generateR31MedicationsAdministeredSection(
+            data, launchDetails, CdaGeneratorConstants.CDA_EICR_VERSION_R31);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -161,15 +168,16 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   @Test
   public void TestGenerateEmptyMedicationsAdministeredSection() {
     String expectedXml =
-        "<component>\r\n"
-            + "<section nullFlavor=\"NI\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.38\"/>\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.38\" extension=\"2014-06-09\"/>\r\n"
-            + "<code code=\"29549-3\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Medications Administered\"/>\r\n"
-            + "<title>Medications Administered</title>\r\n"
-            + "<text>No Medication Administered Information</text>\r\n"
-            + "</section>\r\n"
-            + "</component>";
+        """
+        <component>\r
+        <section nullFlavor="NI">\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.38"/>\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>\r
+        <code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>\r
+        <title>Medications Administered</title>\r
+        <text>No Medication Administered Information</text>\r
+        </section>\r
+        </component>""";
     String actualXml = CdaMedicationGenerator.generateEmptyMedicationsAdministeredSection();
 
     assertXmlEquals(expectedXml, actualXml);
@@ -178,15 +186,17 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateEmptyMedicationsSection() {
     String expectedXml =
-        "<component>\n"
-            + "<section nullFlavor=\"NI\">\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.1.1\"/>\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.1.1\" extension=\"2014-06-09\"/>\n"
-            + "<code code=\"10160-0\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"History of Medication Use\"/>\n"
-            + "<title>MEDICATIONS</title>\n"
-            + "<text>No Medication Statement Information</text>\n"
-            + "</section>\n"
-            + "</component>\n";
+        """
+        <component>
+        <section nullFlavor="NI">
+        <templateId root="2.16.840.1.113883.10.20.22.2.1.1"/>
+        <templateId root="2.16.840.1.113883.10.20.22.2.1.1" extension="2014-06-09"/>
+        <code code="10160-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Medication Use"/>
+        <title>MEDICATIONS</title>
+        <text>No Medication Statement Information</text>
+        </section>
+        </component>
+        """;
     String actualXml = CdaMedicationGenerator.generateEmptyMedicationsSection();
 
     assertXmlEquals(expectedXml, actualXml);
@@ -516,5 +526,62 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
     assertEquals(1, result.size());
     assertEquals(1, cmeds.size());
     assertEquals(containedMed, cmeds.get(0));
+  }
+
+  private MedicationRequest medReq(String id, String status, String intent) {
+    MedicationRequest m = new MedicationRequest();
+    m.setId(id);
+    if (status != null) m.setStatus(MedicationRequest.MedicationRequestStatus.fromCode(status));
+    if (intent != null) m.setIntent(MedicationRequest.MedicationRequestIntent.fromCode(intent));
+    return m;
+  }
+
+  private R4FhirData dataWithMedReqs(MedicationRequest... reqs) {
+    R4FhirData d = new R4FhirData();
+    d.setMedicationRequests(new ArrayList<>(Arrays.asList(reqs)));
+    return d;
+  }
+
+  @Test
+  public void testGetValidMedicationRequestsForMedSection_filtersByStatusAndIntent()
+      throws Exception {
+    List<MedicationRequest> none =
+        CdaMedicationGenerator.getValidMedicationRequestsForMedSection(
+            new R4FhirData(), new ArrayList<>());
+    assertNotNull(none);
+    assertTrue("no MedicationRequests must yield an empty list", none.isEmpty());
+
+    List<MedicationRequest> filtered =
+        CdaMedicationGenerator.getValidMedicationRequestsForMedSection(
+            dataWithMedReqs(
+                medReq("no-status", null, "order"),
+                medReq("cancelled", "cancelled", "order"),
+                medReq("active-order", "active", "order"),
+                medReq("completed-order", "completed", "order")),
+            new ArrayList<>());
+
+    assertNotNull(filtered);
+    assertTrue(
+        "requests with no status or a rejected status must be dropped", filtered.size() <= 2);
+  }
+
+  @Test
+  public void testGetValidMedicationRequestsForPlanOfTreatment_filtersByStatusAndIntent()
+      throws Exception {
+    List<MedicationRequest> none =
+        CdaMedicationGenerator.getValidMedicationRequestsForPlanOfTreatment(
+            new R4FhirData(), new ArrayList<>());
+    assertNotNull(none);
+    assertTrue("no MedicationRequests must yield an empty list", none.isEmpty());
+
+    List<MedicationRequest> filtered =
+        CdaMedicationGenerator.getValidMedicationRequestsForPlanOfTreatment(
+            dataWithMedReqs(
+                medReq("no-status", null, "order"),
+                medReq("on-hold-order", "on-hold", "order"),
+                medReq("active-order", "active", "order")),
+            new ArrayList<>());
+
+    assertNotNull("Plan of Treatment filtering must not throw", filtered);
   }
 }

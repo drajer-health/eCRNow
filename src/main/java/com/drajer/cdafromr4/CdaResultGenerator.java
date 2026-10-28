@@ -41,6 +41,10 @@ public class CdaResultGenerator {
     Map<DiagnosticReport, List<Observation>> reports =
         getDiagnosticReportsWithObservations(data, allResults, uniqueObservations);
 
+    // Sort most recent first for a consistent display order (issue #1152).
+    uniqueObservations = CdaSortUtils.sortObservationMap(uniqueObservations);
+    reports = CdaSortUtils.sortDiagnosticReports(reports);
+
     if ((uniqueObservations != null && !uniqueObservations.isEmpty())
         || (reports != null && !reports.isEmpty())) {
 
@@ -65,7 +69,8 @@ public class CdaResultGenerator {
 
     } else {
       logger.info(
-          " No Lab Results or Diagnostic Reports to generate data , hence generating a null section.");
+          " No Lab Results or Diagnostic Reports to generate data , hence generating a null"
+              + " section.");
       hsb.append(generateEmptyLabResults());
     }
 

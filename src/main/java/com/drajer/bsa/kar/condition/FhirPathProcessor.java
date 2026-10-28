@@ -200,7 +200,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 }
 
                 logger.warn(
-                    " Cache miss for static plan variable {} of expression {}, falling back to inline evaluation",
+                    " Cache miss for static plan variable {} of expression {}, falling back to"
+                        + " inline evaluation",
                     exp.getName(),
                     exp.getExpression());
 
@@ -266,7 +267,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     if (variableResult.getParameter(PARAM) == null) {
       logger.error(
-          " No parameter returned from FHIR Path Expression Evaluator for variable {} in expression {}, so value is set to null",
+          " No parameter returned from FHIR Path Expression Evaluator for variable {} in expression"
+              + " {}, so value is set to null",
           exp.getName(),
           exp.getExpression());
       paramComponent.setValue((Type) null);
@@ -681,7 +683,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            newEvaluator()
+            getEvaluator()
                 .evaluate(
                     null,
                     cond.getLogicExpression().getExpression(),

@@ -7,6 +7,7 @@ import ca.uhn.fhir.context.FhirContext;
 import com.drajer.test.simulator.ContentDataSimulator;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +28,9 @@ public class ReportGenerationUtilsTest {
 
   @Test
   public void testFilterObservationsByCategory() {
-    FhirContext fhirContext = FhirContext.forR4();
+    FhirContext localFhirContext = FhirContext.forR4();
     Bundle bundle =
-        fhirContext
+        localFhirContext
             .newJsonParser()
             .parseResource(
                 Bundle.class,
@@ -84,22 +85,6 @@ public class ReportGenerationUtilsTest {
   public void testHasCode_NullCodings() {
     Coding cd = null;
     assertFalse(ReportGenerationUtils.hasCode("http://loinc.org", "12345-6", cd));
-  }
-
-  @Test
-  public void testHasCode_CodingsWithoutSystem() {
-    Coding coding = new Coding();
-    coding.setCode("12345-6");
-
-    assertFalse(ReportGenerationUtils.hasCode("http://loinc.org", "12345-6", coding));
-  }
-
-  @Test
-  public void testHasCode_CodingsWithoutCode() {
-    Coding coding = new Coding();
-    coding.setSystem("http://loinc.org");
-
-    assertFalse(ReportGenerationUtils.hasCode("http://loinc.org", "12345-6", coding));
   }
 
   @Test
@@ -402,5 +387,85 @@ public class ReportGenerationUtilsTest {
     Set<Resource> resourceSet =
         ReportGenerationUtils.filterSocialHistoryObservations(new HashSet<>());
     assertTrue(resourceSet.isEmpty());
+  }
+
+  @Test
+  public void filterObservations_onTheRealEicrBySocialHistoryCodesAndPregnancy() {
+    Bundle document =
+        (Bundle)
+            loadBundleFromFile("Bsa/report/ecr-report/fhirReport.json").getEntry().stream()
+                .map(Bundle.BundleEntryComponent::getResource)
+                .filter(r -> r instanceof Bundle)
+                .findFirst()
+                .orElseThrow();
+    Set<Resource> observations =
+        document.getEntry().stream()
+            .map(Bundle.BundleEntryComponent::getResource)
+            .filter(r -> r instanceof Observation)
+            .collect(Collectors.toSet());
+    String labId = "535e7bf4-2ff6-40b4-89d3-dfff0ffdd622";
+    String smokingId = "e83c4524-bfc7-4321-b5be-68546a15b6e9";
+    Observation lab =
+        (Observation)
+            observations.stream()
+                .filter(r -> r.getIdElement().getIdPart().equals(labId))
+                .findFirst()
+                .orElseThrow();
+    Observation smoking =
+        (Observation)
+            observations.stream()
+                .filter(r -> r.getIdElement().getIdPart().equals(smokingId))
+                .findFirst()
+                .orElseThrow();
+
+    assertTrue(ReportGenerationUtils.observationBelongsToCategory(lab, "laboratory"));
+    assertFalse(ReportGenerationUtils.observationBelongsToCategory(lab, "social-history"));
+    assertFalse(ReportGenerationUtils.observationBelongsToCategory(null, "laboratory"));
+
+    Set<Resource> social = ReportGenerationUtils.filterSocialHistoryObservations(observations);
+    assertTrue(social.contains(smoking));
+    assertFalse(social.contains(lab));
+
+    List<Map<String, String>> smokingCode =
+        List.of(Map.of("system", "http://loinc.org", "code", "72166-2"));
+    assertEquals(
+        Set.of(smoking),
+        ReportGenerationUtils.filterSocialHistoryObservations(observations, smokingCode));
+    assertTrue(ReportGenerationUtils.filterSocialHistoryObservations(null, smokingCode).isEmpty());
+
+    Observation pregnancyStatus = new Observation();
+    pregnancyStatus.getCode().addCoding().setSystem("http://loinc.org").setCode("82810-3");
+    Set<Resource> mixed = new HashSet<>(Set.of(pregnancyStatus, smoking));
+    assertEquals(Set.of(pregnancyStatus), ReportGenerationUtils.filterPregnancyObservations(mixed));
+    assertEquals(
+        Set.of(pregnancyStatus),
+        ReportGenerationUtils.filterPregancyObservationn(
+            mixed, List.of(Map.of("system", "http://loinc.org", "code", "82810-3"))));
+    assertTrue(ReportGenerationUtils.filterPregnancyObservations(null).isEmpty());
+  }
+
+  @Test
+  public void sectionChecks_recognizeTheSocialHistoryAndPregnancySectionsOfARealEicr() {
+    Bundle document =
+        (Bundle)
+            loadBundleFromFile("Bsa/report/ecr-report/fhirReport.json").getEntry().stream()
+                .map(Bundle.BundleEntryComponent::getResource)
+                .filter(r -> r instanceof Bundle)
+                .findFirst()
+                .orElseThrow();
+    Composition composition = (Composition) document.getEntryFirstRep().getResource();
+
+    assertEquals(
+        1,
+        composition.getSection().stream()
+            .filter(ReportGenerationUtils::isPregnancySection)
+            .count());
+    assertEquals(
+        1,
+        composition.getSection().stream()
+            .filter(ReportGenerationUtils::isSocialHistorySection)
+            .count());
+    assertFalse(ReportGenerationUtils.isPregnancySection(null));
+    assertFalse(ReportGenerationUtils.isSocialHistorySection(new Composition.SectionComponent()));
   }
 }

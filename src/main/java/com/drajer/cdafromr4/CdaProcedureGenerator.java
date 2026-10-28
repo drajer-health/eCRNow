@@ -24,7 +24,8 @@ public class CdaProcedureGenerator {
 
     logger.info("Start Creating Procedure Section");
 
-    List<Procedure> procList = data.getProcedureList();
+    // Sort most recent first for a consistent display order (issue #1152).
+    List<Procedure> procList = CdaSortUtils.sortProcedures(data.getProcedureList());
 
     if ((procList != null && !procList.isEmpty())) {
 

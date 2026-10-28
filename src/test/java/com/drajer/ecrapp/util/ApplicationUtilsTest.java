@@ -5,19 +5,22 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import com.drajer.eca.model.PatientExecutionState;
+import ca.uhn.fhir.parser.IParser;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.service.PlanDefinitionProcessor;
 import com.drajer.sof.model.LaunchDetails;
 import java.io.File;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.logging.LogLevel;
 
 public class ApplicationUtilsTest {
@@ -71,6 +74,12 @@ public class ApplicationUtilsTest {
     ValueSet vsNullCompose = new ValueSet();
     vsNullCompose.setUrl("nullCompose");
     ValueSetSingleton.getInstance().getGrouperValueSets().add(vsNullCompose);
+
+    List<CanonicalType> result = ApplicationUtils.getValueSetListFromGrouper("nullCompose");
+    assertNull("Should return null for ValueSet with null compose", result);
+
+    List<CanonicalType> notFoundResult = ApplicationUtils.getValueSetListFromGrouper("notFound");
+    assertNull("Should return null for non-existent grouper", notFoundResult);
   }
 
   @Test
@@ -146,10 +155,8 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testCalculateNewTimeForTimer_CurrentBefore() {
-    Duration d = new Duration();
-    d.setValue(1d);
     Instant result =
-        ApplicationUtils.calculateNewTimeForTimer(10, 0, 12, 0, "UTC", d, Instant.now());
+        ApplicationUtils.calculateNewTimeForTimer(10, 0, 12, 0, "UTC", null, Instant.now());
     assertNotNull(result);
   }
 
@@ -197,8 +204,6 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testHandleException() {
-
-    Exception e = new Exception("msg");
 
     ObjectDeletedException ode = new ObjectDeletedException("MyEntity", 1L, "Entity was deleted");
     assertThrows(
@@ -321,14 +326,18 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testReadBundleFromFile_InvalidFile() {
+    IParser jsonParserMock = Mockito.mock(IParser.class);
     ApplicationUtils appUtils = new ApplicationUtils();
+    appUtils.jsonParser = jsonParserMock;
     Bundle bundle = appUtils.readBundleFromFile("nonexistent.json");
     assertNull(bundle); // should handle exception gracefully
   }
 
   @Test
   public void testReadDstu2BundleFromFile_InvalidFile() {
+    IParser jsonParserMock = Mockito.mock(IParser.class);
     ApplicationUtils appUtils = new ApplicationUtils();
+    appUtils.jsonParser = jsonParserMock;
     ca.uhn.fhir.model.dstu2.resource.Bundle bundle =
         appUtils.readDstu2BundleFromFile("nonexistent.json");
     assertNull(bundle);
@@ -336,7 +345,9 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testReadDstu2BundleFromString_ValidString() {
+    IParser jsonParserMock = Mockito.mock(IParser.class);
     ApplicationUtils appUtils = new ApplicationUtils();
+    appUtils.jsonParser = jsonParserMock;
     String data = "{ \"resourceType\": \"Bundle\", \"type\": \"collection\" }";
     ca.uhn.fhir.model.dstu2.resource.Bundle bundle = appUtils.readDstu2BundleFromString(data);
     assertNotNull(bundle);
@@ -345,7 +356,7 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testGetValueSetListFromGrouper_UrlNullOrComposeNull() {
-    // Case: ValueSet URL is null
+
     ValueSet vsNullUrl = new ValueSet();
     ValueSetSingleton.getInstance().getGrouperValueSets().add(vsNullUrl);
     assertNull(ApplicationUtils.getValueSetListFromGrouper("anyId"));
@@ -366,7 +377,7 @@ public class ApplicationUtilsTest {
   public void testGetDetailStatus_EmptyJson() {
     LaunchDetails ld = new LaunchDetails();
     ld.setStatus("{}");
-    PatientExecutionState result = assertDoesNotThrow(() -> ApplicationUtils.getDetailStatus(ld));
+    assertDoesNotThrow(() -> ApplicationUtils.getDetailStatus(ld));
   }
 
   @Test
@@ -380,9 +391,6 @@ public class ApplicationUtilsTest {
 
   @Test
   public void testCalculateNewTimeForTimer_CurrentAfter() {
-    Duration d = new Duration();
-    d.setValue(1d);
-    d.setUnit("h");
     Instant now = Instant.now();
     int startHour = 0;
     int startMin = 0;
@@ -391,8 +399,11 @@ public class ApplicationUtilsTest {
     String timeZone = "UTC";
     Instant result =
         ApplicationUtils.calculateNewTimeForTimer(
-            startHour, startMin, endHour, endMin, timeZone, d, now);
+            startHour, startMin, endHour, endMin, timeZone, null, now);
     result.isAfter(now);
+
+    assertNotNull("Result should not be null", result);
+    assertTrue("Result should be after current time", result.isAfter(now));
   }
 
   @Test
@@ -441,11 +452,10 @@ public class ApplicationUtilsTest {
     Instant now = Instant.now();
     Instant res1 = ApplicationUtils.calculateNewTimeForTimer(9, 0, 17, 0, "UTC", null, now);
     assertNotNull(res1);
-    Duration d = new Duration();
-    d.setValue(1d);
-    Instant res2 = ApplicationUtils.calculateNewTimeForTimer(18, 0, 9, 0, "UTC", d, now);
+    Instant res2 = ApplicationUtils.calculateNewTimeForTimer(18, 0, 9, 0, "UTC", null, now);
     assertNotNull(res2);
-    Instant res3 = ApplicationUtils.calculateNewTimeForTimer(0, 0, 23, 59, "Asia/Kolkata", d, now);
+    Instant res3 =
+        ApplicationUtils.calculateNewTimeForTimer(0, 0, 23, 59, "Asia/Kolkata", null, now);
     assertNotNull(res3);
   }
 
@@ -499,5 +509,102 @@ public class ApplicationUtilsTest {
     assertTrue(ApplicationUtils.convertCodeableConceptsToString(null).isEmpty());
 
     assertTrue(ApplicationUtils.convertCodeableConceptsToString(Collections.emptyList()).isEmpty());
+  }
+
+  @Test
+  public void getEmergentValueSetByIds_matchesByUrlInBothValueSetCollections() {
+    ValueSet general = new ValueSet();
+    general.setId("general-vs");
+    general.setUrl("http://example.org/fhir/ValueSet/general");
+    general.addUseContext(
+        new UsageContext()
+            .setValue(
+                new CodeableConcept()
+                    .addCoding(
+                        new Coding().setCode(PlanDefinitionProcessor.EMERGENT_USE_CONTEXT_CODE))));
+    ValueSet emergent = new ValueSet();
+    emergent.setId("emergent-vs");
+    emergent.setUrl("http://example.org/fhir/ValueSet/emergent");
+    emergent.addUseContext(
+        new UsageContext()
+            .setValue(
+                new CodeableConcept()
+                    .addCoding(
+                        new Coding()
+                            .setCode(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_CODE))));
+    ValueSet notEmergent = new ValueSet();
+    notEmergent.setId("plain-vs");
+    notEmergent.setUrl("http://example.org/fhir/ValueSet/plain");
+    ValueSetSingleton.getInstance().getValueSets().add(general);
+    ValueSetSingleton.getInstance().getValueSets().add(notEmergent);
+    ValueSetSingleton.getInstance().getEmergentValueSets().add(emergent);
+
+    Set<ValueSet> found =
+        ApplicationUtils.getEmergentValueSetByIds(
+            List.of(
+                new CanonicalType("http://example.org/fhir/ValueSet/general"),
+                new CanonicalType("http://example.org/fhir/ValueSet/emergent"),
+                new CanonicalType("http://example.org/fhir/ValueSet/plain")));
+
+    assertEquals(Set.of(general, emergent), found);
+  }
+
+  @Test
+  public void convertTimingScheduleToInstant_usesFrequencyPeriodOrZeroSeconds() {
+    TimingSchedule everyTwoHours = new TimingSchedule();
+    everyTwoHours.setFrequencyPeriod(BigDecimal.valueOf(2));
+    everyTwoHours.setFrequencyPeriodUnit(Timing.UnitsOfTime.H);
+    Instant before = new Date().toInstant();
+
+    Instant frequency = ApplicationUtils.convertTimingScheduleToInstant(everyTwoHours, new Date());
+    Instant immediate =
+        ApplicationUtils.convertTimingScheduleToInstant(new TimingSchedule(), new Date());
+
+    assertFalse(frequency.isBefore(before.plusSeconds(2 * 60 * 60)));
+    assertTrue(frequency.isBefore(before.plusSeconds(2 * 60 * 60 + 60)));
+    assertFalse(immediate.isBefore(before));
+    assertTrue(immediate.isBefore(before.plusSeconds(60)));
+  }
+
+  @Test
+  public void readDstu2BundleFromFile_readsTheRealBundleAndReturnsNullForAMissingFile() {
+    ApplicationUtils utils = new ApplicationUtils();
+    utils.jsonParser = Mockito.mock(IParser.class);
+
+    ca.uhn.fhir.model.dstu2.resource.Bundle bundle =
+        utils.readDstu2BundleFromFile(
+            "src/test/resources/Dstu2/Condition/ConditionBundle_d2572364249.json");
+
+    assertNotNull(bundle);
+    assertFalse(bundle.getEntry().isEmpty());
+    assertNull(utils.readDstu2BundleFromFile("src/test/resources/Dstu2/missing.json"));
+  }
+
+  @Test
+  public void saveDataToFile_writesTheDataAndIgnoresAnUnwritablePath() throws Exception {
+    File target = File.createTempFile("ecr-save-", ".txt");
+    target.deleteOnExit();
+
+    ApplicationUtils.saveDataToFile("<ClinicalDocument/>", target.getPath());
+    ApplicationUtils.saveDataToFile("ignored", "no-such-directory/ecr-save.txt");
+
+    assertEquals(
+        "<ClinicalDocument/>",
+        new String(Files.readAllBytes(target.toPath()), StandardCharsets.UTF_8));
+    assertFalse(new File("no-such-directory/ecr-save.txt").exists());
+  }
+
+  @Test
+  public void handleException_logsAtEveryLevelAndRethrowsObjectDeleted() {
+    Exception failure = new IllegalStateException("simulated");
+
+    for (LogLevel level : LogLevel.values()) {
+      assertDoesNotThrow(() -> ApplicationUtils.handleException(failure, "message", level));
+    }
+    assertThrows(
+        ObjectDeletedException.class,
+        () ->
+            ApplicationUtils.handleException(
+                new ObjectDeletedException("deleted", 1, "Entity"), "message", LogLevel.ERROR));
   }
 }

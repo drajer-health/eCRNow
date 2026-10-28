@@ -15,31 +15,50 @@
                 <tbody>
                     <tr>
                         <td>
-                            <content ID="vaccine1">zoster vaccine, inactivated</content>
+                            <content ID="vaccine1">influenza virus vaccine, live</content>
                         </td>
                         <td>
-                            <content ID="vaccinationDate1">Wed Jan 01 00:00:00 UTC 2014</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="vaccine2">tetanus toxoid | tetanus toxoid, unspecified formulation</content>
-                        </td>
-                        <td>
-                            <content ID="vaccinationDate2">Sat Jan 01 00:00:00 UTC 2000</content>
+                            <content ID="vaccinationDate1">Tue Jan 01 00:00:00 UTC 2019</content>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <content ID="vaccine3">influenza virus vaccine, live</content>
+                            <content ID="vaccine2">zoster vaccine, inactivated</content>
                         </td>
                         <td>
-                            <content ID="vaccinationDate3">Tue Jan 01 00:00:00 UTC 2019</content>
+                            <content ID="vaccinationDate2">Wed Jan 01 00:00:00 UTC 2014</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="vaccine3">tetanus toxoid | tetanus toxoid, unspecified formulation</content>
+                        </td>
+                        <td>
+                            <content ID="vaccinationDate3">Sat Jan 01 00:00:00 UTC 2000</content>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </text>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
+                <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="M197287356"/>
+                <statusCode code="completed"/>
+                <effectiveTime value="20190101"/>
+                <doseQuantity value="1.25" unit="mg"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.54"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.54" extension="2014-06-09"/>
+                        <manufacturedMaterial>
+                            <code code="111" codeSystem="2.16.840.1.113883.12.292" codeSystemName="CVX" displayName="influenza virus vaccine, live, attenuated, for intranasal use"></code>
+                        </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
         <entry typeCode="DRIV">
             <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
                 <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
@@ -73,25 +92,6 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.54" extension="2014-06-09"/>
                         <manufacturedMaterial>
                             <code code="112" codeSystem="2.16.840.1.113883.12.292" codeSystemName="CVX" displayName="tetanus toxoid, unspecified formulation"></code>
-                        </manufacturedMaterial>
-                    </manufacturedProduct>
-                </consumable>
-            </substanceAdministration>
-        </entry>
-        <entry typeCode="DRIV">
-            <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
-                <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
-                <templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="M197287356"/>
-                <statusCode code="completed"/>
-                <effectiveTime value="20190101"/>
-                <doseQuantity value="1.25" unit="mg"/>
-                <consumable>
-                    <manufacturedProduct classCode="MANU">
-                        <templateId root="2.16.840.1.113883.10.20.22.4.54"/>
-                        <templateId root="2.16.840.1.113883.10.20.22.4.54" extension="2014-06-09"/>
-                        <manufacturedMaterial>
-                            <code code="111" codeSystem="2.16.840.1.113883.12.292" codeSystemName="CVX" displayName="influenza virus vaccine, live, attenuated, for intranasal use"></code>
                         </manufacturedMaterial>
                     </manufacturedProduct>
                 </consumable>

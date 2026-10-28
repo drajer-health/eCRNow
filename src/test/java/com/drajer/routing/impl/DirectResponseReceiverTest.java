@@ -2,23 +2,29 @@ package com.drajer.routing.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.drajer.cda.parser.CdaRrModel;
+import com.drajer.cda.parser.RrParser;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.TestUtils;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.Vector;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
@@ -28,13 +34,15 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Session.class})
 public class DirectResponseReceiverTest {
-  @InjectMocks DirectResponseReceiver receiver;
+  private DirectResponseReceiver receiver;
   @Mock EicrRRService rrService;
   @Mock LaunchDetails launchDetails;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    receiver = new DirectResponseReceiver();
+    receiver.rrService = rrService;
   }
 
   @Test
@@ -305,5 +313,98 @@ public class DirectResponseReceiverTest {
 
     Object result = spyReceiver.receiveRespone(launchDetails);
     assertNotNull(result);
+  }
+
+  @Test
+  public void testReadMail_realRrAttachment_isHandedToRrServiceAndSeenMailIsDeleted()
+      throws Exception {
+    String rr = TestUtils.getFileContentAsString("R4/Misc/RrResponse.xml");
+    Message mail = mock(Message.class);
+    Multipart content = mock(Multipart.class);
+    BodyPart attachment = mock(BodyPart.class);
+    Vector<Header> headers = new Vector<>();
+    headers.add(new Header("Message-ID", "<rr-1@ecrnow.example>"));
+    when(mail.getAllHeaders()).thenReturn(headers.elements());
+    when(mail.getFrom()).thenReturn(new Address[] {new InternetAddress("rr@ecrnow.example")});
+    when(mail.getContent()).thenReturn(content);
+    when(content.getCount()).thenReturn(1);
+    when(content.getBodyPart(0)).thenReturn(attachment);
+    when(attachment.getFileName()).thenReturn("RrResponse.xml");
+    when(attachment.getInputStream())
+        .thenReturn(new ByteArrayInputStream(rr.getBytes(StandardCharsets.UTF_8)));
+    when(launchDetails.getImapUrl()).thenReturn("");
+    when(launchDetails.getImapPort()).thenReturn("993");
+    Session sessionMock = PowerMockito.mock(Session.class);
+    Store storeMock = mock(Store.class);
+    Folder folderMock = mock(Folder.class);
+    PowerMockito.mockStatic(Session.class);
+    when(Session.getInstance(any(Properties.class), any())).thenReturn(sessionMock);
+    when(sessionMock.getStore("imap")).thenReturn(storeMock);
+    when(storeMock.getFolder("Inbox")).thenReturn(folderMock);
+    when(folderMock.search(any(FlagTerm.class))).thenReturn(new Message[] {mail});
+
+    receiver.readMail(launchDetails);
+
+    ArgumentCaptor<ReportabilityResponse> handled =
+        ArgumentCaptor.forClass(ReportabilityResponse.class);
+    verify(rrService)
+        .handleReportabilityResponse(handled.capture(), eq("<rr-1@ecrnow.example>"), eq(true));
+    assertEquals("REPORTABILITY_RESPONSE", handled.getValue().getResponseType());
+    assertEquals("<?xml version=\"1.0\"?>" + rr, handled.getValue().getRrXml());
+    verify(mail).setFlag(Flags.Flag.DELETED, true);
+    verify(folderMock).close(true);
+    String expected = handled.getValue().getRrXml();
+    boolean written = false;
+    for (File f : new File(".").listFiles((dir, name) -> name.matches("[0-9a-f-]{36}\\.xml"))) {
+      if (expected.equals(FileUtils.readFileToString(f, StandardCharsets.UTF_8))) {
+        written = true;
+        f.delete();
+      }
+    }
+    assertTrue("RR xml was not written to disk", written);
+    CdaRrModel parsed = new RrParser().parse(expected);
+    assertEquals("172b5e81-bd1e-4d14-8b59-28eb8c8131a4", parsed.getRrDocId().getRootValue());
+  }
+
+  @Test
+  public void testReadMail_onlyXmlAttachmentsAreHandled_withImapUrl() throws Exception {
+    String rr = TestUtils.getFileContentAsString("R4/Misc/RrResponse_v1.xml");
+    Message mail = mock(Message.class);
+    Multipart content = mock(Multipart.class);
+    BodyPart notes = mock(BodyPart.class);
+    BodyPart attachment = mock(BodyPart.class);
+    when(mail.getAllHeaders()).thenReturn(new Vector<Header>().elements());
+    when(mail.getContent()).thenReturn(content);
+    when(content.getCount()).thenReturn(2);
+    when(content.getBodyPart(0)).thenReturn(notes);
+    when(content.getBodyPart(1)).thenReturn(attachment);
+    when(notes.getFileName()).thenReturn("notes.txt");
+    when(attachment.getFileName()).thenReturn("RR.XML");
+    when(attachment.getInputStream())
+        .thenReturn(new ByteArrayInputStream(rr.getBytes(StandardCharsets.UTF_8)));
+    when(launchDetails.getImapUrl()).thenReturn("imap.ecrnow.example");
+    when(launchDetails.getImapPort()).thenReturn("993");
+    Session sessionMock = PowerMockito.mock(Session.class);
+    Store storeMock = mock(Store.class);
+    Folder folderMock = mock(Folder.class);
+    PowerMockito.mockStatic(Session.class);
+    when(Session.getInstance(any(Properties.class), any())).thenReturn(sessionMock);
+    when(sessionMock.getStore("imap")).thenReturn(storeMock);
+    when(storeMock.getFolder("Inbox")).thenReturn(folderMock);
+    when(folderMock.search(any(FlagTerm.class))).thenReturn(new Message[] {mail});
+
+    receiver.readMail(launchDetails);
+
+    verify(storeMock, atLeastOnce()).connect(eq("imap.ecrnow.example"), eq(993), any(), any());
+    ArgumentCaptor<ReportabilityResponse> handled =
+        ArgumentCaptor.forClass(ReportabilityResponse.class);
+    verify(rrService, times(1)).handleReportabilityResponse(handled.capture(), eq(""), eq(true));
+    assertEquals("REPORTABILITY_RESPONSE", handled.getValue().getResponseType());
+    assertEquals("<?xml version=\"1.0\"?>" + rr, handled.getValue().getRrXml());
+    verify(attachment).getInputStream();
+    verify(notes, never()).getInputStream();
+    for (File f : new File(".").listFiles((dir, name) -> name.matches("[0-9a-f-]{36}\\.xml"))) {
+      f.delete();
+    }
   }
 }

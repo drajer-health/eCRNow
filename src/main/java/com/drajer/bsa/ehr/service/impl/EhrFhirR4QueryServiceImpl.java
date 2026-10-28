@@ -683,7 +683,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info("Getting data for Resource : {} with Url : {}", resourceName, url);
 
-      resource = (Resource) (genericClient.read().resource(resourceName).withUrl(url).execute());
+      resource =
+          (Resource)
+              fhirOperationExecutor.execute(
+                  data,
+                  context,
+                  client -> client.read().resource(resourceName).withUrl(url).execute());
 
       if (resource != null
           && resource.getResourceType() != ResourceType.OperationOutcome
@@ -693,6 +698,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -701,6 +707,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
       logger.error("Error in getting {} resource by Url: {}", resourceName, url, responseException);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.error("Error in getting {} resource by Url: {}", resourceName, url, e);
     }
     return resource;
@@ -719,12 +726,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 return client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
               });
 
-      getAllR4RecordsUsingPagination(genericClient, bundle);
+      getAllR4RecordsUsingPagination(kd, context, bundle);
       List<BundleEntryComponent> bc = bundle.getEntry();
       for (BundleEntryComponent comp : bc) {
         resources.add(comp.getResource());
       }
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.error(e.getMessage(), e);
     }
     return resources;
@@ -769,6 +777,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       if (applyFiltering && !isValidResource(resource)) resource = null;
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -781,6 +790,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           StringEscapeUtils.escapeJava(resourceId),
           responseException);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.error(
           "Error in getting {} resource by Id: {}",
           resourceName,
@@ -818,7 +828,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 return client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
               });
 
-      getAllR4RecordsUsingPagination(genericClient, bundle);
+      getAllR4RecordsUsingPagination(kd, context, bundle);
 
       if (bundle != null && bundle.hasEntry()) {
         logger.info(
@@ -857,6 +867,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -869,6 +880,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           kd.getNotificationContext().getPatientId(),
           responseException);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
@@ -877,18 +889,48 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
   }
 
-  private void getAllR4RecordsUsingPagination(IGenericClient genericClient, Bundle bundle) {
+  /**
+   * Follows the "next" links of a search result and appends every page's entries to the first
+   * bundle. Each page is fetched through the FhirOperationExecutor, so if the token expires between
+   * pages only the failed page is retried with a fresh token; earlier pages are not fetched again.
+   */
+  private void getAllR4RecordsUsingPagination(
+      KarProcessingData kd, FhirContext context, Bundle bundle) {
 
-    if (bundle.hasEntry()) {
-      List<BundleEntryComponent> entriesList = bundle.getEntry();
-      if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.info(
-            "Found Next Page in Bundle :{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
-        Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
-        entriesList.addAll(nextPageBundleResults.getEntry());
-        nextPageBundleResults.setEntry(entriesList);
-        getAllR4RecordsUsingPagination(genericClient, nextPageBundleResults);
+    if (bundle == null || !bundle.hasEntry()) {
+      return;
+    }
+
+    List<BundleEntryComponent> entriesList = bundle.getEntry();
+    Bundle currentPage = bundle;
+
+    while (currentPage.hasLink() && currentPage.getLink(IBaseBundle.LINK_NEXT) != null) {
+
+      logger.info(
+          "Found Next Page in Bundle :{}", currentPage.getLink(IBaseBundle.LINK_NEXT).getUrl());
+
+      final Bundle pageToFollow = currentPage;
+      Bundle nextPage =
+          fhirOperationExecutor.execute(
+              kd, context, client -> client.loadPage().next(pageToFollow).execute());
+
+      if (nextPage == null) {
+        break;
       }
+
+      entriesList.addAll(nextPage.getEntry());
+      currentPage = nextPage;
+    }
+  }
+
+  /**
+   * Authentication failures must not be treated as "resource not found". If the request still gets
+   * a 401 after FhirOperationExecutor refreshed the token and retried once, rethrow it so the job
+   * fails visibly instead of producing an eICR with missing data.
+   */
+  private static void rethrowIfUnauthorized(Exception e) {
+    if (e instanceof RuntimeException && FhirOperationExecutor.isUnauthorized(e)) {
+      throw (RuntimeException) e;
     }
   }
 
@@ -1018,7 +1060,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         }
       } else {
         logger.info(
-            " Not executing Query for dataReqId : {} as it is not available in the EHR per the custom query definition",
+            " Not executing Query for dataReqId : {} as it is not available in the EHR per the"
+                + " custom query definition",
             dataReqId);
       }
     } else {
@@ -1064,9 +1107,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     try {
       logger.info("Getting data for resource type {} using query: {}", resType, searchUrl);
 
-      Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+      Bundle bundle =
+          fhirOperationExecutor.execute(
+              kd,
+              context,
+              client -> client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute());
 
-      getAllR4RecordsUsingPagination(genericClient, bundle);
+      getAllR4RecordsUsingPagination(kd, context, bundle);
       if (bundle != null && bundle.hasEntry() && bundle.getEntry().size() > 0) {
 
         logger.info(
@@ -1107,6 +1154,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -1115,6 +1163,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
       logger.info("Error in getting {} resource using search query {}", resType, searchUrl);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.info("Error in getting {} resource using search query {}", resType, searchUrl, e);
     }
   }
@@ -1446,7 +1495,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
 
             logger.info(
-                " Adding secondary Medication Request resource for MedicationAdministration with id {}",
+                " Adding secondary Medication Request resource for MedicationAdministration with id"
+                    + " {}",
                 secRes.getId());
             kd.addResourceByType(secRes.getResourceType(), secRes);
             kd.storeResourceById(medRequestRef.getReferenceElement().getIdPart(), secRes);
@@ -1737,7 +1787,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       data.addResourceByType(res.getResourceType(), res);
     } else {
       logger.info(
-          " Resource for dataReqId {} is null, invalid resource or is an OperationOutcome, hence not added ",
+          " Resource for dataReqId {} is null, invalid resource or is an OperationOutcome, hence"
+              + " not added ",
           dataReqId);
     }
   }

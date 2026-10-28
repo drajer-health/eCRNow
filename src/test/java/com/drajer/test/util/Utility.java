@@ -201,16 +201,28 @@ public interface Utility {
     mdcContext.put("key1", "value1");
     mdcContext.put("key2", "value2");
 
+    //    ScheduledJobData jobData =
+    //        new ScheduledJobData.Builder()
+    //            .karExecutionStateId(UUID.randomUUID())
+    //            .actionId("action123")
+    //            .actionType(ActionType.CHECK_TRIGGER_CODES)
+    //            .expirationTime(Instant.now())
+    //            .jobId("job456")
+    //            .xRequestId("xRequestId123")
+    //            .jobType(BsaJobType.IMMEDIATE_REPORTING)
+    //            .mdcContext(mdcContext)
+    //            .build();
+
     ScheduledJobData jobData =
         new ScheduledJobData(
-            UUID.randomUUID(),
-            "action123",
-            ActionType.CHECK_TRIGGER_CODES,
-            Instant.now(),
-            "job456",
-            "xRequestId123",
-            BsaJobType.IMMEDIATE_REPORTING,
-            mdcContext);
+            UUID.randomUUID(), // karExecutionStateId
+            "action123", // actionId
+            ActionType.CHECK_TRIGGER_CODES, // actionType
+            Instant.now(), // expirationTime
+            "job456", // jobId
+            "xRequestId123", // xRequestId
+            BsaJobType.IMMEDIATE_REPORTING, // jobType
+            mdcContext); // mdcContext
 
     karProcessingData.setScheduledJobData(jobData);
     return karProcessingData;

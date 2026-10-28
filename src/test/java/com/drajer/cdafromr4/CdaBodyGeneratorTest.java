@@ -1,5 +1,6 @@
 package com.drajer.cdafromr4;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
@@ -41,7 +42,11 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateCdaBodyWithEmptyComponent() {
     String expectedXml =
-        "<component>\r\n" + "<structuredBody>\r\n" + "</structuredBody>\r\n" + "</component>";
+        """
+        <component>\r
+        <structuredBody>\r
+        </structuredBody>\r
+        </component>""";
     String actualXml =
         CdaBodyGenerator.generateCdaBody(null, null, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
@@ -122,14 +127,17 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
     PowerMockito.mockStatic(CdaVitalSignsGenerator.class);
     PowerMockito.when(CdaVitalSignsGenerator.generateVitalsSection(data, details, version))
         .thenReturn("<vitals/>");
+
     PowerMockito.mockStatic(CdaHistoryOfPresentIllnessGenerator.class);
     PowerMockito.when(
             CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(
                 data, version))
         .thenReturn("<history/>");
+
     PowerMockito.mockStatic(CdaReasonForVisitGenerator.class);
     PowerMockito.when(CdaReasonForVisitGenerator.generateReasonForVisitSection(data, version))
         .thenReturn("<reason/>");
+
     String xml = CdaBodyGenerator.generateCdaBody(data, details, version);
     assertTrue(xml.contains("<problem/>"));
     assertTrue(xml.contains("<encounter/>"));
@@ -147,5 +155,13 @@ public class CdaBodyGeneratorTest extends BaseGeneratorTest {
     assertTrue(xml.contains("<reason/>"));
     assertTrue(xml.contains("<structuredBody>"));
     assertTrue(xml.contains("<component>"));
+  }
+
+  @Test
+  public void testGenerateCdaBody_withNullData() {
+    String xml = CdaBodyGenerator.generateCdaBody(null, launchDetails, "CDA_R31");
+
+    assertNotNull("A body must still be produced for null data", xml);
+    assertTrue("structuredBody must be opened", xml.contains("structuredBody"));
   }
 }

@@ -14,20 +14,18 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TriggerQueryR4BundleTest {
 
-  @InjectMocks private TriggerQueryR4Bundle triggerQueryR4Bundle;
+  private TriggerQueryR4Bundle triggerQueryR4Bundle;
 
   @Mock private FhirContextInitializer fhirContextInitializer;
 
@@ -39,8 +37,26 @@ public class TriggerQueryR4BundleTest {
   private LaunchDetails launchDetails;
   private R4FhirData r4FhirData;
 
+  //  @Before
+  //  public void setUp() {
+  //    triggerQueryR4Bundle = new TriggerQueryR4Bundle(fhirContextInitializer, r4ResourcesData);
+  //    fhirContext = FhirContext.forR4();
+  //
+  //    launchDetails = new LaunchDetails();
+  //    launchDetails.setFhirVersion("R4");
+  //    launchDetails.setLaunchPatientId("test-patient-id");
+  //
+  //    r4FhirData = new R4FhirData();
+  //
+  //    when(fhirContextInitializer.getFhirContext("R4")).thenReturn(fhirContext);
+  //    when(fhirContextInitializer.createClient(any(), any(), any())).thenReturn(client);
+  //  }
+
   @Before
   public void setUp() {
+    triggerQueryR4Bundle = new TriggerQueryR4Bundle();
+    triggerQueryR4Bundle.fhirContextInitializer = fhirContextInitializer;
+    triggerQueryR4Bundle.r4ResourcesData = r4ResourcesData;
     fhirContext = FhirContext.forR4();
 
     launchDetails = new LaunchDetails();
@@ -95,9 +111,7 @@ public class TriggerQueryR4BundleTest {
     assertTrue("Bundle should have entries", resultBundle.hasEntry());
 
     List<Resource> resources =
-        resultBundle.getEntry().stream()
-            .map(Bundle.BundleEntryComponent::getResource)
-            .collect(Collectors.toList());
+        resultBundle.getEntry().stream().map(Bundle.BundleEntryComponent::getResource).toList();
 
     assertTrue(resources.stream().anyMatch(Patient.class::isInstance));
     assertTrue(resources.stream().anyMatch(Encounter.class::isInstance));

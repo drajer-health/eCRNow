@@ -18,17 +18,30 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import java.io.File;
 import java.util.*;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class ActionRepoTest {
 
   private ActionRepo repo;
 
+  private Object savedInstance;
+
   @Before
   public void setup() {
+    // ActionRepo is a static singleton that other tests may have replaced (e.g. with a mock).
+    // Start every test from a fresh, real instance and put the original back afterwards.
+    savedInstance = ReflectionTestUtils.getField(ActionRepo.class, "instance");
+    ReflectionTestUtils.setField(ActionRepo.class, "instance", null);
     repo = ActionRepo.getInstance();
+  }
+
+  @After
+  public void restoreSingleton() {
+    ReflectionTestUtils.setField(ActionRepo.class, "instance", savedInstance);
   }
 
   @Test
@@ -43,6 +56,8 @@ public class ActionRepoTest {
     repo.setupTriggerBasedActions();
     repo.setActions(new HashMap<>());
     repo.setupTriggerBasedActions();
+    assertNotNull("Actions should not be null", repo.getActions());
+    assertTrue("Actions should be empty", repo.getActions().isEmpty());
   }
 
   @Test
@@ -69,6 +84,7 @@ public class ActionRepoTest {
   @Test
   public void testPrintRunsWithoutError() {
     repo.print();
+    assertNotNull("Repo should not be null after print", repo);
   }
 
   @Test
@@ -117,7 +133,7 @@ public class ActionRepoTest {
 
   @Test
   public void testWorkflowService() {
-    WorkflowService workflowService = new WorkflowService();
+    WorkflowService workflowService = mock(WorkflowService.class);
     repo.setWorkflowService(workflowService);
     assertEquals(workflowService, repo.getWorkflowService());
   }
@@ -198,24 +214,30 @@ public class ActionRepoTest {
   @Test
   public void testSetupTriggerBasedActions_withTimingSchedule() {
 
-    ActionRepo repo = ActionRepo.getInstance();
-    repo.setActions(null);
-    repo.setActionsByTriggers(null);
+    ActionRepo localRepo = ActionRepo.getInstance();
+    localRepo.setActions(null);
+    localRepo.setActionsByTriggers(null);
 
     AbstractAction action =
         new AbstractAction() {
           @Override
           public void execute(
-              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {}
+              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {
+            // Test stub: execute() not needed for timing schedule trigger validation
+          }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for timing schedule trigger validation
+          }
         };
 
     TimingSchedule ts =
         new TimingSchedule() {
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for getTriggerType() validation
+          }
 
           @Override
           public TriggerType getTriggerType() {
@@ -230,41 +252,47 @@ public class ActionRepoTest {
     actionSet.add(action);
     actionsMap.put(EcrActionTypes.PERIODIC_UPDATE_EICR, actionSet);
 
-    repo.setActions(actionsMap);
-    repo.setupTriggerBasedActions();
-    assertNotNull(repo.getActionsByTriggers());
-    assertTrue(repo.getActionsByTriggers().containsKey(TriggerType.DATACHANGED));
-    assertTrue(repo.getActionsByTriggers().get(TriggerType.DATACHANGED).contains(action));
+    localRepo.setActions(actionsMap);
+    localRepo.setupTriggerBasedActions();
+    assertNotNull(localRepo.getActionsByTriggers());
+    assertTrue(localRepo.getActionsByTriggers().containsKey(TriggerType.DATACHANGED));
+    assertTrue(localRepo.getActionsByTriggers().get(TriggerType.DATACHANGED).contains(action));
   }
 
   @Test
   public void testPrintRunsWithoutErrosr() {
-    ActionRepo repo = ActionRepo.getInstance();
+    ActionRepo localRepo = ActionRepo.getInstance();
     AbstractAction action =
         new AbstractAction() {
           @Override
           public void execute(
-              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {}
+              Object obj, EventTypes.WorkflowEvent launchType, String taskInstanceId) {
+            // Test stub: execute() not needed for print() validation
+
+          }
 
           @Override
-          public void print() {}
+          public void print() {
+            // Test stub: print() not needed for action repo printing validation
+
+          }
         };
     Set<AbstractAction> actionSet = new HashSet<>();
     actionSet.add(action);
     Map<EcrActionTypes, Set<AbstractAction>> actionsMap = new HashMap<>();
     actionsMap.put(EcrActionTypes.CREATE_EICR, actionSet);
-    repo.setActions(actionsMap);
+    localRepo.setActions(actionsMap);
     Set<AbstractAction> triggerSet = new HashSet<>();
     triggerSet.add(action);
     Map<TriggerType, Set<AbstractAction>> triggerMap = new HashMap<>();
     triggerMap.put(TriggerType.DATAACCESSED, triggerSet);
-    repo.setActionsByTriggers(triggerMap);
-    repo.print();
+    localRepo.setActionsByTriggers(triggerMap);
+    localRepo.print();
 
-    assertNotNull(repo.getActions());
-    assertTrue(repo.getActions().get(EcrActionTypes.CREATE_EICR).contains(action));
+    assertNotNull(localRepo.getActions());
+    assertTrue(localRepo.getActions().get(EcrActionTypes.CREATE_EICR).contains(action));
 
-    assertNotNull(repo.getActionsByTriggers());
-    assertTrue(repo.getActionsByTriggers().get(TriggerType.DATAACCESSED).contains(action));
+    assertNotNull(localRepo.getActionsByTriggers());
+    assertTrue(localRepo.getActionsByTriggers().get(TriggerType.DATAACCESSED).contains(action));
   }
 }

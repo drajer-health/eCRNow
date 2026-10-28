@@ -1,18 +1,21 @@
 package com.drajer.test.simulator;
 
+import static org.junit.Assert.*;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.cdafromr4.CdaMedicationGenerator;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Medication;
@@ -60,71 +63,86 @@ public class ContentDataSimulator {
   }
 
   @Test
-  public void testGenerationOfCdaSections() {
+  public void testGenerationOfCdaSections() throws Exception {
 
-    logger.info(" Running the test ");
+    logger.info("Running the test");
 
     Bundle b =
         appUtils.readBundleFromFile(
             "src/test/resources/SampleTestData/r4-loading-query-bundle-sample1.json");
 
-    if (b != null) {
-      logger.info(" Found Bundle ");
+    assertNotNull("Bundle should not be null", b);
+    assertFalse("Bundle should have entries", b.getEntry().isEmpty());
 
-      R4FhirData r4Data = new R4FhirData();
-      List<Observation> observations = new ArrayList();
-      List<MedicationStatement> medicationStatements = new ArrayList();
-      List<Condition> conditions = new ArrayList();
-      List<MedicationRequest> mrs = new ArrayList();
-      List<Medication> medications = new ArrayList();
+    logger.info("Found Bundle with {} entries", b.getEntry().size());
 
-      List<BundleEntryComponent> entries = b.getEntry();
+    R4FhirData r4Data = new R4FhirData();
+    List<Observation> observations = new ArrayList<>();
+    List<MedicationStatement> medicationStatements = new ArrayList<>();
+    List<MedicationRequest> mrs = new ArrayList<>();
+    List<Medication> medications = new ArrayList<>();
 
-      for (BundleEntryComponent ent : entries) {
+    List<BundleEntryComponent> entries = b.getEntry();
 
-        if (ent.getResource().getResourceType() == ResourceType.Patient) {
-          Patient patient = (Patient) ent.getResource();
-          r4Data.setPatient(patient);
-          logger.info(" PAtient = {}", patient.getNameFirstRep().getFamily());
-        } else if (ent.getResource().getResourceType() == ResourceType.Practitioner) {
-          Practitioner practitioner = (Practitioner) ent.getResource();
-          r4Data.setPractitioner(practitioner);
-        } else if (ent.getResource().getResourceType() == ResourceType.Location) {
-          Location location = (Location) ent.getResource();
-          r4Data.setLocation(location);
-        } else if (ent.getResource().getResourceType() == ResourceType.Encounter) {
-          Encounter encounter = (Encounter) ent.getResource();
-          r4Data.setEncounter(encounter);
-        } else if (ent.getResource().getResourceType() == ResourceType.Observation) {
-          observations.add((Observation) ent.getResource());
-        } else if (ent.getResource().getResourceType() == ResourceType.MedicationStatement) {
-          medicationStatements.add((MedicationStatement) ent.getResource());
-        } else if (ent.getResource().getResourceType() == ResourceType.MedicationRequest) {
-          mrs.add((MedicationRequest) ent.getResource());
-        } else if (ent.getResource().getResourceType() == ResourceType.Medication) {
-          medications.add((Medication) ent.getResource());
-        }
+    for (BundleEntryComponent ent : entries) {
+      if (ent.getResource().getResourceType() == ResourceType.Patient) {
+        Patient patient = (Patient) ent.getResource();
+        r4Data.setPatient(patient);
+        logger.info("Patient = {}", patient.getNameFirstRep().getFamily());
+      } else if (ent.getResource().getResourceType() == ResourceType.Practitioner) {
+        Practitioner practitioner = (Practitioner) ent.getResource();
+        r4Data.setPractitioner(practitioner);
+      } else if (ent.getResource().getResourceType() == ResourceType.Location) {
+        Location location = (Location) ent.getResource();
+        r4Data.setLocation(location);
+      } else if (ent.getResource().getResourceType() == ResourceType.Encounter) {
+        Encounter encounter = (Encounter) ent.getResource();
+        r4Data.setEncounter(encounter);
+      } else if (ent.getResource().getResourceType() == ResourceType.Observation) {
+        observations.add((Observation) ent.getResource());
+      } else if (ent.getResource().getResourceType() == ResourceType.MedicationStatement) {
+        medicationStatements.add((MedicationStatement) ent.getResource());
+      } else if (ent.getResource().getResourceType() == ResourceType.MedicationRequest) {
+        mrs.add((MedicationRequest) ent.getResource());
+      } else if (ent.getResource().getResourceType() == ResourceType.Medication) {
+        medications.add((Medication) ent.getResource());
       }
-
-      r4Data.setLabResults(observations);
-      r4Data.setMedicationStatements(medicationStatements);
-      r4Data.setMedicationRequests(mrs);
-      r4Data.setMedicationList(medications);
-
-      LaunchDetails ld = new LaunchDetails();
-
-      ld.setLaunchPatientId(r4Data.getPatient().getIdElement().getId());
-      ld.setEncounterId(r4Data.getEncounter().getIdElement().getId());
-
-      String secXml = CdaMedicationGenerator.generateMedicationSection(r4Data, ld, "");
-
-      List<MedicationRequest> mrList =
-          CdaMedicationGenerator.getValidMedicationRequests(r4Data, medications);
-
-      logger.info(" XML = {} ", secXml);
-
-    } else {
-      logger.info(" Bundle is null ");
     }
+
+    r4Data.setLabResults(observations);
+    r4Data.setMedicationStatements(medicationStatements);
+    r4Data.setMedicationRequests(mrs);
+    r4Data.setMedicationList(medications);
+
+    assertNotNull("Patient should be set", r4Data.getPatient());
+    assertNotNull("Encounter should be set", r4Data.getEncounter());
+
+    LaunchDetails ld = new LaunchDetails();
+    // getIdPart() is the resource id; getIdElement().getId() is the element's own id (always null).
+    ld.setLaunchPatientId(r4Data.getPatient().getIdElement().getIdPart());
+    ld.setEncounterId(r4Data.getEncounter().getIdElement().getIdPart());
+    // CDA generation reads the patient's execution state (matched trigger codes) from the status.
+    ld.setStatus(
+        new ObjectMapper()
+            .writeValueAsString(
+                new PatientExecutionState(ld.getLaunchPatientId(), ld.getEncounterId())));
+
+    assertNotNull("LaunchDetails patientId should not be null", ld.getLaunchPatientId());
+    assertNotNull("LaunchDetails encounterId should not be null", ld.getEncounterId());
+
+    String secXml = CdaMedicationGenerator.generateMedicationSection(r4Data, ld, "");
+
+    assertNotNull("Generated XML section should not be null", secXml);
+    assertFalse("Generated XML section should not be empty", secXml.isEmpty());
+    assertTrue("Generated XML should contain valid XML content", secXml.contains("<"));
+
+    logger.info("Generated XML = {} chars", secXml.length());
+
+    List<MedicationRequest> mrList =
+        CdaMedicationGenerator.getValidMedicationRequests(r4Data, medications);
+
+    assertNotNull("Medication request list should not be null", mrList);
+
+    logger.info("Valid medication requests count: {}", mrList.size());
   }
 }

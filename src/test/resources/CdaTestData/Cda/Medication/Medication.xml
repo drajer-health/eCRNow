@@ -60,32 +60,32 @@
                     </tr>
                     <tr>
                         <td>
-                            <content ID="medication5">albuterol</content>
+                            <content ID="medication5">cefepime 1000 MG Injection</content>
                         </td>
                         <td>
-                            <content ID="medicationDate5">20200429083200-0500</content>
+                            <content ID="medicationDate5">20200429090000-0500</content>
                         </td>
                         <td>
-                            <content ID="medicationDosagePeriod5">1.25|http://unitsofmeasure.org|mg|frequency: 1|period: 1|periodUnit: D</content>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <content ID="medication6">cefepime 1000 MG Injection</content>
-                        </td>
-                        <td>
-                            <content ID="medicationDate6">20200429090000-0500</content>
-                        </td>
-                        <td>
-                            <content ID="medicationDosagePeriod6">100.0|http://unitsofmeasure.org|mL|frequency: 1|period: 1|periodUnit: D</content>
+                            <content ID="medicationDosagePeriod5">100.0|http://unitsofmeasure.org|mL|frequency: 1|period: 1|periodUnit: D</content>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <content ID="medication7">cetirizine-pseudoephedrine (ZyrTEC-D 5 mg-120 mg oral tablet, extended release)</content>
+                            <content ID="medication6">albuterol</content>
                         </td>
                         <td>
-                            <content ID="medicationDate7">20200428132700-0500</content>
+                            <content ID="medicationDate6">20200429083200-0500</content>
+                        </td>
+                        <td>
+                            <content ID="medicationDosagePeriod6">1.25|http://unitsofmeasure.org|mg|frequency: 1|period: 1|periodUnit: D</content>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <content ID="medication7">norgestimate-ethinyl estradiol (Ortho Tri-Cyclen oral tablet)</content>
+                        </td>
+                        <td>
+                            <content ID="medicationDate7">20200428132800-0500</content>
                         </td>
                         <td>
                             <content ID="medicationDosagePeriod7">1.0|http://unitsofmeasure.org|{tbl}|frequency: 1|period: 1|periodUnit: D</content>
@@ -93,7 +93,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <content ID="medication8">citalopram (citalopram 20 mg oral tablet)</content>
+                            <content ID="medication8">cetirizine-pseudoephedrine (ZyrTEC-D 5 mg-120 mg oral tablet, extended release)</content>
                         </td>
                         <td>
                             <content ID="medicationDate8">20200428132700-0500</content>
@@ -104,10 +104,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <content ID="medication9">norgestimate-ethinyl estradiol (Ortho Tri-Cyclen oral tablet)</content>
+                            <content ID="medication9">citalopram (citalopram 20 mg oral tablet)</content>
                         </td>
                         <td>
-                            <content ID="medicationDate9">20200428132800-0500</content>
+                            <content ID="medicationDate9">20200428132700-0500</content>
                         </td>
                         <td>
                             <content ID="medicationDosagePeriod9">1.0|http://unitsofmeasure.org|{tbl}|frequency: 1|period: 1|periodUnit: D</content>
@@ -216,6 +216,29 @@
             <substanceAdministration classCode="SBADM" moodCode="INT">
                 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="311503469"/>
+                <statusCode code="active"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20200429090000-0500"/>
+                </effectiveTime>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period value="1" unit="h"/>
+                </effectiveTime>
+                <doseQuantity value="100.0" unit="mL"/>
+                <consumable>
+                    <manufacturedProduct classCode="MANU">
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+                        <code code="1665093" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="cefepime 1000 MG Injection"></code>
+                    </manufacturedMaterial>
+                    </manufacturedProduct>
+                </consumable>
+            </substanceAdministration>
+        </entry>
+        <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="INT">
+                <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
                 <id root="2.16.840.1.113883.1.1.1.1" extension="311503467"/>
                 <statusCode code="active"/>
                 <effectiveTime xsi:type="IVL_TS"><low value="20200429083200-0500"/>
@@ -239,20 +262,20 @@
             <substanceAdministration classCode="SBADM" moodCode="INT">
                 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
                 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="311503469"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="311477551"/>
                 <statusCode code="active"/>
-                <effectiveTime xsi:type="IVL_TS"><low value="20200429090000-0500"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20200428132800-0500"/>
                 </effectiveTime>
                 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
                     <period value="1" unit="h"/>
                 </effectiveTime>
-                <doseQuantity value="100.0" unit="mL"/>
+                <doseQuantity value="1.0" unit="{tbl}"/>
                 <consumable>
                     <manufacturedProduct classCode="MANU">
                         <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
                         <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
                         <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
-                        <code code="1665093" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="cefepime 1000 MG Injection"></code>
+                        <code code="749785" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="{7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.18 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.215 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.25 MG Oral Tablet) / 7 (Inert Ingredients 1 MG Oral Tablet) } Pack [Or"></code>
                     </manufacturedMaterial>
                     </manufacturedProduct>
                 </consumable>
@@ -299,29 +322,6 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
                         <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
                         <code code="200371" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="Citalopram 20 MG Oral Tablet"></code>
-                    </manufacturedMaterial>
-                    </manufacturedProduct>
-                </consumable>
-            </substanceAdministration>
-        </entry>
-        <entry typeCode="DRIV">
-            <substanceAdministration classCode="SBADM" moodCode="INT">
-                <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
-                <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="311477551"/>
-                <statusCode code="active"/>
-                <effectiveTime xsi:type="IVL_TS"><low value="20200428132800-0500"/>
-                </effectiveTime>
-                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-                    <period value="1" unit="h"/>
-                </effectiveTime>
-                <doseQuantity value="1.0" unit="{tbl}"/>
-                <consumable>
-                    <manufacturedProduct classCode="MANU">
-                        <templateId root="2.16.840.1.113883.10.20.22.4.23"/>
-                        <templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
-                        <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
-                        <code code="749785" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="{7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.18 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.215 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.25 MG Oral Tablet) / 7 (Inert Ingredients 1 MG Oral Tablet) } Pack [Or"></code>
                     </manufacturedMaterial>
                     </manufacturedProduct>
                 </consumable>

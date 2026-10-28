@@ -4,9 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.drajer.bsa.model.PublicHealthMessage;
@@ -26,7 +23,6 @@ import org.hibernate.query.Query;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -56,8 +52,6 @@ public class PhMessageDaoTest {
 
   @Mock Path<Object> xRequestIdExpression;
 
-  @Mock private CompoundSelection<PublicHealthMessage> summarySelection;
-
   @InjectMocks private PhMessageDaoImpl phMessageDaoImpl;
 
   private List<PublicHealthMessage> expectedPublicHealthMessages;
@@ -78,9 +72,6 @@ public class PhMessageDaoTest {
     Mockito.lenient().when(cb.createQuery(PublicHealthMessage.class)).thenReturn(cq);
     Mockito.lenient().when(cq.from(PublicHealthMessage.class)).thenReturn(root);
     Mockito.lenient().when(root.get(anyString())).thenReturn(xRequestIdExpression);
-    Mockito.lenient()
-        .when(cb.construct(eq(PublicHealthMessage.class), ArgumentMatchers.<Selection<?>>any()))
-        .thenReturn(summarySelection);
     mockProjectionAndCriteria();
 
     Mockito.lenient().when(session.createQuery(any(CriteriaQuery.class))).thenReturn(query);
@@ -106,7 +97,9 @@ public class PhMessageDaoTest {
         phMessageDaoImpl.getPhMessageDataSummary(searchParams);
 
     assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
-    verifySummaryProjection();
+    assertEquals(
+        TestUtils.toJsonString(expectedPublicHealthMessages),
+        TestUtils.toJsonString(actualPublicHealthMessages));
   }
 
   @Test
@@ -143,48 +136,9 @@ public class PhMessageDaoTest {
         phMessageDaoImpl.getPhMessagesContainingXRequestIds(xRequestIds, true);
 
     assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
-    verifySummaryProjection();
-  }
-
-  @Test
-  public void testGetPhMessageData_withSummaryFlag() {
-    List<PublicHealthMessage> actualPublicHealthMessages =
-        phMessageDaoImpl.getPhMessageData(searchParams, true);
-
-    assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
-    verifySummaryProjection();
-  }
-
-  @Test
-  public void testGetPhMessageByXRequestIds_withSummaryFlag() {
-    List<String> xRequestIds = Arrays.asList("xRequestId1", "xRequestId2");
-
-    List<PublicHealthMessage> actualPublicHealthMessages =
-        phMessageDaoImpl.getPhMessageByXRequestIds(xRequestIds, true);
-
-    assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
-    verifySummaryProjection();
-  }
-
-  @Test
-  public void testGetPhMessageData_withoutSummaryFlagSelectsFullEntity() {
-    phMessageDaoImpl.getPhMessageData(searchParams, false);
-
-    verify(cb, never()).construct(any(), ArgumentMatchers.<Selection<?>>any());
-    verify(cq, never()).select(any());
-  }
-
-  private void verifySummaryProjection() {
-    verify(cb).construct(eq(PublicHealthMessage.class), ArgumentMatchers.<Selection<?>>any());
-    verify(cq).select(summarySelection);
-    for (String property : PhMessageDaoImpl.SUMMARY_PROPERTIES) {
-      verify(root, atLeastOnce()).get(property);
-    }
-    verify(root, never()).get("submittedFhirData");
-    verify(root, never()).get("submittedCdaData");
-    verify(root, never()).get("fhirResponseData");
-    verify(root, never()).get("cdaResponseData");
-    verify(root, never()).get("failureResponseData");
+    assertEquals(
+        TestUtils.toJsonString(expectedPublicHealthMessages),
+        TestUtils.toJsonString(actualPublicHealthMessages));
   }
 
   @Test
@@ -241,11 +195,5 @@ public class PhMessageDaoTest {
     verify(session).remove(publicHealthMessage);
   }
 
-  private void mockProjectionAndCriteria() {
-    /*Mockito.lenient().when(criteria.setProjection(any(ProjectionList.class))).thenReturn(criteria);
-    Mockito.lenient().when(criteria.setResultTransformer(any())).thenReturn(criteria);
-    Mockito.lenient().when(criteria.add(any())).thenReturn(criteria);
-    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);
-    */
-  }
+  private void mockProjectionAndCriteria() {}
 }

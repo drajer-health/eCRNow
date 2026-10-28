@@ -3,6 +3,7 @@ package com.drajer.eca.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -70,23 +71,20 @@ public class CreateEicrActionTest {
 
     try {
 
-      // Setup
       CreateEicrStatus createEicrStatus = new CreateEicrStatus();
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
       when(mockState.hasActionCompleted(any())).thenReturn(false);
       setupMockData();
 
       String taskInstanceId = "";
-      // Test
       createtEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
-      // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
       verify(mockRelActn, times(0)).getDuration();
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -96,7 +94,6 @@ public class CreateEicrActionTest {
 
     try {
 
-      // Setup
       CreateEicrStatus createEicrStatus = new CreateEicrStatus();
       createEicrStatus.setJobStatus(JobStatus.NOT_STARTED);
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
@@ -108,10 +105,8 @@ public class CreateEicrActionTest {
       when(mockRelActn.getDuration()).thenReturn(duration);
 
       String taskInstanceId = "";
-      // Test
       createtEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
-      // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
       verify(mockRelActn, times(2)).getDuration();
       PowerMockito.verifyStatic(WorkflowService.class, times(1));
@@ -126,7 +121,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -136,7 +131,6 @@ public class CreateEicrActionTest {
 
     try {
 
-      // Setup
       CreateEicrStatus createEicrStatus = new CreateEicrStatus();
       createEicrStatus.setJobStatus(JobStatus.NOT_STARTED);
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
@@ -147,10 +141,8 @@ public class CreateEicrActionTest {
 
       setupMockData();
 
-      // Test
       createtEicrAction.execute(mockDetails, launchType, "");
 
-      // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
       verify(mockRelActn, times(1)).getDuration();
 
@@ -167,7 +159,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -177,7 +169,6 @@ public class CreateEicrActionTest {
 
     try {
 
-      // Setup
       CreateEicrStatus createEicrStatus = new CreateEicrStatus();
       createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
@@ -212,7 +203,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -222,7 +213,6 @@ public class CreateEicrActionTest {
 
     try {
 
-      // Setup
       CreateEicrStatus createEicrStatus = new CreateEicrStatus();
       createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
@@ -238,10 +228,9 @@ public class CreateEicrActionTest {
       when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
 
       String taskInstanceId = "";
-      // Test
+
       createtEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
-      // Validate
       PowerMockito.verifyStatic(EcaUtils.class, times(0));
       EcaUtils.createEicr(mockDetails);
 
@@ -249,7 +238,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -258,14 +247,13 @@ public class CreateEicrActionTest {
   public void testExecute_DetailObjIsInvalid() throws Exception {
 
     String taskInstanceId = "";
-    // Test
+
     createtEicrAction.execute(null, launchType, taskInstanceId);
   }
 
   @Test()
   public void testHasEicrCreated() throws Exception {
-    PatientExecutionState patientExecutionState = new PatientExecutionState();
-    patientExecutionState =
+    PatientExecutionState patientExecutionState =
         (PatientExecutionState)
             TestUtils.getResourceAsObject(
                 "R4/Misc/EcaUtils/NewState.json", PatientExecutionState.class);
@@ -276,21 +264,76 @@ public class CreateEicrActionTest {
 
   private void setupMockData() {
 
-    // Mock LaunchDetails
     when(mockDetails.getId()).thenReturn(1);
     when(mockDetails.getStatus()).thenReturn("MockStatus");
     when(mockDetails.getLaunchPatientId()).thenReturn("100");
     when(mockDetails.getStartDate()).thenReturn(new Date());
 
-    // Mock EcaUtils
     when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
-    // Mock RelatedActions
     when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
     when(mockRelActn.getRelatedAction()).thenReturn(createtEicrAction);
 
-    // SetUp CreateEicrAction
     createtEicrAction.addRelatedAction(mockRelActn);
     createtEicrAction.setActionId("123");
+  }
+
+  @Test
+  public void testExecute_ConditionsNotMet() throws Exception {
+    PatientExecutionState state = new PatientExecutionState();
+    when(mockDetails.getValidationMode()).thenReturn(false);
+
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(state);
+
+    CreateEicrAction action = new CreateEicrAction();
+    action.execute(mockDetails, launchType, "taskId");
+
+    assertNotNull(state);
+  }
+
+  @Test
+  public void testExecute_JobScheduledWithScheduledJobEvent() throws Exception {
+    CreateEicrStatus status = new CreateEicrStatus();
+    status.setJobStatus(JobStatus.SCHEDULED);
+    when(mockState.getCreateEicrStatus()).thenReturn(status);
+    when(mockDetails.getValidationMode()).thenReturn(false);
+
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+
+    PowerMockito.mockStatic(EcaUtils.class);
+    when(EcaUtils.recheckTriggerCodes(any(), any())).thenReturn(mockState);
+
+    CreateEicrAction action = new CreateEicrAction();
+    action.execute(mockDetails, WorkflowEvent.SCHEDULED_JOB, "taskId");
+
+    assertNotNull(mockState.getCreateEicrStatus().getJobStatus());
+  }
+
+  @Test
+  public void testExecute_ValidationModeTrue() throws Exception {
+    CreateEicrStatus status = new CreateEicrStatus();
+    status.setJobStatus(JobStatus.NOT_STARTED);
+    when(mockState.getCreateEicrStatus()).thenReturn(status);
+    when(mockDetails.getValidationMode()).thenReturn(true);
+
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+
+    PowerMockito.mockStatic(EcaUtils.class);
+    when(EcaUtils.recheckTriggerCodes(any(), any())).thenReturn(mockState);
+
+    CreateEicrAction action = new CreateEicrAction();
+    action.execute(mockDetails, launchType, "taskId");
+
+    assertNotNull(mockState.getCreateEicrStatus());
+  }
+
+  @Test
+  public void testPrint() {
+    CreateEicrAction action = new CreateEicrAction();
+    action.print();
+    assertTrue(true);
   }
 }

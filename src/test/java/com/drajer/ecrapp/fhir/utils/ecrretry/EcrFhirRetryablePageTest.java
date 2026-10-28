@@ -6,14 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.PagingHttpMethodEnum;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.gclient.*;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
-import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
@@ -34,6 +32,8 @@ import org.mockito.MockitoAnnotations;
 public class EcrFhirRetryablePageTest {
 
   private LaunchDetails currentStateDetails;
+
+  @SuppressWarnings("unused")
   private ClientDetails clientDetails;
 
   @InjectMocks FHIRRetryTemplate fhirretryTemplate;
@@ -59,7 +59,6 @@ public class EcrFhirRetryablePageTest {
 
   @Test
   public void testRetryPage() {
-    FhirContext context = mock(FhirContext.class);
     EcrFhirRetryClient retryClient = mock(EcrFhirRetryClient.class);
     IGetPage loadPage = mock(EcrFhirRetryablePage.class);
     IGetPageTyped getPageTyped = mock(EcrFhirRetryablePage.class);
@@ -80,13 +79,6 @@ public class EcrFhirRetryablePageTest {
     RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
     fhirretryTemplate = new FHIRRetryTemplate(retryStatusCode.configureRetryTemplate());
     when(retryClient.getRetryTemplate()).thenReturn(fhirretryTemplate);
-
-    when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
-        .thenReturn(context);
-
-    when(fhirContextInitializer.createClient(
-            context, currentStateDetails, EventTypes.QueryType.NONE))
-        .thenReturn(retryClient);
 
     when(retryClient.loadPage()).thenReturn(loadPage);
     when(loadPage.next(bundle)).thenReturn(getPageTyped);

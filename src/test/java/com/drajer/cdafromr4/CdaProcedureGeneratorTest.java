@@ -1,5 +1,8 @@
 package com.drajer.cdafromr4;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -17,6 +20,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CdaGeneratorUtils.class})
 public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
+
+  private static final String VERSION = CdaGeneratorConstants.CDA_EICR_VERSION_R11;
 
   private static final String PROCEDURE_CDA_FILE = "CdaTestData/Cda/Procedure/procedure.xml";
 
@@ -62,14 +67,12 @@ public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
     String expectedXml = TestUtils.getFileContentAsString(PROCEDURE_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
-    String actualXml = CdaProcedureGenerator.generateProcedureSection(data, launchDetails, "");
+    String actualXml = CdaProcedureGenerator.generateProcedureSection(data, launchDetails, VERSION);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -77,14 +80,12 @@ public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateProcedureSection_withEmptyData() {
 
-    R4FhirData data = new R4FhirData();
-
     String expectedXml = TestUtils.getFileContentAsString(EMPTY_PROCEDURE_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     String actualXml =
-        CdaProcedureGenerator.generateProcedureSection(r4FhirData, launchDetails, "");
+        CdaProcedureGenerator.generateProcedureSection(r4FhirData, launchDetails, VERSION);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -110,8 +111,27 @@ public class CdaProcedureGeneratorTest extends BaseGeneratorTest {
     R4FhirData r4Data = new R4FhirData();
     r4Data.setProcedureList(Collections.singletonList(procedure));
 
-    String actualXml = CdaProcedureGenerator.generateProcedureSection(r4Data, launchDetails, "");
+    String actualXml =
+        CdaProcedureGenerator.generateProcedureSection(r4Data, launchDetails, VERSION);
 
     assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateProcedureSectionHeader_bothArms() {
+    String nf = CdaProcedureGenerator.generateProcedureSectionHeader(CdaGeneratorConstants.NF_NI);
+    assertNotNull(nf);
+    assertTrue("nullFlavor section must be emitted", nf.contains(CdaGeneratorConstants.NF_NI));
+
+    String normal = CdaProcedureGenerator.generateProcedureSectionHeader("");
+    assertNotNull(normal);
+    assertTrue("a plain section must be opened", normal.contains("<section"));
+  }
+
+  @Test
+  public void testGenerateProcedureSection_withNoProcedures() {
+    String xml =
+        CdaProcedureGenerator.generateProcedureSection(new R4FhirData(), launchDetails, VERSION);
+    assertNotNull("A section must still be produced", xml);
   }
 }

@@ -1,11 +1,14 @@
 package com.drajer.ecrapp.fhir.utils.ecrretry;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
-import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.*;
 import ca.uhn.fhir.rest.gclient.*;
-import com.drajer.eca.model.EventTypes;
+import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
@@ -25,6 +28,8 @@ import org.mockito.MockitoAnnotations;
 public class EcrFhirRetryableSearchTest {
 
   private LaunchDetails currentStateDetails;
+
+  @SuppressWarnings("unused")
   private ClientDetails clientDetails;
 
   @InjectMocks FHIRRetryTemplate fhirretryTemplate;
@@ -50,7 +55,6 @@ public class EcrFhirRetryableSearchTest {
 
   @Test
   public void testRetrySearch() {
-    FhirContext context = mock(FhirContext.class);
     EcrFhirRetryClient retryClient = mock(EcrFhirRetryClient.class);
     IQuery iQuery = mock(EcrFhirRetryableSearch.class);
     IUntypedQuery iUntypedQuery = mock(EcrFhirRetryableSearch.class);
@@ -72,12 +76,6 @@ public class EcrFhirRetryableSearchTest {
     fhirretryTemplate = new FHIRRetryTemplate(retryStatusCode.configureRetryTemplate());
     when(retryClient.getRetryTemplate()).thenReturn(fhirretryTemplate);
 
-    when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
-        .thenReturn(context);
-    when(fhirContextInitializer.createClient(
-            context, currentStateDetails, EventTypes.QueryType.NONE))
-        .thenReturn(retryClient);
-
     when(retryClient.search()).thenReturn(iUntypedQuery);
     when(iUntypedQuery.byUrl(url)).thenReturn(iQuery);
     when(iQuery.returnBundle(Bundle.class)).thenReturn(iQuery);
@@ -94,5 +92,100 @@ public class EcrFhirRetryableSearchTest {
     } catch (Exception e) {
       verify(iQuery, times(3)).execute();
     }
+  }
+
+  @Test
+  public void testConstructorsInitialize() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IQuery query = mock(IQuery.class);
+    IUntypedQuery untypedQuery = mock(IUntypedQuery.class);
+
+    EcrFhirRetryableSearch searchWithQuery = new EcrFhirRetryableSearch(query, client);
+    EcrFhirRetryableSearch searchWithUntypedQuery =
+        new EcrFhirRetryableSearch(untypedQuery, client);
+
+    assertNotNull(searchWithQuery);
+    assertNotNull(searchWithUntypedQuery);
+    assertEquals("EcrFhirRetryableSearch", searchWithQuery.getClass().getSimpleName());
+    assertEquals("EcrFhirRetryableSearch", searchWithUntypedQuery.getClass().getSimpleName());
+  }
+
+  @Test
+  public void testUntypedQueryNotImplementedMethods() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    EcrFhirRetryableSearch untypedSearch =
+        new EcrFhirRetryableSearch(mock(IUntypedQuery.class), client);
+
+    Map emptyWhereMap = new HashMap();
+    assertThrows(NotImplementedOperationException.class, () -> untypedSearch.where(emptyWhereMap));
+    Map emptyWhereMultiMap = new HashMap();
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.whereMap(emptyWhereMultiMap));
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.encoded(EncodingEnum.JSON));
+    assertThrows(NotImplementedOperationException.class, () -> untypedSearch.encodedJson());
+    assertThrows(NotImplementedOperationException.class, () -> untypedSearch.encodedXml());
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> untypedSearch.preferResponseType(Bundle.class));
+    List emptyPreferredTypes = new ArrayList();
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> untypedSearch.preferResponseTypes(emptyPreferredTypes));
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.accept("application/json"));
+    assertThrows(NotImplementedOperationException.class, () -> untypedSearch.prettyPrint());
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.summaryMode(SummaryEnum.TRUE));
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.elementsSubset("elem"));
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.andLogRequestAndResponse(true));
+    CacheControlDirective mockCacheControlDirective = mock(CacheControlDirective.class);
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> untypedSearch.cacheControl(mockCacheControlDirective));
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.withAdditionalHeader("h", "v"));
+    assertThrows(NotImplementedOperationException.class, () -> untypedSearch.forAllResources());
+    assertThrows(
+        NotImplementedOperationException.class, () -> untypedSearch.forResource("Patient"));
+  }
+
+  @Test
+  public void testQueryPaginationAndSortNotImplementedMethods() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    EcrFhirRetryableSearch search = new EcrFhirRetryableSearch(mock(IQuery.class), client);
+
+    assertThrows(NotImplementedOperationException.class, () -> search.offset(10));
+    assertThrows(NotImplementedOperationException.class, () -> search.limitTo(50));
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> search.lastUpdated(mock(DateRangeParam.class)));
+    assertThrows(NotImplementedOperationException.class, () -> search.include(mock(Include.class)));
+    assertThrows(
+        NotImplementedOperationException.class, () -> search.revInclude(mock(Include.class)));
+    assertThrows(NotImplementedOperationException.class, () -> search.sort());
+    assertThrows(NotImplementedOperationException.class, () -> search.sort(mock(SortSpec.class)));
+    assertThrows(
+        NotImplementedOperationException.class, () -> search.usingStyle(SearchStyleEnum.GET));
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> search.totalMode(SearchTotalModeEnum.ACCURATE));
+  }
+
+  @Test
+  public void testQueryMetadataNotImplementedMethods() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    EcrFhirRetryableSearch search = new EcrFhirRetryableSearch(mock(IQuery.class), client);
+
+    assertThrows(NotImplementedOperationException.class, () -> search.withProfile("uri"));
+    List emptyProfileUris = new ArrayList();
+    assertThrows(
+        NotImplementedOperationException.class, () -> search.withAnyProfile(emptyProfileUris));
+    assertThrows(NotImplementedOperationException.class, () -> search.withTag("s", "c"));
+    assertThrows(NotImplementedOperationException.class, () -> search.withSecurity("s", "c"));
+    assertThrows(
+        NotImplementedOperationException.class, () -> search.withIdAndCompartment("id", "c"));
   }
 }

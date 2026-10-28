@@ -27,7 +27,8 @@ public class CdaOdhDataGenerator {
 
     logger.info("Start Creating ODH Section");
 
-    List<Observation> occObs = data.getOccupationObs();
+    // Sort most recent first for a consistent display order (issue #1152).
+    List<Observation> occObs = CdaSortUtils.sortObservations(data.getOccupationObs());
 
     if ((occObs != null && !occObs.isEmpty())) {
 

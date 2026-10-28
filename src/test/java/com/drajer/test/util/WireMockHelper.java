@@ -59,7 +59,7 @@ public class WireMockHelper {
   }
 
   private void callStubber(String resource, StubVO stubVO) {
-    boolean isQueryParam = stubVO.getParams().getClass().getSimpleName().equals("LinkedHashMap");
+    boolean isQueryParam = stubVO.getParams() instanceof LinkedHashMap;
 
     if (isQueryParam) {
       StringBuilder params = new StringBuilder("");

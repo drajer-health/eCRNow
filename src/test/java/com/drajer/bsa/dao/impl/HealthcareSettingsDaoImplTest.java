@@ -43,10 +43,20 @@ public class HealthcareSettingsDaoImplTest {
   @Mock private Query<HealthcareSetting> healthcareSettingHibernateQuery;
   @Mock private Query<KnowledgeArtifactStatus> karsHibernateQuery;
 
+  @Mock
+  private com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem
+      knowledgeArtifactRepositorySystem;
+
   @InjectMocks private HealthcareSettingsDaoImpl dao;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
+    // Manually inject sessionFactory into AbstractDao using reflection
+    java.lang.reflect.Field sessionFactoryField =
+        com.drajer.ecrapp.dao.AbstractDao.class.getDeclaredField("sessionFactory");
+    sessionFactoryField.setAccessible(true);
+    sessionFactoryField.set(dao, sessionFactory);
+
     when(sessionFactory.getCurrentSession()).thenReturn(session);
     when(session.getEntityManagerFactory()).thenReturn(entityManagerFactory);
     when(entityManagerFactory.createEntityManager()).thenReturn(entityManager);

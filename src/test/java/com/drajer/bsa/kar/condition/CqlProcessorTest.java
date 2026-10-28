@@ -1,7 +1,6 @@
 package com.drajer.bsa.kar.condition;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
@@ -90,5 +89,22 @@ public class CqlProcessorTest {
     Mockito.verify(bsaCqlCondition).getDataEndpoint();
     Mockito.verify(bsaCqlCondition, times(2)).getLogicExpression();
     Mockito.verify(expression, times(2)).getExpression();
+  }
+
+  @Test
+  public void testEvaluateExpression_wrongConditionType_throwsClassCastException() {
+
+    BsaCondition wrongCondition = Mockito.mock(BsaCondition.class);
+    Mockito.lenient().when(wrongCondition.getLogicExpression()).thenReturn(expression);
+    Mockito.lenient().when(expression.getExpression()).thenReturn("someExpression");
+
+    Bundle bundle = TestUtils.loadBundleFromFile(ENCOUNTER_BUNDLE_JSON);
+    Mockito.lenient().when(karProcessingData.getNotificationBundle()).thenReturn(bundle);
+
+    assertThrows(
+        ClassCastException.class,
+        () ->
+            cqlProcessor.evaluateExpression(
+                wrongCondition, bsaAction, karProcessingData, ehrQueryService));
   }
 }

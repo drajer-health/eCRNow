@@ -36,12 +36,13 @@ public class CdaSocialHistoryGenerator {
     List<Observation> occHistory = new ArrayList<>();
 
     if (version.contentEquals(CdaGeneratorConstants.CDA_EICR_VERSION_R11)) {
-      pregCond = data.getPregnancyConditions();
-      pregObs = data.getPregnancyObs();
-      occHistory = data.getOccupationObs();
+      // Sort most recent first for a consistent display order (issue #1152).
+      pregCond = CdaSortUtils.sortConditions(data.getPregnancyConditions());
+      pregObs = CdaSortUtils.sortObservations(data.getPregnancyObs());
+      occHistory = CdaSortUtils.sortObservations(data.getOccupationObs());
     }
 
-    List<Observation> travelHistory = data.getTravelObs();
+    List<Observation> travelHistory = CdaSortUtils.sortObservations(data.getTravelObs());
 
     if (birthSex != null
         || (pregObs != null && !pregObs.isEmpty())
@@ -665,13 +666,14 @@ public class CdaSocialHistoryGenerator {
             data.getPatient().getExtension(),
             CdaGeneratorConstants.FHIR_USCORE_TRIBAL_AFFILIATION_EXT_URL);
 
-    List<Observation> travelHistory = data.getTravelObs();
-    List<Observation> residencyData = data.getResidencyObs();
-    List<Observation> nationalityData = data.getNationalityObs();
-    List<Observation> vaccineCredData = data.getVaccineCredObs();
-    List<Observation> disabilityData = data.getDisabilityObs();
-    List<Observation> homelessData = data.getHomelessObs();
-    List<Observation> occObs = data.getOccupationObs();
+    // Sort most recent first for a consistent display order (issue #1152).
+    List<Observation> travelHistory = CdaSortUtils.sortObservations(data.getTravelObs());
+    List<Observation> residencyData = CdaSortUtils.sortObservations(data.getResidencyObs());
+    List<Observation> nationalityData = CdaSortUtils.sortObservations(data.getNationalityObs());
+    List<Observation> vaccineCredData = CdaSortUtils.sortObservations(data.getVaccineCredObs());
+    List<Observation> disabilityData = CdaSortUtils.sortObservations(data.getDisabilityObs());
+    List<Observation> homelessData = CdaSortUtils.sortObservations(data.getHomelessObs());
+    List<Observation> occObs = CdaSortUtils.sortObservations(data.getOccupationObs());
 
     if (birthSex != null
         || genderIdentity != null

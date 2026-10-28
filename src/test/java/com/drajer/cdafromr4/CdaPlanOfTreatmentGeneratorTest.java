@@ -2,6 +2,7 @@ package com.drajer.cdafromr4;
 
 import static com.drajer.cda.utils.CdaGeneratorConstants.FHIR_SNOMED_URL;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -15,7 +16,13 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
+import java.util.Date;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.ServiceRequest;
 import org.javatuples.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +101,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     List<Bundle.BundleEntryComponent> entries = b.getEntry();
     Bundle bundle = new Bundle();
-    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+    Set<Resource> resourceSet = new LinkedHashSet<>();
 
     Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
 
@@ -125,8 +132,6 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
     String expectedXml = TestUtils.getFileContentAsString(PLANNED_PROCEDURE_ENTRY_CDA_FILE);
 
@@ -184,17 +189,20 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
     String expectedXml = TestUtils.getFileContentAsString(PLANNED_ACT_CDA_FILE);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
     ServiceRequest serviceRequest = data.getServiceRequests().stream().findFirst().get();
+
     String actualXml =
         (String)
-            CdaPlanOfTreatmentGenerator.getPlannedActXml(serviceRequest, launchDetails, "", "");
+            CdaPlanOfTreatmentGenerator.getPlannedActXml(
+                serviceRequest,
+                launchDetails,
+                "contentRef",
+                CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertNotNull(actualXml);
 
@@ -249,16 +257,17 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
   public void testGenerateEmptyPlanOfTreatmentSection() {
 
     String expectedXml =
-        "<component>\r\n"
-            + "<section nullFlavor=\"NI\">\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.10\"/>\r\n"
-            + "<templateId root=\"2.16.840.1.113883.10.20.22.2.10\" extension=\"2014-06-09\"/>\r\n"
-            + "<code code=\"18776-5\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"Treatment Plan\"/>\r\n"
-            + "<title>Plan of Treatment</title>\r\n"
-            + "<text>No Plan Of Treatment Information</text>\r\n"
-            + "</section>\r\n"
-            + "</component>\r\n"
-            + "";
+        """
+        <component>\r
+        <section nullFlavor="NI">\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.10"/>\r
+        <templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>\r
+        <code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>\r
+        <title>Plan of Treatment</title>\r
+        <text>No Plan Of Treatment Information</text>\r
+        </section>\r
+        </component>\r
+        """;
     String actualXml = CdaPlanOfTreatmentGenerator.generateEmptyPlanOfTreatmentSection();
 
     assertNotNull(actualXml);
@@ -365,7 +374,6 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testIsPlannedObservation_WithNoCategory() {
     ServiceRequest sr = new ServiceRequest();
-    // Not setting any category
 
     assertFalse(
         "Expected false when no category is present",
@@ -374,8 +382,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
   @Test(expected = NullPointerException.class)
   public void testIsPlannedObservation_WithNullServiceRequest() {
-    // This test checks behavior if method is called with null (should ideally be handled in the
-    // method)
+
     CdaPlanOfTreatmentGenerator.isPlannedObservation(null);
   }
 
@@ -421,7 +428,6 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     assertFalse(CdaPlanOfTreatmentGenerator.isPlannedAct(sr));
   }
 
-  // Helper method to create a ServiceRequest with a single category
   private ServiceRequest createServiceRequestWithCategory(String snomedCode) {
     ServiceRequest sr = new ServiceRequest();
     CodeableConcept category =
@@ -430,7 +436,6 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     return sr;
   }
 
-  // Helper method to create a ServiceRequest with multiple categories
   private ServiceRequest createServiceRequestWithCategories(String... snomedCodes) {
     ServiceRequest sr = new ServiceRequest();
     for (String code : snomedCodes) {
@@ -443,29 +448,30 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
   public String getAuthor() {
     String authorXml =
-        "<author>\n"
-            + "            <time value=\"20250217125323+0000\"/>\n"
-            + "            <assignedAuthor>\n"
-            + "                <id root=\"2.16.840.1.113883.4.6\" extension=\"9999993519\"/>\n"
-            + "                <addr>\n"
-            + "                    <streetAddressLine>5400 N Oak Trfy</streetAddressLine>\n"
-            + "                    <city>New York City</city>\n"
-            + "                    <county>Manhattan</county>\n"
-            + "                    <state>NY</state>\n"
-            + "                    <postalCode>10001</postalCode>\n"
-            + "                    <country>US</country>\n"
-            + "                </addr>\n"
-            + "                <telecom value=\"tel:(816)673-2878\" use=\"MC\"/>\n"
-            + "                <telecom value=\"mailto:arthur.james73@gmail.com\"/>\n"
-            + "                <assignedPerson>\n"
-            + "                    <name>\n"
-            + "                        <given>Arthur</given>\n"
-            + "                        <given>James</given>\n"
-            + "                        <family>Smith</family>\n"
-            + "                    </name>\n"
-            + "                </assignedPerson>\n"
-            + "            </assignedAuthor>\n"
-            + "        </author>";
+        """
+        <author>
+                    <time value="20250217125323+0000"/>
+                    <assignedAuthor>
+                        <id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+                        <addr>
+                            <streetAddressLine>5400 N Oak Trfy</streetAddressLine>
+                            <city>New York City</city>
+                            <county>Manhattan</county>
+                            <state>NY</state>
+                            <postalCode>10001</postalCode>
+                            <country>US</country>
+                        </addr>
+                        <telecom value="tel:(816)673-2878" use="MC"/>
+                        <telecom value="mailto:arthur.james73@gmail.com"/>
+                        <assignedPerson>
+                            <name>
+                                <given>Arthur</given>
+                                <given>James</given>
+                                <family>Smith</family>
+                            </name>
+                        </assignedPerson>
+                    </assignedAuthor>
+                </author>""";
     return authorXml;
   }
 
@@ -477,7 +483,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     List<Bundle.BundleEntryComponent> entries = b.getEntry();
     Bundle bundle = new Bundle();
-    Set<Resource> resourceSet = new LinkedHashSet<>(); // Initialize HashSet outside the loop
+    Set<Resource> resourceSet = new LinkedHashSet<>();
 
     Map<ResourceType, Set<Resource>> resourcesByType = new HashMap<>();
 
@@ -559,8 +565,11 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     mockStatic(CdaFhirUtilities.class, Mockito.CALLS_REAL_METHODS);
     when(CdaGeneratorUtils.getXmlForII(any(), any()))
         .thenReturn("<id root=\"1.2.3.4.5\" extension=\"sr-authored-only\"/>");
+
     String xml =
-        (String) CdaPlanOfTreatmentGenerator.getPlannedActXml(sr, details, "contentRef", "CDA_R31");
+        (String)
+            CdaPlanOfTreatmentGenerator.getPlannedActXml(
+                sr, details, "contentRef", CdaGeneratorConstants.CDA_EICR_VERSION_R11);
     assertNotNull(xml);
     assertTrue(xml.contains("effectiveTime"));
   }
@@ -764,7 +773,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
   @Test
   public void testPIVLEffectiveTimeAdded() {
-    String freqInHours = "8"; // not UNKNOWN
+    String freqInHours = "8";
     StringBuilder sb = new StringBuilder();
     if (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(freqInHours)) {
       sb.append(
@@ -807,7 +816,16 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String xml =
         CdaPlanOfTreatmentGenerator.getPlannedMedicationXml(
-            mr, details, "ref6", data, null, null, null, medList, details, "v1");
+            mr,
+            details,
+            "contentRef",
+            data,
+            null,
+            null,
+            null,
+            medList,
+            details,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R31);
     assertTrue(xml.contains("codeXml"));
   }
 
@@ -833,7 +851,16 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String xml =
         CdaPlanOfTreatmentGenerator.getPlannedMedicationXml(
-            mr, details, "ref7", data, null, null, null, medList, details, "v1");
+            mr,
+            details,
+            "contentRef",
+            data,
+            null,
+            null,
+            null,
+            medList,
+            details,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R31);
     assertTrue(xml.contains("fallback"));
   }
 
@@ -862,7 +889,16 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String xml =
         CdaPlanOfTreatmentGenerator.getPlannedMedicationXml(
-            mr, details, "ref8", data, null, null, null, medList, details, "v1");
+            mr,
+            details,
+            "contentRef",
+            data,
+            null,
+            null,
+            null,
+            medList,
+            details,
+            CdaGeneratorConstants.CDA_EICR_VERSION_R31);
     assertTrue(xml.contains("final"));
   }
 
@@ -883,5 +919,80 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
 
     String xml = sb.toString();
     assertTrue(xml.contains("12345"));
+  }
+
+  private ServiceRequest serviceRequest(String id, boolean withCode, boolean withOccurrence) {
+    ServiceRequest sr = new ServiceRequest();
+    sr.setId(id);
+    if (withCode) {
+      sr.setCode(
+          new CodeableConcept()
+              .addCoding(
+                  new Coding()
+                      .setSystem(CdaGeneratorConstants.FHIR_SNOMED_URL)
+                      .setCode("71388002")
+                      .setDisplay("Procedure")));
+    }
+    if (withOccurrence) sr.setOccurrence(new DateTimeType(new Date()));
+    else sr.setAuthoredOn(new Date());
+    return sr;
+  }
+
+  @Test
+  public void testGetPlannedProcedureXml_populatedAndBare() {
+    assertNotNull(
+        "a populated ServiceRequest must produce a planned procedure entry",
+        CdaPlanOfTreatmentGenerator.getPlannedProcedureXml(
+            serviceRequest("sr-proc-1", true, true), launchDetails, "ref1", new R4FhirData()));
+
+    assertNotNull(
+        "a bare ServiceRequest must not throw",
+        CdaPlanOfTreatmentGenerator.getPlannedProcedureXml(
+            new ServiceRequest(), launchDetails, "ref2", new R4FhirData()));
+  }
+
+  @Test
+  public void testGetPlannedObservationXml_populatedAndBare() {
+    assertNotNull(
+        "a populated ServiceRequest must produce a planned observation entry",
+        CdaPlanOfTreatmentGenerator.getPlannedObservationXml(
+            serviceRequest("sr-obs-1", true, true),
+            launchDetails,
+            "ref1",
+            new R4FhirData(),
+            "CDA_R31"));
+
+    assertNotNull(
+        "a ServiceRequest with no code and no occurrence must not throw",
+        CdaPlanOfTreatmentGenerator.getPlannedObservationXml(
+            serviceRequest("sr-obs-2", false, false),
+            launchDetails,
+            "ref2",
+            new R4FhirData(),
+            "CDA_R11"));
+  }
+
+  @Test
+  public void testGetDiagnosticReportXml_populatedAndBare() {
+    DiagnosticReport dr = new DiagnosticReport();
+    dr.setId("dr-1");
+    dr.setCode(
+        new CodeableConcept()
+            .addCoding(
+                new Coding()
+                    .setSystem(CdaGeneratorConstants.FHIR_LOINC_URL)
+                    .setCode("24357-6")
+                    .setDisplay("Urinalysis")));
+    dr.setEffective(new DateTimeType(new Date()));
+
+    assertNotNull(
+        "a populated DiagnosticReport must produce an entry",
+        CdaPlanOfTreatmentGenerator.getDiagnosticReportXml(
+            dr, launchDetails, "ref1", new R4FhirData(), "CDA_R31"));
+
+    assertNotNull(
+        "a bare DiagnosticReport must not throw",
+        CdaPlanOfTreatmentGenerator.getDiagnosticReportXml(
+            new DiagnosticReport(), launchDetails, "ref2", new R4FhirData(), "CDA_R31"));
   }
 }
