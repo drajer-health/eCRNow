@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.sof.utils.FhirContextInitializer;
 import java.time.Instant;
 import java.util.Date;
@@ -54,9 +55,9 @@ public class FhirOperationExecutor {
     try {
       return operation.apply(client);
 
-    } catch (BaseServerResponseException exception) {
+    } catch (RuntimeException exception) {
 
-      if (exception.getStatusCode() != HTTP_UNAUTHORIZED) {
+      if (!isUnauthorized(exception)) {
         throw exception;
       }
 
@@ -76,9 +77,9 @@ public class FhirOperationExecutor {
       try {
         return operation.apply(refreshedClient);
 
-      } catch (BaseServerResponseException retryException) {
+      } catch (RuntimeException retryException) {
 
-        if (retryException.getStatusCode() == HTTP_UNAUTHORIZED) {
+        if (isUnauthorized(retryException)) {
           logger.error(
               "FHIR request returned 401 after generating a fresh token. "
                   + "No further authentication retry will be attempted. Request ID: {}",
@@ -88,6 +89,25 @@ public class FhirOperationExecutor {
         throw retryException;
       }
     }
+  }
+
+//  /**
+//   * Detects a 401 Unauthorized response regardless of how the FHIR client surfaced it. When the
+//   * retryable client is enabled, HAPI's {@link BaseServerResponseException} is wrapped in a {@link
+//   * RetryableException}; when it is disabled, the {@link BaseServerResponseException} is thrown
+//   * directly.
+//   */
+ private boolean isUnauthorized(RuntimeException exception) {
+
+  if (exception instanceof RetryableException) {
+     return ((RetryableException) exception).getHttpResponseStatusCode() == HTTP_UNAUTHORIZED;
+   }
+
+    if (exception instanceof BaseServerResponseException) {
+      return ((BaseServerResponseException) exception).getStatusCode() == HTTP_UNAUTHORIZED;
+    }
+
+   return false;
   }
 
   private IGenericClient createClient(KarProcessingData data, FhirContext context) {
@@ -101,6 +121,8 @@ public class FhirOperationExecutor {
   }
 
   private void refreshAccessToken(KarProcessingData data) {
+
+    String previousAccessToken = data.getHealthcareSetting().getEhrAccessToken();
 
     JSONObject tokenResponse = authorizationUtils.getToken(data.getHealthcareSetting());
 
@@ -122,7 +144,27 @@ public class FhirOperationExecutor {
 
     healthcareSettingsDao.saveOrUpdate(data.getHealthcareSetting());
 
-    logger.info("Generated fresh EHR access token. Expiration time: {}", expirationTime);
+    logger.info(
+        "Generated fresh EHR access token. old={}, new={}, changed={}, Expiration time: {}",
+        fingerprintToken(previousAccessToken),
+        fingerprintToken(freshAccessToken),
+        !java.util.Objects.equals(previousAccessToken, freshAccessToken),
+        expirationTime);
+  }
+
+  /**
+   * Produces a non-sensitive fingerprint of an access token for logging. Never logs the full token;
+   * only its length and last few characters so a rotation is visible in the logs.
+   */
+  private static String fingerprintToken(String token) {
+
+    if (token == null || token.isBlank()) {
+      return "none";
+    }
+
+    String suffix = token.length() <= 4 ? token : token.substring(token.length() - 4);
+
+    return "len=" + token.length() + ",…" + suffix;
   }
 
   private void ensureValidAccessToken(KarProcessingData data) {

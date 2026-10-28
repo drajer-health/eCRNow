@@ -1062,9 +1062,17 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     try {
       logger.info("Getting data for resource type {} using query: {}", resType, searchUrl);
 
-      Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+      Bundle bundle =
+          fhirOperationExecutor.execute(
+              kd,
+              context,
+              client -> {
+                Bundle searchBundle =
+                    client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+                getAllR4RecordsUsingPagination(client, searchBundle);
+                return searchBundle;
+              });
 
-      getAllR4RecordsUsingPagination(genericClient, bundle);
       if (bundle != null && bundle.hasEntry() && bundle.getEntry().size() > 0) {
 
         logger.info(
