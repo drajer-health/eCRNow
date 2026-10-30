@@ -17,6 +17,7 @@ public class R4FhirData extends FhirData {
   private Patient patient;
   private Practitioner practitioner;
   private List<Practitioner> practitionersList;
+  private List<PractitionerRole> practitionerRoles;
   private Encounter encounter;
   private Location location;
   private List<Location> locationList;
@@ -108,11 +109,25 @@ public class R4FhirData extends FhirData {
     return null;
   }
 
+  public PractitionerRole getPractitionerRoleById(String id) {
+
+    logger.debug("Id for retrieving practitioner role = {}", id);
+    if (id != null) {
+      for (PractitionerRole role : practitionerRoles) {
+
+        if (id.equals(role.getIdElement().getIdPart())) return role;
+      }
+    }
+
+    return null;
+  }
+
   public R4FhirData() {
 
     locationList = new ArrayList<>();
     organizationList = new ArrayList<>();
     practitionersList = new ArrayList<>();
+    practitionerRoles = new ArrayList<>();
     conditions = new ArrayList<>();
     encounterDiagnosisConditions = new ArrayList<>();
     pregnancyConditions = new ArrayList<>();
@@ -183,6 +198,18 @@ public class R4FhirData extends FhirData {
 
   public void addPractitionersList(List<Practitioner> practitionersList) {
     this.practitionersList.addAll(practitionersList);
+  }
+
+  public List<PractitionerRole> getPractitionerRoles() {
+    return practitionerRoles;
+  }
+
+  public void setPractitionerRoles(List<PractitionerRole> practitionerRoles) {
+    this.practitionerRoles = practitionerRoles;
+  }
+
+  public void addPractitionerRoles(List<PractitionerRole> practitionerRoles) {
+    this.practitionerRoles.addAll(practitionerRoles);
   }
 
   public Encounter getEncounter() {

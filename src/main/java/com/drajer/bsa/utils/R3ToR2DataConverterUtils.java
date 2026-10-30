@@ -161,6 +161,47 @@ public class R3ToR2DataConverterUtils {
         medicationRequests,
         ResourceType.MedicationRequest.toString(),
         r4DataResourceIds);
+
+    // PractitionerRoles of ServiceRequest requesters (authorizing provider, #1079).
+    Set<Resource> practitionerRoles =
+        kd.getResourcesByType(ResourceType.PractitionerRole.toString());
+    addResourcesToR4FhirData(
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        practitionerRoles,
+        ResourceType.PractitionerRole.toString(),
+        r4DataResourceIds);
+
+    // ServiceRequests reached through lab results (basedOn) are only needed to look up the
+    // authorizing provider. They go into the data bundle, not the ServiceRequest list, so they do
+    // not appear in the Plan of Treatment section.
+    addToBundleIfAbsent(data, kd.getResourcesByType(ResourceType.ServiceRequest.toString()));
+  }
+
+  /** Adds resources to the bundle unless a resource of the same type and id is already there. */
+  private static void addToBundleIfAbsent(Bundle data, Set<Resource> resources) {
+
+    if (resources == null || resources.isEmpty()) {
+      return;
+    }
+
+    for (Resource r : resources) {
+      String id = r.getIdElement().getIdPart();
+      boolean present =
+          data.getEntry().stream()
+              .map(BundleEntryComponent::getResource)
+              .anyMatch(
+                  e ->
+                      e != null
+                          && e.getResourceType() == r.getResourceType()
+                          && id != null
+                          && id.equals(e.getIdElement().getIdPart()));
+      if (!present) {
+        data.addEntry(new BundleEntryComponent().setResource(r));
+      }
+    }
   }
 
   public static void addAdministrativeResources(
@@ -257,6 +298,17 @@ public class R3ToR2DataConverterUtils {
           data.addEntry(new BundleEntryComponent().setResource((Organization) r));
         }
         r4FhirData.addOrganization(orgList);
+
+      } else if (type.contentEquals(ResourceType.PractitionerRole.toString())) {
+
+        logger.info(" Setting up the PractitionerRole for R4FhirData ");
+
+        ArrayList<PractitionerRole> roles = new ArrayList<>();
+        for (Resource r : resources) {
+          roles.add((PractitionerRole) r);
+          data.addEntry(new BundleEntryComponent().setResource(r));
+        }
+        r4FhirData.addPractitionerRoles(roles);
 
       } else if (type.contentEquals(ResourceType.Practitioner.toString())) {
 

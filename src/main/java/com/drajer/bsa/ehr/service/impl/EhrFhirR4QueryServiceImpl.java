@@ -66,6 +66,7 @@ import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Procedure.ProcedureStatus;
 import org.hl7.fhir.r4.model.Reference;
@@ -1604,6 +1605,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           if (isPractitioner(performer)) {
             getAndAddSecondaryResource(
                 kd, performer, ResourceType.Practitioner, genericClient, context);
+          } else if (isResourceOfType(performer, ResourceType.Organization)) {
+            // Performing organization (lab) for the result, #1079
+            getAndAddSecondaryResource(
+                kd, performer, ResourceType.Organization, genericClient, context);
           }
         }
       }
@@ -1694,6 +1699,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 if (isPractitioner(performer)) {
                   getAndAddSecondaryResource(
                       kd, performer, ResourceType.Practitioner, genericClient, context);
+                } else if (isResourceOfType(performer, ResourceType.Organization)) {
+                  // Performing organization (lab) for the result, #1079
+                  getAndAddSecondaryResource(
+                      kd, performer, ResourceType.Organization, genericClient, context);
                 }
               }
               if (observation.hasBasedOn()) {
@@ -1731,18 +1740,68 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } else if (res != null && rType == ResourceType.ServiceRequest) {
-      ServiceRequest serviceRequest = (ServiceRequest) res;
-      if (serviceRequest.hasRequester()) {
-        Reference requesterRef = serviceRequest.getRequester();
-        if (isResourceOfType(requesterRef, ResourceType.Practitioner)) {
-          getAndAddSecondaryResource(
-              kd, requesterRef, ResourceType.Practitioner, genericClient, context);
-        }
-      }
+      addServiceRequestRequester(kd, (ServiceRequest) res, genericClient, context);
     }
   }
 
-  private void getAndAddSecondaryResource(
+  /**
+   * Loads the ordering provider of a ServiceRequest (authorizing provider, #1079): the requester
+   * Practitioner, or for a PractitionerRole requester the role and its Practitioner.
+   */
+  private void addServiceRequestRequester(
+      KarProcessingData kd,
+      ServiceRequest serviceRequest,
+      IGenericClient genericClient,
+      FhirContext context) {
+
+    if (!serviceRequest.hasRequester()) {
+      return;
+    }
+
+    Reference requesterRef = serviceRequest.getRequester();
+
+    if (isResourceOfType(requesterRef, ResourceType.Practitioner)) {
+      getAndAddSecondaryResource(
+          kd, requesterRef, ResourceType.Practitioner, genericClient, context);
+
+    } else if (isResourceOfType(requesterRef, ResourceType.PractitionerRole)) {
+      Resource role =
+          getAndAddSecondaryResource(
+              kd, requesterRef, ResourceType.PractitionerRole, genericClient, context);
+
+      if (role instanceof PractitionerRole
+          && ((PractitionerRole) role).hasPractitioner()
+          && isResourceOfType(
+              ((PractitionerRole) role).getPractitioner(), ResourceType.Practitioner)) {
+        getAndAddSecondaryResource(
+            kd,
+            ((PractitionerRole) role).getPractitioner(),
+            ResourceType.Practitioner,
+            genericClient,
+            context);
+      }
+
+      // Ordering facility (#1079): PractitionerRole.organization
+      if (role instanceof PractitionerRole
+          && ((PractitionerRole) role).hasOrganization()
+          && isResourceOfType(
+              ((PractitionerRole) role).getOrganization(), ResourceType.Organization)) {
+        getAndAddSecondaryResource(
+            kd,
+            ((PractitionerRole) role).getOrganization(),
+            ResourceType.Organization,
+            genericClient,
+            context);
+      }
+
+    } else if (isResourceOfType(requesterRef, ResourceType.Organization)) {
+      // Ordering facility (#1079): the requester is the ordering organization itself
+      getAndAddSecondaryResource(
+          kd, requesterRef, ResourceType.Organization, genericClient, context);
+    }
+  }
+
+  private Resource getAndAddSecondaryResource(
       KarProcessingData kd,
       Reference ref,
       ResourceType type,
@@ -1765,6 +1824,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
 
     addResourceToContext(kd, secRes, ref.getReferenceElement().getIdPart(), false);
+
+    // A ServiceRequest reached through basedOn also needs its requester for the authorizing
+    // provider; populateSecondaryResources only runs for searched resources.
+    if (type == ResourceType.ServiceRequest && secRes instanceof ServiceRequest) {
+      addServiceRequestRequester(kd, (ServiceRequest) secRes, genericClient, context);
+    }
+
+    return secRes;
   }
 
   private void addResourceToContext(

@@ -727,17 +727,21 @@ public class CdaHeaderGenerator {
 
     Location location = filterLocation(data.getLocationList());
 
+    // Ordering facility (#1079) is only used when the encounter has no location and no service
+    // provider; otherwise the header is populated exactly as before.
+    Organization facilityOrg = getHealthCareFacilityOrganization(data, location);
+
     if (location != null) {
-      sb.append(getLocationXml(location, data.getOrganization(), details));
+      sb.append(getLocationXml(location, facilityOrg, details));
     } else {
-      sb.append(getLocationXml(null, data.getOrganization(), details));
+      sb.append(getLocationXml(null, facilityOrg, details));
     }
 
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(
             CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, false, false));
+    sb.append(getOrganizationXml(facilityOrg, details, false, false));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
@@ -751,6 +755,41 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMPONENT_OF_EL_NAME));
 
     return sb.toString();
+  }
+
+  /**
+   * Organization for encompassingEncounter/location/healthCareFacility. When the encounter has
+   * neither a Location nor a service provider Organization, the ordering facility of the lab
+   * results is used (#1079). In every other case this is data.getOrganization(), as before; when
+   * nothing is available the header keeps its nullFlavors.
+   */
+  static Organization getHealthCareFacilityOrganization(R4FhirData data, Location location) {
+
+    if (location == null && !hasEncounterServiceProvider(data)) {
+      Organization orderingFacility = CdaResultGenerator.findOrderingFacility(data);
+      if (orderingFacility != null) {
+        logger.info(
+            "Encounter has no location or service provider; using ordering facility {} for"
+                + " healthCareFacility",
+            orderingFacility.getIdElement().getIdPart());
+        return orderingFacility;
+      }
+    }
+
+    return data.getOrganization();
+  }
+
+  /** True when Encounter.serviceProvider references an Organization that was retrieved. */
+  static boolean hasEncounterServiceProvider(R4FhirData data) {
+
+    Encounter encounter = data.getEncounter();
+
+    return encounter != null
+        && encounter.hasServiceProvider()
+        && encounter.getServiceProvider().getReferenceElement().hasIdPart()
+        && data.getOrganizationForId(
+                encounter.getServiceProvider().getReferenceElement().getIdPart())
+            != null;
   }
 
   public static HashMap<V3ParticipationType, List<Practitioner>> getSortedPractitionerList(

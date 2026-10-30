@@ -1864,7 +1864,10 @@ public class EhrFhirR4QueryServiceImplTest {
     Practitioner practitioner = practitioner("p1");
     Specimen specimen = specimen("s1");
     ServiceRequest serviceRequest = serviceRequest("sr1");
-    serveReadsById(Map.of("p1", practitioner, "s1", specimen, "sr1", serviceRequest));
+    Organization lab = new Organization();
+    lab.setId("o1");
+    lab.setName("Performing Lab");
+    serveReadsById(Map.of("p1", practitioner, "s1", specimen, "sr1", serviceRequest, "o1", lab));
     KarProcessingData kd = new KarProcessingData();
 
     Observation obs = observation("obs-1", null);
@@ -1882,9 +1885,46 @@ public class EhrFhirR4QueryServiceImplTest {
     assertSame(practitioner, kd.getResourceById("p1", ResourceType.Practitioner));
     assertSame(specimen, kd.getResourceById("s1", ResourceType.Specimen));
     assertSame(serviceRequest, kd.getResourceById("sr1", ResourceType.ServiceRequest));
-    verify(iReadTyped, never()).withId("o1");
+    // #1079: the Organization performer (performing lab) is now fetched as well
+    assertSame(lab, kd.getResourceById("o1", ResourceType.Organization));
     verify(iReadTyped, never()).withId("cp1");
     verify(iReadTyped, never()).withId("g1");
+  }
+
+  @Test
+  public void secondaryResources_serviceRequestRequesterChain() {
+    // #1079: requester -> PractitionerRole -> practitioner (authorizing provider) and
+    // organization (ordering facility); an Organization requester is the facility itself.
+    ServiceRequest byRole = serviceRequest("sr1");
+    byRole.setRequester(new Reference("PractitionerRole/role1"));
+    ServiceRequest byOrg = serviceRequest("sr2");
+    byOrg.setRequester(new Reference("Organization/fac2"));
+    PractitionerRole role = new PractitionerRole();
+    role.setId("role1");
+    role.setPractitioner(new Reference("Practitioner/p1"));
+    role.setOrganization(new Reference("Organization/fac1"));
+    Practitioner practitioner = practitioner("p1");
+    Organization fac1 = organization("fac1");
+    Organization fac2 = organization("fac2");
+    Map<String, Resource> served = new HashMap<>();
+    served.put("sr1", byRole);
+    served.put("sr2", byOrg);
+    served.put("role1", role);
+    served.put("p1", practitioner);
+    served.put("fac1", fac1);
+    served.put("fac2", fac2);
+    serveReadsById(served);
+    KarProcessingData kd = new KarProcessingData();
+
+    Observation obs = observation("obs-1", null);
+    obs.addBasedOn(new Reference("ServiceRequest/sr1"));
+    obs.addBasedOn(new Reference("ServiceRequest/sr2"));
+    readByUrl(kd, obs);
+
+    assertSame(role, kd.getResourceById("role1", ResourceType.PractitionerRole));
+    assertSame(practitioner, kd.getResourceById("p1", ResourceType.Practitioner));
+    assertSame(fac1, kd.getResourceById("fac1", ResourceType.Organization));
+    assertSame(fac2, kd.getResourceById("fac2", ResourceType.Organization));
   }
 
   @Test
@@ -1949,10 +1989,13 @@ public class EhrFhirR4QueryServiceImplTest {
   }
 
   @Test
-  public void secondaryResources_serviceRequestRequesterThatIsNotAPractitioner() {
+  public void secondaryResources_serviceRequestRequesterThatIsNotAPractitionerOrOrganization() {
     KarProcessingData kd = new KarProcessingData();
 
-    readByUrl(kd, new ServiceRequest().setRequester(new Reference("Organization/o1")));
+    // Organization requesters are fetched since #1079 (ordering facility); see
+    // secondaryResources_serviceRequestRequesterChain.
+    readByUrl(kd, new ServiceRequest().setRequester(new Reference("Patient/pt1")));
+    readByUrl(kd, new ServiceRequest().setRequester(new Reference("RelatedPerson/rp1")));
     readByUrl(kd, new ServiceRequest());
 
     verify(iReadTyped, never()).withId(anyString());
