@@ -66,6 +66,7 @@ import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Procedure.ProcedureStatus;
 import org.hl7.fhir.r4.model.Reference;
@@ -154,6 +155,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   /** The FHIR Context Initializer necessary to retrieve FHIR resources */
   @Autowired FhirContextInitializer fhirContextInitializer;
+
+  @Autowired FhirOperationExecutor fhirOperationExecutor;
 
   /**
    * The attribute contains the directory of custom query files. Each Kar will have its own file
@@ -255,7 +258,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     // Get Patient by Id always
     Resource res =
         getResourceById(
-            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
+            client,
+            kd,
+            context,
+            PATIENT_RESOURCE,
+            kd.getNotificationContext().getPatientId(),
+            true);
 
     if (res != null && res.getResourceType() != ResourceType.OperationOutcome) {
 
@@ -284,6 +292,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       Resource enc =
           getResourceById(
               client,
+              kd,
               context,
               ResourceType.Encounter.toString(),
               kd.getNotificationContext().getNotificationResourceId(),
@@ -352,7 +361,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     // Get Patient by Id always
     Resource res =
         getResourceById(
-            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId(), true);
+            client,
+            kd,
+            context,
+            PATIENT_RESOURCE,
+            kd.getNotificationContext().getPatientId(),
+            true);
     if (res != null) {
 
       logger.info(
@@ -389,7 +403,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           // get the resources
           Set<Resource> resources = kd.getResourcesByType(type.toString());
           if (resources == null || resources.isEmpty()) {
-            resources = fetchResources(client, context, url);
+            resources = fetchResources(client, kd, context, url);
           }
           addFilteredResources(kd, entry, id, type, resources);
         } else {
@@ -554,6 +568,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                   (Practitioner)
                       getResourceById(
                           client,
+                          kd,
                           context,
                           ResourceType.Practitioner.toString(),
                           practitionerID,
@@ -569,7 +584,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       } // For participant != null
 
       // Load Organizations
-      if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
+      if (encounter.hasServiceProvider()) {
         Reference organizationReference = encounter.getServiceProvider();
         if (organizationReference.hasReferenceElement()
             && !kd.containsResourceWithId(
@@ -579,6 +594,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               (Organization)
                   getResourceById(
                       client,
+                      kd,
                       context,
                       "Organization",
                       organizationReference.getReferenceElement().getIdPart(),
@@ -592,7 +608,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
       // Load Locations
-      if (Boolean.TRUE.equals(encounter.hasLocation())) {
+      if (encounter.hasLocation()) {
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
         for (EncounterLocationComponent location : enocunterLocations) {
           if (location.hasLocation()
@@ -604,6 +620,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 (Location)
                     getResourceById(
                         client,
+                        kd,
                         context,
                         "Location",
                         locationReference.getReferenceElement().getIdPart(),
@@ -667,7 +684,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info("Getting data for Resource : {} with Url : {}", resourceName, url);
 
-      resource = (Resource) (genericClient.read().resource(resourceName).withUrl(url).execute());
+      resource =
+          (Resource)
+              fhirOperationExecutor.execute(
+                  data,
+                  context,
+                  client -> client.read().resource(resourceName).withUrl(url).execute());
 
       if (resource != null
           && resource.getResourceType() != ResourceType.OperationOutcome
@@ -677,6 +699,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -685,23 +708,32 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
       logger.error("Error in getting {} resource by Url: {}", resourceName, url, responseException);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.error("Error in getting {} resource by Url: {}", resourceName, url, e);
     }
     return resource;
   }
 
   public Set<Resource> fetchResources(
-      IGenericClient genericClient, FhirContext context, String searchUrl) {
+      IGenericClient genericClient, KarProcessingData kd, FhirContext context, String searchUrl) {
     logger.info("FhirContext: {}", context);
     Set<Resource> resources = new HashSet<>();
     try {
-      Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
-      getAllR4RecordsUsingPagination(genericClient, bundle);
+      Bundle bundle =
+          fhirOperationExecutor.execute(
+              kd,
+              context,
+              client -> {
+                return client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+              });
+
+      getAllR4RecordsUsingPagination(kd, context, bundle);
       List<BundleEntryComponent> bc = bundle.getEntry();
       for (BundleEntryComponent comp : bc) {
         resources.add(comp.getResource());
       }
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.error(e.getMessage(), e);
     }
     return resources;
@@ -717,11 +749,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
 
-    return getResourceById(client, context, resourceName, resourceId, applyFiltering);
+    return getResourceById(client, kd, context, resourceName, resourceId, applyFiltering);
   }
 
   public Resource getResourceById(
       IGenericClient genericClient,
+      KarProcessingData kd,
       FhirContext context,
       String resourceName,
       String resourceId,
@@ -734,11 +767,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       logger.info("Getting data for Resource : {} with Id : {}", resourceName, resourceId);
 
       resource =
-          (Resource) (genericClient.read().resource(resourceName).withId(resourceId).execute());
+          (Resource)
+              fhirOperationExecutor.execute(
+                  kd,
+                  context,
+                  client -> {
+                    return client.read().resource(resourceName).withId(resourceId).execute();
+                  });
 
       if (applyFiltering && !isValidResource(resource)) resource = null;
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -751,6 +791,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           StringEscapeUtils.escapeJava(resourceId),
           responseException);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.error(
           "Error in getting {} resource by Id: {}",
           resourceName,
@@ -780,9 +821,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           resourceName,
           kd.getNotificationContext().getPatientId());
 
-      Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+      Bundle bundle =
+          fhirOperationExecutor.execute(
+              kd,
+              context,
+              client -> {
+                return client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+              });
 
-      getAllR4RecordsUsingPagination(genericClient, bundle);
+      getAllR4RecordsUsingPagination(kd, context, bundle);
 
       if (bundle != null && bundle.hasEntry()) {
         logger.info(
@@ -821,6 +868,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -833,6 +881,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           kd.getNotificationContext().getPatientId(),
           responseException);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
@@ -841,18 +890,48 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
   }
 
-  private void getAllR4RecordsUsingPagination(IGenericClient genericClient, Bundle bundle) {
+  /**
+   * Follows the "next" links of a search result and appends every page's entries to the first
+   * bundle. Each page is fetched through the FhirOperationExecutor, so if the token expires between
+   * pages only the failed page is retried with a fresh token; earlier pages are not fetched again.
+   */
+  private void getAllR4RecordsUsingPagination(
+      KarProcessingData kd, FhirContext context, Bundle bundle) {
 
-    if (bundle.hasEntry()) {
-      List<BundleEntryComponent> entriesList = bundle.getEntry();
-      if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.info(
-            "Found Next Page in Bundle :{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
-        Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
-        entriesList.addAll(nextPageBundleResults.getEntry());
-        nextPageBundleResults.setEntry(entriesList);
-        getAllR4RecordsUsingPagination(genericClient, nextPageBundleResults);
+    if (bundle == null || !bundle.hasEntry()) {
+      return;
+    }
+
+    List<BundleEntryComponent> entriesList = bundle.getEntry();
+    Bundle currentPage = bundle;
+
+    while (currentPage.hasLink() && currentPage.getLink(IBaseBundle.LINK_NEXT) != null) {
+
+      logger.info(
+          "Found Next Page in Bundle :{}", currentPage.getLink(IBaseBundle.LINK_NEXT).getUrl());
+
+      final Bundle pageToFollow = currentPage;
+      Bundle nextPage =
+          fhirOperationExecutor.execute(
+              kd, context, client -> client.loadPage().next(pageToFollow).execute());
+
+      if (nextPage == null) {
+        break;
       }
+
+      entriesList.addAll(nextPage.getEntry());
+      currentPage = nextPage;
+    }
+  }
+
+  /**
+   * Authentication failures must not be treated as "resource not found". If the request still gets
+   * a 401 after FhirOperationExecutor refreshed the token and retried once, rethrow it so the job
+   * fails visibly instead of producing an eICR with missing data.
+   */
+  private static void rethrowIfUnauthorized(Exception e) {
+    if (e instanceof RuntimeException && FhirOperationExecutor.isUnauthorized(e)) {
+      throw (RuntimeException) e;
     }
   }
 
@@ -962,7 +1041,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(" Substituted Query to be executed {}", queryToExecute);
 
-        if (Boolean.TRUE.equals(isSearchQuery(queryToExecute))) {
+        if (isSearchQuery(queryToExecute)) {
 
           String finalSearchQuery = createSearchUrl(data, queryToExecute);
 
@@ -982,7 +1061,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         }
       } else {
         logger.info(
-            " Not executing Query for dataReqId : {} as it is not available in the EHR per the custom query definition",
+            " Not executing Query for dataReqId : {} as it is not available in the EHR per the"
+                + " custom query definition",
             dataReqId);
       }
     } else {
@@ -1028,9 +1108,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     try {
       logger.info("Getting data for resource type {} using query: {}", resType, searchUrl);
 
-      Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+      Bundle bundle =
+          fhirOperationExecutor.execute(
+              kd,
+              context,
+              client -> client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute());
 
-      getAllR4RecordsUsingPagination(genericClient, bundle);
+      getAllR4RecordsUsingPagination(kd, context, bundle);
       if (bundle != null && bundle.hasEntry() && bundle.getEntry().size() > 0) {
 
         logger.info(
@@ -1071,6 +1155,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } catch (BaseServerResponseException responseException) {
+      rethrowIfUnauthorized(responseException);
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
             context
@@ -1079,6 +1164,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
       logger.info("Error in getting {} resource using search query {}", resType, searchUrl);
     } catch (Exception e) {
+      rethrowIfUnauthorized(e);
       logger.info("Error in getting {} resource using search query {}", resType, searchUrl, e);
     }
   }
@@ -1337,6 +1423,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             secRes =
                 getResourceById(
                     genericClient,
+                    kd,
                     context,
                     ResourceType.Medication.toString(),
                     medRef.getReferenceElement().getIdPart(),
@@ -1369,6 +1456,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             secRes =
                 getResourceById(
                     genericClient,
+                    kd,
                     context,
                     ResourceType.Medication.toString(),
                     medRef.getReferenceElement().getIdPart(),
@@ -1398,6 +1486,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             secRes =
                 getResourceById(
                     genericClient,
+                    kd,
                     context,
                     ResourceType.MedicationRequest.toString(),
                     medRequestRef.getReferenceElement().getIdPart(),
@@ -1407,7 +1496,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
 
             logger.info(
-                " Adding secondary Medication Request resource for MedicationAdministration with id {}",
+                " Adding secondary Medication Request resource for MedicationAdministration with id"
+                    + " {}",
                 secRes.getId());
             kd.addResourceByType(secRes.getResourceType(), secRes);
             kd.storeResourceById(medRequestRef.getReferenceElement().getIdPart(), secRes);
@@ -1430,6 +1520,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             secRes =
                 getResourceById(
                     genericClient,
+                    kd,
                     context,
                     ResourceType.Medication.toString(),
                     medRef.getReferenceElement().getIdPart(),
@@ -1462,6 +1553,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             secRes =
                 getResourceById(
                     genericClient,
+                    kd,
                     context,
                     ResourceType.Medication.toString(),
                     medRef.getReferenceElement().getIdPart(),
@@ -1513,6 +1605,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           if (isPractitioner(performer)) {
             getAndAddSecondaryResource(
                 kd, performer, ResourceType.Practitioner, genericClient, context);
+          } else if (isResourceOfType(performer, ResourceType.Organization)) {
+            // Performing organization (lab) for the result, #1079
+            getAndAddSecondaryResource(
+                kd, performer, ResourceType.Organization, genericClient, context);
           }
         }
       }
@@ -1574,6 +1670,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             secRes =
                 getResourceById(
                     genericClient,
+                    kd,
                     context,
                     ResourceType.Observation.toString(),
                     r.getReferenceElement().getIdPart(),
@@ -1602,6 +1699,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 if (isPractitioner(performer)) {
                   getAndAddSecondaryResource(
                       kd, performer, ResourceType.Practitioner, genericClient, context);
+                } else if (isResourceOfType(performer, ResourceType.Organization)) {
+                  // Performing organization (lab) for the result, #1079
+                  getAndAddSecondaryResource(
+                      kd, performer, ResourceType.Organization, genericClient, context);
                 }
               }
               if (observation.hasBasedOn()) {
@@ -1639,18 +1740,68 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
     } else if (res != null && rType == ResourceType.ServiceRequest) {
-      ServiceRequest serviceRequest = (ServiceRequest) res;
-      if (serviceRequest.hasRequester()) {
-        Reference requesterRef = serviceRequest.getRequester();
-        if (isResourceOfType(requesterRef, ResourceType.Practitioner)) {
-          getAndAddSecondaryResource(
-              kd, requesterRef, ResourceType.Practitioner, genericClient, context);
-        }
-      }
+      addServiceRequestRequester(kd, (ServiceRequest) res, genericClient, context);
     }
   }
 
-  private void getAndAddSecondaryResource(
+  /**
+   * Loads the ordering provider of a ServiceRequest (authorizing provider, #1079): the requester
+   * Practitioner, or for a PractitionerRole requester the role and its Practitioner.
+   */
+  private void addServiceRequestRequester(
+      KarProcessingData kd,
+      ServiceRequest serviceRequest,
+      IGenericClient genericClient,
+      FhirContext context) {
+
+    if (!serviceRequest.hasRequester()) {
+      return;
+    }
+
+    Reference requesterRef = serviceRequest.getRequester();
+
+    if (isResourceOfType(requesterRef, ResourceType.Practitioner)) {
+      getAndAddSecondaryResource(
+          kd, requesterRef, ResourceType.Practitioner, genericClient, context);
+
+    } else if (isResourceOfType(requesterRef, ResourceType.PractitionerRole)) {
+      Resource role =
+          getAndAddSecondaryResource(
+              kd, requesterRef, ResourceType.PractitionerRole, genericClient, context);
+
+      if (role instanceof PractitionerRole
+          && ((PractitionerRole) role).hasPractitioner()
+          && isResourceOfType(
+              ((PractitionerRole) role).getPractitioner(), ResourceType.Practitioner)) {
+        getAndAddSecondaryResource(
+            kd,
+            ((PractitionerRole) role).getPractitioner(),
+            ResourceType.Practitioner,
+            genericClient,
+            context);
+      }
+
+      // Ordering facility (#1079): PractitionerRole.organization
+      if (role instanceof PractitionerRole
+          && ((PractitionerRole) role).hasOrganization()
+          && isResourceOfType(
+              ((PractitionerRole) role).getOrganization(), ResourceType.Organization)) {
+        getAndAddSecondaryResource(
+            kd,
+            ((PractitionerRole) role).getOrganization(),
+            ResourceType.Organization,
+            genericClient,
+            context);
+      }
+
+    } else if (isResourceOfType(requesterRef, ResourceType.Organization)) {
+      // Ordering facility (#1079): the requester is the ordering organization itself
+      getAndAddSecondaryResource(
+          kd, requesterRef, ResourceType.Organization, genericClient, context);
+    }
+  }
+
+  private Resource getAndAddSecondaryResource(
       KarProcessingData kd,
       Reference ref,
       ResourceType type,
@@ -1664,10 +1815,23 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     if (secRes == null) {
       secRes =
           getResourceById(
-              genericClient, context, type.toString(), ref.getReferenceElement().getIdPart(), true);
+              genericClient,
+              kd,
+              context,
+              type.toString(),
+              ref.getReferenceElement().getIdPart(),
+              true);
     }
 
     addResourceToContext(kd, secRes, ref.getReferenceElement().getIdPart(), false);
+
+    // A ServiceRequest reached through basedOn also needs its requester for the authorizing
+    // provider; populateSecondaryResources only runs for searched resources.
+    if (type == ResourceType.ServiceRequest && secRes instanceof ServiceRequest) {
+      addServiceRequestRequester(kd, (ServiceRequest) secRes, genericClient, context);
+    }
+
+    return secRes;
   }
 
   private void addResourceToContext(
@@ -1690,7 +1854,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       data.addResourceByType(res.getResourceType(), res);
     } else {
       logger.info(
-          " Resource for dataReqId {} is null, invalid resource or is an OperationOutcome, hence not added ",
+          " Resource for dataReqId {} is null, invalid resource or is an OperationOutcome, hence"
+              + " not added ",
           dataReqId);
     }
   }
@@ -1832,7 +1997,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       IGenericClient client = getClient(data, context);
 
       Resource res =
-          getResourceById(client, context, ResourceType.Encounter.toString(), encId, true);
+          getResourceById(client, data, context, ResourceType.Encounter.toString(), encId, true);
 
       if (res != null) enc = (Encounter) res;
     }

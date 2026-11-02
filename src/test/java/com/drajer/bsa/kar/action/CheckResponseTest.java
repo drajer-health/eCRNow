@@ -36,7 +36,7 @@ public class CheckResponseTest {
   @Test
   public void testSetAndGetDirectReceiver() {
     CheckResponse action = new CheckResponse();
-    DirectTransportImpl receiver = new DirectTransportImpl();
+    DirectTransportImpl receiver = mock(DirectTransportImpl.class);
     action.setDirectReceiver(receiver);
     assertEquals(receiver, action.getDirectReceiver());
   }

@@ -35,7 +35,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
   @Override
   public NotificationContext saveOrUpdate(NotificationContext nc) {
-    getSession().saveOrUpdate(nc);
+    persistOrMerge(nc, nc.getId());
     return nc;
   }
 
@@ -299,6 +299,6 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
   @Override
   public void delete(NotificationContext notificationContext) {
-    getSession().delete(notificationContext);
+    remove(notificationContext);
   }
 }

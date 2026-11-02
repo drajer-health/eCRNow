@@ -1,13 +1,15 @@
 package com.drajer.ecrapp.fhir.utils.ecrretry;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
-import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.CacheControlDirective;
+import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
-import com.drajer.eca.model.EventTypes;
+import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
@@ -18,6 +20,8 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.r4.model.Encounter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -27,6 +31,8 @@ import org.mockito.MockitoAnnotations;
 public class EcrFhirRetryableReadTest {
 
   private LaunchDetails currentStateDetails;
+
+  @SuppressWarnings("unused")
   private ClientDetails clientDetails;
 
   @InjectMocks FHIRRetryTemplate fhirretryTemplate;
@@ -52,11 +58,10 @@ public class EcrFhirRetryableReadTest {
 
   @Test
   public void testRetryRead() {
-    FhirContext context = mock(FhirContext.class);
     EcrFhirRetryClient retryClient = mock(EcrFhirRetryClient.class);
-    IRead read = mock(EcrFhirRetryableRead.class);
-    IReadTyped<IBaseResource> readType = mock((EcrFhirRetryableRead.class));
-    IReadExecutable readExecutable = mock((IReadExecutable.class));
+    IRead read = mock(IRead.class);
+    IReadTyped<IBaseResource> readType = mock(IReadTyped.class);
+    IReadExecutable readExecutable = mock(IReadExecutable.class);
     Map<String, FHIRRetryTemplateConfig.HttpMethodType> map = new HashMap<>();
     currentStateDetails.setFhirVersion("R4");
 
@@ -72,13 +77,6 @@ public class EcrFhirRetryableReadTest {
     RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
     fhirretryTemplate = new FHIRRetryTemplate(retryStatusCode.configureRetryTemplate());
     when(retryClient.getRetryTemplate()).thenReturn(fhirretryTemplate);
-
-    when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
-        .thenReturn(context);
-
-    when(fhirContextInitializer.createClient(
-            context, currentStateDetails, EventTypes.QueryType.NONE))
-        .thenReturn(retryClient);
 
     when(retryClient.read()).thenReturn(read);
     when(read.resource("Encounter")).thenReturn(readType);
@@ -96,5 +94,113 @@ public class EcrFhirRetryableReadTest {
     } catch (Exception e) {
       verify(readExecutable, times(3)).execute();
     }
+  }
+
+  @Test
+  public void testResourceWithString() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IRead read = mock(IRead.class);
+    IReadTyped<IBaseResource> readTyped = mock(IReadTyped.class);
+    when(read.resource("Patient")).thenReturn(readTyped);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(read, client);
+    IReadTyped<IBaseResource> result = retryRead.resource("Patient");
+    assertNotNull(result);
+    assertTrue(result instanceof EcrFhirRetryableRead);
+    verify(read, times(1)).resource("Patient");
+  }
+
+  @Test
+  public void testResourceWithClass_ThrowsException() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IRead read = mock(IRead.class);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(read, client);
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.resource(Encounter.class));
+  }
+
+  @Test
+  public void testWithIdString() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IReadTyped<IBaseResource> readTyped = mock(IReadTyped.class);
+    IReadExecutable readExecutable = mock(IReadExecutable.class);
+    when(readTyped.withId("encounter-123")).thenReturn(readExecutable);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(readTyped, client);
+    IReadExecutable result = retryRead.withId("encounter-123");
+    assertNotNull(result);
+    assertTrue(result instanceof EcrFhirRetryableRead);
+    verify(readTyped, times(1)).withId("encounter-123");
+  }
+
+  @Test
+  public void testWithIdAndVersion_ThrowsException() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IReadTyped<IBaseResource> readTyped = mock(IReadTyped.class);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(readTyped, client);
+    assertThrows(
+        NotImplementedOperationException.class, () -> retryRead.withIdAndVersion("123", "1"));
+  }
+
+  @Test
+  public void testWithIdLong_ThrowsException() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IReadTyped<IBaseResource> readTyped = mock(IReadTyped.class);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(readTyped, client);
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.withId(123L));
+  }
+
+  @Test
+  public void testWithIdIIdType_ThrowsException() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IReadTyped<IBaseResource> readTyped = mock(IReadTyped.class);
+    IIdType idType = mock(IIdType.class);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(readTyped, client);
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.withId(idType));
+  }
+
+  @Test
+  public void testWithUrlIIdType_ThrowsException() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IReadTyped<IBaseResource> readTyped = mock(IReadTyped.class);
+    IIdType urlType = mock(IIdType.class);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(readTyped, client);
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.withUrl(urlType));
+  }
+
+  @Test
+  public void testNotImplementedMethods() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IReadExecutable readExecutable = mock(IReadExecutable.class);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(readExecutable, client);
+    assertThrows(
+        NotImplementedOperationException.class, () -> retryRead.andLogRequestAndResponse(true));
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> retryRead.cacheControl(mock(CacheControlDirective.class)));
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.elementsSubset("elem"));
+    assertThrows(
+        NotImplementedOperationException.class, () -> retryRead.encoded(EncodingEnum.JSON));
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.encodedJson());
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.encodedXml());
+    assertThrows(
+        NotImplementedOperationException.class, () -> retryRead.withAdditionalHeader("h", "v"));
+  }
+
+  @Test
+  public void testResponseFormatMethods_ThrowException() {
+    EcrFhirRetryClient client = mock(EcrFhirRetryClient.class);
+    IReadExecutable readExecutable = mock(IReadExecutable.class);
+    EcrFhirRetryableRead retryRead = new EcrFhirRetryableRead(readExecutable, client);
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> retryRead.preferResponseType(Encounter.class));
+    List emptyPreferredTypes = new ArrayList<>();
+    assertThrows(
+        NotImplementedOperationException.class,
+        () -> retryRead.preferResponseTypes(emptyPreferredTypes));
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.prettyPrint());
+    assertThrows(
+        NotImplementedOperationException.class, () -> retryRead.summaryMode(SummaryEnum.TRUE));
+    assertThrows(
+        NotImplementedOperationException.class, () -> retryRead.accept("application/json"));
+    assertThrows(NotImplementedOperationException.class, () -> retryRead.ifVersionMatches("1.0"));
   }
 }

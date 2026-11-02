@@ -72,7 +72,7 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       tx = session.beginTransaction();
 
       String launchDetailJson = TestUtils.getFileContentAsString(launchDetailsFile);
-      launchDetailJson = launchDetailJson.replace(":port", ":" + wireMockHttpPort);
+      launchDetailJson = launchDetailJson.replace(":port", ":" + WIRE_MOCK_HTTP_PORT);
       launchDetails = mapper.readValue(launchDetailJson, LaunchDetails.class);
 
       wireMockServer.resetRequests();
@@ -80,7 +80,7 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       session.flush();
       tx.commit();
 
-      stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+      stubHelper = new WireMockHelper(wireMockServer, WIRE_MOCK_HTTP_PORT);
       logger.info("Creating WireMock stubs..");
       stubHelper.stubResources(allResourceMapping);
       stubHelper.stubAuthAndMetadata(allOtherMapping);
@@ -186,6 +186,10 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
             case "ServiceRequest":
               assertNotNull(r4FhirData.getServiceRequests());
               assertEquals(resourceName, resourceCount, r4FhirData.getServiceRequests().size());
+              break;
+
+            default:
+              fail("Unknown resource type: " + resourceName);
               break;
           }
         }

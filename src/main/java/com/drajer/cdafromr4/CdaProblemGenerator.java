@@ -35,7 +35,8 @@ public class CdaProblemGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
 
-    List<Condition> conds = data.getConditions();
+    // Active problems first, resolved last, most recent first (issue #1152).
+    List<Condition> conds = CdaSortUtils.sortConditions(data.getConditions());
 
     if (conds != null && !conds.isEmpty()) {
 

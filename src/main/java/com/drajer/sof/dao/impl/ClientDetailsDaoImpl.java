@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDao {
 
   public ClientDetails saveOrUpdate(ClientDetails clientDetails) {
-    getSession().saveOrUpdate(clientDetails);
+    persistOrMerge(clientDetails, clientDetails.getId());
     return clientDetails;
   }
 
@@ -58,6 +58,6 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
   }
 
   public void delete(ClientDetails clientDetails) {
-    getSession().delete(clientDetails);
+    remove(clientDetails);
   }
 }

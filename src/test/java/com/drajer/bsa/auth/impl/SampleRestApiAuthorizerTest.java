@@ -12,6 +12,6 @@ public class SampleRestApiAuthorizerTest {
     KarProcessingData karProcessingData = new KarProcessingData();
     SampleRestApiAuthorizer sampleRestApiAuthorizer = new SampleRestApiAuthorizer();
     HttpHeaders result = sampleRestApiAuthorizer.getAuthorizationHeader(karProcessingData);
-    assertTrue(result.containsKey(HttpHeaders.AUTHORIZATION));
+    assertTrue(result.containsHeader(HttpHeaders.AUTHORIZATION));
   }
 }

@@ -14,19 +14,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoadingQueryR4BundleTest {
 
-  @InjectMocks private LoadingQueryR4Bundle loadingQueryR4Bundle;
+  private LoadingQueryR4Bundle loadingQueryR4Bundle;
 
   @Mock private FhirContextInitializer fhirContextInitializer;
 
@@ -38,6 +36,21 @@ public class LoadingQueryR4BundleTest {
   private LaunchDetails launchDetails;
   private R4FhirData r4FhirData;
 
+  //  @Before
+  //  public void setUp() {
+  //    fhirContext = FhirContext.forR4();
+  //
+  //    launchDetails = new LaunchDetails();
+  //    launchDetails.setFhirVersion("R4");
+  //    launchDetails.setLaunchPatientId("test-patient-id");
+  //
+  //    r4FhirData = new R4FhirData();
+  //
+  //    loadingQueryR4Bundle = new LoadingQueryR4Bundle(fhirContextInitializer, r4ResourcesData);
+  //
+  //    when(fhirContextInitializer.getFhirContext("R4")).thenReturn(fhirContext);
+  //    when(fhirContextInitializer.createClient(any(), any(), any())).thenReturn(client);
+  //  }
   @Before
   public void setUp() {
     fhirContext = FhirContext.forR4();
@@ -47,6 +60,10 @@ public class LoadingQueryR4BundleTest {
     launchDetails.setLaunchPatientId("test-patient-id");
 
     r4FhirData = new R4FhirData();
+
+    loadingQueryR4Bundle = new LoadingQueryR4Bundle();
+    loadingQueryR4Bundle.fhirContextInitializer = fhirContextInitializer;
+    loadingQueryR4Bundle.r4ResourcesData = r4ResourcesData;
 
     when(fhirContextInitializer.getFhirContext("R4")).thenReturn(fhirContext);
     when(fhirContextInitializer.createClient(any(), any(), any())).thenReturn(client);
@@ -118,10 +135,14 @@ public class LoadingQueryR4BundleTest {
     assertTrue("Bundle should contain at least one entry", resultBundle.hasEntry());
 
     List<Resource> resources =
-        resultBundle.getEntry().stream()
-            .map(Bundle.BundleEntryComponent::getResource)
-            .collect(Collectors.toList());
+        resultBundle.getEntry().stream().map(Bundle.BundleEntryComponent::getResource).toList();
 
+    assertAllResourceTypesPresent(resources);
+    assertResourceCounts(resources);
+    verifyResourceDataFetches();
+  }
+
+  private void assertAllResourceTypesPresent(List<Resource> resources) {
     assertTrue(resources.stream().anyMatch(Patient.class::isInstance));
     assertTrue(resources.stream().anyMatch(Encounter.class::isInstance));
     assertTrue(resources.stream().anyMatch(Condition.class::isInstance));
@@ -130,10 +151,14 @@ public class LoadingQueryR4BundleTest {
     assertTrue(resources.stream().anyMatch(Immunization.class::isInstance));
     assertTrue(resources.stream().anyMatch(DiagnosticReport.class::isInstance));
     assertTrue(resources.stream().anyMatch(MedicationStatement.class::isInstance));
+  }
 
+  private void assertResourceCounts(List<Resource> resources) {
     assertEquals(1, resources.stream().filter(Patient.class::isInstance).count());
     assertEquals(1, resources.stream().filter(Encounter.class::isInstance).count());
+  }
 
+  private void verifyResourceDataFetches() {
     verify(r4ResourcesData)
         .getCommonResources(
             eq(r4FhirData), any(), any(), eq(launchDetails), eq(client), eq(fhirContext));

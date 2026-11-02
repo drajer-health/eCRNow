@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PublicHealthAuthorityDaoImpl extends AbstractDao implements PublicHealthAuthorityDao {
   @Override
   public PublicHealthAuthority saveOrUpdate(PublicHealthAuthority pha) {
-    getSession().saveOrUpdate(pha);
+    persistOrMerge(pha, pha.getId());
     return pha;
   }
 

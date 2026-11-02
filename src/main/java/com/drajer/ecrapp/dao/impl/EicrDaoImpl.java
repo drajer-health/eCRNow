@@ -28,7 +28,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   public static final String X_REQUEST_ID = "xRequestId";
 
   public Eicr saveOrUpdate(Eicr eicr) {
-    getSession().saveOrUpdate(eicr);
+    persistOrMerge(eicr, eicr.getId());
     return eicr;
   }
 
@@ -37,7 +37,8 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public ReportabilityResponse saveOrUpdate(ReportabilityResponse rr) {
-    getSession().saveOrUpdate(rr);
+    // ReportabilityResponse is not a mapped entity, merge() keeps the pre-Hibernate 7 behaviour.
+    getSession().merge(rr);
     return rr;
   }
 
@@ -194,6 +195,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public void deleteEicr(Eicr eicr) {
-    getSession().delete(eicr);
+    remove(eicr);
   }
 }

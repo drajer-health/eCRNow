@@ -21,7 +21,7 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
   private final Logger logger = LoggerFactory.getLogger(LaunchDetailsDaoImpl.class);
 
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
-    getSession().saveOrUpdate(authDetails);
+    persistOrMerge(authDetails, authDetails.getId());
     logger.info("Launch Details data successfully inserted in DB");
     return authDetails;
   }
@@ -100,6 +100,6 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
   }
 
   public void delete(LaunchDetails launchDetails) {
-    getSession().delete(launchDetails);
+    remove(launchDetails);
   }
 }

@@ -32,7 +32,7 @@ public class CdaVitalSignsGenerator {
 
     List<Observation> allVitals = data.getVitalObs();
     // Check if there is a LOINC code for the observation to be translated.
-    List<Observation> vitals = getValidVitals(data);
+    List<Observation> vitals = CdaSortUtils.sortObservations(getValidVitals(data));
 
     if (vitals != null && !vitals.isEmpty()) {
 

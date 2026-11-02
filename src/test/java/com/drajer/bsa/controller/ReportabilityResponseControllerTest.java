@@ -85,9 +85,8 @@ public class ReportabilityResponseControllerTest {
     try {
       when(reportabilityResponse.getResponseType()).thenReturn(null);
 
-      ResponseEntity<String> responseEntity =
-          reportabilityResponseController.receiveReportabilityResponse(
-              xRequestId, xCorrelationId, reportabilityResponse, request, response);
+      reportabilityResponseController.receiveReportabilityResponse(
+          xRequestId, xCorrelationId, reportabilityResponse, request, response);
     } catch (ResponseStatusException e) {
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
     }
@@ -105,9 +104,8 @@ public class ReportabilityResponseControllerTest {
           .when(rrReceieverService)
           .handleReportabilityResponse(any(), any());
 
-      ResponseEntity<String> responseEntity =
-          reportabilityResponseController.receiveReportabilityResponse(
-              xRequestId, xCorrelationId, reportabilityResponse, request, response);
+      reportabilityResponseController.receiveReportabilityResponse(
+          xRequestId, xCorrelationId, reportabilityResponse, request, response);
     } catch (ResponseStatusException e) {
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
     }
@@ -124,9 +122,9 @@ public class ReportabilityResponseControllerTest {
     String eicrId = "validEicrId";
 
     when(phDao.getBySubmittedMessageId(eicrId)).thenReturn(publicHealthMessage);
-    ResponseEntity<String> response =
+    ResponseEntity<String> responseResult =
         reportabilityResponseController.reSubmitReportabilityResponse(eicrId, null);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, responseResult.getStatusCode());
   }
 
   @Test
@@ -139,18 +137,17 @@ public class ReportabilityResponseControllerTest {
 
     when(phDao.getBySubmittedDataId(eicrDocId)).thenReturn(publicHealthMessage);
 
-    ResponseEntity<String> response =
+    ResponseEntity<String> responseResult =
         reportabilityResponseController.reSubmitReportabilityResponse(null, eicrDocId);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, responseResult.getStatusCode());
   }
 
   @Test
   public void testReSubmitReportabilityResponse_WithMissingEicrIdAndEicrDocId() {
 
     try {
-      ResponseEntity<String> response =
-          reportabilityResponseController.reSubmitReportabilityResponse(null, null);
+      reportabilityResponseController.reSubmitReportabilityResponse(null, null);
     } catch (ResponseStatusException e) {
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
     }
@@ -163,8 +160,7 @@ public class ReportabilityResponseControllerTest {
 
     when(phDao.getBySubmittedMessageId(eicrId)).thenThrow(new RuntimeException("Database error"));
     try {
-      ResponseEntity<String> response =
-          reportabilityResponseController.reSubmitReportabilityResponse(eicrId, null);
+      reportabilityResponseController.reSubmitReportabilityResponse(eicrId, null);
     } catch (ResponseStatusException e) {
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
     }

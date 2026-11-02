@@ -63,13 +63,20 @@ public class CdaPlanOfTreatmentGenerator {
       reports.addAll(data.getDiagReports());
     }
 
+    // Sort most recent first for a consistent display order (issue #1152).
+    medReqs = CdaSortUtils.sortMedicationRequests(medReqs);
+    obsReqs = CdaSortUtils.sortServiceRequests(obsReqs);
+    procReqs = CdaSortUtils.sortServiceRequests(procReqs);
+    reports = CdaSortUtils.sortDiagnosticReportList(reports);
+
     if ((obsReqs != null && !obsReqs.isEmpty())
         || (reports != null && !reports.isEmpty())
         || procReqs != null && !procReqs.isEmpty()
         || medReqs != null && !medReqs.isEmpty()) {
 
       logger.info(
-          "Found {} Observation ServiceRequest, {} Procedure ServiceRequest and {} LabOrder objects to translate to CDA.",
+          "Found {} Observation ServiceRequest, {} Procedure ServiceRequest and {} LabOrder objects"
+              + " to translate to CDA.",
           obsReqs.size(),
           procReqs.size(),
           reports.size());
@@ -236,7 +243,8 @@ public class CdaPlanOfTreatmentGenerator {
           dt = CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
         } else {
           logger.error(
-              " Dosage field does not have a valid period either due to datetime or timezone being null ");
+              " Dosage field does not have a valid period either due to datetime or timezone being"
+                  + " null ");
         }
 
         Map<String, String> bodyvals = new HashMap<>();
@@ -503,7 +511,8 @@ public class CdaPlanOfTreatmentGenerator {
                 contentRef);
       } else {
         logger.info(
-            "Did not find the code value in the matched codes, make it a regular Planned Observation");
+            "Did not find the code value in the matched codes, make it a regular Planned"
+                + " Observation");
       }
     }
 
@@ -640,7 +649,8 @@ public class CdaPlanOfTreatmentGenerator {
                 contentRef);
       } else {
         logger.debug(
-            "Did not find the code value in the matched codes, make it a regular Planned Observation");
+            "Did not find the code value in the matched codes, make it a regular Planned"
+                + " Observation");
       }
     }
 
@@ -902,7 +912,8 @@ public class CdaPlanOfTreatmentGenerator {
                 contentRef);
       } else {
         logger.info(
-            "Did not find the code value in the matched codes, make it a regular Planned Observation");
+            "Did not find the code value in the matched codes, make it a regular Planned"
+                + " Observation");
       }
     }
 

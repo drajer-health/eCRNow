@@ -43,7 +43,7 @@
                             <content ID="socContent3">Travel History</content>
                         </td>
                         <td>
-                            <content ID="socObservationResult3">Travel Component 1 : Location |  Value : Travel to China in last 14 days</content>
+                            <content ID="socObservationResult3">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
                         </td>
                     </tr>
                     <tr>
@@ -51,7 +51,7 @@
                             <content ID="socContent4">Travel History</content>
                         </td>
                         <td>
-                            <content ID="socObservationResult4">Travel Component 1 : Location |  Value : Travel Location: China</content>
+                            <content ID="socObservationResult4">Travel Component 1 : Location |  Value : Travel to China in last 14 days</content>
                         </td>
                     </tr>
                     <tr>
@@ -59,7 +59,7 @@
                             <content ID="socContent5">Travel History</content>
                         </td>
                         <td>
-                            <content ID="socObservationResult5">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
+                            <content ID="socObservationResult5">Travel Component 1 : Location |  Value : Travel Location: China</content>
                         </td>
                     </tr>
                     <tr>
@@ -67,7 +67,7 @@
                             <content ID="socContent6">Travel History</content>
                         </td>
                         <td>
-                            <content ID="socObservationResult6">Travel History Component 1 : Location |  Value : Travelled abroad</content>
+                            <content ID="socObservationResult6">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
                         </td>
                     </tr>
                     <tr>
@@ -75,7 +75,7 @@
                             <content ID="socContent7">Travel History</content>
                         </td>
                         <td>
-                            <content ID="socObservationResult7">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
+                            <content ID="socObservationResult7">Travel History Component 1 : Location |  Value : Travelled abroad</content>
                         </td>
                     </tr>
                     <tr>
@@ -107,7 +107,7 @@
                             <content ID="socContent11">Residency</content>
                         </td>
                         <td>
-                            <content ID="socObservationResult11">United Kingdom of Great Britain and Northern Ireland</content>
+                            <content ID="socObservationResult11">United States of America</content>
                         </td>
                     </tr>
                     <tr>
@@ -115,7 +115,7 @@
                             <content ID="socContent12">Residency</content>
                         </td>
                         <td>
-                            <content ID="socObservationResult12">United States of America</content>
+                            <content ID="socObservationResult12">United Kingdom of Great Britain and Northern Ireland</content>
                         </td>
                     </tr>
                     <tr>
@@ -144,15 +144,15 @@
                     </tr>
                     <tr>
                         <td>
-                            <content ID="occHist16">Past or Present Occupation</content>
+                            <content ID="occHist16">Employment Status</content>
                         </td>
                         <td>
-                            <content ID="occHistResult16">Writing Tutor [Tutors]</content>
+                            <content ID="occHistResult16">Employed</content>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <content ID="occHist17">Usual Occupation</content>
+                            <content ID="occHist17">Past or Present Occupation</content>
                         </td>
                         <td>
                             <content ID="occHistResult17">Writing Tutor [Tutors]</content>
@@ -160,7 +160,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <content ID="occHist18">Past or Present Occupation</content>
+                            <content ID="occHist18">Usual Occupation</content>
                         </td>
                         <td>
                             <content ID="occHistResult18">Writing Tutor [Tutors]</content>
@@ -176,10 +176,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <content ID="occHist20">Employment Status</content>
+                            <content ID="occHist20">Past or Present Occupation</content>
                         </td>
                         <td>
-                            <content ID="occHistResult20">Employed</content>
+                            <content ID="occHistResult20">Writing Tutor [Tutors]</content>
                         </td>
                     </tr>
                     <tr>
@@ -227,6 +227,21 @@
                 <effectiveTime nullFlavor="NI"/>
                 <value xsi:type="BL" value="true"/>
             </observation>
+        </entry>
+        <entry>
+            <act classCode="ACT" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="c9fae72d-f781-4089-9534-77045256146d"/>
+                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+                <text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
+                <statusCode code="completed"/>
+                <effectiveTime value="20241201000000+0000"/>
+                <participant typeCode="LOC">
+                    <participantRole classCode="TERR">
+                        <code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
+                    </participantRole>
+                </participant>
+            </act>
         </entry>
         <entry>
             <act classCode="ACT" moodCode="EVN">
@@ -303,21 +318,6 @@
         <entry>
             <act classCode="ACT" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="c9fae72d-f781-4089-9534-77045256146d"/>
-                <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-                <text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
-                <statusCode code="completed"/>
-                <effectiveTime value="20241201000000+0000"/>
-                <participant typeCode="LOC">
-                    <participantRole classCode="TERR">
-                        <code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
-                    </participantRole>
-                </participant>
-            </act>
-        </entry>
-        <entry>
-            <act classCode="ACT" moodCode="EVN">
-                <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
                 <id root="2.16.840.1.113883.1.1.1.1" extension="f1da4975-a496-467f-b57f-2cd8458d0838"/>
                 <code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
                 <text>Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</text>
@@ -366,10 +366,10 @@
         <entry>
             <observation classCode="OBS" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.15.2.3.53" extension="2021-01-01"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="6be61adc-a809-45bd-b401-80ef23e18229"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="fa5f3922-b84f-4d3b-8955-4e191ffda800"/>
                 <code code="77983-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Residency"/>
                 <statusCode code="completed"/>
-                <value xsi:type="CD" code="GB" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="United Kingdom of Great Britain and Northern Ireland"><originalText>
+                <value xsi:type="CD" code="USA" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="United States of America"><originalText>
                     <reference value="#socContent11"/>
                 </originalText>
                 </value>
@@ -378,10 +378,10 @@
         <entry>
             <observation classCode="OBS" moodCode="EVN">
                 <templateId root="2.16.840.1.113883.10.20.15.2.3.53" extension="2021-01-01"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="fa5f3922-b84f-4d3b-8955-4e191ffda800"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="6be61adc-a809-45bd-b401-80ef23e18229"/>
                 <code code="77983-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Residency"/>
                 <statusCode code="completed"/>
-                <value xsi:type="CD" code="USA" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="United States of America"><originalText>
+                <value xsi:type="CD" code="GB" codeSystem="1.0.3166.1.2.2" codeSystemName="1.0.3166.1.2.2" displayName="United Kingdom of Great Britain and Northern Ireland"><originalText>
                     <reference value="#socContent12"/>
                 </originalText>
                 </value>
@@ -423,6 +423,19 @@
                 <statusCode code="completed"/>
                 <effectiveTime value="20240107000000+0000"/>
                 <value xsi:type="BL" value="true"/>
+            </observation>
+        </entry>
+        <entry>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.22.4.212"/>
+                <templateId root="2.16.840.1.113883.10.20.22.4.212" extension="2017-11-30"/>
+                <id root="2.16.840.1.113883.1.1.1.1" extension="b7bd427b-9d2e-4e8c-ae1e-9b33818efa49"/>
+                <code code="74165-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Employment Status"/>
+                <statusCode code="completed"/>
+                <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
+                    <high nullFlavor="NI"/>
+                </effectiveTime>
+                <value xsi:type="CD" code="Employed" codeSystem="2.16.840.1.113883.5.1063" codeSystemName="v3-ObservationValue" displayName="Employed"></value>
             </observation>
         </entry>
         <entry>
@@ -550,19 +563,6 @@
                         <value xsi:type="ST" nullFlavor="NI"/>
                     </observation>
                 </entryRelationship>
-            </observation>
-        </entry>
-        <entry>
-            <observation classCode="OBS" moodCode="EVN">
-                <templateId root="2.16.840.1.113883.10.20.22.4.212"/>
-                <templateId root="2.16.840.1.113883.10.20.22.4.212" extension="2017-11-30"/>
-                <id root="2.16.840.1.113883.1.1.1.1" extension="b7bd427b-9d2e-4e8c-ae1e-9b33818efa49"/>
-                <code code="74165-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Employment Status"/>
-                <statusCode code="completed"/>
-                <effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
-                    <high nullFlavor="NI"/>
-                </effectiveTime>
-                <value xsi:type="CD" code="Employed" codeSystem="2.16.840.1.113883.5.1063" codeSystemName="v3-ObservationValue" displayName="Employed"></value>
             </observation>
         </entry>
         <entry>

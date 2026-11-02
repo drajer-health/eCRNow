@@ -4,11 +4,11 @@ import static org.junit.Assert.*;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.ehr.service.impl.EhrFhirR4QueryServiceImpl;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.SectionTypeEnum;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
@@ -17,8 +17,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.InputStream;
 import java.util.*;
 import org.hl7.fhir.r4.model.*;
+import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 public class RespnetReportCreatorTest {
@@ -32,7 +34,7 @@ public class RespnetReportCreatorTest {
   @Before
   public void setUp() {
     respnetReportCreator = new RespnetReportCreator();
-    ehrQueryService = new EhrFhirR4QueryServiceImpl();
+    ehrQueryService = Mockito.mock(EhrQueryService.class);
     karProcessingData = new KarProcessingData();
     karProcessingData.setKarStatus(getKnowledgeArtifactStatus());
     karProcessingData.setPhm(null);
@@ -84,6 +86,7 @@ public class RespnetReportCreatorTest {
     Composition.SectionComponent sectionComponent = new Composition.SectionComponent();
     sectionComponent.fhirType();
     respnetReportCreator.populateReasonForVisitNarrative(sectionComponent, karProcessingData);
+    assertNotNull("Section component should be populated after method call", sectionComponent);
   }
 
   private BsaAction getBsaAction() {
@@ -121,7 +124,6 @@ public class RespnetReportCreatorTest {
   private HashMap<ResourceType, Set<Resource>> getFilteredByType(String filePath) {
     HashMap<ResourceType, Set<Resource>> groupedResources = new HashMap<>();
     try {
-      FhirContext ctx = FhirContext.forR4();
       Bundle bundle = loadBundleFromFile(filePath);
 
       for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -162,8 +164,7 @@ public class RespnetReportCreatorTest {
   }
 
   private HealthcareSetting getHealthcareSetting() {
-    HealthcareSetting healthcareSetting = new HealthcareSetting();
-    healthcareSetting =
+    HealthcareSetting healthcareSetting =
         (HealthcareSetting)
             TestUtils.getResourceAsObject("Bsa/HealthCareSettings.json", HealthcareSetting.class);
     return healthcareSetting;
@@ -197,5 +198,386 @@ public class RespnetReportCreatorTest {
       }
     }
     return null;
+  }
+
+  @Test
+  public void testGetDeviceAuthor() {
+    Device dev = respnetReportCreator.getDeviceAuthor();
+    assertNotNull("Should return Device", dev);
+    assertTrue("Should have device name", dev.hasDeviceName());
+    assertEquals("Should have one device name", 1, dev.getDeviceName().size());
+  }
+
+  @Test
+  public void testGetDeviceAuthor_DeviceNameComponent() {
+    Device dev = respnetReportCreator.getDeviceAuthor();
+    assertNotNull("Device should not be null", dev);
+    assertTrue("Should have device names", dev.hasDeviceName());
+
+    Device.DeviceDeviceNameComponent dnc = dev.getDeviceNameFirstRep();
+    assertNotNull("Device name component should not be null", dnc);
+    assertNotNull("Device name should be set", dnc.getName());
+  }
+
+  @Test
+  public void testGetSectionComponent_PrimaryCancer() {
+    Composition.SectionComponent sc =
+        respnetReportCreator.getSectionComponent(
+            SectionTypeEnum.PRIMARY_CANCER_CONDITION, karProcessingData);
+    assertNotNull("Should return section component", sc);
+  }
+
+  @Test
+  public void testGetSectionComponent_SecondaryCancer() {
+    Composition.SectionComponent sc =
+        respnetReportCreator.getSectionComponent(
+            SectionTypeEnum.SECONDARY_CANCER_CONDITION, karProcessingData);
+    assertNotNull("Should return section component", sc);
+  }
+
+  @Test
+  public void testGetSectionComponent_CancerStage() {
+    Composition.SectionComponent sc =
+        respnetReportCreator.getSectionComponent(
+            SectionTypeEnum.CANCER_STAGE_GROUP, karProcessingData);
+    assertNotNull("Should return section component", sc);
+  }
+
+  @Test
+  public void testGetSectionComponent_RadioTherapy() {
+    Composition.SectionComponent sc =
+        respnetReportCreator.getSectionComponent(
+            SectionTypeEnum.RADIO_THERAPY_COURSE_SUMMARY, karProcessingData);
+    assertNotNull("Should return section component", sc);
+  }
+
+  @Test
+  public void testGetSectionComponent_ODH() {
+    Composition.SectionComponent sc =
+        respnetReportCreator.getSectionComponent(SectionTypeEnum.ODH, karProcessingData);
+    assertNotNull("Should return section component", sc);
+  }
+
+  @Test
+  public void testGetSectionComponent_Allergies() {
+    Composition.SectionComponent sc =
+        respnetReportCreator.getSectionComponent(SectionTypeEnum.ALLERGIES, karProcessingData);
+    assertNotNull("Should return section component", sc);
+  }
+
+  @Test
+  public void testGetSectionComponent_AdmissionMeds() {
+    Composition.SectionComponent sc =
+        respnetReportCreator.getSectionComponent(
+            SectionTypeEnum.ADMISSION_MEDICATIONS, karProcessingData);
+    assertNotNull("Should return section component", sc);
+  }
+
+  // ========== RESOURCE HAS MATCHED CODE TESTS ==========
+
+  @Test
+  public void testResourceHasMatchedCode_ConditionWithMatch() {
+    Condition condition = new Condition();
+    CodeableConcept code = new CodeableConcept();
+    code.addCoding().setSystem("http://snomed.info/sct").setCode("12345-6");
+    condition.setCode(code);
+
+    CheckTriggerCodeStatus ctcs = Mockito.mock(CheckTriggerCodeStatus.class);
+    ReportableMatchedTriggerCode rmtc = new ReportableMatchedTriggerCode();
+    rmtc.setCode("12345-6");
+    Mockito.when(ctcs.getMatchedCode(Mockito.any())).thenReturn(new Pair<>(true, rmtc));
+
+    Pair<Boolean, ReportableMatchedTriggerCode> result =
+        respnetReportCreator.resourceHasMatchedCode(condition, ctcs);
+
+    assertNotNull("Result should not be null", result);
+    assertTrue("Should find match", result.getValue0());
+    assertNotNull("Code should not be null", result.getValue1());
+  }
+
+  @Test
+  public void testResourceHasMatchedCode_ConditionNoMatch() {
+    Condition condition = new Condition();
+    CodeableConcept code = new CodeableConcept();
+    condition.setCode(code);
+
+    CheckTriggerCodeStatus ctcs = Mockito.mock(CheckTriggerCodeStatus.class);
+    Mockito.when(ctcs.getMatchedCode(Mockito.any())).thenReturn(new Pair<>(false, null));
+
+    Pair<Boolean, ReportableMatchedTriggerCode> result =
+        respnetReportCreator.resourceHasMatchedCode(condition, ctcs);
+
+    assertNotNull("Result should not be null", result);
+    assertFalse("Should not find match", result.getValue0());
+    assertNull("Code should be null", result.getValue1());
+  }
+
+  @Test
+  public void testResourceHasMatchedCode_Observation() {
+    Observation obs = new Observation();
+    CheckTriggerCodeStatus ctcs = Mockito.mock(CheckTriggerCodeStatus.class);
+
+    Pair<Boolean, ReportableMatchedTriggerCode> result =
+        respnetReportCreator.resourceHasMatchedCode(obs, ctcs);
+
+    assertNotNull("Result should not be null", result);
+    assertFalse("Should return false for observation", result.getValue0());
+    assertNull("Code should be null", result.getValue1());
+  }
+
+  @Test
+  public void testResourceHasMatchedCode_MedicationRequest() {
+    MedicationRequest mr = new MedicationRequest();
+    CheckTriggerCodeStatus ctcs = Mockito.mock(CheckTriggerCodeStatus.class);
+
+    Pair<Boolean, ReportableMatchedTriggerCode> result =
+        respnetReportCreator.resourceHasMatchedCode(mr, ctcs);
+
+    assertNotNull("Result should not be null", result);
+    assertFalse("Should return false for medication request", result.getValue0());
+    assertNull("Code should be null", result.getValue1());
+  }
+
+  @Test
+  public void testResourceHasMatchedCode_ServiceRequest() {
+    ServiceRequest sr = new ServiceRequest();
+    CheckTriggerCodeStatus ctcs = Mockito.mock(CheckTriggerCodeStatus.class);
+
+    Pair<Boolean, ReportableMatchedTriggerCode> result =
+        respnetReportCreator.resourceHasMatchedCode(sr, ctcs);
+
+    assertNotNull("Result should not be null", result);
+    assertFalse("Should return false for service request", result.getValue0());
+    assertNull("Code should be null", result.getValue1());
+  }
+
+  @Test
+  public void testResourceHasMatchedCode_Immunization() {
+    Immunization imm = new Immunization();
+    CheckTriggerCodeStatus ctcs = Mockito.mock(CheckTriggerCodeStatus.class);
+
+    Pair<Boolean, ReportableMatchedTriggerCode> result =
+        respnetReportCreator.resourceHasMatchedCode(imm, ctcs);
+
+    assertNotNull("Result should not be null", result);
+    assertFalse("Should return false for immunization", result.getValue0());
+    assertNull("Code should be null", result.getValue1());
+  }
+
+  @Test
+  public void testResourceHasMatchedCode_Procedure() {
+    Procedure proc = new Procedure();
+    CheckTriggerCodeStatus ctcs = Mockito.mock(CheckTriggerCodeStatus.class);
+
+    Pair<Boolean, ReportableMatchedTriggerCode> result =
+        respnetReportCreator.resourceHasMatchedCode(proc, ctcs);
+
+    assertNotNull("Result should not be null", result);
+    assertFalse("Should return false for procedure", result.getValue0());
+    assertNull("Code should be null", result.getValue1());
+  }
+
+  // ========== REMOVE EXTENSIONS TESTS ==========
+
+  @Test
+  public void testRemoveExtensions_PatientKeepsCoreExtension() {
+    Patient patient = new Patient();
+    List<Extension> exts = new ArrayList<>();
+
+    Extension coreExt = new Extension();
+    coreExt.setUrl("http://hl7.org/fhir/us/core/test");
+    exts.add(coreExt);
+
+    Extension otherExt = new Extension();
+    otherExt.setUrl("http://example.org/other");
+    exts.add(otherExt);
+
+    patient.setExtension(exts);
+    respnetReportCreator.removeExtensions(patient);
+
+    assertTrue(
+        "Should keep us/core extension",
+        patient.getExtension().stream().anyMatch(e -> e.getUrl().contains("us/core")));
+  }
+
+  @Test
+  public void testRemoveExtensions_PatientKeepsMedmorphExtension() {
+    Patient patient = new Patient();
+    List<Extension> exts = new ArrayList<>();
+
+    Extension medExt = new Extension();
+    medExt.setUrl("http://hl7.org/fhir/us/medmorph/test");
+    exts.add(medExt);
+
+    Extension otherExt = new Extension();
+    otherExt.setUrl("http://example.org/other");
+    exts.add(otherExt);
+
+    patient.setExtension(exts);
+    respnetReportCreator.removeExtensions(patient);
+
+    assertTrue(
+        "Should keep us/medmorph extension",
+        patient.getExtension().stream().anyMatch(e -> e.getUrl().contains("us/medmorph")));
+  }
+
+  @Test
+  public void testRemoveExtensions_PatientRemovesNonMatching() {
+    Patient patient = new Patient();
+    List<Extension> exts = new ArrayList<>();
+
+    Extension otherExt1 = new Extension();
+    otherExt1.setUrl("http://example.org/ext1");
+    exts.add(otherExt1);
+
+    Extension otherExt2 = new Extension();
+    otherExt2.setUrl("http://example.org/ext2");
+    exts.add(otherExt2);
+
+    patient.setExtension(exts);
+    respnetReportCreator.removeExtensions(patient);
+
+    assertTrue("Should remove non-matching extensions", patient.getExtension().isEmpty());
+  }
+
+  @Test
+  public void testRemoveExtensions_ObservationPerformerExtensions() {
+    Observation obs = new Observation();
+    Reference perfRef = new Reference();
+
+    List<Extension> perfExts = new ArrayList<>();
+    Extension perfExt = new Extension();
+    perfExt.setUrl("http://hl7.org/fhir/StructureDefinition/event-performerFunction");
+    perfExts.add(perfExt);
+
+    Extension otherExt = new Extension();
+    otherExt.setUrl("http://example.org/other");
+    perfExts.add(otherExt);
+
+    perfRef.setExtension(perfExts);
+    obs.addPerformer(perfRef);
+
+    respnetReportCreator.removeExtensions(obs);
+
+    assertTrue(
+        "Should preserve performer function",
+        obs.getPerformer().get(0).getExtension().stream()
+            .anyMatch(e -> e.getUrl().contains("event-performerFunction")));
+  }
+
+  @Test
+  public void testRemoveExtensions_ObservationRemoveDuplicatePerformerFunction() {
+    Observation obs = new Observation();
+    Reference perfRef = new Reference();
+
+    List<Extension> perfExts = new ArrayList<>();
+    Extension perf1 = new Extension();
+    perf1.setUrl("http://hl7.org/fhir/StructureDefinition/event-performerFunction");
+    perfExts.add(perf1);
+
+    Extension perf2 = new Extension();
+    perf2.setUrl("http://hl7.org/fhir/StructureDefinition/event-performerFunction");
+    perfExts.add(perf2);
+
+    Extension other = new Extension();
+    other.setUrl("http://example.org/other");
+    perfExts.add(other);
+
+    perfRef.setExtension(perfExts);
+    obs.addPerformer(perfRef);
+
+    respnetReportCreator.removeExtensions(obs);
+
+    long perfCount =
+        obs.getPerformer().get(0).getExtension().stream()
+            .filter(e -> e.getUrl().contains("event-performerFunction"))
+            .count();
+    assertEquals("Should have only 1 performer function", 1, perfCount);
+  }
+
+  @Test
+  public void testRemoveExtensions_PatientKeepsAllMatchingPatterns() {
+    Patient patient = new Patient();
+    List<Extension> exts = new ArrayList<>();
+
+    String[] patterns = {
+      "us/core", "us/medmorph", "us/healthcare-survey", "us/ecr", "us/ccrr", "us/ph"
+    };
+    for (String pattern : patterns) {
+      Extension ext = new Extension();
+      ext.setUrl("http://hl7.org/fhir/" + pattern + "/test");
+      exts.add(ext);
+    }
+
+    patient.setExtension(exts);
+    respnetReportCreator.removeExtensions(patient);
+
+    assertEquals("Should keep all matching patterns", 6, patient.getExtension().size());
+  }
+
+  @Test
+  public void createSender_forNonEncounterNotification_hasProfileAndUsAddress() {
+    karProcessingData.getNotificationContext().setNotificationResourceType("Patient");
+    karProcessingData.getHealthcareSetting().setOrgName("Sample Health System");
+    karProcessingData.getHealthcareSetting().setOrgId("org-1");
+    karProcessingData.getHealthcareSetting().setOrgIdSystem("urn:oid:2.16.840.1.113883.19.5");
+
+    Organization sender = respnetReportCreator.createSender(karProcessingData);
+
+    assertEquals("Sample Health System", sender.getName());
+    assertTrue(sender.getActive());
+    assertEquals(
+        RespnetReportCreator.SENDER_ORG_PROFILE, sender.getMeta().getProfile().get(0).getValue());
+    assertEquals("US", sender.getAddressFirstRep().getCountry());
+    assertEquals("urn:oid:2.16.840.1.113883.19.5", sender.getIdentifierFirstRep().getSystem());
+    assertEquals("org-1", sender.getIdentifierFirstRep().getValue());
+  }
+
+  @Test
+  public void createMessageHeader_withoutReceiverAddresses_usesTheDefaultDestination() {
+    karProcessingData.getKar().setReceiverAddresses(new HashSet<>());
+
+    MessageHeader header = respnetReportCreator.createMessageHeader(karProcessingData);
+
+    assertEquals(1, header.getDestination().size());
+    assertEquals("Example PHA", header.getDestinationFirstRep().getName());
+    assertEquals("http://example.org/fhir/pha", header.getDestinationFirstRep().getEndpoint());
+  }
+
+  @Test
+  public void filterResourcesByProfile_keepsOnlyRealResourcesCarryingTheProfile() {
+    Bundle data = TestUtils.loadBundleFromFile("R4/LoadingQueryBundle.json");
+    Resource condition =
+        data.getEntry().stream()
+            .map(e -> e.getResource())
+            .filter(r -> r instanceof Condition)
+            .findFirst()
+            .get();
+    Resource otherProfile =
+        data.getEntry().stream()
+            .map(e -> e.getResource())
+            .filter(r -> r instanceof Immunization)
+            .findFirst()
+            .get();
+    Resource noProfile =
+        TestUtils.loadResourceDataFromFile(Patient.class, "R4/Patient/Patient.json");
+    String profile = "http://hl7.org/fhir/us/resp-net/StructureDefinition/rn-condition";
+    condition.getMeta().addProfile(profile);
+    otherProfile.getMeta().addProfile("http://example.org/StructureDefinition/other");
+    noProfile.setMeta(null);
+    Set<Resource> resources = new HashSet<>(List.of(condition, otherProfile, noProfile));
+
+    Set<Resource> byProfile =
+        respnetReportCreator.filterResourcesByProfile(resources, profile, Set.of());
+    Set<Resource> ignoringProfiles =
+        respnetReportCreator.filterResourcesByProfile(resources, "", Set.of("x"));
+    Set<Resource> unfiltered =
+        respnetReportCreator.filterResourcesByProfile(resources, "", Set.of());
+
+    assertEquals(Set.of(condition), byProfile);
+    // With an empty profile and an ignore list, a resource that carries a profile cannot be
+    // matched, so only the resource without meta/profile is kept.
+    assertEquals(Set.of(noProfile), ignoringProfiles);
+    assertEquals(resources, unfiltered);
   }
 }

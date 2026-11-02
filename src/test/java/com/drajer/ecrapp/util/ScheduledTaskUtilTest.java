@@ -12,11 +12,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.Instant;
 import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -27,15 +27,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({FileUtils.class})
 public class ScheduledTaskUtilTest {
+
   @Mock private SchedulerDao schedulerDao;
   @Mock private Logger logger;
   @Mock private ObjectMapper objectMapper;
-  @InjectMocks private ScheduledTaskUtil scheduledTaskUtil;
+  private ScheduledTaskUtil scheduledTaskUtil;
 
   private String MOCK_FILE_PATH = "ecrTestData/ScheduleUtils/schedule.json";
-
-  private static final TypeReference<List<Map<String, Object>>> LIST_MAP_TYPE_REF =
-      new TypeReference<List<Map<String, Object>>>() {};
 
   private static class SampleObject {
     public String name = "John";
@@ -46,6 +44,10 @@ public class ScheduledTaskUtilTest {
   public void setUp() {
 
     MockitoAnnotations.initMocks(this);
+    // ScheduledTaskUtil now uses field injection (no-arg constructor only) and its fields are
+    // private, so they are set through reflection.
+    scheduledTaskUtil = new ScheduledTaskUtil();
+    ReflectionTestUtils.setField(scheduledTaskUtil, "schedulerDao", schedulerDao);
     ReflectionTestUtils.setField(scheduledTaskUtil, "scheduledTaskFilePath", MOCK_FILE_PATH);
   }
 
@@ -216,5 +218,73 @@ public class ScheduledTaskUtilTest {
     assertEquals("worker_01", result.get("picked_by"));
     assertEquals(3, result.get("consecutive_failures"));
     assertEquals(1, result.get("version"));
+  }
+
+  @Test
+  public void test_ImportScheduledTasks_SingleTask() throws IOException {
+    Map<String, Object> taskData = createTaskDataMap();
+    Map<String, Object> scheduledTaskMap = createScheduledTaskMap(taskData);
+    List<Map<String, Object>> tasksList = Collections.singletonList(scheduledTaskMap);
+
+    org.powermock.api.mockito.PowerMockito.mockStatic(FileUtils.class);
+    when(FileUtils.readFileContents(eq(MOCK_FILE_PATH), any(TypeReference.class)))
+        .thenReturn(tasksList);
+
+    String result = scheduledTaskUtil.importScheduledTasks();
+
+    assertEquals("Should return file path", MOCK_FILE_PATH, result);
+    verify(schedulerDao, times(1)).saveOrUpdate(any(ScheduledTasks.class));
+  }
+
+  @Test
+  public void test_ImportScheduledTasks_WithExpirationTime() throws IOException {
+    Map<String, Object> taskData = createTaskDataMapWithExpiration();
+    Map<String, Object> scheduledTaskMap = createScheduledTaskMap(taskData);
+    List<Map<String, Object>> tasksList = Collections.singletonList(scheduledTaskMap);
+
+    org.powermock.api.mockito.PowerMockito.mockStatic(FileUtils.class);
+    when(FileUtils.readFileContents(eq(MOCK_FILE_PATH), any(TypeReference.class)))
+        .thenReturn(tasksList);
+
+    String result = scheduledTaskUtil.importScheduledTasks();
+
+    assertEquals("Should return file path", MOCK_FILE_PATH, result);
+    verify(schedulerDao, times(1)).saveOrUpdate(any(ScheduledTasks.class));
+  }
+
+  private Map<String, Object> createTaskDataMap() {
+    Map<String, Object> taskData = new HashMap<>();
+    taskData.put("karExecutionStateId", UUID.randomUUID().toString());
+    taskData.put("actionId", "action123");
+    taskData.put("actionType", "EVALUATE_MEASURE");
+    taskData.put("jobId", "job456");
+    taskData.put("expirationTime", null);
+    taskData.put("jobType", "IMMEDIATE_REPORTING");
+    taskData.put("mdcContext", new HashMap<>());
+    return taskData;
+  }
+
+  private Map<String, Object> createTaskDataMapWithExpiration() {
+    Map<String, Object> taskData = createTaskDataMap();
+    taskData.put("expirationTime", Instant.now().plusSeconds(3600).toString());
+    return taskData;
+  }
+
+  private Map<String, Object> createScheduledTaskMap(Map<String, Object> taskData) {
+    Map<String, Object> scheduledTaskMap = new HashMap<>();
+    scheduledTaskMap.put("task_instance", "task_001");
+    scheduledTaskMap.put("task_name", "Test Task");
+    scheduledTaskMap.put("task_data", taskData);
+    return scheduledTaskMap;
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testDeserialize_NullData_ThrowsIllegalArgumentException() throws IOException {
+    scheduledTaskUtil.deserialize(null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testDeserialize_EmptyData_ThrowsIllegalArgumentException() throws IOException {
+    scheduledTaskUtil.deserialize(new byte[0]);
   }
 }

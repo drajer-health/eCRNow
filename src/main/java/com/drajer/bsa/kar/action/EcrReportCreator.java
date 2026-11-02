@@ -939,6 +939,11 @@ public class EcrReportCreator extends ReportCreator {
       SectionComponent sc, KarProcessingData kd, Pair<R4FhirData, LaunchDetails> data) {
     logger.info("Creating Chief Complaint Narrative ");
 
+    if (sc == null) {
+      logger.warn("Section component is null, skipping chief complaint narrative");
+      return;
+    }
+
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
     val.setDivAsString(
@@ -948,6 +953,11 @@ public class EcrReportCreator extends ReportCreator {
 
   public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
     logger.info("Adding Narrative ");
+
+    if (sc == null) {
+      logger.warn("Section component is null, skipping default narrative");
+      return;
+    }
 
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);

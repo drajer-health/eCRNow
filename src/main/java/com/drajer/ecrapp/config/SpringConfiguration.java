@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.*;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -207,8 +207,7 @@ public class SpringConfiguration {
 
   private Bundle readErsdBundleFromFile() {
     Bundle bundle = new Bundle();
-    try {
-      InputStream in = new FileInputStream(new File(ersdFileLocation));
+    try (InputStream in = new FileInputStream(new File(ersdFileLocation))) {
       bundle = getEsrdJsonParser().parseResource(Bundle.class, in);
       logger.info("Successfully loaded eRSD bundle from: {}", ersdFileLocation);
     } catch (FileNotFoundException e) {

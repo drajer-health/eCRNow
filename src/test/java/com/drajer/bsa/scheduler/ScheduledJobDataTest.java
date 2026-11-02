@@ -34,6 +34,17 @@ public class ScheduledJobDataTest {
     xRequestId = "xReq123";
     jobType = BsaTypes.BsaJobType.IMMEDIATE_REPORTING;
 
+    //    scheduledJobData =
+    //        new ScheduledJobData.Builder()
+    //            .karExecutionStateId(karExecutionStateId)
+    //            .actionId(actionId)
+    //            .actionType(actionType)
+    //            .expirationTime(expirationTime)
+    //            .jobId(jobId)
+    //            .xRequestId(xRequestId)
+    //            .jobType(jobType)
+    //            .mdcContext(mdcContext)
+    //            .build();
     scheduledJobData =
         new ScheduledJobData(
             karExecutionStateId,

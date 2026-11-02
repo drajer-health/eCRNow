@@ -3,25 +3,32 @@ package com.drajer.bsa.kar.condition;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
+import com.drajer.bsa.kar.action.EvaluateCondition;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.test.util.TestUtils;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -49,6 +56,7 @@ import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
 
@@ -664,5 +672,241 @@ public class FhirPathProcessorTest {
     expression.setExpression(expressionValue);
     condition.setLogicExpression(expression);
     return condition;
+  }
+
+  @Test
+  public void filterByCode_MedicationRequest_WithReferenceMedication_ProcessesReference() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-med-ref");
+    dr.setType("MedicationRequest");
+
+    MedicationRequest medicationRequest = new MedicationRequest();
+    medicationRequest.setId("MedicationRequest/2");
+    medicationRequest.setMedication(new Reference("Medication/med-1"));
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Medication medication = new Medication();
+    medication.setCode(new CodeableConcept());
+    Mockito.lenient()
+        .when(kd.getResourceById("med-1", ResourceType.Medication))
+        .thenReturn(medication);
+
+    Set<Resource> candidates = new HashSet<>();
+    candidates.add(medicationRequest);
+
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    processor.filterByCode(dr, kd, new CheckTriggerCodeStatus(), candidates, resources);
+
+    assertNotNull(medicationRequest);
+    assertNotNull(candidates);
+    assertEquals(1, candidates.size());
+    verify(kd).getResourceById("med-1", ResourceType.Medication);
+  }
+
+  @Test
+  public void filterByCode_MedicationStatement_WithReferenceMedication_ProcessesReference() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-med-stmt-ref");
+    dr.setType("MedicationStatement");
+
+    MedicationStatement medicationStatement = new MedicationStatement();
+    medicationStatement.setId("MedicationStatement/2");
+    medicationStatement.setMedication(new Reference("Medication/med-2"));
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Medication medication = new Medication();
+    medication.setCode(new CodeableConcept());
+    Mockito.lenient()
+        .when(kd.getResourceById("med-2", ResourceType.Medication))
+        .thenReturn(medication);
+
+    Set<Resource> candidates = new HashSet<>();
+    candidates.add(medicationStatement);
+
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    processor.filterByCode(dr, kd, new CheckTriggerCodeStatus(), candidates, resources);
+
+    verify(kd).getResourceById("med-2", ResourceType.Medication);
+    assertNotNull(resources);
+  }
+
+  @Test
+  public void filterByCode_MedicationAdministration_WithReferenceMedication_ProcessesReference() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-med-admin-ref");
+    dr.setType("MedicationAdministration");
+
+    MedicationAdministration medicationAdmin = new MedicationAdministration();
+    medicationAdmin.setId("MedicationAdministration/2");
+    medicationAdmin.setMedication(new Reference("Medication/med-3"));
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Medication medication = new Medication();
+    medication.setCode(new CodeableConcept());
+    Mockito.lenient()
+        .when(kd.getResourceById("med-3", ResourceType.Medication))
+        .thenReturn(medication);
+
+    Set<Resource> candidates = new HashSet<>();
+    candidates.add(medicationAdmin);
+
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    processor.filterByCode(dr, kd, new CheckTriggerCodeStatus(), candidates, resources);
+
+    verify(kd).getResourceById("med-3", ResourceType.Medication);
+    assertNotNull(resources);
+  }
+
+  @Test
+  public void filterByCode_WithCodeFilter_NoMatchFound_ResourceNotAdded() {
+    DataRequirement dr = new DataRequirement();
+    dr.setId("dr-no-match");
+    dr.setType("Condition");
+    DataRequirement.DataRequirementCodeFilterComponent codeFilter = dr.addCodeFilter();
+    codeFilter.setPath("code");
+    codeFilter.setValueSet("ValueSet/vs-empty");
+
+    Condition condition = new Condition();
+    condition.setId("Condition/nomatch");
+    CodeableConcept code = new CodeableConcept();
+    condition.setCode(code);
+
+    ValueSet valueSet = new ValueSet();
+    valueSet.setId("ValueSet/vs-empty");
+
+    KarProcessingData kd = mock(KarProcessingData.class);
+    Mockito.lenient()
+        .when(kd.getResourceById("vs-empty", ResourceType.ValueSet))
+        .thenReturn(valueSet);
+    Mockito.lenient()
+        .when(kd.getKar())
+        .thenReturn(mock(com.drajer.bsa.kar.model.KnowledgeArtifact.class));
+
+    CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
+    Map<String, Set<Resource>> resources = new HashMap<>();
+
+    processor.filterByCode(dr, code, kd, ctc, resources, condition, false);
+
+    assertNotNull(resources);
+    assertFalse(resources.containsKey("dr-no-match"));
+  }
+
+  private static final String DXTC_URL = "http://hl7.org/fhir/us/ecr/ValueSet/dxtc";
+  private static final String COVID_CONDITION_ID = "d2572357189";
+  private static final String PREGNANCY_CONDITION_ID = "p73079845";
+
+  @Test
+  public void filterResources_WithRealConditionsAndTriggerValueSet_KeepsOnlyTheTriggerMatch() {
+    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> out =
+        processor.filterResources(
+            conditionRequirement(),
+            kdWithConditions(
+                realCondition(COVID_CONDITION_ID), realCondition(PREGNANCY_CONDITION_ID)));
+
+    Set<Resource> matched = out.getValue1().get("Condition");
+    assertEquals(1, matched.size());
+    assertEquals(COVID_CONDITION_ID, matched.iterator().next().getIdElement().getIdPart());
+    CheckTriggerCodeStatus status = out.getValue0();
+    assertTrue(status.getTriggerMatchStatus());
+    assertEquals("Condition.code", status.getMatchedCodes().get(0).getMatchedPath());
+    Set<String> matchedCodes = status.getMatchedCodes().get(0).getMatchedCodes();
+    assertTrue(matchedCodes.contains("http://snomed.info/sct|840539006"));
+
+    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> none =
+        processor.filterResources(
+            conditionRequirement(), kdWithConditions(realCondition(PREGNANCY_CONDITION_ID)));
+
+    assertTrue(none.getValue1().isEmpty());
+    assertFalse(none.getValue0().getTriggerMatchStatus());
+  }
+
+  @Test
+  public void getValueSet_ResolvesTheKarValueSetWithOrWithoutAVersionSuffix() {
+    KarProcessingData kd = kdWithConditions();
+    Resource byUrl = processor.getValueSet(kd, DXTC_URL);
+
+    assertNotNull(byUrl);
+    assertSame(byUrl, processor.getValueSet(kd, DXTC_URL + "|20210526"));
+    assertNull(processor.getValueSet(kd, "http://hl7.org/fhir/us/ecr/ValueSet/unknown"));
+    assertNull(processor.getValueSet(kd, " "));
+    assertEquals(DXTC_URL, processor.normalizeCanonicalUrl(DXTC_URL + "|20210526"));
+    assertEquals(DXTC_URL, processor.normalizeCanonicalUrl(DXTC_URL));
+    assertNull(processor.normalizeCanonicalUrl(null));
+  }
+
+  @Test
+  public void evaluateExpression_WithCodeFilteredInput_PassesOnlyTheMatchingConditionToTheEngine() {
+    Parameters triggered = new Parameters();
+    triggered.addParameter().setName(FhirPathProcessor.PARAM).setValue(new BooleanType(true));
+    Mockito.when(
+            expressionEvaluator.evaluate(
+                any(), anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        .thenReturn(triggered);
+    EvaluateCondition action = new EvaluateCondition();
+    action.setActionId("check-dx-trigger");
+    action.setInputData(Collections.singletonList(conditionRequirement()));
+    Condition covid = realCondition(COVID_CONDITION_ID);
+
+    Boolean result =
+        processor.evaluateExpression(
+            buildCondition("%Condition.exists()"),
+            action,
+            kdWithConditions(covid, realCondition(PREGNANCY_CONDITION_ID)),
+            mock(EhrQueryService.class));
+
+    assertTrue(result);
+    ArgumentCaptor<Parameters> sent = ArgumentCaptor.forClass(Parameters.class);
+    verify(expressionEvaluator)
+        .evaluate(
+            any(),
+            eq("%Condition.exists()"),
+            sent.capture(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any());
+    assertEquals(1, sent.getValue().getParameter().size());
+    assertEquals("%Condition", sent.getValue().getParameterFirstRep().getName());
+    assertSame(covid, sent.getValue().getParameterFirstRep().getResource());
+    assertTrue(
+        sent.getValue()
+            .getParameterFirstRep()
+            .hasExtension(FhirPathProcessor.CPG_PARAM_DEFINITION));
+  }
+
+  private DataRequirement conditionRequirement() {
+    DataRequirement requirement = new DataRequirement();
+    requirement.setId("Condition");
+    requirement.setType("Condition");
+    requirement.addCodeFilter().setPath("code").setValueSet(DXTC_URL);
+    return requirement;
+  }
+
+  private Condition realCondition(String id) {
+    Bundle patientConditions =
+        TestUtils.loadBundleFromFile("R4/Condition/CondPergnancy_SCT_77386006.json");
+    return (Condition)
+        patientConditions.getEntry().stream()
+            .map(Bundle.BundleEntryComponent::getResource)
+            .filter(r -> r instanceof Condition && r.getIdElement().getIdPart().equals(id))
+            .findFirst()
+            .orElseThrow();
+  }
+
+  private KarProcessingData kdWithConditions(Condition... conditions) {
+    KnowledgeArtifact kar = new KnowledgeArtifact();
+    kar.addDependentValueSet(
+        TestUtils.loadResourceDataFromFile(
+            ValueSet.class,
+            "Bsa/Scenarios/PlanDefinition_eRSD_Instance_FhirPathOnly/ex-trigger-condition-in/"
+                + "valueset-dxtc-example.json"));
+    KarProcessingData kd = new KarProcessingData();
+    kd.setKar(kar);
+    kd.addResourcesByType(ResourceType.Condition, new HashSet<>(List.of(conditions)));
+    return kd;
   }
 }

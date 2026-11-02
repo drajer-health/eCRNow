@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -32,7 +33,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class DataRoutingTest {
 
   @InjectMocks DirectEicrSender directEicrSender;
-
+  @Mock EicrRRService rrService;
+  @InjectMocks DirectResponseReceiver directReceiver;
   private Transport mockTransport;
   private Session mockSession;
   private Properties mockProperties;
@@ -68,10 +70,9 @@ public class DataRoutingTest {
       when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
 
       String correlationId = "1234";
-      // Test
+
       directEicrSender.sendData(launchDetails, data, correlationId);
 
-      // Validate
       verify(mockTransport, times(1)).sendMessage(any(Message.class), any());
 
     } catch (Exception e) {
@@ -83,16 +84,11 @@ public class DataRoutingTest {
   @Test
   public void receiveResponseTest() throws JsonParseException, JsonMappingException, IOException {
 
-    DirectResponseReceiver directReceiver = new DirectResponseReceiver();
     DirectResponseReceiver directResponseReceiverSpy = Mockito.spy(directReceiver);
 
-    // Setup
     doNothing().when(directResponseReceiverSpy).readMail(any());
 
-    // Test
     directResponseReceiverSpy.receiveRespone(launchDetails);
-
-    // Validate
 
     Mockito.verify(directResponseReceiverSpy, times(1)).readMail(any());
   }

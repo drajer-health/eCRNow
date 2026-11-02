@@ -21,7 +21,7 @@ public class TimeZoneController {
   }
 
   @PostMapping("/api/timezone")
-  public ResponseEntity<String> setTimeZone(@RequestParam String timeZone) {
+  public ResponseEntity<String> setTimeZone(@RequestParam("timeZone") String timeZone) {
 
     try {
       // Validate the time zone

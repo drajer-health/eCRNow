@@ -9,12 +9,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,12 +22,13 @@ import org.springframework.http.ResponseEntity;
 public class KeycloakTokenControllerTest {
   @Mock private KeyCloakTokenValidationClient keyCloakTokenValidationClient;
 
+  //  private KeycloakTokenController keycloakTokenController;
+  //
+  //  @Before
+  //  public void setUp() {
+  //    keycloakTokenController = new KeycloakTokenController(keyCloakTokenValidationClient);
+  //  }
   @InjectMocks private KeycloakTokenController keycloakTokenController;
-
-  @Before
-  public void setUp() {
-    MockitoAnnotations.initMocks(this); // Deprecated but still works in JUnit 4
-  }
 
   @Test
   public void testGenerateToken_BadRequest() throws Exception {

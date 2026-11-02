@@ -57,11 +57,20 @@ public class EvaluateMeasureTest {
     assertEquals(start, evaluateMeasure.getPeriodStart());
   }
 
+  /**
+   * Known bug in EvaluateMeasure.setPeriodEnd: its parameter is named "ZonedDateTime" and the body
+   * does "this.periodEnd = periodEnd", so the value passed in is ignored and the constructor
+   * default (31 Dec of the current year, 23:59, America/Vancouver) is kept.
+   */
   @Test
   public void testSetPeriodEnd_DoesNotChangeValue() {
-    ZonedDateTime originalEnd = evaluateMeasure.getPeriodEnd();
-    evaluateMeasure.setPeriodEnd(ZonedDateTime.now().plusDays(5));
-    assertEquals(originalEnd, evaluateMeasure.getPeriodEnd());
+    ZonedDateTime defaultEnd = evaluateMeasure.getPeriodEnd();
+    ZonedDateTime newEnd = ZonedDateTime.now().plusDays(5);
+
+    evaluateMeasure.setPeriodEnd(newEnd);
+
+    assertEquals(defaultEnd, evaluateMeasure.getPeriodEnd());
+    assertNotEquals(newEnd, evaluateMeasure.getPeriodEnd());
   }
 
   @Test

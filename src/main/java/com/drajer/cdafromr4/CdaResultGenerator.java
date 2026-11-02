@@ -22,6 +22,12 @@ public class CdaResultGenerator {
   private static final List<String> SEE_NOTE_PATTERNS =
       Arrays.asList("see note", "see notes", "see below", "see comments", "comment");
 
+  /** participant/@typeCode for the authorizing provider (responsible party). */
+  static final String AUTHORIZING_PROVIDER_TYPE_CODE = "RESP";
+
+  /** participantRole/@classCode for a healthcare provider. */
+  static final String AUTHORIZING_PROVIDER_CLASS_CODE = "PROV";
+
   private CdaResultGenerator() {}
 
   private static final Logger logger = LoggerFactory.getLogger(CdaResultGenerator.class);
@@ -40,6 +46,10 @@ public class CdaResultGenerator {
     // Get Diagnostic Reports with lab results and Observations without Diagnostic Reports
     Map<DiagnosticReport, List<Observation>> reports =
         getDiagnosticReportsWithObservations(data, allResults, uniqueObservations);
+
+    // Sort most recent first for a consistent display order (issue #1152).
+    uniqueObservations = CdaSortUtils.sortObservationMap(uniqueObservations);
+    reports = CdaSortUtils.sortDiagnosticReports(reports);
 
     if ((uniqueObservations != null && !uniqueObservations.isEmpty())
         || (reports != null && !reports.isEmpty())) {
@@ -65,7 +75,8 @@ public class CdaResultGenerator {
 
     } else {
       logger.info(
-          " No Lab Results or Diagnostic Reports to generate data , hence generating a null section.");
+          " No Lab Results or Diagnostic Reports to generate data , hence generating a null"
+              + " section.");
       hsb.append(generateEmptyLabResults());
     }
 
@@ -363,7 +374,8 @@ public class CdaResultGenerator {
     // Add static organizer data including start elements for entry and organizer
     lrEntry.append(getOrganizerEntryStaticData());
 
-    // Add dynamic organizer data
+    // Add dynamic organizer data. Authorizing Provider (#1079): DiagnosticReport.basedOn first,
+    // then the result Observations' basedOn, per the mapping sheet.
     lrEntry.append(
         getOrganizerEntryDynamicData(
             report.getCode(),
@@ -371,7 +383,7 @@ public class CdaResultGenerator {
             data,
             report.getIssuedElement(),
             report.getPerformer(),
-            report.getBasedOn(),
+            getAuthorizingProviderBasedOnRefs(report, observations),
             version));
 
     int i = 1;
@@ -392,7 +404,8 @@ public class CdaResultGenerator {
               obs.getPerformer(),
               data,
               version,
-              obs.getReferenceRange()));
+              obs.getReferenceRange(),
+              report.getPerformer()));
 
       i++;
     }
@@ -653,7 +666,8 @@ public class CdaResultGenerator {
                   obs.getPerformer(),
                   data,
                   version,
-                  obs.getReferenceRange());
+                  obs.getReferenceRange(),
+                  rep.getPerformer());
 
           if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
 
@@ -690,7 +704,8 @@ public class CdaResultGenerator {
                 obs.getPerformer(),
                 data,
                 version,
-                obs.getReferenceRange()));
+                obs.getReferenceRange(),
+                rep.getPerformer()));
       }
     }
 
@@ -711,6 +726,38 @@ public class CdaResultGenerator {
       R4FhirData data,
       String version,
       List<Observation.ObservationReferenceRangeComponent> referenceRange) {
+    return getXmlForObservationComponent(
+        details,
+        cd,
+        val,
+        id,
+        effective,
+        interpretation,
+        rowNum,
+        performerRefs,
+        data,
+        version,
+        referenceRange,
+        null);
+  }
+
+  /**
+   * @param reportPerformerRefs DiagnosticReport.performer of the report the observation belongs to;
+   *     used for the performing organization when the observation has no Organization performer.
+   */
+  public static String getXmlForObservationComponent(
+      LaunchDetails details,
+      CodeableConcept cd,
+      Type val,
+      String id,
+      Type effective,
+      List<CodeableConcept> interpretation,
+      int rowNum,
+      List<Reference> performerRefs,
+      R4FhirData data,
+      String version,
+      List<Observation.ObservationReferenceRangeComponent> referenceRange,
+      List<Reference> reportPerformerRefs) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -748,10 +795,12 @@ public class CdaResultGenerator {
       obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths, version);
     }
 
+    boolean isTriggerResult = false;
     if ((obsCodeXml != null && obsCodeXml.getValue0())
         || (obsValueXml != null && obsValueXml.getValue0())) {
 
       lrEntry.append(getTriggerCodeTemplateXml(version));
+      isTriggerResult = true;
     }
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
@@ -769,27 +818,16 @@ public class CdaResultGenerator {
     lrEntry.append(
         CdaFhirUtilities.getXmlForType(effective, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
-    if (obsValueXml == null) {
-      lrEntry.append(CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true));
-    } else {
-      lrEntry.append(obsValueXml.getValue1());
-    }
+    String valueXml =
+        (obsValueXml == null)
+            ? CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true)
+            : obsValueXml.getValue1();
+    lrEntry.append(valueXml);
 
-    // Add interpretation code.
-    if (interpretation != null) {
+    // Add interpretation code (#1151: NI fallback for trigger results with an ST value).
+    lrEntry.append(getInterpretationCodeXml(interpretation, isTriggerResult, valueXml));
 
-      logger.debug("Adding Interpretation Code");
-
-      String interpretXml =
-          CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
-              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
-              interpretation,
-              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
-              false,
-              false);
-
-      if (interpretXml != null && !interpretXml.isEmpty()) lrEntry.append(interpretXml);
-    }
+    lrEntry.append(getPerformingOrganizationXml(performerRefs, reportPerformerRefs, data));
 
     // Add performer
     lrEntry.append(CdaFhirUtilities.getXmlForAuthor(performerRefs, data));
@@ -806,6 +844,41 @@ public class CdaResultGenerator {
     logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
 
     return lrEntry.toString();
+  }
+
+  private static final String ST_VALUE_TYPE = "xsi:type=\"" + CdaGeneratorConstants.ST_TYPE + "\"";
+
+  /**
+   * interpretationCode for a result observation: from Observation.interpretation when present;
+   * otherwise nullFlavor NI when CONF:4411-603 requires one.
+   *
+   * <p>GitHub #1151, eICR CONF:4411-603: "If value has xsi:type="ST" then there SHALL be at least
+   * one [1..*] interpretationCode" (Initial Case Report Trigger Code Result Observation).
+   */
+  static String getInterpretationCodeXml(
+      List<CodeableConcept> interpretation, boolean isTriggerResult, String valueXml) {
+
+    String interpretXml =
+        (interpretation == null)
+            ? ""
+            : CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
+                CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+                interpretation,
+                CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+                false,
+                false);
+
+    if (StringUtils.isNotEmpty(interpretXml)) {
+      return interpretXml;
+    }
+
+    if (isTriggerResult && valueXml != null && valueXml.contains(ST_VALUE_TYPE)) {
+      logger.info("Trigger result with an ST value has no interpretation; adding nullFlavor NI");
+      return CdaGeneratorUtils.getNFXMLForElement(
+          CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, CdaGeneratorConstants.NF_NI);
+    }
+
+    return "";
   }
 
   public static String getTriggerCodeTemplateXml(String version) {
@@ -839,6 +912,40 @@ public class CdaResultGenerator {
       R4FhirData data,
       String version,
       List<Observation.ObservationReferenceRangeComponent> referenceRange) {
+    return getXmlForObservationComponent(
+        details,
+        cd,
+        val,
+        id,
+        effective,
+        interpretation,
+        contentRef,
+        altCode,
+        performerRefs,
+        data,
+        version,
+        referenceRange,
+        null);
+  }
+
+  /**
+   * @param reportPerformerRefs DiagnosticReport.performer of the report the observation belongs to;
+   *     used for the performing organization when the observation has no Organization performer.
+   */
+  public static String getXmlForObservationComponent(
+      LaunchDetails details,
+      CodeableConcept cd,
+      Type val,
+      String id,
+      Type effective,
+      List<CodeableConcept> interpretation,
+      String contentRef,
+      CodeableConcept altCode,
+      List<Reference> performerRefs,
+      R4FhirData data,
+      String version,
+      List<Observation.ObservationReferenceRangeComponent> referenceRange,
+      List<Reference> reportPerformerRefs) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -880,10 +987,12 @@ public class CdaResultGenerator {
       obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths, version);
     }
 
+    boolean isTriggerResult = false;
     if ((obsCodeXml != null && obsCodeXml.getValue0())
         || (obsValueXml != null && obsValueXml.getValue0())) {
 
       lrEntry.append(getTriggerCodeTemplateXml(version));
+      isTriggerResult = true;
 
     } else if (altObsCodeXml != null && altObsCodeXml.getValue0()) {
 
@@ -892,6 +1001,7 @@ public class CdaResultGenerator {
       // not exist
       // or is not the same.
       lrEntry.append(getTriggerCodeTemplateXml(version));
+      isTriggerResult = true;
     }
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
@@ -913,27 +1023,17 @@ public class CdaResultGenerator {
     lrEntry.append(
         CdaFhirUtilities.getXmlForType(effective, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
-    if (obsValueXml == null) {
-      lrEntry.append(CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true));
-    } else {
-      lrEntry.append(obsValueXml.getValue1());
-    }
+    String valueXml =
+        (obsValueXml == null)
+            ? CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true)
+            : obsValueXml.getValue1();
+    lrEntry.append(valueXml);
 
-    // Add interpretation code.
-    if (interpretation != null) {
+    // Add interpretation code (#1151: NI fallback for trigger results with an ST value).
+    lrEntry.append(getInterpretationCodeXml(interpretation, isTriggerResult, valueXml));
 
-      logger.debug("Adding Interpretation Code");
-
-      String interpretXml =
-          CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
-              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
-              interpretation,
-              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
-              false,
-              false);
-
-      if (interpretXml != null && !interpretXml.isEmpty()) lrEntry.append(interpretXml);
-    }
+    // Performing organization (#1079): performer must precede author in a CDA observation.
+    lrEntry.append(getPerformingOrganizationXml(performerRefs, reportPerformerRefs, data));
 
     // Add performer
 
@@ -1803,6 +1903,159 @@ public class CdaResultGenerator {
     return (low + " | " + high).trim();
   }
 
+  /**
+   * Performing organization of a lab result (#1079): the lab that ran the test.
+   *
+   * <p>Source: Observation.performer (Organization), falling back to DiagnosticReport.performer
+   * (Organization). The first Organization found is used.
+   *
+   * <p>Target: observation/performer/assignedEntity/representedOrganization with name, phone and
+   * address. Returns "" when no performing Organization can be resolved.
+   */
+  public static String getPerformingOrganizationXml(
+      List<Reference> observationPerformerRefs,
+      List<Reference> reportPerformerRefs,
+      R4FhirData data) {
+
+    if (data == null) {
+      return "";
+    }
+
+    Organization org = findOrganization(observationPerformerRefs, data);
+    if (org == null) {
+      org = findOrganization(reportPerformerRefs, data);
+    }
+
+    if (org == null || (!org.hasName() && !org.hasAddress() && !org.hasTelecom())) {
+      return "";
+    }
+
+    StringBuilder sb = new StringBuilder(600);
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+            CdaGeneratorConstants.PERF_EL_NAME, CdaGeneratorConstants.DEFAULT_PERF_EL_TYPE_CODE));
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+
+    // assignedEntity/id is required by the CDA schema; the lab itself is identified below.
+    sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
+
+    // representedOrganization: name, telecom, addr (CDA Organization element order)
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
+
+    if (org.hasName()) {
+      sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
+    }
+
+    ContactPoint phone = pickContactPoint(org.getTelecom(), ContactPoint.ContactPointSystem.PHONE);
+    if (phone != null) {
+      String use =
+          phone.hasUse()
+              ? CdaGeneratorConstants.getCodeForTelecomUse(phone.getUse().toCode())
+              : "WP";
+      sb.append(
+          CdaGeneratorUtils.getXmlForTelecom(
+              CdaGeneratorConstants.TEL_EL_NAME, phone.getValue(), use, false));
+    }
+
+    if (org.hasAddress()) {
+      sb.append(CdaFhirUtilities.getAddressXml(org.getAddress(), false));
+    }
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PERF_EL_NAME));
+
+    return sb.toString();
+  }
+
+  /** The first Organization among the references (all fetched Organizations are in the list). */
+  static Organization findOrganization(List<Reference> refs, R4FhirData data) {
+
+    if (refs == null) {
+      return null;
+    }
+
+    for (Reference ref : refs) {
+
+      if (ref == null || !ref.getReferenceElement().hasIdPart()) {
+        continue;
+      }
+
+      String type = ref.getReferenceElement().getResourceType();
+      if (type != null && !ResourceType.Organization.toString().equals(type)) {
+        continue;
+      }
+
+      Organization org = data.getOrganizationForId(ref.getReferenceElement().getIdPart());
+      if (org != null) {
+        return org;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * basedOn references to search for the Authorizing Provider of a DiagnosticReport organizer, in
+   * the mapping sheet's priority: DiagnosticReport.basedOn first, then each result Observation's
+   * basedOn. The first ServiceRequest whose requester resolves to a Practitioner wins.
+   */
+  static List<Reference> getAuthorizingProviderBasedOnRefs(
+      DiagnosticReport report, List<Observation> observations) {
+
+    List<Reference> refs = new ArrayList<>();
+    if (report != null) {
+      addServiceRequestReferences(refs, report.getBasedOn());
+    }
+    if (observations != null) {
+      for (Observation obs : observations) {
+        addServiceRequestReferences(refs, obs.getBasedOn());
+      }
+    }
+    return refs;
+  }
+
+  /** Adds only the basedOn references that point to a ServiceRequest. */
+  private static void addServiceRequestReferences(List<Reference> target, List<Reference> basedOn) {
+    for (Reference ref : basedOn) {
+      if (isServiceRequestReference(ref)) {
+        target.add(ref);
+      }
+    }
+  }
+
+  /**
+   * True when the reference points to a ServiceRequest: "ServiceRequest/{id}" (relative or
+   * absolute), or a reference whose Reference.type is ServiceRequest. basedOn may also point to
+   * CarePlan, MedicationRequest, ImmunizationRecommendation and others, which are skipped.
+   */
+  static boolean isServiceRequestReference(Reference ref) {
+
+    if (ref == null || !ref.getReferenceElement().hasIdPart()) {
+      return false;
+    }
+
+    String type = ref.getReferenceElement().getResourceType();
+    if (type != null) {
+      return ResourceType.ServiceRequest.toString().equals(type);
+    }
+
+    return ref.hasType() && ResourceType.ServiceRequest.toString().equals(ref.getType());
+  }
+
+  /**
+   * Authorizing provider of a lab result (#1079): the clinician who ordered the test.
+   *
+   * <p>Source: DiagnosticReport/Observation.basedOn -> ServiceRequest.requester -> Practitioner, or
+   * -> PractitionerRole.practitioner -> Practitioner. The first basedOn ServiceRequest whose
+   * requester resolves to a Practitioner is used.
+   *
+   * <p>Target: organizer/participant[@typeCode='RESP']/participantRole[@classCode='PROV'] with the
+   * NPI (id/@root=2.16.840.1.113883.4.6), address, phone, fax and playingEntity/name. Elements
+   * without source data are left out; returns "" when no ordering practitioner can be resolved.
+   */
   public static String getAuthorizingProviderParticipantXml(
       List<Reference> basedOnRefs, R4FhirData data) {
 
@@ -1810,108 +2063,266 @@ public class CdaResultGenerator {
       return "";
     }
 
-    // Find the first ServiceRequest linked via basedOn
-    ServiceRequest serviceRequest = null;
+    Practitioner practitioner = findAuthorizingProvider(basedOnRefs, data);
+
+    if (practitioner == null) {
+      logger.info("No authorizing provider found via basedOn ServiceRequest.requester.");
+      return "";
+    }
+
+    Identifier npi =
+        CdaFhirUtilities.getIdentifierForSystem(
+            practitioner.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+    boolean hasNpi = npi != null && npi.hasValue();
+
+    if (!hasNpi && !practitioner.hasName()) {
+      logger.info(
+          "Authorizing provider {} has neither an NPI nor a name; participant not added.",
+          practitioner.getIdElement().getIdPart());
+      return "";
+    }
+
+    return buildAuthorizingProviderParticipantXml(practitioner, hasNpi ? npi.getValue() : null);
+  }
+
+  /** Returns the ordering Practitioner of the first basedOn ServiceRequest that has one. */
+  static Practitioner findAuthorizingProvider(List<Reference> basedOnRefs, R4FhirData data) {
+
     for (Reference ref : basedOnRefs) {
-      String id = ref.getReferenceElement().getIdPart();
-      ServiceRequest sr = data.getServiceRequestById(id); // see note below
-      if (sr != null) {
-        serviceRequest = sr;
-        if (serviceRequest.hasRequester()) {
-          break;
+
+      ServiceRequest serviceRequest = findServiceRequest(data, ref);
+
+      if (serviceRequest == null || !serviceRequest.hasRequester()) {
+        continue;
+      }
+
+      Practitioner practitioner = resolveRequesterPractitioner(serviceRequest.getRequester(), data);
+
+      if (practitioner != null) {
+        return practitioner;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Ordering facility (#1079): the organization where the lab order originated, from
+   * ServiceRequest.requester -> PractitionerRole.organization, or a requester that is itself an
+   * Organization. A plain Practitioner requester has no facility.
+   *
+   * <p>Uses the first lab result (DiagnosticReports, then lab Observations) whose basedOn
+   * ServiceRequest resolves to an ordering facility. Returns null when none does.
+   */
+  public static Organization findOrderingFacility(R4FhirData data) {
+
+    if (data == null) {
+      return null;
+    }
+
+    List<List<Reference>> basedOnLists = new ArrayList<>();
+    if (data.getDiagReports() != null) {
+      for (DiagnosticReport report : data.getDiagReports()) {
+        basedOnLists.add(report.getBasedOn());
+      }
+    }
+    if (data.getLabResults() != null) {
+      for (Observation obs : data.getLabResults()) {
+        basedOnLists.add(obs.getBasedOn());
+      }
+    }
+
+    for (List<Reference> basedOnRefs : basedOnLists) {
+      for (Reference ref : basedOnRefs) {
+        ServiceRequest serviceRequest = findServiceRequest(data, ref);
+        if (serviceRequest != null && serviceRequest.hasRequester()) {
+          Organization facility = resolveRequesterOrganization(serviceRequest.getRequester(), data);
+          if (facility != null) {
+            return facility;
+          }
         }
       }
     }
 
-    if (serviceRequest == null || !serviceRequest.hasRequester()) {
-      logger.info("No ServiceRequest with requester found via basedOn references.");
-      return "";
-    }
-
-    // Resolve the requester reference to a Practitioner
-    Reference requesterRef = serviceRequest.getRequester();
-    String practitionerId = requesterRef.getReferenceElement().getIdPart();
-    Practitioner practitioner = data.getPractitionerById(practitionerId); // see note below
-
-    if (practitioner == null) {
-      logger.warn(
-          "Practitioner {} referenced by ServiceRequest.requester not found in bundle.",
-          practitionerId);
-      return "";
-    }
-
-    // Extract name — prefer official use, fall back to first available
-    HumanName name = null;
-    for (HumanName hn : practitioner.getName()) {
-      if (hn.hasUse() && hn.getUse().equals(HumanName.NameUse.OFFICIAL)) {
-        name = hn;
-        break;
-      } else {
-        name = hn;
-      }
-    }
-    if (name == null && !practitioner.getName().isEmpty()) {
-      name = practitioner.getName().get(0);
-    }
-
-    if (name == null) {
-      logger.warn("Practitioner {} has no name element.", practitionerId);
-      return "";
-    }
-
-    String given = name.getGivenAsSingleString(); // space-joined given names
-    String family = name.getFamily();
-
-    if (StringUtils.isBlank(given) && StringUtils.isBlank(family)) {
-      return "";
-    }
-
-    return buildAuthorizingProviderParticipantXml(given, family);
+    return null;
   }
 
-  /** Produces the raw CDA XML for the participant block. */
-  private static String buildAuthorizingProviderParticipantXml(String given, String family) {
+  /** ServiceRequest.requester -> PractitionerRole.organization, or an Organization requester. */
+  static Organization resolveRequesterOrganization(Reference requester, R4FhirData data) {
 
-    StringBuilder sb = new StringBuilder(400);
+    if (requester == null || !requester.getReferenceElement().hasIdPart()) {
+      return null;
+    }
 
-    sb.append(CdaGeneratorConstants.START_XMLTAG)
-        .append(CdaGeneratorConstants.PARTICIPANT_EL_NAME)
-        .append(CdaGeneratorConstants.SPACE)
-        .append(CdaGeneratorConstants.TYPECODE_ATTR_NAME)
-        .append(CdaGeneratorConstants.EQUAL)
-        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
-        .append("REF")
-        .append(CdaGeneratorConstants.DOUBLE_QUOTE)
-        .append(CdaGeneratorConstants.RIGHT_ANGLE_BRACKET)
-        .append(CdaGeneratorConstants.NEW_LINE);
+    String type = requester.getReferenceElement().getResourceType();
+    String id = requester.getReferenceElement().getIdPart();
 
-    sb.append(CdaGeneratorUtils.getXmlForParticipantRole(CdaGeneratorConstants.ASSIGNED));
+    if (ResourceType.Organization.toString().equals(type)) {
+      return data.getOrganizationForId(id);
+    }
 
+    if (type == null || ResourceType.PractitionerRole.toString().equals(type)) {
+      PractitionerRole role = data.getPractitionerRoleById(id);
+      if (role != null
+          && role.hasOrganization()
+          && role.getOrganization().getReferenceElement().hasIdPart()) {
+        return data.getOrganizationForId(role.getOrganization().getReferenceElement().getIdPart());
+      }
+    }
+
+    return null;
+  }
+
+  /** A basedOn ServiceRequest from the ServiceRequest list, or from the bundle. */
+  static ServiceRequest findServiceRequest(R4FhirData data, Reference ref) {
+
+    if (!isServiceRequestReference(ref)) {
+      return null;
+    }
+
+    String id = ref.getReferenceElement().getIdPart();
+    ServiceRequest serviceRequest = data.getServiceRequestById(id);
+    return serviceRequest != null
+        ? serviceRequest
+        : (ServiceRequest) findInBundle(data, ResourceType.ServiceRequest, id);
+  }
+
+  /**
+   * ServiceRequest.requester -> Practitioner, directly or through PractitionerRole.practitioner.
+   */
+  static Practitioner resolveRequesterPractitioner(Reference requester, R4FhirData data) {
+
+    if (requester == null || !requester.getReferenceElement().hasIdPart()) {
+      return null;
+    }
+
+    String type = requester.getReferenceElement().getResourceType();
+    String id = requester.getReferenceElement().getIdPart();
+
+    if (type == null || ResourceType.Practitioner.toString().equals(type)) {
+      Practitioner practitioner = data.getPractitionerById(id);
+      if (practitioner != null) {
+        return practitioner;
+      }
+    }
+
+    if (type == null || ResourceType.PractitionerRole.toString().equals(type)) {
+      PractitionerRole role = data.getPractitionerRoleById(id);
+      if (role != null
+          && role.hasPractitioner()
+          && role.getPractitioner().hasReferenceElement()
+          && role.getPractitioner().getReferenceElement().hasIdPart()) {
+        return data.getPractitionerById(role.getPractitioner().getReferenceElement().getIdPart());
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Looks up a resource in the R4FhirData bundle. Only needed for ServiceRequests reached through
+   * basedOn, which are kept out of the ServiceRequest list so they do not appear in Plan of
+   * Treatment.
+   */
+  static Resource findInBundle(R4FhirData data, ResourceType type, String id) {
+
+    if (id == null || data.getData() == null) {
+      return null;
+    }
+
+    for (Bundle.BundleEntryComponent entry : data.getData().getEntry()) {
+      Resource r = entry.getResource();
+      if (r != null && r.getResourceType() == type && id.equals(r.getIdElement().getIdPart())) {
+        return r;
+      }
+    }
+    return null;
+  }
+
+  /** Produces the participant block; element order follows the CDA ParticipantRole schema. */
+  private static String buildAuthorizingProviderParticipantXml(Practitioner pr, String npi) {
+
+    StringBuilder sb = new StringBuilder(800);
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+            CdaGeneratorConstants.PARTICIPANT_EL_NAME, AUTHORIZING_PROVIDER_TYPE_CODE));
+    sb.append(CdaGeneratorUtils.getXmlForParticipantRole(AUTHORIZING_PROVIDER_CLASS_CODE));
+
+    // id (NPI)
+    if (npi != null) {
+      sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi));
+    }
+
+    // addr
+    if (pr.hasAddress()) {
+      sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress(), false));
+    }
+
+    // telecom: phone (use defaults to WP) and fax
+    sb.append(getAuthorizingProviderTelecomXml(pr.getTelecom()));
+
+    // playingEntity/name
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PLAYING_ENTITY));
-
-    // <name>
-    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
-
-    if (StringUtils.isNotBlank(given)) {
-      sb.append(
-          CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.FIRST_NAME_EL_NAME, StringEscapeUtils.escapeXml11(given)));
+    if (pr.hasName()) {
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+      sb.append(CdaFhirUtilities.getNameXml(pr.getName(), false));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
     }
-    if (StringUtils.isNotBlank(family)) {
-      sb.append(
-          CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.LAST_NAME_EL_NAME, StringEscapeUtils.escapeXml11(family)));
-    }
-
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PLAYING_ENTITY));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME));
-
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
 
     return sb.toString();
+  }
+
+  /** One phone (work preferred, use defaults to WP) and one fax number, when present. */
+  static String getAuthorizingProviderTelecomXml(List<ContactPoint> telecoms) {
+
+    StringBuilder sb = new StringBuilder(200);
+
+    ContactPoint phone = pickContactPoint(telecoms, ContactPoint.ContactPointSystem.PHONE);
+    if (phone != null) {
+      String use =
+          phone.hasUse()
+              ? CdaGeneratorConstants.getCodeForTelecomUse(phone.getUse().toCode())
+              : "WP";
+      sb.append(
+          CdaGeneratorUtils.getXmlForTelecom(
+              CdaGeneratorConstants.TEL_EL_NAME, phone.getValue(), use, false));
+    }
+
+    ContactPoint fax = pickContactPoint(telecoms, ContactPoint.ContactPointSystem.FAX);
+    if (fax != null) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForTelecom(
+              CdaGeneratorConstants.TEL_EL_NAME, fax.getValue(), "", true));
+    }
+
+    return sb.toString();
+  }
+
+  /** The work contact point of the given system if there is one, otherwise the first one. */
+  private static ContactPoint pickContactPoint(
+      List<ContactPoint> telecoms, ContactPoint.ContactPointSystem system) {
+
+    if (telecoms == null) {
+      return null;
+    }
+
+    ContactPoint first = null;
+    for (ContactPoint cp : telecoms) {
+      if (cp.getSystem() == system && StringUtils.isNotBlank(cp.getValue())) {
+        if (cp.getUse() == ContactPoint.ContactPointUse.WORK) {
+          return cp;
+        }
+        if (first == null) {
+          first = cp;
+        }
+      }
+    }
+    return first;
   }
 }

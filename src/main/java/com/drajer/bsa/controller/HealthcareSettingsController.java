@@ -74,6 +74,14 @@ public class HealthcareSettingsController {
   @CrossOrigin
   @PostMapping(value = "/api/healthcareSettings")
   public ResponseEntity<Object> createHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
+
+    if (hsDetails == null || StringUtils.isEmpty(hsDetails.getFhirServerBaseURL())) {
+      JSONObject responseObject = new JSONObject();
+      responseObject.put("status", "error");
+      responseObject.put("message", "FHIR Server URL is required");
+      return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);
+    }
+
     HealthcareSetting hsd =
         healthcareSettingsService.getHealthcareSettingByUrl(hsDetails.getFhirServerBaseURL());
 
@@ -225,7 +233,7 @@ public class HealthcareSettingsController {
 
   @GetMapping("/api/healthcareSettings/check")
   @CrossOrigin
-  public ResponseEntity<Object> checkHealthCareSettingExist(@RequestParam String url) {
+  public ResponseEntity<Object> checkHealthCareSettingExist(@RequestParam("url") String url) {
     try {
       logger.info("Received URL: {} for checking healthcareSettings", url);
 

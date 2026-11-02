@@ -4,6 +4,8 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
+import com.drajer.sof.service.ClientDetailsService;
+import com.drajer.sof.service.LaunchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -216,20 +218,25 @@ public class RefreshTokenScheduler {
    */
   private void updateAccessToken(LaunchDetails existingAuthDetails, JSONObject tokenResponse) {
     try {
-      if (existingAuthDetails != null) {
-        logger.trace("Updating the AccessToken value in LaunchDetails table");
-        existingAuthDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
-        existingAuthDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
-        if (tokenResponse.has(PROVIDER_UUID)) {
-          existingAuthDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
-        }
-        existingAuthDetails.setLastUpdated(new Date());
-        long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
-        Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
-        existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
-        ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
-        logger.trace("Successfully updated AccessToken value in LaunchDetails table");
+      LaunchService launchService = ActionRepo.getInstance().getLaunchService();
+      if (existingAuthDetails == null || tokenResponse == null || launchService == null) {
+        logger.warn(
+            "Launch details, token response or launch service not available, AccessToken not updated");
+        return;
       }
+
+      logger.trace("Updating the AccessToken value in LaunchDetails table");
+      existingAuthDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+      existingAuthDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
+      if (tokenResponse.has(PROVIDER_UUID)) {
+        existingAuthDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+      }
+      existingAuthDetails.setLastUpdated(new Date());
+      long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
+      Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
+      existingAuthDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
+      launchService.saveOrUpdate(existingAuthDetails);
+      logger.trace("Successfully updated AccessToken value in LaunchDetails table");
     } catch (Exception e) {
       logger.error("Error in Updating the AccessToken value into LaunchDetails: ", e);
     }
@@ -358,17 +365,23 @@ public class RefreshTokenScheduler {
   private void updateAccessTokenInClientDetails(
       ClientDetails existingClientDetails, JSONObject tokenResponse) {
     try {
-      if (existingClientDetails != null) {
-        logger.info("Updating the AccessToken value in ClientDetails table");
-        existingClientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
-        existingClientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
-        existingClientDetails.setLastUpdated(new Date());
-        long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
-        Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
-        existingClientDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
-        ActionRepo.getInstance().getClientDetailsService().saveOrUpdate(existingClientDetails);
-        logger.info("Successfully updated AccessToken value in ClientDetails table");
+      ClientDetailsService clientDetailsService =
+          ActionRepo.getInstance().getClientDetailsService();
+      if (existingClientDetails == null || tokenResponse == null || clientDetailsService == null) {
+        logger.warn(
+            "Client details, token response or client details service not available, AccessToken not updated");
+        return;
       }
+
+      logger.info("Updating the AccessToken value in ClientDetails table");
+      existingClientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+      existingClientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
+      existingClientDetails.setLastUpdated(new Date());
+      long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
+      Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
+      existingClientDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
+      clientDetailsService.saveOrUpdate(existingClientDetails);
+      logger.info("Successfully updated AccessToken value in ClientDetails table");
     } catch (Exception e) {
       logger.error("Error in Updating the AccessToken value into ClientDetails: ", e);
     }

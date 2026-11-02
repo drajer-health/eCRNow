@@ -60,7 +60,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
       }
     }
 
-    getSession().saveOrUpdate(hsd);
+    persistOrMerge(hsd, hsd.getId());
     return hsd;
   }
 
@@ -157,6 +157,6 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
   @Override
   public void delete(HealthcareSetting healthcareSetting) {
-    getSession().delete(healthcareSetting);
+    remove(healthcareSetting);
   }
 }

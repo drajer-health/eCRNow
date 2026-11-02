@@ -52,7 +52,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @PowerMockIgnore({"javax.crypto.*"})
-public class BaseGeneratorTest {
+public abstract class BaseGeneratorTest {
 
   public static final Logger logger = LoggerFactory.getLogger(BaseGeneratorTest.class);
   public static final FhirContext fhirContext = FhirContext.forR4();
@@ -169,6 +169,10 @@ public class BaseGeneratorTest {
               break;
             case DiagnosticReport:
               diagnosticReports.add((DiagnosticReport) ent.getResource());
+              break;
+
+            default:
+              logger.warn("Unsupported ResourceType encountered: {}", resourceType);
               break;
           }
         });
@@ -508,15 +512,10 @@ public class BaseGeneratorTest {
 
   public String getAbsoluteFilePath(String partialPath) {
 
-    // URL res = getClass().getClassLoader().getResource(partialPath);
-
     File file = null;
     try {
-      // 	file = Paths.get(res.toURI()).toFile();
 
       file = new ClassPathResource(partialPath).getFile();
-      // } catch (URISyntaxException e) {
-      //	e.printStackTrace();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

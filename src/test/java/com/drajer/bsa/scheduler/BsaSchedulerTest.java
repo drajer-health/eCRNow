@@ -3,7 +3,6 @@ package com.drajer.bsa.scheduler;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.drajer.bsa.model.BsaTypes;
 import com.github.kagkarlsson.scheduler.Scheduler;
@@ -17,7 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,7 +38,6 @@ public class BsaSchedulerTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
     karExecId = UUID.randomUUID();
     actionId = "action123";
     actionType = BsaTypes.ActionType.CREATE_REPORT;
@@ -49,7 +47,7 @@ public class BsaSchedulerTest {
     mdc = new HashMap<>();
     mdc.put("key1", "value1");
 
-    when(schedulerConfig.sampleOneTimeJob()).thenReturn(sampleOneTimeJob);
+    Mockito.lenient().when(schedulerConfig.sampleOneTimeJob()).thenReturn(sampleOneTimeJob);
   }
 
   @Test

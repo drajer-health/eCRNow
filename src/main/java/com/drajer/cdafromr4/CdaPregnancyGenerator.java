@@ -33,13 +33,15 @@ public class CdaPregnancyGenerator {
 
     logger.info("Start Creating Pregnancy Section");
 
-    List<Observation> pregObs = data.getPregnancyObs();
+    // Sort most recent first for a consistent display order (issue #1152).
+    List<Observation> pregObs = CdaSortUtils.sortObservations(data.getPregnancyObs());
     pregObs.addAll(data.getPregnancyStatusObs());
-    List<Condition> pregConds = data.getPregnancyConditions();
-    List<Observation> lmpObs = data.getLmpObs();
-    List<Observation> postPartumObs = data.getPostPartumObs();
-    List<Observation> pregOutcomeObs = data.getPregnancyOutcomeObs();
-    List<Observation> pregnancyIntentionObs = data.getPregnancyIntentionObservations();
+    List<Condition> pregConds = CdaSortUtils.sortConditions(data.getPregnancyConditions());
+    List<Observation> lmpObs = CdaSortUtils.sortObservations(data.getLmpObs());
+    List<Observation> postPartumObs = CdaSortUtils.sortObservations(data.getPostPartumObs());
+    List<Observation> pregOutcomeObs = CdaSortUtils.sortObservations(data.getPregnancyOutcomeObs());
+    List<Observation> pregnancyIntentionObs =
+        CdaSortUtils.sortObservations(data.getPregnancyIntentionObservations());
 
     if ((pregObs != null && !pregObs.isEmpty())
         || (pregConds != null && !pregConds.isEmpty())

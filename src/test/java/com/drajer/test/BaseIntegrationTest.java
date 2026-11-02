@@ -24,12 +24,12 @@ import org.junit.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -66,9 +66,10 @@ public abstract class BaseIntegrationTest {
   protected static final ObjectMapper mapper = new ObjectMapper();
 
   protected static final String URL = "http://localhost:";
-  protected static final String fhirBaseUrl = "/FHIR";
 
-  protected static final int wireMockHttpPort = 9011;
+  protected static final String FHIR_BASE_URL = "/FHIR";
+  protected static final int WIRE_MOCK_HTTP_PORT = 9011;
+
   protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
   protected TestRestTemplate restTemplate;
@@ -79,12 +80,11 @@ public abstract class BaseIntegrationTest {
     restTemplate =
         new TestRestTemplate(
             restTemplateBuilder
-                .setConnectTimeout(Duration.ofSeconds(1000)) // Set connection timeout
-                .setReadTimeout(Duration.ofSeconds(600)) // Set read timeout
-            );
+                .connectTimeout(Duration.ofSeconds(1000))
+                .readTimeout(Duration.ofSeconds(600)));
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     session = sessionFactory.openSession();
-    wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
+    wireMockServer = WireMockHandle.getInstance().getWireMockServer(WIRE_MOCK_HTTP_PORT);
     wireMockServer.resetMappings();
     headers.clear();
   }
@@ -101,11 +101,10 @@ public abstract class BaseIntegrationTest {
     try {
       String systemLaunchPayload = TestUtils.getFileContentAsString(systemLaunchFile);
 
-      // Hardcode FHIR URL to match clientDetail to avoid mistakes in test data file.
       String fhirUrl =
           clientDetails != null
               ? clientDetails.getFhirServerBaseURL()
-              : URL + wireMockHttpPort + fhirBaseUrl;
+              : URL + WIRE_MOCK_HTTP_PORT + FHIR_BASE_URL;
       JSONObject jsonObject = new JSONObject(systemLaunchPayload);
       jsonObject.put("fhirServerURL", fhirUrl);
       systemLaunchPayload = jsonObject.toString();
@@ -125,17 +124,15 @@ public abstract class BaseIntegrationTest {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
 
-    // Hardcode FHIR & Token URL to avoid mistakes in test data file.
-    String fhirUrl = URL + wireMockHttpPort + fhirBaseUrl;
+    String fhirUrl = URL + WIRE_MOCK_HTTP_PORT + FHIR_BASE_URL;
     String authUrl = fhirUrl + "/token";
-    String directUrl = URL + wireMockHttpPort + "/directurl";
+    String directUrl = URL + WIRE_MOCK_HTTP_PORT + "/directurl";
     JSONObject jsonObject = new JSONObject(clientDetailString);
     jsonObject.put("fhirServerBaseURL", fhirUrl);
     jsonObject.put("tokenURL", authUrl);
     jsonObject.put("restAPIURL", directUrl);
     clientDetailString = jsonObject.toString();
 
-    // Insert ClientDetails Row
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<String> entity = new HttpEntity<>(clientDetailString, headers);
     ResponseEntity<String> response =

@@ -135,3 +135,14 @@ The above introduces a delay of 10 seconds before accepting launch patient reque
 
 This value is used to refresh the access token before it expires, the value is supposed to be in seconds and will be subtracted from the access token expiration time. 
 * token.refresh.threshold=15
+
+## 2.15 Configuring Token Refresh Retries on HTTP 401
+
+When the EHR rejects a FHIR request with HTTP 401 (for example because the access token was revoked or expired early), eCRNow generates a fresh access token and retries the same request. This property controls how many times that happens per request.
+* ecr.fhir.auth.retry-on-401.max-attempts=1
+
+* 0 disables the retry; the first 401 fails the request.
+* 1 (default) refreshes the token and retries once.
+* The maximum is 3; larger values are limited to 3. Each attempt calls the EHR token endpoint, so keep this low.
+
+If the request still returns 401 after the configured attempts, the job fails instead of continuing with missing data.

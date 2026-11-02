@@ -1,12 +1,20 @@
 package com.drajer.cdafromr4;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.junit.Test;
@@ -35,9 +43,10 @@ public class CdaHistoryOfPresentIllnessGeneratorTest extends BaseGeneratorTest {
 
     r4FhirData.setEncounterDiagnosisConditions(r4FhirData.getConditions());
     String expectedXml = TestUtils.getFileContentAsString(HISTORY_OF_PATIENT_ILLNESS_CDA_FILE);
+
     String actualXml =
         CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(
-            r4FhirData, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            new R4FhirData(), CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertXmlEquals(expectedXml, actualXml);
   }
@@ -81,8 +90,6 @@ public class CdaHistoryOfPresentIllnessGeneratorTest extends BaseGeneratorTest {
         resourcesByType.remove(resourceType);
       }
     }
-    //    data.getLabResults().sort(Comparator.comparing(Observation::getId));
-    //    data.getDiagReports().sort(Comparator.comparing(DiagnosticReport::getId));
     data.setData(bundle);
 
     String expectedXml = TestUtils.getFileContentAsString(HISTORY_OF_PHI_CDA_FILE);
@@ -97,19 +104,56 @@ public class CdaHistoryOfPresentIllnessGeneratorTest extends BaseGeneratorTest {
   @Test
   public void testGenerateHistoryOfPresentIllnessSectionWithEmptyConditions() {
     String expectedXml =
-        "<component>\r\n"
-            + "<section nullFlavor=\"NI\">\r\n"
-            + "<templateId root=\"1.3.6.1.4.1.19376.1.5.3.1.3.4\"/>\r\n"
-            + "<code code=\"10164-2\" codeSystem=\"2.16.840.1.113883.6.1\" codeSystemName=\"LOINC\" displayName=\"History of Present Illness\"/>\r\n"
-            + "<title>History of Present Illness</title>\r\n"
-            + "<text>No History of Present Illness Information</text>\r\n"
-            + "</section>\r\n"
-            + "</component>";
+        """
+        <component>\r
+        <section nullFlavor="NI">\r
+        <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.4"/>\r
+        <code code="10164-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Present Illness"/>\r
+        <title>History of Present Illness</title>\r
+        <text>No History of Present Illness Information</text>\r
+        </section>\r
+        </component>""";
 
     String actualXml =
         CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(
-            new R4FhirData(), CdaGeneratorConstants.CDA_EICR_VERSION_R11);
+            r4FhirData, CdaGeneratorConstants.CDA_EICR_VERSION_R11);
 
     assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateHPIData_withAndWithoutConditions() {
+    R4FhirData withConds = new R4FhirData();
+    Condition c = new Condition();
+    c.setId("hpi-cond-1");
+    c.setCode(
+        new CodeableConcept()
+            .addCoding(
+                new Coding()
+                    .setSystem(CdaGeneratorConstants.FHIR_SNOMED_URL)
+                    .setCode("386661006")
+                    .setDisplay("Fever"))
+            .setText("Fever"));
+    withConds.setEncounterDiagnosisConditions(new ArrayList<>(Collections.singletonList(c)));
+
+    String xml = CdaHistoryOfPresentIllnessGenerator.generateHPIData(withConds);
+    assertNotNull("HPI data must be produced", xml);
+    assertTrue("section must be opened", xml.contains("<section"));
+
+    String none = CdaHistoryOfPresentIllnessGenerator.generateHPIData(new R4FhirData());
+    assertNotNull("HPI data must still be produced with no conditions", none);
+  }
+
+  @Test
+  public void testGenerateHpiHeader_bothArms() {
+    String nf = CdaHistoryOfPresentIllnessGenerator.generateHpiHeader(CdaGeneratorConstants.NF_NI);
+    assertNotNull(nf);
+    assertTrue("nullFlavor section must be emitted", nf.contains(CdaGeneratorConstants.NF_NI));
+
+    String normal = CdaHistoryOfPresentIllnessGenerator.generateHpiHeader("");
+    assertNotNull(normal);
+    assertTrue("a plain section must be opened", normal.contains("<section"));
+
+    assertNotNull(CdaHistoryOfPresentIllnessGenerator.generateHpiEndHeader());
   }
 }

@@ -96,7 +96,7 @@ public class RestfulTransportImpl implements DataTransportInterface {
           restTemplate.exchange(ub.toString(), HttpMethod.POST, request, String.class);
 
       bundleResponse = new JSONObject(response.getBody());
-      bundleResponse.put("status", response.getStatusCodeValue());
+      bundleResponse.put("status", response.getStatusCode().value());
 
       if (logger.isInfoEnabled()) {
         logger.info("Received response: {}", bundleResponse);

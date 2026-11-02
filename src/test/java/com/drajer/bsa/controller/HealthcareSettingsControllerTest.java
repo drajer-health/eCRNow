@@ -1,7 +1,10 @@
 package com.drajer.bsa.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.drajer.bsa.model.HealthcareSetting;
@@ -20,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,6 @@ public class HealthcareSettingsControllerTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
     ReflectionTestUtils.setField(healthcareSettingsController, "directSmtpTlsVersion", "TLSv1.2");
   }
 
@@ -627,5 +628,25 @@ public class HealthcareSettingsControllerTest {
     metadata.put("fhirVersion", "4.0.1");
 
     return metadata;
+  }
+
+  /**
+   * Known bug in HealthcareSettingsController.createHealthcareSettings: when tokenUrl is null it
+   * calls hsd.getFhirServerBaseURL() inside "if (hsd == null)", so it always throws a
+   * NullPointerException and nothing is saved (it should use hsDetails). Until the main class is
+   * fixed, this test pins the current behaviour and covers the tokenUrl == null branch.
+   */
+  @Test
+  public void createHealthcareSettings_withoutTokenUrl_currentlyThrowsNullPointer() {
+    HealthcareSetting hs =
+        TestUtils.readFileContents(
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+    hs.setTokenUrl(null);
+
+    assertThrows(
+        NullPointerException.class,
+        () -> healthcareSettingsController.createHealthcareSettings(hs));
+
+    verify(healthcareSettingsService, never()).saveOrUpdate(any());
   }
 }

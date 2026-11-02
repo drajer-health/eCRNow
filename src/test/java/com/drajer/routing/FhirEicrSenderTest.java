@@ -1,15 +1,52 @@
 package com.drajer.routing;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+import com.drajer.sof.utils.Authorization;
+import com.drajer.sof.utils.FhirContextInitializer;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class FhirEicrSenderTest {
+
+  /**
+   * FhirEicrSender now uses @Autowired/@Value field injection (no-arg constructor only). The two
+   * services are package-private (same package as this test); fhirServerURL is private, so it is
+   * set through reflection.
+   */
+  private FhirEicrSender newSender(
+      FhirContextInitializer contextInitializer, Authorization authorization, String url) {
+    FhirEicrSender sender = new FhirEicrSender();
+    sender.contextInitializer = contextInitializer;
+    sender.authorization = authorization;
+    ReflectionTestUtils.setField(sender, "fhirServerURL", url);
+    return sender;
+  }
+
   @Test
   public void testSubmitBundle_FailurePath() {
-    FhirEicrSender sender = new FhirEicrSender();
+    FhirContextInitializer contextInitializer = mock(FhirContextInitializer.class);
+    Authorization authorization = mock(Authorization.class);
+    String fhirServerURL = "http://localhost:8080/fhir";
+
+    FhirEicrSender sender = newSender(contextInitializer, authorization, fhirServerURL);
     JSONObject result = sender.submitBundle("{\"resourceType\":\"Bundle\"}");
+    assertNull(result);
+  }
+
+  @Test
+  public void testSubmitBundle_WithInvalidBundleFormat() {
+    // Test that submitBundle handles malformed JSON gracefully
+    FhirContextInitializer contextInitializer = mock(FhirContextInitializer.class);
+    Authorization authorization = mock(Authorization.class);
+    String fhirServerURL = "http://localhost:8080/fhir";
+
+    FhirEicrSender sender = newSender(contextInitializer, authorization, fhirServerURL);
+
+    // Send invalid bundle format - should return null without throwing exception
+    JSONObject result = sender.submitBundle("invalid json {");
     assertNull(result);
   }
 }

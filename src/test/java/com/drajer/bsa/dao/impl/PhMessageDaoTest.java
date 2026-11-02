@@ -188,18 +188,12 @@ public class PhMessageDaoTest {
   public void testDelete() {
     PublicHealthMessage publicHealthMessage = new PublicHealthMessage();
 
-    Mockito.lenient().doNothing().when(session).delete(publicHealthMessage);
+    Mockito.lenient().when(session.merge(publicHealthMessage)).thenReturn(publicHealthMessage);
 
     phMessageDaoImpl.delete(publicHealthMessage);
 
-    verify(session).delete(publicHealthMessage);
+    verify(session).remove(publicHealthMessage);
   }
 
-  private void mockProjectionAndCriteria() {
-    /*Mockito.lenient().when(criteria.setProjection(any(ProjectionList.class))).thenReturn(criteria);
-    Mockito.lenient().when(criteria.setResultTransformer(any())).thenReturn(criteria);
-    Mockito.lenient().when(criteria.add(any())).thenReturn(criteria);
-    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);
-    */
-  }
+  private void mockProjectionAndCriteria() {}
 }

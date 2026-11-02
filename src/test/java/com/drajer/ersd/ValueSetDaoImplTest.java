@@ -1,7 +1,10 @@
 package com.drajer.ersd;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.drajer.ersd.dao.impl.ValueSetDaoImpl;
@@ -12,15 +15,14 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@ExtendWith(MockitoExtension.class)
-class ValueSetDaoImplTest {
+@RunWith(MockitoJUnitRunner.class)
+public class ValueSetDaoImplTest {
 
   @Mock private Session session;
 
@@ -30,71 +32,73 @@ class ValueSetDaoImplTest {
 
   @InjectMocks private ValueSetDaoImpl valueSetDaoImpl;
 
-  @BeforeEach
-  void setUp() {
-
-    // Mock Hibernate session lifecycle
+  /**
+   * Stubs the Hibernate session lifecycle. Only the create* methods open a session, so only those
+   * tests call this; stubbing it for every test makes strict Mockito fail the read tests with
+   * UnnecessaryStubbingException.
+   */
+  private void mockSessionLifecycle() {
     when(sessionFactory.openSession()).thenReturn(session);
     when(session.beginTransaction()).thenReturn(transaction);
     when(session.getTransaction()).thenReturn(transaction);
   }
 
-  @Test
-  void getAllValuesets_Test_success() {
+  private void verifySessionCommittedAndClosed() {
+    verify(sessionFactory).openSession();
+    verify(session).beginTransaction();
+    verify(transaction).commit();
+    verify(session).close();
+  }
 
-    // If DAO returns empty list by default
+  @Test
+  public void getAllValuesets_returnsEmptyListWithoutOpeningASession() {
+
     List<ValueSetModel> valueSetModelList = valueSetDaoImpl.getAllValuesets();
 
     assertNotNull(valueSetModelList);
     assertTrue(valueSetModelList.isEmpty());
+    verifyNoInteractions(sessionFactory);
   }
 
   @Test
-  void createValueset_Test() {
+  public void getValueSetById_returnsNullWithoutOpeningASession() {
+
+    ValueSetModel result = valueSetDaoImpl.getValueSetById(123);
+
+    assertNull(result);
+    verifyNoInteractions(sessionFactory);
+  }
+
+  @Test
+  public void createValueset_commitsAndClosesSession() {
+    mockSessionLifecycle();
 
     ValueSetModel valueSetModel = new ValueSetModel();
     valueSetModel.setValueSetId("123");
 
     valueSetDaoImpl.createValueset(valueSetModel);
 
-    verify(sessionFactory).openSession();
-    verify(session).beginTransaction();
-    verify(transaction).commit();
-    verify(session).close();
+    verifySessionCommittedAndClosed();
   }
 
   @Test
-  void createValuesetGrouper_Test() {
+  public void createValuesetGrouper_commitsAndClosesSession() {
+    mockSessionLifecycle();
 
     ValueSetGrouperModel valueSetGrouperModel = new ValueSetGrouperModel();
     valueSetGrouperModel.setId("123");
 
     valueSetDaoImpl.createValuesetGrouper(valueSetGrouperModel);
 
-    verify(sessionFactory).openSession();
-    verify(session).beginTransaction();
-    verify(transaction).commit();
-    verify(session).close();
+    verifySessionCommittedAndClosed();
   }
 
   @Test
-  void createPlanDefinitionActions_Test() {
+  public void createPlanDefinitionActions_commitsAndClosesSession() {
+    mockSessionLifecycle();
 
-    PlanDefinitionActionModel planDefinitionActionModel = new PlanDefinitionActionModel();
+    valueSetDaoImpl.createPlanDefinitionActions(new PlanDefinitionActionModel());
 
-    valueSetDaoImpl.createPlanDefinitionActions(planDefinitionActionModel);
-
-    verify(sessionFactory).openSession();
-    verify(session).beginTransaction();
-    verify(transaction).commit();
-    verify(session).close();
-  }
-
-  @Test
-  void getValueSetById_Test() {
-
-    ValueSetModel result = valueSetDaoImpl.getValueSetById(123);
-
-    assertNull(result);
+    verifySessionCommittedAndClosed();
   }
 }

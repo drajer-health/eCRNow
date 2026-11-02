@@ -219,15 +219,18 @@ public final class BsaTypes {
     UNKNOWN
   }
 
-  public static String getOutputContentType(OutputContentType t) {
-
-    if (t == OutputContentType.FHIR || t == OutputContentType.TEST_FHIR_NOT_FOR_PRODUCTION)
-      return "FHIR";
-    else if (t == OutputContentType.CDA_R11) return "CDA_R11";
-    else if (t == OutputContentType.CDA_R30) return "CDA_R30";
-    else if (t == OutputContentType.CDA_R31) return "CDA_R31";
-    else if (t == OutputContentType.BOTH || t == OutputContentType.BOTH) return "Both";
-    else return UNKNOWN;
+  public static String getOutputContentType(OutputContentType type) {
+    if (type == null) {
+      return UNKNOWN;
+    }
+    return switch (type) {
+      case FHIR, TEST_FHIR_NOT_FOR_PRODUCTION -> "FHIR";
+      case CDA_R11 -> "CDA_R11";
+      case CDA_R30 -> "CDA_R30";
+      case CDA_R31 -> "CDA_R31";
+      case BOTH -> "Both";
+      default -> UNKNOWN;
+    };
   }
 
   public static OutputContentType getOutputContentType(String code) {

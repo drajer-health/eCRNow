@@ -35,7 +35,7 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
    */
   @Override
   public KarExecutionState saveOrUpdate(KarExecutionState kar) {
-    getSession().saveOrUpdate(kar);
+    persistOrMerge(kar, kar.getId());
     return kar;
   }
 
@@ -75,7 +75,7 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
    */
   @Override
   public void delete(KarExecutionState state) {
-    getSession().delete(state);
+    remove(state);
   }
 
   @Override

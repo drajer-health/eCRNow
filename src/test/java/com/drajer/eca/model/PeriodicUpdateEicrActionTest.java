@@ -87,7 +87,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -123,7 +123,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -159,7 +159,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -174,14 +174,14 @@ public class PeriodicUpdateEicrActionTest {
       createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
 
-      PeriodicUpdateEicrAction periodicUpdateEicrAction = new PeriodicUpdateEicrAction();
-      when(mockRelActn.getRelatedAction()).thenReturn(periodicUpdateEicrAction);
+      PeriodicUpdateEicrAction localPeriodicUpdateEicrAction = new PeriodicUpdateEicrAction();
+      when(mockRelActn.getRelatedAction()).thenReturn(localPeriodicUpdateEicrAction);
 
       CloseOutEicrStatus closeOutEicrStatus = new CloseOutEicrStatus();
       when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutEicrStatus);
 
       TimingSchedule timeSchld = new TimingSchedule();
-      periodicUpdateEicrAction.addTimingData(timeSchld);
+      localPeriodicUpdateEicrAction.addTimingData(timeSchld);
       List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();
       matchedCodes.add(new MatchedTriggerCodes());
 
@@ -206,7 +206,7 @@ public class PeriodicUpdateEicrActionTest {
 
       String taskInstanceId = "";
       // Test
-      periodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
+      localPeriodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
@@ -214,7 +214,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -225,15 +225,15 @@ public class PeriodicUpdateEicrActionTest {
     try {
 
       // Setup
-      PeriodicUpdateEicrAction periodicUpdateEicrAction = new PeriodicUpdateEicrAction();
+      PeriodicUpdateEicrAction localPeriodicUpdateEicrAction = new PeriodicUpdateEicrAction();
       CreateEicrStatus createEicrStatus = new CreateEicrStatus();
       CloseOutEicrStatus closeOutEicrStatus = new CloseOutEicrStatus();
       TimingSchedule timeSchld = new TimingSchedule();
       setupMockData();
 
-      periodicUpdateEicrAction.addRelatedAction(mockRelActn);
-      periodicUpdateEicrAction.setActionId("123");
-      periodicUpdateEicrAction.addTimingData(timeSchld);
+      localPeriodicUpdateEicrAction.addRelatedAction(mockRelActn);
+      localPeriodicUpdateEicrAction.setActionId("123");
+      localPeriodicUpdateEicrAction.addTimingData(timeSchld);
       createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
 
       EventTypes.JobStatus periodicUpdateJobStatus = JobStatus.SCHEDULED;
@@ -243,7 +243,7 @@ public class PeriodicUpdateEicrActionTest {
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
       when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutEicrStatus);
       when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
-      when(mockRelActn.getRelatedAction()).thenReturn(periodicUpdateEicrAction);
+      when(mockRelActn.getRelatedAction()).thenReturn(localPeriodicUpdateEicrAction);
       when(mockState.hasActionCompleted(any())).thenReturn(true);
       when(mockRelActn.getDuration()).thenReturn(null);
       when(EcaUtils.recheckTriggerCodes(mockDetails, launchType)).thenReturn(mockState);
@@ -252,7 +252,7 @@ public class PeriodicUpdateEicrActionTest {
 
       String taskInstanceId = "";
       // Test
-      periodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
+      localPeriodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(WorkflowService.class, times(1));
@@ -267,7 +267,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      logger.error("Exception occured during the test:::::{}", e);
+      logger.error("Exception occured during the test:::::", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -278,11 +278,11 @@ public class PeriodicUpdateEicrActionTest {
   @Test(expected = RuntimeException.class)
   public void whenInvalidObjectPassedThrowRuntimeException() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
-    WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
-    PeriodicUpdateEicrAction periodicUpdateEicrAction = new PeriodicUpdateEicrAction();
+    WorkflowEvent localLaunchType = WorkflowEvent.SCHEDULED_JOB;
+    PeriodicUpdateEicrAction localPeriodicUpdateEicrAction = new PeriodicUpdateEicrAction();
 
     String taskInstanceId = "";
-    periodicUpdateEicrAction.execute(mapper, launchType, taskInstanceId);
+    localPeriodicUpdateEicrAction.execute(mapper, localLaunchType, taskInstanceId);
   }
 
   private void setupMockData() {

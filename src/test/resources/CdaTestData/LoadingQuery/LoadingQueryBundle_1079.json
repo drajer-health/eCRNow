@@ -1,0 +1,791 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "0afd65a5-3b83-4df9-8381-424a358abc2f",
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Test1079",
+            "given": [
+              "Synthetic"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1985-01-01",
+        "address": [
+          {
+            "use": "home",
+            "line": [
+              "1 Synthetic Ln"
+            ],
+            "city": "Olympia",
+            "state": "WA",
+            "postalCode": "98501",
+            "country": "US"
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(360) 555-0199",
+            "use": "home"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+      }
+    },
+    {
+      "fullUrl": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "2d12a30a-27a7-41fd-951c-75684d8cb1e7",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185349003",
+                "display": "Encounter for check up"
+              }
+            ]
+          }
+        ],
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "period": {
+          "start": "2026-10-29T08:00:00Z",
+          "end": "2026-10-29T12:00:00Z"
+        },
+        "participant": [
+          {
+            "individual": {
+              "reference": "Practitioner/t1079-pr-1"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/t1079-pr-1",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "t1079-pr-1",
+        "active": true,
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1234567893"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Ordering",
+            "given": [
+              "Alice",
+              "M"
+            ],
+            "prefix": [
+              "Dr."
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(206) 555-0101",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "(206) 555-0102",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "use": "work",
+            "line": [
+              "100 Order Ave"
+            ],
+            "city": "Seattle",
+            "state": "WA",
+            "postalCode": "98101",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/t1079-pr-1"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/t1079-pr-2",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "t1079-pr-2",
+        "active": true,
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1245319599"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Direct",
+            "given": [
+              "Brian"
+            ],
+            "prefix": [
+              "Dr."
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(253) 555-0201",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "(253) 555-0202",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "use": "work",
+            "line": [
+              "200 Clinic Rd"
+            ],
+            "city": "Tacoma",
+            "state": "WA",
+            "postalCode": "98402",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/t1079-pr-2"
+      }
+    },
+    {
+      "fullUrl": "Organization/t1079-org-ordering",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "t1079-org-ordering",
+        "active": true,
+        "name": "Test1079 Ordering Clinic",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(425) 555-0110",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "use": "work",
+            "line": [
+              "10 Facility Way"
+            ],
+            "city": "Bellevue",
+            "state": "WA",
+            "postalCode": "98004",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Organization/t1079-org-ordering"
+      }
+    },
+    {
+      "fullUrl": "Organization/t1079-org-ordering-2",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "t1079-org-ordering-2",
+        "active": true,
+        "name": "Test1079 Requesting Org",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(425) 555-0120",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "use": "work",
+            "line": [
+              "20 Requester St"
+            ],
+            "city": "Everett",
+            "state": "WA",
+            "postalCode": "98201",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Organization/t1079-org-ordering-2"
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/t1079-role-1",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "t1079-role-1",
+        "active": true,
+        "practitioner": {
+          "reference": "Practitioner/t1079-pr-1"
+        },
+        "organization": {
+          "reference": "Organization/t1079-org-ordering"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/practitioner-role",
+                "code": "doctor"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "PractitionerRole/t1079-role-1"
+      }
+    },
+    {
+      "fullUrl": "Organization/t1079-lab-obs",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "t1079-lab-obs",
+        "active": true,
+        "name": "Test1079 Observation Lab",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(206) 555-0150",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "use": "work",
+            "line": [
+              "1610 Lab Pkwy"
+            ],
+            "city": "Shoreline",
+            "state": "WA",
+            "postalCode": "98155",
+            "country": "US"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1972654328"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Organization/t1079-lab-obs"
+      }
+    },
+    {
+      "fullUrl": "Organization/t1079-lab-report",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "t1079-lab-report",
+        "active": true,
+        "name": "Test1079 Report Lab",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(509) 555-0160",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "use": "work",
+            "line": [
+              "500 Report Blvd"
+            ],
+            "city": "Spokane",
+            "state": "WA",
+            "postalCode": "99201",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Organization/t1079-lab-report"
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/t1079-sr-1",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "t1079-sr-1",
+        "status": "completed",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "108252007",
+                "display": "Laboratory procedure"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94500-6",
+              "display": "SARS-CoV-2 RNA [Presence] in Respiratory system specimen by NAA with probe detection"
+            }
+          ],
+          "text": "SARS-CoV-2 RNA [Presence] in Respiratory system specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "authoredOn": "2026-10-29T08:30:00Z",
+        "requester": {
+          "reference": "PractitionerRole/t1079-role-1"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ServiceRequest/t1079-sr-1"
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/t1079-sr-2",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "t1079-sr-2",
+        "status": "completed",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "108252007",
+                "display": "Laboratory procedure"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94309-2",
+              "display": "SARS-CoV-2 RNA [Presence] in Specimen by NAA with probe detection"
+            }
+          ],
+          "text": "SARS-CoV-2 RNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "authoredOn": "2026-10-29T08:30:00Z",
+        "requester": {
+          "reference": "Practitioner/t1079-pr-2"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ServiceRequest/t1079-sr-2"
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/t1079-sr-3",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "t1079-sr-3",
+        "status": "completed",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "108252007",
+                "display": "Laboratory procedure"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "80383-3",
+              "display": "Influenza virus B Ag [Presence] in Upper respiratory specimen by Rapid immunoassay"
+            }
+          ],
+          "text": "Influenza virus B Ag [Presence] in Upper respiratory specimen by Rapid immunoassay"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "authoredOn": "2026-10-29T08:30:00Z",
+        "requester": {
+          "reference": "Organization/t1079-org-ordering-2"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ServiceRequest/t1079-sr-3"
+      }
+    },
+    {
+      "fullUrl": "Observation/t1079-obs-1",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "t1079-obs-1",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/t1079-sr-1"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94500-6",
+              "display": "SARS-CoV-2 RNA [Presence] in Respiratory system specimen by NAA with probe detection"
+            }
+          ],
+          "text": "SARS-CoV-2 RNA [Presence] in Respiratory system specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "effectiveDateTime": "2026-10-29T09:00:00Z",
+        "issued": "2026-10-29T11:00:00Z",
+        "performer": [
+          {
+            "reference": "Organization/t1079-lab-obs"
+          },
+          {
+            "reference": "Practitioner/t1079-pr-1"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected (qualifier value)"
+            }
+          ],
+          "text": "Detected"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/t1079-obs-1"
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/t1079-dr-1",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "t1079-dr-1",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/t1079-sr-1"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94500-6",
+              "display": "SARS-CoV-2 RNA [Presence] in Respiratory system specimen by NAA with probe detection"
+            }
+          ],
+          "text": "SARS-CoV-2 RNA [Presence] in Respiratory system specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "effectiveDateTime": "2026-10-29T09:00:00Z",
+        "issued": "2026-10-29T11:00:00Z",
+        "performer": [
+          {
+            "reference": "Organization/t1079-lab-report"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/t1079-obs-1"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "DiagnosticReport/t1079-dr-1"
+      }
+    },
+    {
+      "fullUrl": "Observation/t1079-obs-2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "t1079-obs-2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/t1079-sr-2"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94309-2",
+              "display": "SARS-CoV-2 RNA [Presence] in Specimen by NAA with probe detection"
+            }
+          ],
+          "text": "SARS-CoV-2 RNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "effectiveDateTime": "2026-10-29T09:00:00Z",
+        "issued": "2026-10-29T11:00:00Z",
+        "performer": [
+          {
+            "reference": "Practitioner/t1079-pr-2"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected (qualifier value)"
+            }
+          ],
+          "text": "Detected"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/t1079-obs-2"
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/t1079-dr-2",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "t1079-dr-2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/t1079-sr-2"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94309-2",
+              "display": "SARS-CoV-2 RNA [Presence] in Specimen by NAA with probe detection"
+            }
+          ],
+          "text": "SARS-CoV-2 RNA [Presence] in Specimen by NAA with probe detection"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "effectiveDateTime": "2026-10-29T09:00:00Z",
+        "issued": "2026-10-29T11:00:00Z",
+        "performer": [
+          {
+            "reference": "Organization/t1079-lab-report"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/t1079-obs-2"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "DiagnosticReport/t1079-dr-2"
+      }
+    },
+    {
+      "fullUrl": "Observation/t1079-obs-3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "t1079-obs-3",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/t1079-sr-3"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "80383-3",
+              "display": "Influenza virus B Ag [Presence] in Upper respiratory specimen by Rapid immunoassay"
+            }
+          ],
+          "text": "Influenza virus B Ag [Presence] in Upper respiratory specimen by Rapid immunoassay"
+        },
+        "subject": {
+          "reference": "Patient/0afd65a5-3b83-4df9-8381-424a358abc2f"
+        },
+        "encounter": {
+          "reference": "Encounter/2d12a30a-27a7-41fd-951c-75684d8cb1e7"
+        },
+        "effectiveDateTime": "2026-10-29T09:00:00Z",
+        "issued": "2026-10-29T11:00:00Z",
+        "performer": [
+          {
+            "reference": "Organization/t1079-lab-obs"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected (qualifier value)"
+            }
+          ],
+          "text": "Detected"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/t1079-obs-3"
+      }
+    }
+  ]
+}
