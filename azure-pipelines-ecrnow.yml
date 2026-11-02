@@ -1,12 +1,12 @@
 trigger:
   branches:
     include:
-      - cql-performance
+      - master
 
 pr: none
 
 variables:
-  - group: ix-prod
+  - group: ix-prodS
   - name: vmImageName
     value: 'Default'
   - name: imageRepository
