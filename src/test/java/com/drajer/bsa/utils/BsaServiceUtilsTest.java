@@ -1,14 +1,13 @@
 package com.drajer.bsa.utils;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -159,13 +158,11 @@ public class BsaServiceUtilsTest {
     assertEquals(expectedBundle.getId(), actualBundle.getId());
   }
 
+  /** A KAR file that cannot be read is logged and returns null instead of throwing. */
   @Test
   public void readKarFromFileByException() {
-    assertThatExceptionOfType(RuntimeException.class)
-        .isThrownBy(
-            () -> {
-              doThrow(RuntimeException.class).when(bsaServiceUtils.readKarFromFile(""));
-            });
+    assertNull(bsaServiceUtils.readKarFromFile(""));
+    assertNull(bsaServiceUtils.readKarFromFile("src/test/resources/Bsa/no-such-kar.json"));
   }
 
   @Test

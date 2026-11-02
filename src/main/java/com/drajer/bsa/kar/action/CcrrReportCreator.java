@@ -832,6 +832,10 @@ public class CcrrReportCreator extends ReportCreator {
   public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
     logger.info("KarProcessingData:{}", kd);
 
+    if (sc == null) {
+      logger.warn("Section component is null, skipping section narrative");
+      return;
+    }
     Narrative val = new Narrative();
     val.setStatus(NarrativeStatus.ADDITIONAL);
     val.setDivAsString("Not Generated automatically");

@@ -1,12 +1,11 @@
 package com.drajer.bsa.controller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import com.drajer.bsa.dto.HealthcareSettingRequest;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.sof.utils.Authorization;
@@ -178,9 +177,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void updateHealthcareSettings_shouldReturnOk() {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     hs.setId(100);
 
@@ -188,21 +187,19 @@ public class HealthcareSettingsControllerTest {
         .when(healthcareSettingsService.getHealthcareSettingByUrl(hs.getFhirServerBaseURL()))
         .thenReturn(null);
 
-    Mockito.lenient().when(healthcareSettingsService.saveOrUpdate(hs)).thenReturn(hs);
-
     ResponseEntity<Object> response = healthcareSettingsController.updateHealthcareSettings(hs);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    verify(healthcareSettingsService).saveOrUpdate(hs);
+    verify(healthcareSettingsService).saveOrUpdate(any(HealthcareSetting.class));
   }
 
   @Test
   public void updateHealthcareSettings_shouldReturnOk_whenSameId() {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     Integer existingId = 100;
     hs.setId(existingId);
@@ -215,21 +212,19 @@ public class HealthcareSettingsControllerTest {
         .when(healthcareSettingsService.getHealthcareSettingByUrl(hs.getFhirServerBaseURL()))
         .thenReturn(existingHs);
 
-    Mockito.lenient().when(healthcareSettingsService.saveOrUpdate(hs)).thenReturn(hs);
-
     ResponseEntity<Object> response = healthcareSettingsController.updateHealthcareSettings(hs);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    verify(healthcareSettingsService).saveOrUpdate(hs);
+    verify(healthcareSettingsService).saveOrUpdate(any(HealthcareSetting.class));
   }
 
   @Test
   public void updateHealthcareSettings_shouldReturnError_whenDifferentId() {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     hs.setId(100);
 
@@ -249,9 +244,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void updateHealthcareSettings_shouldSetDirectTlsVersion_whenEmpty() {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     hs.setId(100);
     hs.setDirectTlsVersion("");
@@ -260,12 +255,10 @@ public class HealthcareSettingsControllerTest {
         .when(healthcareSettingsService.getHealthcareSettingByUrl(hs.getFhirServerBaseURL()))
         .thenReturn(null);
 
-    Mockito.lenient().when(healthcareSettingsService.saveOrUpdate(hs)).thenReturn(hs);
-
     ResponseEntity<Object> response = healthcareSettingsController.updateHealthcareSettings(hs);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals("TLSv1.2", hs.getDirectTlsVersion());
+    assertEquals("TLSv1.2", ((HealthcareSetting) response.getBody()).getDirectTlsVersion());
   }
 
   // =====================================================
@@ -274,9 +267,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void createHealthcareSettings_shouldCreate_usingJson() throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     Mockito.lenient().when(authorization.getMetadata(anyString())).thenReturn(mockMetadata());
 
@@ -288,9 +281,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void createHealthcareSettings_shouldReturnError_whenDuplicate() throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     HealthcareSetting existingHs = new HealthcareSetting();
     existingHs.setId(200);
@@ -308,9 +301,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void createHealthcareSettings_shouldSetFhirVersion_DSTU2() throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     Mockito.lenient()
         .when(healthcareSettingsService.getHealthcareSettingByUrl(hs.getFhirServerBaseURL()))
@@ -325,9 +318,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void createHealthcareSettings_shouldSetFhirVersion_R4() throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     Mockito.lenient()
         .when(healthcareSettingsService.getHealthcareSettingByUrl(hs.getFhirServerBaseURL()))
@@ -344,9 +337,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void createHealthcareSettings_shouldSetDirectTlsVersion_whenEmpty() throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     hs.setDirectTlsVersion("");
 
@@ -365,9 +358,9 @@ public class HealthcareSettingsControllerTest {
   public void createHealthcareSettings_shouldPreserveDirectTlsVersion_whenProvided()
       throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     hs.setDirectTlsVersion("TLSv1.3");
 
@@ -380,15 +373,15 @@ public class HealthcareSettingsControllerTest {
     ResponseEntity<Object> response = healthcareSettingsController.createHealthcareSettings(hs);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals("TLSv1.3", hs.getDirectTlsVersion());
+    assertEquals("TLSv1.3", ((HealthcareSetting) response.getBody()).getDirectTlsVersion());
   }
 
   @Test
   public void createHealthcareSettings_shouldHandleNullMetadata() throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     Mockito.lenient()
         .when(healthcareSettingsService.getHealthcareSettingByUrl(hs.getFhirServerBaseURL()))
@@ -404,9 +397,9 @@ public class HealthcareSettingsControllerTest {
   @Test
   public void createHealthcareSettings_withTokenUrl_shouldNotOverrideExisting() throws Exception {
 
-    HealthcareSetting hs =
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
 
     String providedTokenUrl = "http://custom-token-url.com";
     hs.setTokenUrl(providedTokenUrl);
@@ -631,22 +624,26 @@ public class HealthcareSettingsControllerTest {
   }
 
   /**
-   * Known bug in HealthcareSettingsController.createHealthcareSettings: when tokenUrl is null it
-   * calls hsd.getFhirServerBaseURL() inside "if (hsd == null)", so it always throws a
-   * NullPointerException and nothing is saved (it should use hsDetails). Until the main class is
-   * fixed, this test pins the current behaviour and covers the tokenUrl == null branch.
+   * Without a tokenUrl, the token URL and FHIR version are read from the server's
+   * CapabilityStatement at {fhirServerBaseURL}/metadata, and the setting is saved.
    */
   @Test
-  public void createHealthcareSettings_withoutTokenUrl_currentlyThrowsNullPointer() {
-    HealthcareSetting hs =
+  public void createHealthcareSettings_withoutTokenUrl_readsTokenUrlFromMetadata()
+      throws Exception {
+    HealthcareSettingRequest hs =
         TestUtils.readFileContents(
-            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSetting>() {});
+            HEALTHCARE_SETTING_JSON, new TypeReference<HealthcareSettingRequest>() {});
     hs.setTokenUrl(null);
 
-    assertThrows(
-        NullPointerException.class,
-        () -> healthcareSettingsController.createHealthcareSettings(hs));
+    Mockito.when(authorization.getMetadata(hs.getFhirServerBaseURL() + "/metadata"))
+        .thenReturn(mockMetadata());
 
-    verify(healthcareSettingsService, never()).saveOrUpdate(any());
+    ResponseEntity<Object> response = healthcareSettingsController.createHealthcareSettings(hs);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    HealthcareSetting saved = (HealthcareSetting) response.getBody();
+    assertEquals("http://example-token-url.com", saved.getTokenUrl());
+    assertEquals("R4", saved.getFhirVersion());
+    verify(healthcareSettingsService).saveOrUpdate(saved);
   }
 }

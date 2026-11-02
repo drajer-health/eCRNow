@@ -3,6 +3,7 @@ package com.drajer.bsa.controller;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.drajer.bsa.dto.PublicHealthAuthorityRequest;
 import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.bsa.service.PublicHealthAuthorityService;
 import java.util.Arrays;
@@ -25,28 +26,36 @@ public class PublicHealthAuthorityControllerTest {
 
   private PublicHealthAuthority pha;
 
+  private PublicHealthAuthorityRequest phaRequest;
+
   @Before
   public void setup() {
     pha = new PublicHealthAuthority();
     pha.setId(1);
     pha.setFhirServerBaseURL("http://pha.test");
+
+    phaRequest = new PublicHealthAuthorityRequest();
+    phaRequest.setId(1);
+    phaRequest.setFhirServerBaseURL("http://pha.test");
   }
 
   @Test
   public void testCreatePublicHealthAuthority_New() {
     when(service.getPublicHealthAuthorityByUrl(anyString())).thenReturn(null);
-    ResponseEntity<Object> response = controller.createPublicHealthAuthority(pha);
+    ResponseEntity<Object> response = controller.createPublicHealthAuthority(phaRequest);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    verify(service, times(1)).saveOrUpdate(pha);
-    assertEquals(pha, response.getBody());
+    verify(service, times(1)).saveOrUpdate(any(PublicHealthAuthority.class));
+    PublicHealthAuthority saved = (PublicHealthAuthority) response.getBody();
+    assertEquals(Integer.valueOf(1), saved.getId());
+    assertEquals("http://pha.test", saved.getFhirServerBaseURL());
   }
 
   @Test
   public void testUpdatePublicHealthAuthority_NoExisting() {
     when(service.getPublicHealthAuthorityByUrl(anyString())).thenReturn(null);
-    ResponseEntity<Object> response = controller.updatePublicHealthAuthority(pha);
+    ResponseEntity<Object> response = controller.updatePublicHealthAuthority(phaRequest);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    verify(service, times(1)).saveOrUpdate(pha);
+    verify(service, times(1)).saveOrUpdate(any(PublicHealthAuthority.class));
   }
 
   @Test
@@ -54,9 +63,9 @@ public class PublicHealthAuthorityControllerTest {
     PublicHealthAuthority existing = new PublicHealthAuthority();
     existing.setId(1);
     when(service.getPublicHealthAuthorityByUrl(anyString())).thenReturn(existing);
-    ResponseEntity<Object> response = controller.updatePublicHealthAuthority(pha);
+    ResponseEntity<Object> response = controller.updatePublicHealthAuthority(phaRequest);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    verify(service, times(1)).saveOrUpdate(pha);
+    verify(service, times(1)).saveOrUpdate(any(PublicHealthAuthority.class));
   }
 
   @Test
@@ -86,7 +95,7 @@ public class PublicHealthAuthorityControllerTest {
 
   @Test
   public void testUpdatePublicHealthAuthority_DifferentId_ErrorPathCovered() {
-    PublicHealthAuthority incoming = new PublicHealthAuthority();
+    PublicHealthAuthorityRequest incoming = new PublicHealthAuthorityRequest();
     incoming.setId(1);
     incoming.setFhirServerBaseURL("http://pha.test");
     PublicHealthAuthority existing = new PublicHealthAuthority();
@@ -109,7 +118,7 @@ public class PublicHealthAuthorityControllerTest {
     existing.setId(99);
     existing.setFhirServerBaseURL("http://pha.test");
     when(service.getPublicHealthAuthorityByUrl("http://pha.test")).thenReturn(existing);
-    ResponseEntity<Object> response = controller.createPublicHealthAuthority(pha);
+    ResponseEntity<Object> response = controller.createPublicHealthAuthority(phaRequest);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     assertNotNull(response.getBody());
     String body = response.getBody().toString();

@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.drajer.bsa.dto.KnowledgeArtifactRepositoryRequest;
+import com.drajer.bsa.dto.KnowledgeArtifactStatusRequest;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.service.KarParser;
@@ -63,7 +65,7 @@ public class KnowledgeArtifactRepositoryControllerTest {
   @Test
   public void testShouldCreateNewKARWhenNoExistingKAR() {
 
-    KnowledgeArtifactRepository kar = new KnowledgeArtifactRepository();
+    KnowledgeArtifactRepositoryRequest kar = new KnowledgeArtifactRepositoryRequest();
     kar.setFhirServerURL("http://hosp.com");
 
     Mockito.lenient().when(karService.getKARByUrl(anyString())).thenReturn(null);
@@ -72,13 +74,13 @@ public class KnowledgeArtifactRepositoryControllerTest {
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    verify(karService).saveOrUpdate(kar);
+    verify(karService).saveOrUpdate(any(KnowledgeArtifactRepository.class));
   }
 
   @Test
   public void testShouldReturnErrorWhenKARAlreadyExists() throws Exception {
 
-    KnowledgeArtifactRepository kar = new KnowledgeArtifactRepository();
+    KnowledgeArtifactRepositoryRequest kar = new KnowledgeArtifactRepositoryRequest();
     kar.setFhirServerURL("http://hosp.com");
 
     KnowledgeArtifactRepository existingKar = new KnowledgeArtifactRepository();
@@ -148,9 +150,9 @@ public class KnowledgeArtifactRepositoryControllerTest {
   @Test
   public void testShouldAddKARStatus_usingJsonArray() {
 
-    List<KnowledgeArtifactStatus> karStatuses =
+    List<KnowledgeArtifactStatusRequest> karStatuses =
         TestUtils.readFileContents(
-            KAR_STATUS_JSON, new TypeReference<List<KnowledgeArtifactStatus>>() {});
+            KAR_STATUS_JSON, new TypeReference<List<KnowledgeArtifactStatusRequest>>() {});
 
     Mockito.lenient()
         .when(karService.getKarStatusByKarIdAndKarVersion(anyString(), anyString(), anyInt()))

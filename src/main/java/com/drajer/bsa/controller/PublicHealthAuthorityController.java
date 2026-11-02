@@ -1,5 +1,6 @@
 package com.drajer.bsa.controller;
 
+import com.drajer.bsa.dto.PublicHealthAuthorityRequest;
 import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.bsa.service.PublicHealthAuthorityService;
 import java.util.List;
@@ -26,7 +27,8 @@ public class PublicHealthAuthorityController {
   @CrossOrigin
   @PostMapping(value = "/api/publicHealthAuthority")
   public ResponseEntity<Object> createPublicHealthAuthority(
-      @RequestBody PublicHealthAuthority pha) {
+      @RequestBody PublicHealthAuthorityRequest phaRequest) {
+    PublicHealthAuthority pha = phaRequest.toEntity();
     PublicHealthAuthority phaCurrent =
         publicHealthAuthorityService.getPublicHealthAuthorityByUrl(pha.getFhirServerBaseURL());
 
@@ -55,7 +57,8 @@ public class PublicHealthAuthorityController {
   @CrossOrigin
   @PutMapping(value = "/api/publicHealthAuthority")
   public ResponseEntity<Object> updatePublicHealthAuthority(
-      @RequestBody PublicHealthAuthority pha) {
+      @RequestBody PublicHealthAuthorityRequest phaRequest) {
+    PublicHealthAuthority pha = phaRequest.toEntity();
     PublicHealthAuthority existingPha =
         publicHealthAuthorityService.getPublicHealthAuthorityByUrl(pha.getFhirServerBaseURL());
 

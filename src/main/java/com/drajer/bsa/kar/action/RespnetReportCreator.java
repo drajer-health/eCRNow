@@ -797,7 +797,7 @@ public class RespnetReportCreator extends ReportCreator {
     logger.info("KarProcessingData:{}", kd);
 
     if (sc == null) {
-      logger.warn("Section component is null, skipping chief complaint narrative");
+      logger.warn("Section component is null, skipping section narrative");
       return;
     }
     Narrative val = new Narrative();

@@ -3,10 +3,8 @@ package com.drajer.eca.model;
 import static com.helger.commons.mock.CommonsAssert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
-import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.EicrRRService;
@@ -226,16 +224,9 @@ public class SubmitEicrActionTest {
     Set<SubmitEicrStatus> submitStatuses = new HashSet<>();
     when(mockState.getSubmitEicrStatus()).thenReturn(submitStatuses);
 
+    // mockStatic turns every static method of WorkflowService, including the void scheduleJob,
+    // into a no-op, so no separate doNothing() stubbing is needed.
     PowerMockito.mockStatic(WorkflowService.class);
-    PowerMockito.doNothing()
-        .when(
-            WorkflowService.class,
-            "scheduleJob",
-            anyInt(),
-            any(org.hl7.fhir.r4.model.Duration.class),
-            any(EcrActionTypes.class),
-            any(Date.class),
-            any());
 
     submitEicrAction.setActionId("A-1");
 

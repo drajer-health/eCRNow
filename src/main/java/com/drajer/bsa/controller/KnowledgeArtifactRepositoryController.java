@@ -1,5 +1,7 @@
 package com.drajer.bsa.controller;
 
+import com.drajer.bsa.dto.KnowledgeArtifactRepositoryRequest;
+import com.drajer.bsa.dto.KnowledgeArtifactStatusRequest;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
@@ -7,6 +9,7 @@ import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.service.KarService;
 import com.drajer.bsa.utils.OperationOutcomeUtil;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +31,6 @@ import org.springframework.web.bind.annotation.*;
  * @since 2021-04-15
  */
 @RestController
-// Entities are accepted as request bodies by design; DTOs are not introduced (java:S4684).
-@SuppressWarnings("java:S4684")
 public class KnowledgeArtifactRepositoryController {
 
   private final Logger logger =
@@ -57,12 +58,14 @@ public class KnowledgeArtifactRepositoryController {
   /**
    * Method to create a Knowledge Artifact Repository with the summary information.
    *
-   * @param kar - The KnowledgeArtifactRepository object that needs to be persisted.
+   * @param karRequest - The KnowledgeArtifactRepository details that need to be persisted.
    * @return - Entity that is created.
    */
   @CrossOrigin
   @PostMapping(value = "/api/kar")
-  public ResponseEntity<Object> createKARs(@RequestBody KnowledgeArtifactRepository kar) {
+  public ResponseEntity<Object> createKARs(
+      @RequestBody KnowledgeArtifactRepositoryRequest karRequest) {
+    KnowledgeArtifactRepository kar = karRequest.toEntity();
     KnowledgeArtifactRepository existingKar = karService.getKARByUrl(kar.getFhirServerURL());
     if (existingKar == null || (existingKar.getId().equals(kar.getId()))) {
       logger.info("Saving the KAR Details");
@@ -116,7 +119,11 @@ public class KnowledgeArtifactRepositoryController {
   @CrossOrigin
   @PostMapping(value = "/api/addKARStatus/")
   public ResponseEntity<List<KnowledgeArtifactStatus>> addKARStatus(
-      @RequestBody List<KnowledgeArtifactStatus> karStatuses) {
+      @RequestBody List<KnowledgeArtifactStatusRequest> karStatusRequests) {
+    List<KnowledgeArtifactStatus> karStatuses =
+        karStatusRequests.stream()
+            .map(KnowledgeArtifactStatusRequest::toEntity)
+            .collect(Collectors.toList());
     for (KnowledgeArtifactStatus karStatus : karStatuses) {
 
       karStatus.setOutputFormat(

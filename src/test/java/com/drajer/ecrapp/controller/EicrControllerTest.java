@@ -1,8 +1,9 @@
 package com.drajer.ecrapp.controller;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.EicrRRService;
@@ -22,6 +23,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
@@ -76,25 +80,24 @@ public class EicrControllerTest {
 
   @Test
   public void getEicrDataByException() {
-    assertThatExceptionOfType(RuntimeException.class)
-        .isThrownBy(
-            () -> {
-              doThrow(RuntimeException.class)
-                  .when(
-                      eicrController
-                          .getEicrData(
-                              "67735647",
-                              "877",
-                              "390",
-                              "293204",
-                              "98323",
-                              "1.0",
-                              "http://ecrunitest/ecr/dao",
-                              "5678",
-                              null,
-                              null)
-                          .getBody());
-            });
+    when(eicrRRService.getEicrData(any())).thenThrow(new RuntimeException("search failed"));
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () ->
+                eicrController.getEicrData(
+                    "67735647",
+                    "877",
+                    "390",
+                    "293204",
+                    "98323",
+                    "1.0",
+                    "http://ecrunitest/ecr/dao",
+                    "5678",
+                    null,
+                    null));
+    assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatusCode().value());
   }
 
   @Test
@@ -128,12 +131,13 @@ public class EicrControllerTest {
 
   @Test
   public void getRRDataByException() {
-    assertThatExceptionOfType(RuntimeException.class)
-        .isThrownBy(
-            () -> {
-              doThrow(RuntimeException.class)
-                  .when(eicrController.getRRData("", "", "", "", "", "", "").getStatusCode());
-            });
+    when(eicrRRService.getRRData(any())).thenThrow(new RuntimeException("search failed"));
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> eicrController.getRRData("", "", "", "", "", "", ""));
+    assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatusCode().value());
   }
 
   @Test
@@ -159,12 +163,14 @@ public class EicrControllerTest {
 
   @Test
   public void getEicrAndRRByRequestIdByException() {
-    assertThatExceptionOfType(RuntimeException.class)
-        .isThrownBy(
-            () -> {
-              doThrow(RuntimeException.class)
-                  .when(eicrController.getEicrAndRRByRequestId("", "", "").getStatusCode());
-            });
+    when(eicrRRService.getEicrAndRRByXRequestId(any()))
+        .thenThrow(new RuntimeException("search failed"));
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> eicrController.getEicrAndRRByRequestId("", "", ""));
+    assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatusCode().value());
   }
 
   @Test
@@ -183,12 +189,11 @@ public class EicrControllerTest {
 
   @Test
   public void getEicrByEicrDocIDByException() {
-    assertThatExceptionOfType(RuntimeException.class)
-        .isThrownBy(
-            () -> {
-              doThrow(RuntimeException.class)
-                  .when(eicrController.getEicrByEicrDocID("123", "", "").getStatusCode());
-            });
+    when(eicrRRService.getEicrByDocId("123")).thenThrow(new RuntimeException("lookup failed"));
+
+    ResponseEntity<Object> response = eicrController.getEicrByEicrDocID("123", "", "");
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
@@ -213,16 +218,13 @@ public class EicrControllerTest {
 
   @Test
   public void deleteEicrByEicrDocIDByException() {
-    assertThatExceptionOfType(RuntimeException.class)
-        .isThrownBy(
-            () -> {
-              doThrow(RuntimeException.class)
-                  .when(
-                      eicrController
-                          .deleteEicrByEicrDocID(
-                              "123", "", "", httpServletRequest, httpServletResponse)
-                          .getStatusCode());
-            });
+    when(eicrRRService.getEicrByDocId("123")).thenThrow(new RuntimeException("lookup failed"));
+
+    ResponseEntity<String> response =
+        eicrController.deleteEicrByEicrDocID(
+            "123", "", "", httpServletRequest, httpServletResponse);
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test

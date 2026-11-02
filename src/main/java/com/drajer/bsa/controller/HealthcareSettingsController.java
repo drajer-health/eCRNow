@@ -1,6 +1,7 @@
 package com.drajer.bsa.controller;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
+import com.drajer.bsa.dto.HealthcareSettingRequest;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.sof.utils.Authorization;
@@ -32,8 +33,6 @@ import org.springframework.web.bind.annotation.*;
  * @since 2021-04-15
  */
 @RestController
-// Entities are accepted as request bodies by design; DTOs are not introduced (java:S4684).
-@SuppressWarnings("java:S4684")
 public class HealthcareSettingsController {
 
   private static final String FHIR_VERSION = "fhirVersion";
@@ -69,13 +68,16 @@ public class HealthcareSettingsController {
    * The BSA administrator is expected to use this method when provisioning each of the
    * HealthcareSettings.
    *
-   * @param hsDetails The HealthcareSettings details passed as part of the Request Body.
+   * @param hsRequest The HealthcareSettings details passed as part of the Request Body.
    * @return This returns the HTTP Response Entity containing the JSON representation of the
    *     HealthcareSetting when successful, else returns appropriate error.
    */
   @CrossOrigin
   @PostMapping(value = "/api/healthcareSettings")
-  public ResponseEntity<Object> createHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
+  public ResponseEntity<Object> createHealthcareSettings(
+      @RequestBody HealthcareSettingRequest hsRequest) {
+
+    HealthcareSetting hsDetails = (hsRequest != null) ? hsRequest.toEntity() : null;
 
     if (hsDetails == null || StringUtils.isEmpty(hsDetails.getFhirServerBaseURL())) {
       JSONObject responseObject = new JSONObject();
@@ -92,7 +94,8 @@ public class HealthcareSettingsController {
       logger.info("Healthcare Setting does not exist, Saving the Healthcare Settings");
 
       if (hsDetails.getTokenUrl() == null) {
-        JSONObject object = authorization.getMetadata(hsd.getFhirServerBaseURL() + "/metadata");
+        JSONObject object =
+            authorization.getMetadata(hsDetails.getFhirServerBaseURL() + "/metadata");
         if (object != null) {
           logger.info("Reading Metadata information");
           JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
@@ -141,13 +144,15 @@ public class HealthcareSettingsController {
    * The BSA administrator is expected to use this method when updating already provisioned
    * HealthcareSetting.
    *
-   * @param hsDetails The updated HealthcareSettings details passed as part of the Request Body.
+   * @param hsRequest The updated HealthcareSettings details passed as part of the Request Body.
    * @return This returns the HTTP Response Entity containing the JSON representation of the
    *     HealthcareSetting when successful, else returns appropriate error.
    */
   @CrossOrigin
   @PutMapping(value = "/api/healthcareSettings")
-  public ResponseEntity<Object> updateHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
+  public ResponseEntity<Object> updateHealthcareSettings(
+      @RequestBody HealthcareSettingRequest hsRequest) {
+    HealthcareSetting hsDetails = hsRequest.toEntity();
     HealthcareSetting existingHsd =
         healthcareSettingsService.getHealthcareSettingByUrl(hsDetails.getFhirServerBaseURL());
 
