@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.*;
  * @since 2021-04-15
  */
 @RestController
-// Entities are accepted as request bodies by design; DTOs are not introduced (java:S4684).
-@SuppressWarnings("java:S4684")
 public class HealthcareSettingsController {
 
   private static final String FHIR_VERSION = "fhirVersion";
