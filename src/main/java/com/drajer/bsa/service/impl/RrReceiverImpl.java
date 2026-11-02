@@ -266,11 +266,15 @@ public class RrReceiverImpl implements RrReceiver {
 
   public void postDocRefToEhr(
       DocumentReference docRef, PublicHealthMessage phm, HealthcareSetting hs, CdaRrModel rrModel) {
+    if (phm == null || hs == null) {
+      throw new IllegalArgumentException(
+          "PublicHealthMessage and HealthcareSetting are required to post the RR to the EHR");
+    }
 
     // Get the AccessToken using the HealthcareSetting
     JSONObject tokenResponse = ehrService.getAuthorizationToken(hs);
     String ehrContext = null;
-    if (phm != null) {
+    if (phm.getNotificationId() != null) {
       NotificationContext nc =
           ncDao.getNotificationContextById(UUID.fromString(phm.getNotificationId()));
       if (nc != null) ehrContext = nc.getEhrLaunchContext();

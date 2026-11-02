@@ -2005,7 +2005,7 @@ public class CdaResultGenerator {
   static List<Reference> getAuthorizingProviderBasedOnRefs(
       DiagnosticReport report, List<Observation> observations) {
 
-    List<Reference> refs = new LinkedList<>();
+    List<Reference> refs = new ArrayList<>();
     if (report != null) {
       addServiceRequestReferences(refs, report.getBasedOn());
     }

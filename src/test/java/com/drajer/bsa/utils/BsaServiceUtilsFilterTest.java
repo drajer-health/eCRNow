@@ -3,7 +3,6 @@ package com.drajer.bsa.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
@@ -155,10 +154,8 @@ public class BsaServiceUtilsFilterTest {
     assertTrue(BsaServiceUtils.isCodePresentInValueSet(composed, SNOMED, "840539006"));
     assertFalse(BsaServiceUtils.isCodePresentInValueSet(composed, SNOMED, "77386006"));
     assertFalse(BsaServiceUtils.isCodePresentInValueSet(composed, "http://loinc.org", "840539006"));
-    // isCodePresentInValueSet does not null-check vs before vs.hasExpansion(), so null throws.
-    assertThrows(
-        NullPointerException.class,
-        () -> BsaServiceUtils.isCodePresentInValueSet(null, SNOMED, "840539006"));
+    // A value set that is not in the KAR (null) matches nothing.
+    assertFalse(BsaServiceUtils.isCodePresentInValueSet(null, SNOMED, "840539006"));
     assertEquals(
         "840539006",
         BsaServiceUtils.isCodingPresentInValueSet(composed, new Coding(SNOMED, "840539006", null))

@@ -166,7 +166,7 @@ public class EicrController {
   @CrossOrigin
   @GetMapping(value = "/api/eicrAndRRData")
   public ResponseEntity<Object> getEicrAndRRByRequestId(
-      @RequestParam String xRequestId,
+      @RequestParam("xRequestId") String xRequestId,
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue) {
@@ -188,7 +188,7 @@ public class EicrController {
   @CrossOrigin
   @GetMapping(value = "/api/eicr")
   public ResponseEntity<Object> getEicrByEicrDocID(
-      @RequestParam String eicrDocId,
+      @RequestParam("eicrDocId") String eicrDocId,
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue) {
@@ -220,7 +220,7 @@ public class EicrController {
   @CrossOrigin
   @DeleteMapping(value = "/api/eicr")
   public ResponseEntity<String> deleteEicrByEicrDocID(
-      @RequestParam String eicrDocId,
+      @RequestParam("eicrDocId") String eicrDocId,
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue,

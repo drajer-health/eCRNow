@@ -58,9 +58,10 @@ public class NotificationContextController {
 
   @GetMapping("/api/notificationContext")
   public ResponseEntity<List<NotificationContext>> getNotificationContextData(
-      @RequestParam(required = false) String fhirServerUrl,
-      @RequestParam(required = false) String patientId,
-      @RequestParam(required = false) String notificationResourceId) {
+      @RequestParam(value = "fhirServerUrl", required = false) String fhirServerUrl,
+      @RequestParam(value = "patientId", required = false) String patientId,
+      @RequestParam(value = "notificationResourceId", required = false)
+          String notificationResourceId) {
 
     List<NotificationContext> contexts =
         notificationContextService.getNotificationContextData(

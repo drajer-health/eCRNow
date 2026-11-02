@@ -52,7 +52,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @PowerMockIgnore({"javax.crypto.*"})
-public class BaseGeneratorTest {
+public abstract class BaseGeneratorTest {
 
   public static final Logger logger = LoggerFactory.getLogger(BaseGeneratorTest.class);
   public static final FhirContext fhirContext = FhirContext.forR4();
