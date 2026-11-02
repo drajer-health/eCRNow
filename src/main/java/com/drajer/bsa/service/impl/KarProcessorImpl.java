@@ -396,7 +396,10 @@ public class KarProcessorImpl implements KarProcessor {
         PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_ID, nc.getNotificationResourceId());
     searchParams.put(
         PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
-    searchParams.put(PublicHealthMessagesDaoImpl.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
+    searchParams.put(
+        PublicHealthMessagesDaoImpl.KAR_UNIQUE_ID,
+        (data != null && data.getKar() != null) ? data.getKar().getVersionUniqueId() : null);
+
     searchParams.put(PublicHealthMessagesDaoImpl.SUBMISSION_MESSAGE_STATUS, "FAILED");
     List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);
 

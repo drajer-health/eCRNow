@@ -22,7 +22,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CdaGeneratorUtils.class})
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
+@PowerMockIgnore({
+  "com.sun.org.apache.*",
+  "javax.xml.*",
+  "org.xml.*",
+  "org.w3c.*",
+  "javax.management.*",
+  "javax.crypto.*"
+})
 public class CdaResultGeneratorTest extends BaseGeneratorTest {
 
   private static final String RESULT_CDA_FILE = "CdaTestData/Cda/Result/Result.xml";

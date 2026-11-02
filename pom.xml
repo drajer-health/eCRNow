@@ -693,7 +693,9 @@
                 <configuration>
                     <java>
                         <googleJavaFormat>
-                            <version>1.17.0</version>
+                            <!-- 1.28.0: newest release that runs on JDK 17 (1.29.0+ needs JDK 21 javac
+                                 classes) and includes the fix for the newer-JDK getDiagnostics() error -->
+                            <version>1.28.0</version>
                         </googleJavaFormat>
                     </java>
                 </configuration>
@@ -706,6 +708,8 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    <!-- Keep method parameter names for Spring binding (#1146) -->
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
 

@@ -446,7 +446,7 @@ public class BsaServiceUtils {
       }
     }
 
-    if (!retVal && vs.hasExpansion()) {
+    if (!retVal && vs != null && vs.hasExpansion()) {
 
       ValueSetExpansionComponent vsec = vs.getExpansion();
 

@@ -136,6 +136,9 @@ public class ValueSetSingleton {
   }
 
   public Set<ValueSet> getGrouperValueSets() {
+    if (grouperValueSets == null) {
+      grouperValueSets = new HashSet<>();
+    }
     return grouperValueSets;
   }
 

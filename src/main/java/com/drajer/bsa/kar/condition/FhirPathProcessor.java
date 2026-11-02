@@ -57,8 +57,10 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters params = kd.getParametersByActionId(act.getActionId());
     if (params == null) {
-
       params = resolveInputParameters(act.getInputData(), kd, act);
+      if (params == null) {
+        params = new Parameters();
+      }
     }
 
     logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());

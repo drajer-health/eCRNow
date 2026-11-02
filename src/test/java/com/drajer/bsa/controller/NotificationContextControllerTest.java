@@ -1,6 +1,8 @@
 package com.drajer.bsa.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.NotificationContextService;
@@ -18,6 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationContextControllerTest {
@@ -166,5 +170,25 @@ public class NotificationContextControllerTest {
             .getNotificationContextForReprocessing(new java.util.HashMap<>())
             .getStatusCode()
             .value());
+  }
+
+  /**
+   * #1146: the query parameters must bind by their explicit names over HTTP, so the endpoint does
+   * not depend on the classes being compiled with -parameters.
+   */
+  @Test
+  public void getNotificationContextData_bindsQueryParametersByName() throws Exception {
+    MockMvc mockMvc = MockMvcBuilders.standaloneSetup(notificationContextController).build();
+
+    mockMvc
+        .perform(
+            get("/api/notificationContext")
+                .param("fhirServerUrl", "http://fhir.example.org/r4")
+                .param("patientId", "patient-1")
+                .param("notificationResourceId", "encounter-1"))
+        .andExpect(status().isNoContent());
+
+    Mockito.verify(notificationContextService)
+        .getNotificationContextData(null, "http://fhir.example.org/r4", "encounter-1", "patient-1");
   }
 }

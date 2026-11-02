@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.*;
  * @since 2021-04-15
  */
 @RestController
+// Entities are accepted as request bodies by design; DTOs are not introduced (java:S4684).
+@SuppressWarnings("java:S4684")
 public class HealthcareSettingsController {
 
   private static final String FHIR_VERSION = "fhirVersion";
@@ -74,6 +76,14 @@ public class HealthcareSettingsController {
   @CrossOrigin
   @PostMapping(value = "/api/healthcareSettings")
   public ResponseEntity<Object> createHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
+
+    if (hsDetails == null || StringUtils.isEmpty(hsDetails.getFhirServerBaseURL())) {
+      JSONObject responseObject = new JSONObject();
+      responseObject.put("status", "error");
+      responseObject.put("message", "FHIR Server URL is required");
+      return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);
+    }
+
     HealthcareSetting hsd =
         healthcareSettingsService.getHealthcareSettingByUrl(hsDetails.getFhirServerBaseURL());
 
@@ -225,7 +235,7 @@ public class HealthcareSettingsController {
 
   @GetMapping("/api/healthcareSettings/check")
   @CrossOrigin
-  public ResponseEntity<Object> checkHealthCareSettingExist(@RequestParam String url) {
+  public ResponseEntity<Object> checkHealthCareSettingExist(@RequestParam("url") String url) {
     try {
       logger.info("Received URL: {} for checking healthcareSettings", url);
 

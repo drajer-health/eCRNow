@@ -3,6 +3,7 @@ package com.drajer.test.model;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("java:S2187")
 public class TestCase {
   private Map<String, String> testData;
   private Map<String, ?> resourceMappingData;

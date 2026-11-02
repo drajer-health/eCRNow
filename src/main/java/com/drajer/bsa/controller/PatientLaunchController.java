@@ -492,9 +492,9 @@ public class PatientLaunchController {
    */
   @DeleteMapping("/api/scheduledTasks")
   public ResponseEntity<Object> deleteScheduledTasks(
-      @RequestParam(required = false) String fhirServerBaseUrl,
-      @RequestParam(required = false) String patientId,
-      @RequestParam(required = false) String encounterId)
+      @RequestParam(value = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
+      @RequestParam(value = "patientId", required = false) String patientId,
+      @RequestParam(value = "encounterId", required = false) String encounterId)
       throws IOException {
 
     logger.info(

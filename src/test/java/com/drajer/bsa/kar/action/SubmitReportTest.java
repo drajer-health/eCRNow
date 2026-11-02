@@ -806,17 +806,16 @@ public class SubmitReportTest {
     verify(submitReport, never()).executeRelatedActions(any(), any());
   }
 
-  /**
-   * Known issue: the output-format check is "(artStatus != null && (CDA_R11 || CDA_R30)) ||
-   * artStatus.getOutputFormat() == CDA_R31", so a KAR without an artifact status reaches
-   * artStatus.getOutputFormat() and throws NullPointerException.
-   */
+  /** A KAR without an artifact status submits nothing, and the action still completes. */
   @Test
-  public void process_noArtifactStatusForTheKar_currentlyThrowsNullPointer() {
+  public void process_noArtifactStatusForTheKar_submitsNothingButCompletes() {
     KarProcessingData data = dataWithOutputFormat(null);
-    EhrQueryService ehrService = mock(EhrQueryService.class);
 
-    assertThrows(NullPointerException.class, () -> submitReport.process(data, ehrService));
+    BsaActionStatus result = submitReport.process(data, mock(EhrQueryService.class));
+
+    assertEquals(BsaTypes.BsaActionStatusType.COMPLETED, result.getActionStatus());
+    verify(submitReport, never()).submitCdaOutput(any(), any(), any());
+    verify(submitReport, never()).submitFhirOutput(any(), any(), any());
   }
 
   // ---------------- submitCdaOutput ----------------

@@ -573,11 +573,11 @@ public class ApplicationUtilsTest {
 
     ca.uhn.fhir.model.dstu2.resource.Bundle bundle =
         utils.readDstu2BundleFromFile(
-            "src/test/resources/Dstu2/Condition/ConditionBundle_d2572364249.json");
+            "src/test/resources/DSTU2/Condition/ConditionBundle_d2572364249.json");
 
     assertNotNull(bundle);
     assertFalse(bundle.getEntry().isEmpty());
-    assertNull(utils.readDstu2BundleFromFile("src/test/resources/Dstu2/missing.json"));
+    assertNull(utils.readDstu2BundleFromFile("src/test/resources/DSTU2/missing.json"));
   }
 
   @Test

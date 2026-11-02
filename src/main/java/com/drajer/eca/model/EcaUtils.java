@@ -22,10 +22,7 @@ import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -226,8 +223,12 @@ public class EcaUtils {
   public static PatientExecutionState recheckTriggerCodes(
       LaunchDetails details, WorkflowEvent launchType) {
 
+    Map<EcrActionTypes, Set<AbstractAction>> actions = ActionRepo.getInstance().getActions();
     Set<AbstractAction> acts =
-        ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
+        (actions != null)
+            ? actions.getOrDefault(EcrActionTypes.MATCH_TRIGGER, new HashSet<>())
+            : new HashSet<>();
+
     String taskInstanceId = "";
     for (AbstractAction act : acts) {
       act.execute(details, launchType, taskInstanceId);
@@ -411,7 +412,7 @@ public class EcaUtils {
 
   public static boolean checkLongRunningEncounters(LaunchDetails details) {
     AppConfig appConfig = ActionRepo.getInstance().getAppConfig();
-    if (appConfig.isEnableSuspend()) {
+    if (appConfig != null && appConfig.isEnableSuspend()) {
       Date thresholdDate = DateUtils.addDays(new Date(), -appConfig.getSuspendThreshold());
       if (details.getStartDate() != null && details.getStartDate().before(thresholdDate)) {
         logger.info(
