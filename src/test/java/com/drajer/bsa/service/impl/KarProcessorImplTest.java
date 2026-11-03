@@ -494,7 +494,7 @@ public class KarProcessorImplTest {
   }
 
   @Test
-  public void applyKarForScheduledJob_phmAlreadyRecorded_skipsDuplicateSaveOrUpdate() {
+  public void applyKarForScheduledJob_phmAlreadyRecorded_stillSavedViaUpdate() {
     ReflectionTestUtils.setField(karProcessor, "throttlingEnabled", Boolean.FALSE);
 
     UUID stateId = UUID.randomUUID();
@@ -529,9 +529,8 @@ public class KarProcessorImplTest {
 
     karProcessor.applyKarForScheduledJob(data, buildTaskInstance(data), buildExecutionContext(0));
 
-    // PHM already has an ID, so the success-path saveOrUpdate is skipped.
-    verify(phDao, never()).saveOrUpdate(any());
-    verify(karExecutionStateService, times(1)).delete(state);
+    // PHM always goes through saveOrUpdate on the success path.
+    verify(phDao, times(1)).saveOrUpdate(phm);
   }
 
   @Test
@@ -891,10 +890,10 @@ public class KarProcessorImplTest {
     verify(hsService, never()).saveEhrAccessToken(any());
   }
 
-  // ==================== PH message recorded right after submission ====================
+  // ==================== Failure after submission creates FAILED message ====================
 
   @Test
-  public void applyKarForScheduledJob_failsAfterReportWasRecorded_retriesMaxed_noFailedDuplicate() {
+  public void applyKarForScheduledJob_failsAfterReportWasSent_retriesMaxed_createsFailedMessage() {
     ReflectionTestUtils.setField(karProcessor, "timerRetries", 1);
 
     UUID stateId = UUID.randomUUID();
@@ -928,8 +927,8 @@ public class KarProcessorImplTest {
 
     karProcessor.applyKarForScheduledJob(data, buildTaskInstance(data), buildExecutionContext(0));
 
-    // No second message with the same version marked FAILED.
-    verify(phDao, never()).saveOrUpdate(any());
+    // A FAILED message is created and saved when retries are maxed, even if PHM was already set.
+    verify(phDao, times(1)).saveOrUpdate(any());
     verify(ncDao, times(1)).saveOrUpdate(nc);
   }
 }

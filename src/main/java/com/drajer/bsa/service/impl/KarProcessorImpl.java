@@ -283,7 +283,7 @@ public class KarProcessorImpl implements KarProcessor {
                     action.process(kd, ehrInterface);
 
                     // persist relevant outputs
-                    if (kd.getPhm() != null && kd.getPhm().getId() == null) {
+                    if (kd.getPhm() != null) {
                       logger.info("Updating database with PhMesssage data ");
                       phDao.saveOrUpdate(kd.getPhm());
                     }
@@ -315,11 +315,7 @@ public class KarProcessorImpl implements KarProcessor {
 
                 } catch (Exception e) {
 
-                  if (kd.getPhm() != null && kd.getPhm().getId() != null) {
-                    logger.info(
-                        "Submitted PH message {} is already recorded; no FAILED message created",
-                        kd.getPhm().getSubmittedDataId());
-                  } else if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
+                  if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
                     publicHealthMessage =
                         createPublicHealthMessage(
                             kd, kd.getSubmittedCdaData(), SUBMISSION_STATUS_FAILED);
