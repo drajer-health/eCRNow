@@ -759,4 +759,94 @@ public class KarProcessorImplTest {
     verify(phDao, never()).saveOrUpdate(any());
     verify(ncDao, never()).saveOrUpdate(any());
   }
+
+  // ==================== EHR access token: saved once at the end of a scheduled job
+  // ====================
+
+  private com.drajer.bsa.model.HealthcareSetting healthcareSetting(Integer id, String token) {
+    com.drajer.bsa.model.HealthcareSetting hs = new com.drajer.bsa.model.HealthcareSetting();
+    hs.setId(id);
+    hs.setEhrAccessToken(token);
+    return hs;
+  }
+
+  private KarProcessingData withHealthcareSetting(com.drajer.bsa.model.HealthcareSetting hs) {
+    KarProcessingData kd = new KarProcessingData();
+    kd.setHealthcareSetting(hs);
+    return kd;
+  }
+
+  @Test
+  public void saveRefreshedEhrAccessToken_tokenNotRefreshed_notSaved() {
+    karProcessor.saveRefreshedEhrAccessToken(
+        withHealthcareSetting(healthcareSetting(7, "old")), "old");
+
+    verify(hsService, never()).saveEhrAccessToken(any());
+  }
+
+  @Test
+  public void saveRefreshedEhrAccessToken_tokenRefreshed_savedOnce() {
+    com.drajer.bsa.model.HealthcareSetting hs = healthcareSetting(7, "new");
+
+    karProcessor.saveRefreshedEhrAccessToken(withHealthcareSetting(hs), "old");
+
+    verify(hsService, times(1)).saveEhrAccessToken(hs);
+  }
+
+  @Test
+  public void saveRefreshedEhrAccessToken_saveFails_doesNotThrow() {
+    com.drajer.bsa.model.HealthcareSetting hs = healthcareSetting(7, "new");
+    doThrow(new RuntimeException("Row was updated or deleted by another transaction"))
+        .when(hsService)
+        .saveEhrAccessToken(hs);
+
+    karProcessor.saveRefreshedEhrAccessToken(withHealthcareSetting(hs), "old"); // must not throw
+
+    verify(hsService, times(1)).saveEhrAccessToken(hs);
+  }
+
+  @Test
+  public void saveRefreshedEhrAccessToken_noHealthcareSettingOrNoId_nothingSaved() {
+    karProcessor.saveRefreshedEhrAccessToken(new KarProcessingData(), "old");
+    karProcessor.saveRefreshedEhrAccessToken(
+        withHealthcareSetting(healthcareSetting(null, "new")), "old");
+
+    verify(hsService, never()).saveEhrAccessToken(any());
+  }
+
+  @Test
+  public void applyKarForScheduledJob_healthcareSettingIsReadOnly_tokenUnchanged_notSaved() {
+    UUID stateId = UUID.randomUUID();
+    UUID ncId = UUID.randomUUID();
+    KarExecutionState state = mock(KarExecutionState.class);
+    when(state.getNcId()).thenReturn(ncId);
+    when(state.getHsFhirServerUrl()).thenReturn("http://hs-url");
+    when(karExecutionStateService.getKarExecutionStateById(stateId)).thenReturn(state);
+    when(ncService.getNotificationContext(ncId)).thenReturn(buildNotificationContext("trigger-1"));
+    when(karRepositorySystem.getById(any())).thenReturn(mock(KnowledgeArtifact.class));
+    com.drajer.bsa.model.HealthcareSetting hs = healthcareSetting(7, "old");
+    when(hsService.getHealthcareSettingByUrl("http://hs-url")).thenReturn(hs);
+
+    ScheduledJobData data =
+        jobData(stateId, "job-1", "action-1", "req-1", BsaJobType.IMMEDIATE_REPORTING, null);
+    karProcessor.applyKarForScheduledJob(data, buildTaskInstance(data), buildExecutionContext(0));
+
+    verify(hsService).markReadOnly(hs);
+    verify(hsService, never()).saveEhrAccessToken(any());
+  }
+
+  @Test
+  public void applyKarForNotification_unchanged_doesNotTouchTheHealthcareSetting() {
+    NotificationContext nc = buildNotificationContext("trigger-1");
+    KnowledgeArtifact kar = mock(KnowledgeArtifact.class);
+    when(kar.getActionsForTriggerEvent("trigger-1")).thenReturn(new HashSet<>());
+    when(kar.getVersionUniqueId()).thenReturn("kar-1|1.0");
+    KarProcessingData data = buildKarProcessingData(kar, nc);
+    data.setHealthcareSetting(healthcareSetting(7, "old"));
+
+    karProcessor.applyKarForNotification(data);
+
+    verify(hsService, never()).markReadOnly(any());
+    verify(hsService, never()).saveEhrAccessToken(any());
+  }
 }

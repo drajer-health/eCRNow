@@ -2,6 +2,7 @@ package com.drajer.bsa.dao;
 
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,4 +64,23 @@ public interface HealthcareSettingsDao {
    * @param healthcareSetting The HealthcareSetting to be deleted.
    */
   void delete(HealthcareSetting healthcareSetting);
+
+  /**
+   * Marks the HealthcareSetting read-only in the current Hibernate session, so that in-memory
+   * changes (such as a refreshed EHR access token) are never written as part of the current
+   * transaction.
+   */
+  void markReadOnly(HealthcareSetting hs);
+
+  /**
+   * Updates only the EHR access token columns of the HealthcareSetting.
+   *
+   * @return the number of rows updated.
+   */
+  int updateEhrAccessToken(
+      Integer id,
+      String ehrAccessToken,
+      int ehrAccessTokenExpiryDuration,
+      Date ehrAccessTokenExpirationTime,
+      String defaultProviderId);
 }

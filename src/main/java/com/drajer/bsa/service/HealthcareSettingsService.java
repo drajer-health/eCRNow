@@ -54,4 +54,17 @@ public interface HealthcareSettingsService {
    * @param healthcareSetting The HealthcareSetting to be deleted.
    */
   void delete(HealthcareSetting healthcareSetting);
+
+  /**
+   * Marks the HealthcareSetting read-only in the current Hibernate session, so that in-memory
+   * changes (such as a refreshed EHR access token) are never written as part of the current
+   * transaction.
+   */
+  void markReadOnly(HealthcareSetting hs);
+
+  /**
+   * Saves the EHR access token of the HealthcareSetting in its own new transaction, independent of
+   * the caller's transaction. Failures are thrown to the caller, which decides how to handle them.
+   */
+  void saveEhrAccessToken(HealthcareSetting hs);
 }
