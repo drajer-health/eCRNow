@@ -18,6 +18,7 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthAuthority;
+import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import com.drajer.bsa.routing.impl.RestfulTransportImpl;
 import com.drajer.bsa.service.PublicHealthAuthorityService;
@@ -139,6 +140,7 @@ public class SubmitReport extends BsaAction {
         logger.info(" Submitting FHIR Output ");
         // by default it is FHIR Payload and validate accordingly.
         submitFhirOutput(data, actStatus, ehrService);
+
       } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
 
         logger.info(" Submitting Both CDA and FHIR Output ");
@@ -181,6 +183,9 @@ public class SubmitReport extends BsaAction {
 
       logger.info(" Finished Sending payload via Direct Transport ");
 
+      // The eICR has left eCRNow: record it now, before anything else can fail.
+      recordSubmittedMessage(data);
+
       // Setup a rrCheck schedule job after a delay of 300 seconds.
       if (Boolean.FALSE.equals(ignoreTimers)) {
 
@@ -218,6 +223,9 @@ public class SubmitReport extends BsaAction {
 
       logger.info(" Submitting to restful endpoint ");
       restSubmitter.sendEicrDataUsingRestfulApi(data);
+
+      // The eICR has left eCRNow: record it now, before anything else can fail.
+      recordSubmittedMessage(data);
 
     } else if (Boolean.TRUE.equals(hs.getIsXdr())) {
       logger.info(" Submitting to XDR endpoint :TO DO");
@@ -485,5 +493,32 @@ public class SubmitReport extends BsaAction {
     logger.info(" Submission End point : {}", submissionEndpoint);
 
     logger.info(" **** END Printing Derived Action **** {}", actionId);
+  }
+
+  /**
+   * Records the PH message in its own transaction right after the report was submitted. Until now
+   * the message was only saved when the whole job committed, so a failure after the submission
+   * rolled back the record of a report that had already been sent, and the retry sent it again with
+   * the same version. A failure to record here is logged; the job still saves the message when it
+   * commits, as before.
+   */
+  void recordSubmittedMessage(KarProcessingData data) {
+    PublicHealthMessage phm = data.getPhm();
+    if (phm == null || phm.getId() != null || phDao == null) {
+      return; // nothing new to record, or already recorded
+    }
+    try {
+      phDao.saveInNewTransaction(phm);
+      logger.info(
+          "Recorded submitted PH message, submittedDataId: {} version: {}",
+          phm.getSubmittedDataId(),
+          phm.getSubmittedVersionNumber());
+    } catch (Exception e) {
+      logger.error(
+          "Report with submittedDataId {} was submitted but could not be recorded immediately; it"
+              + " will be saved when the job commits",
+          phm.getSubmittedDataId(),
+          e);
+    }
   }
 }

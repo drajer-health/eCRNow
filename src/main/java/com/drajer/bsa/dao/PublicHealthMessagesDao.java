@@ -9,6 +9,13 @@ public interface PublicHealthMessagesDao {
 
   PublicHealthMessage saveOrUpdate(PublicHealthMessage message);
 
+  /**
+   * Saves the message in its own new transaction, committed immediately and independent of the
+   * caller's transaction. Used to record a report right after it has been submitted, so that the
+   * record survives even if the rest of the job later fails and rolls back.
+   */
+  PublicHealthMessage saveInNewTransaction(PublicHealthMessage message);
+
   PublicHealthMessage getById(UUID id);
 
   Integer getMaxVersionId(PublicHealthMessage message);

@@ -494,6 +494,47 @@ public class KarProcessorImplTest {
   }
 
   @Test
+  public void applyKarForScheduledJob_phmAlreadyRecorded_skipsDuplicateSaveOrUpdate() {
+    ReflectionTestUtils.setField(karProcessor, "throttlingEnabled", Boolean.FALSE);
+
+    UUID stateId = UUID.randomUUID();
+    UUID ncId = UUID.randomUUID();
+    ScheduledJobData data = jobData(stateId, "job-1", "action-1", "throttle-ctx", null, null);
+    setUpMatchingKarStatusState(stateId, ncId, "kar-1|1.0");
+
+    NotificationContext nc = buildNotificationContext("trigger-1");
+    nc.setNotificationResourceType("Encounter");
+    nc.setNotificationData("{}");
+    when(ncService.getNotificationContext(ncId)).thenReturn(nc);
+    when(jsonParser.parseResource(anyString()))
+        .thenReturn(buildNotificationBundle(new Patient().setId("notified")));
+    when(loadManager.canExecuteJob("throttle-ctx", BsaJobType.DELAYED_REPORTING)).thenReturn(true);
+
+    KnowledgeArtifact kar = mock(KnowledgeArtifact.class);
+    when(karRepositorySystem.getById("kar-1|1.0")).thenReturn(kar);
+    BsaAction action = mock(BsaAction.class);
+    when(kar.getAction("action-1")).thenReturn(action);
+
+    // Simulate the PHM being recorded early (has an ID already).
+    PublicHealthMessage phm = new PublicHealthMessage();
+    phm.setId(UUID.randomUUID());
+    doAnswer(
+            invocation -> {
+              KarProcessingData kd = invocation.getArgument(0);
+              kd.setPhm(phm);
+              return null;
+            })
+        .when(action)
+        .process(any(KarProcessingData.class), eq(ehrInterface));
+
+    karProcessor.applyKarForScheduledJob(data, buildTaskInstance(data), buildExecutionContext(0));
+
+    // PHM already has an ID, so the success-path saveOrUpdate is skipped.
+    verify(phDao, never()).saveOrUpdate(any());
+    verify(karExecutionStateService, times(1)).delete(state);
+  }
+
+  @Test
   public void applyKarForScheduledJob_throttlingEnabledAndBlocked_reschedulesJob() {
     ReflectionTestUtils.setField(karProcessor, "throttlingEnabled", Boolean.TRUE);
 
@@ -848,5 +889,47 @@ public class KarProcessorImplTest {
 
     verify(hsService, never()).markReadOnly(any());
     verify(hsService, never()).saveEhrAccessToken(any());
+  }
+
+  // ==================== PH message recorded right after submission ====================
+
+  @Test
+  public void applyKarForScheduledJob_failsAfterReportWasRecorded_retriesMaxed_noFailedDuplicate() {
+    ReflectionTestUtils.setField(karProcessor, "timerRetries", 1);
+
+    UUID stateId = UUID.randomUUID();
+    UUID ncId = UUID.randomUUID();
+    ScheduledJobData data = jobData(stateId, "job-1", "action-1", null, null, null);
+    setUpMatchingKarStatusState(stateId, ncId, "kar-1|1.0");
+
+    NotificationContext nc = buildNotificationContext("trigger-1");
+    nc.setNotificationResourceType("Encounter");
+    nc.setNotificationData("{}");
+    when(ncService.getNotificationContext(ncId)).thenReturn(nc);
+    when(jsonParser.parseResource(anyString()))
+        .thenReturn(buildNotificationBundle(new Patient().setId("notified")));
+
+    KnowledgeArtifact kar = mock(KnowledgeArtifact.class);
+    when(karRepositorySystem.getById("kar-1|1.0")).thenReturn(kar);
+    BsaAction action = mock(BsaAction.class);
+    when(kar.getAction("action-1")).thenReturn(action);
+    doAnswer(
+            invocation -> {
+              KarProcessingData kd = invocation.getArgument(0);
+              kd.setSubmittedCdaData("<xml>cda</xml>");
+              PublicHealthMessage recorded = new PublicHealthMessage();
+              recorded.setId(UUID.randomUUID()); // recorded right after submission
+              recorded.setSubmittedVersionNumber(3);
+              kd.setPhm(recorded);
+              throw new RuntimeException("failure after the report was sent");
+            })
+        .when(action)
+        .process(any(KarProcessingData.class), eq(ehrInterface));
+
+    karProcessor.applyKarForScheduledJob(data, buildTaskInstance(data), buildExecutionContext(0));
+
+    // No second message with the same version marked FAILED.
+    verify(phDao, never()).saveOrUpdate(any());
+    verify(ncDao, times(1)).saveOrUpdate(nc);
   }
 }

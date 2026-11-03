@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
@@ -36,6 +37,13 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public PublicHealthMessage saveOrUpdate(PublicHealthMessage message) {
+    persistOrMerge(message, message.getId());
+    return message;
+  }
+
+  @Override
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public PublicHealthMessage saveInNewTransaction(PublicHealthMessage message) {
     persistOrMerge(message, message.getId());
     return message;
   }

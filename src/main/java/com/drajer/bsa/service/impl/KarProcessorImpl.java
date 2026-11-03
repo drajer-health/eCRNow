@@ -204,9 +204,6 @@ public class KarProcessorImpl implements KarProcessor {
           kd.setExecutionSequenceId(data.getJobId());
           kd.setNotificationContext(nc);
           HealthcareSetting hs = hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl());
-          // Read-only: Hibernate never writes the shared HealthcareSetting with this job's commit,
-          // even when the token is refreshed. The refreshed token is saved once at the end of the
-          // job, in its own transaction.
           hsService.markReadOnly(hs);
           kd.setHealthcareSetting(hs);
           tokenAtStart = currentToken(kd);
@@ -286,7 +283,7 @@ public class KarProcessorImpl implements KarProcessor {
                     action.process(kd, ehrInterface);
 
                     // persist relevant outputs
-                    if (kd.getPhm() != null) {
+                    if (kd.getPhm() != null && kd.getPhm().getId() == null) {
                       logger.info("Updating database with PhMesssage data ");
                       phDao.saveOrUpdate(kd.getPhm());
                     }
@@ -318,7 +315,11 @@ public class KarProcessorImpl implements KarProcessor {
 
                 } catch (Exception e) {
 
-                  if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
+                  if (kd.getPhm() != null && kd.getPhm().getId() != null) {
+                    logger.info(
+                        "Submitted PH message {} is already recorded; no FAILED message created",
+                        kd.getPhm().getSubmittedDataId());
+                  } else if (StringUtils.isNotBlank(kd.getSubmittedCdaData())) {
                     publicHealthMessage =
                         createPublicHealthMessage(
                             kd, kd.getSubmittedCdaData(), SUBMISSION_STATUS_FAILED);
