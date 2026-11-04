@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - cql-performance
+      - issue-fixes-1155
 
 pr: none
 
