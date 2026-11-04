@@ -1,4 +1,3 @@
-
 package com.drajer.ecrapp.util;
 
 import com.drajer.ecrapp.EcrApp;
@@ -12,18 +11,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootTest(
-        classes = EcrApp.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = EcrApp.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class EcrAppTest {
 
-  @Autowired
-  private RestTemplate restTemplate;
+  @Autowired private RestTemplate restTemplate;
 
-  @LocalServerPort
-  private int port;
+  @LocalServerPort private int port;
 
   @Test
   public void test1() {
@@ -31,15 +25,12 @@ public class EcrAppTest {
 
     try {
       restTemplate.exchange(
-              "http://localhost:" + port + "/api/test2?waitFor=5000",
-              HttpMethod.GET,
-              null,
-              String.class
-      );
+          "http://localhost:" + port + "/api/test2?waitFor=5000",
+          HttpMethod.GET,
+          null,
+          String.class);
     } catch (ResourceAccessException e) {
-      Assertions.assertFalse(
-              e.getMessage().toLowerCase().contains("read timed out")
-      );
+      Assertions.assertFalse(e.getMessage().toLowerCase().contains("read timed out"));
     }
   }
 
@@ -49,18 +40,15 @@ public class EcrAppTest {
 
     try {
       restTemplate.exchange(
-              "http://localhost:" + port + "/api/test2?waitFor=15000",
-              HttpMethod.GET,
-              null,
-              String.class
-      );
+          "http://localhost:" + port + "/api/test2?waitFor=15000",
+          HttpMethod.GET,
+          null,
+          String.class);
 
       Assertions.fail("Expected ResourceAccessException due to read timeout");
 
     } catch (ResourceAccessException e) {
-      Assertions.assertTrue(
-              e.getMessage().toLowerCase().contains("read timed out")
-      );
+      Assertions.assertTrue(e.getMessage().toLowerCase().contains("read timed out"));
     }
   }
 }
