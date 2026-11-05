@@ -32,10 +32,10 @@ services:
       - custom-query.directory=/config/custom-queries
       - jdbc.url=jdbc:postgresql://postgres_container:5432/ecrNow
       - jdbc.username=postgres
-      - jdbc.password=ecr@2024
+      - jdbc.password=ecrnow@2024
       - security.key=test123
     ports:
-      - "8081:8080"
+      - "8081:8081"
 
 networks:
   ecrnow_network:
