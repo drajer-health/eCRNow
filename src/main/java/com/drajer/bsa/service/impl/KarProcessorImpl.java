@@ -30,7 +30,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
@@ -188,7 +187,6 @@ public class KarProcessorImpl implements KarProcessor {
     NotificationContext nc = null;
     PublicHealthMessage publicHealthMessage = null;
     KarProcessingData kd = new KarProcessingData();
-    String tokenAtStart = null;
     try {
 
       KarExecutionState state =
@@ -206,7 +204,6 @@ public class KarProcessorImpl implements KarProcessor {
           HealthcareSetting hs = hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl());
           hsService.markReadOnly(hs);
           kd.setHealthcareSetting(hs);
-          tokenAtStart = currentToken(kd);
           kd.setKar(knowledgeArtifactRepositorySystem.getById(state.getKarUniqueId()));
           kd.setxRequestId(data.getxRequestId());
           kd.setxCorrelationId(nc.getxCorrelationId());
@@ -387,37 +384,9 @@ public class KarProcessorImpl implements KarProcessor {
         logger.error("Retrhowing exception since the retries have not maxed out ");
         throw e;
       }
-    } finally {
-      saveRefreshedEhrAccessToken(kd, tokenAtStart);
     }
 
     // Save Data only if everything is good
-  }
-
-  private static String currentToken(KarProcessingData kd) {
-    HealthcareSetting hs = kd.getHealthcareSetting();
-    return hs != null ? hs.getEhrAccessToken() : null;
-  }
-
-  /**
-   * Saves the EHR access token once, at the end of the job, if the job refreshed it. The save runs
-   * in its own transaction (REQUIRES_NEW), and any failure is logged and ignored, so that a
-   * conflict on the shared HealthcareSetting row can never fail or roll back the eICR job.
-   */
-  void saveRefreshedEhrAccessToken(KarProcessingData kd, String tokenAtStart) {
-    HealthcareSetting hs = kd.getHealthcareSetting();
-    if (hs == null || hs.getId() == null || Objects.equals(tokenAtStart, hs.getEhrAccessToken())) {
-      return;
-    }
-    try {
-      hsService.saveEhrAccessToken(hs);
-    } catch (Exception e) {
-      logger.warn(
-          "Could not save the refreshed EHR access token for HealthcareSetting {}; the job"
-              + " continues and the next job will refresh the token if needed.",
-          hs.getId(),
-          e);
-    }
   }
 
   private PublicHealthMessage getPublicHealthMessage(

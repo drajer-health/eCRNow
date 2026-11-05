@@ -800,7 +800,7 @@ public class KarProcessorImplTest {
     verify(ncDao, never()).saveOrUpdate(any());
   }
 
-  // ==================== EHR access token: saved once at the end of a scheduled job
+  // ==================== HealthcareSetting is read-only during a scheduled job
   // ====================
 
   private com.drajer.bsa.model.HealthcareSetting healthcareSetting(Integer id, String token) {
@@ -810,52 +810,8 @@ public class KarProcessorImplTest {
     return hs;
   }
 
-  private KarProcessingData withHealthcareSetting(com.drajer.bsa.model.HealthcareSetting hs) {
-    KarProcessingData kd = new KarProcessingData();
-    kd.setHealthcareSetting(hs);
-    return kd;
-  }
-
   @Test
-  public void saveRefreshedEhrAccessToken_tokenNotRefreshed_notSaved() {
-    karProcessor.saveRefreshedEhrAccessToken(
-        withHealthcareSetting(healthcareSetting(7, "old")), "old");
-
-    verify(hsService, never()).saveEhrAccessToken(any());
-  }
-
-  @Test
-  public void saveRefreshedEhrAccessToken_tokenRefreshed_savedOnce() {
-    com.drajer.bsa.model.HealthcareSetting hs = healthcareSetting(7, "new");
-
-    karProcessor.saveRefreshedEhrAccessToken(withHealthcareSetting(hs), "old");
-
-    verify(hsService, times(1)).saveEhrAccessToken(hs);
-  }
-
-  @Test
-  public void saveRefreshedEhrAccessToken_saveFails_doesNotThrow() {
-    com.drajer.bsa.model.HealthcareSetting hs = healthcareSetting(7, "new");
-    doThrow(new RuntimeException("Row was updated or deleted by another transaction"))
-        .when(hsService)
-        .saveEhrAccessToken(hs);
-
-    karProcessor.saveRefreshedEhrAccessToken(withHealthcareSetting(hs), "old"); // must not throw
-
-    verify(hsService, times(1)).saveEhrAccessToken(hs);
-  }
-
-  @Test
-  public void saveRefreshedEhrAccessToken_noHealthcareSettingOrNoId_nothingSaved() {
-    karProcessor.saveRefreshedEhrAccessToken(new KarProcessingData(), "old");
-    karProcessor.saveRefreshedEhrAccessToken(
-        withHealthcareSetting(healthcareSetting(null, "new")), "old");
-
-    verify(hsService, never()).saveEhrAccessToken(any());
-  }
-
-  @Test
-  public void applyKarForScheduledJob_healthcareSettingIsReadOnly_tokenUnchanged_notSaved() {
+  public void applyKarForScheduledJob_healthcareSettingIsMarkedReadOnly() {
     UUID stateId = UUID.randomUUID();
     UUID ncId = UUID.randomUUID();
     KarExecutionState state = mock(KarExecutionState.class);
@@ -872,7 +828,6 @@ public class KarProcessorImplTest {
     karProcessor.applyKarForScheduledJob(data, buildTaskInstance(data), buildExecutionContext(0));
 
     verify(hsService).markReadOnly(hs);
-    verify(hsService, never()).saveEhrAccessToken(any());
   }
 
   @Test
@@ -887,7 +842,6 @@ public class KarProcessorImplTest {
     karProcessor.applyKarForNotification(data);
 
     verify(hsService, never()).markReadOnly(any());
-    verify(hsService, never()).saveEhrAccessToken(any());
   }
 
   // ==================== Failure after submission creates FAILED message ====================

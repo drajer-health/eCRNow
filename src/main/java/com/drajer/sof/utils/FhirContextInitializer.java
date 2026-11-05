@@ -15,6 +15,7 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import com.drajer.bsa.ehr.service.EhrHeaderInterceptorInterface;
+import com.drajer.bsa.ehr.service.impl.FhirOperationExecutor;
 import com.drajer.eca.model.EventTypes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
@@ -228,6 +229,28 @@ public class FhirContextInitializer {
     }
 
     return outcome;
+  }
+
+  /**
+   * Creates the resource on the FHIR server, like {@link #submitResource}: failures are logged and
+   * null is returned. The exception is HTTP 401, which is rethrown so that the caller can retry
+   * with a new access token. A 401 means the server did not process the request, so a retry cannot
+   * create a duplicate resource.
+   */
+  public MethodOutcome submitResourceRethrowingUnauthorized(
+      IGenericClient genericClient, Resource resource) {
+    try {
+      return genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
+    } catch (RuntimeException e) {
+      if (FhirOperationExecutor.isUnauthorized(e)) {
+        throw e;
+      }
+      logger.error(
+          "Error in Submitting the resource::::: {}",
+          StringEscapeUtils.escapeJava(resource.getResourceType().name()),
+          e);
+      return null;
+    }
   }
 
   public IBaseResource getResouceById(

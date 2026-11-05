@@ -4,7 +4,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.auth.AuthorizationUtils;
-import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.auth.EhrAccessTokenCache;
+import com.drajer.bsa.auth.EhrAccessTokenException;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.HealthcareSetting;
@@ -17,7 +18,6 @@ import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
@@ -103,9 +103,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String LOG_FHIR_CTX_GET = " Getting FHIR Context for R4";
   private static final String LOG_INIT_FHIR_CLIENT = "Initializing FHIR Client";
 
-  private static final String EHR_ACCESS_TOKEN = "access_token";
-  private static final String EHR_ACCESS_TOKEN_EXPIRES_IN = "expires_in";
-  private static final String EHR_ACCESS_TOKEN_PROVIDER_ID = "uuid";
   private static final String DATE_FORMAT = "yyy-MM-dd";
 
   // Variables for custom queries
@@ -150,8 +147,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   /** The Authorization utils class enables the BSA to get an access token. */
   @Autowired AuthorizationUtils authUtils;
 
-  /** The HealthcareSettings Dao to save Healthcare Setting state as needed */
-  @Autowired HealthcareSettingsDao hsDao;
+  /** Provides the EHR access token for a HealthcareSetting (cached in memory). */
+  @Autowired EhrAccessTokenCache ehrAccessTokenCache;
 
   /** The FHIR Context Initializer necessary to retrieve FHIR resources */
   @Autowired FhirContextInitializer fhirContextInitializer;
@@ -437,25 +434,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
 
-    String accessToken = null;
-
-    if (kd.hasValidAccessToken()) {
-
-      accessToken = kd.getAccessToken();
-      logger.debug(
-          " Reusing Valid Access Token: {}, Expiration Time: {}",
-          StringEscapeUtils.escapeJava(accessToken),
-          kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
-
-    } else {
-
-      retrieveAndUpdateAccessToken(kd);
-      accessToken = kd.getAccessToken();
-      logger.debug(
-          " Generated New Access Token: {}, Expiration Time: {}",
-          StringEscapeUtils.escapeJava(accessToken),
-          kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
-    }
+    String accessToken = ehrAccessTokenCache.getToken(kd.getHealthcareSetting()).accessToken();
 
     return fhirContextInitializer.createClient(
         context,
@@ -463,30 +442,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         accessToken,
         kd.getNotificationContext().getxRequestId(),
         kd.getNotificationContext().getEhrLaunchContext());
-  }
-
-  private void retrieveAndUpdateAccessToken(KarProcessingData data) {
-
-    logger.info(" Retrieving New Access Token since the old one is not valid anymore ");
-    JSONObject tokenResponse = authUtils.getToken(data.getHealthcareSetting());
-
-    String accessToken = tokenResponse.getString(EHR_ACCESS_TOKEN);
-    int expirationDuration = tokenResponse.getInt(EHR_ACCESS_TOKEN_EXPIRES_IN);
-
-    data.getHealthcareSetting().setEhrAccessToken(accessToken);
-    data.getHealthcareSetting().setEhrAccessTokenExpiryDuration(expirationDuration);
-
-    if (tokenResponse.has(EHR_ACCESS_TOKEN_PROVIDER_ID)) {
-      data.getHealthcareSetting()
-          .setDefaultProviderId(tokenResponse.getString(EHR_ACCESS_TOKEN_PROVIDER_ID));
-    }
-
-    long expiresInSec = tokenResponse.getLong(EHR_ACCESS_TOKEN_EXPIRES_IN);
-    Instant expirationInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
-
-    data.getHealthcareSetting().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime));
-
-    hsDao.saveOrUpdate(data.getHealthcareSetting());
   }
 
   /**
@@ -925,11 +880,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   }
 
   /**
-   * Authentication failures must not be treated as "resource not found". If the request still gets
-   * a 401 after FhirOperationExecutor refreshed the token and retried once, rethrow it so the job
-   * fails visibly instead of producing an eICR with missing data.
+   * Authentication failures must not be treated as "resource not found". If no EHR access token can
+   * be obtained, or the request still gets a 401 after FhirOperationExecutor refreshed the token and
+   * retried once, rethrow it so the job fails visibly instead of producing an eICR with missing
+   * data.
    */
   private static void rethrowIfUnauthorized(Exception e) {
+    if (e instanceof EhrAccessTokenException) {
+      throw (EhrAccessTokenException) e;
+    }
     if (e instanceof RuntimeException && FhirOperationExecutor.isUnauthorized(e)) {
       throw (RuntimeException) e;
     }

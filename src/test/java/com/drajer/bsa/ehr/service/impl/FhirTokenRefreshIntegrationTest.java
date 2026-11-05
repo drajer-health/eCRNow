@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.bsa.auth.AuthorizationUtils;
-import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.auth.EhrAccessTokenCache;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
@@ -26,7 +26,6 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * <p>Uses the real FhirContextInitializer, retry template, EcrFhirRetryClient,
  * FhirOperationExecutor and EhrFhirR4QueryServiceImpl against a local HTTP server that plays the
- * EHR. Only the token endpoint (AuthorizationUtils) and the DAO are mocked.
+ * EHR, with a real EhrAccessTokenCache. Only the token endpoint (AuthorizationUtils) is mocked.
  *
  * <p>Every test runs twice: with ecr.fhir.retry.enabled=true (production) and =false.
  */
@@ -75,12 +74,14 @@ public class FhirTokenRefreshIntegrationTest {
   private volatile int expireOldTokenAfterRequest = -1;
   private final AtomicInteger requestCount = new AtomicInteger();
   private final AtomicInteger tokenCalls = new AtomicInteger();
+  private final AtomicInteger issuedTokens = new AtomicInteger();
   private final List<String> requestLog = new CopyOnWriteArrayList<>();
 
   // ----- eCRNow objects under test -----
   private final FhirContext context = FhirContext.forR4();
   private EhrFhirR4QueryServiceImpl service;
   private FhirOperationExecutor executor;
+  private EhrAccessTokenCache tokenCache;
   private FhirContextInitializer fhirContextInitializer;
   private KarProcessingData kd;
   private HealthcareSetting hs;
@@ -108,7 +109,9 @@ public class FhirTokenRefreshIntegrationTest {
     assertNotNull("Patient should be returned after the token refresh", patient);
     assertEquals(2, requestCount.get()); // 401, then 200
     assertEquals(1, tokenCalls.get());
-    assertEquals(NEW_TOKEN, hs.getEhrAccessToken());
+    // The new token is cached: the next request reuses it without calling the token endpoint.
+    assertEquals(NEW_TOKEN, tokenCache.getToken(hs).accessToken());
+    assertEquals(1, tokenCalls.get());
   }
 
   @Test
@@ -203,7 +206,8 @@ public class FhirTokenRefreshIntegrationTest {
     assertNotNull(patient);
     assertEquals(3, requestCount.get()); // old-token 401, new-token 401, new-token-2 200
     assertEquals(2, tokenCalls.get());
-    assertEquals(NEW_TOKEN + "-2", hs.getEhrAccessToken());
+    assertEquals(NEW_TOKEN + "-2", tokenCache.getToken(hs).accessToken());
+    assertEquals(2, tokenCalls.get());
   }
 
   @Test
@@ -250,30 +254,34 @@ public class FhirTokenRefreshIntegrationTest {
     ReflectionTestUtils.setField(fhirContextInitializer, "poolMaxTotal", 100);
     ReflectionTestUtils.setField(fhirContextInitializer, "connectionReqTimeOut", 30);
 
-    // Token endpoint: always issues NEW_TOKEN.
+    // Token endpoint: the first token issued is OLD_TOKEN, then NEW_TOKEN, NEW_TOKEN-2, ...
     AuthorizationUtils authorizationUtils = mock(AuthorizationUtils.class);
     when(authorizationUtils.getToken(any()))
         .thenAnswer(
             inv -> {
-              int n = tokenCalls.incrementAndGet();
-              String token = n == 1 ? NEW_TOKEN : NEW_TOKEN + "-" + n;
+              tokenCalls.incrementAndGet();
+              int n = issuedTokens.incrementAndGet();
+              String token = n == 1 ? OLD_TOKEN : n == 2 ? NEW_TOKEN : NEW_TOKEN + "-" + (n - 1);
               return new JSONObject().put("access_token", token).put("expires_in", 300);
             });
 
-    executor =
-        new FhirOperationExecutor(
-            fhirContextInitializer, authorizationUtils, mock(HealthcareSettingsDao.class));
-    ReflectionTestUtils.setField(executor, "TOKEN_EXPIRY_BUFFER_SECONDS", 60L);
+    // Real cache: 60 s refresh threshold, 5 s lock timeout.
+    tokenCache = new EhrAccessTokenCache(authorizationUtils, 60, 5);
+
+    executor = new FhirOperationExecutor(fhirContextInitializer, tokenCache);
 
     service = new EhrFhirR4QueryServiceImpl();
     ReflectionTestUtils.setField(service, "fhirOperationExecutor", executor);
     ReflectionTestUtils.setField(service, "fhirContextInitializer", fhirContextInitializer);
+    ReflectionTestUtils.setField(service, "ehrAccessTokenCache", tokenCache);
 
-    // eCRNow believes old-token is valid for another hour.
     hs = new HealthcareSetting();
     hs.setFhirServerBaseURL(baseUrl);
-    hs.setEhrAccessToken(OLD_TOKEN);
-    hs.setEhrAccessTokenExpirationTime(new Date(System.currentTimeMillis() + 3_600_000));
+
+    // eCRNow already holds old-token in its cache and believes it is valid for a few minutes.
+    assertEquals(OLD_TOKEN, tokenCache.getToken(hs).accessToken());
+    tokenCalls.set(0);
+
     NotificationContext nc = new NotificationContext();
     nc.setxRequestId("req-1");
     kd = new KarProcessingData();

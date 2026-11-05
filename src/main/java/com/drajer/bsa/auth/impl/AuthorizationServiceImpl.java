@@ -1,6 +1,7 @@
 package com.drajer.bsa.auth.impl;
 
 import com.drajer.bsa.auth.AuthorizationService;
+import com.drajer.bsa.auth.TokenEndpointHttp;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.FhirServerDetails;
 import java.nio.charset.StandardCharsets;
@@ -60,7 +61,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             " System Launch/Multi-tenant System Launch authorization is configured for EHR {}",
             StringEscapeUtils.escapeJava(fsd.getAuthType()));
 
-        RestTemplate resTemplate = new RestTemplate();
+        RestTemplate resTemplate = TokenEndpointHttp.withTimeouts(new RestTemplate());
         HttpHeaders headers = new HttpHeaders();
 
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

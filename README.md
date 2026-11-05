@@ -61,6 +61,14 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | validate.eicr.cdar31                                 | Allows the validation of a eICR based on CDA Release 3.1 for ECR when set to true. 
 | validate.eicr.fhir=false                             | Allows the validation of a eICR based on ECR FHIR IG when set to true.  <br/>                                                                                                |
 | jdbc.url                                             | JDBC URL to connect to the PostgreSQL database. Adjust host, port, and database name as needed. |
+| token.refresh.threshold=20                           | EHR access tokens are cached in memory per HealthcareSetting FHIR server URL and are not stored in the database. A token is refreshed by one job once half its lifetime has passed, while other jobs keep using it; it is no longer used in its last `token.refresh.threshold` seconds (at most half its lifetime). |
+| ecr.ehr.token.lock-timeout-seconds=45                | Maximum seconds a job waits while another job obtains the EHR access token for the same FHIR server. Keep it above 40 seconds (the longest possible token request). |
+| hikari.maximum_pool_size                             | Maximum number of database connections per application instance. Set it to `db-scheduler.threads` + 2 to 4. See [2.7 Database Connection Pool Sizing](#27-database-connection-pool-sizing). |
+| hikari.minimum_idle                                  | Minimum number of idle connections kept in the pool. |
+| hikari.connection_timeout                            | Milliseconds a thread waits for a free connection before failing. Recommended `30000` (30 seconds), so an exhausted pool shows up as an error quickly instead of stalling jobs. |
+| hikari.idle_timeout                                  | Milliseconds an unused connection can stay idle before it is closed. Must be lower than `hikari.max_lifetime`. |
+| hikari.max_lifetime                                  | Maximum lifetime of a connection in milliseconds. Must be higher than `hikari.idle_timeout`, for example `1800000` (30 minutes). |
+| hikari.validation_timeout                            | Milliseconds allowed for checking that a connection is still alive. |
 | logging.file.name                                    | Path to the log file where application debugging and runtime logs will be stored. |
 | ersd.file.location                                   | Specifies the file path for the ERSD (Electronic Reporting and Surveillance Distribution) JSON used by the systemLaunch API in Release 2.0. For Release 3.x, this should be set to an invalid path (e.g., `//dummy.json`) as the configuration is not required. |
 | authorization.service.impl.class                     | Implementation class used to obtain tokens for HTTP headers when invoking EHR RESTful endpoints. |
@@ -73,7 +81,7 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | db-scheduler.table-name                              | Table name in the database to store scheduled tasks. |
 | db-scheduler.immediate-execution-enabled=false       | Whether tasks should execute immediately after scheduling. |
 | db-scheduler.scheduler-name=eCRNow-Instance-1        | Name for the scheduler instance (useful for multi-node deployments). |
-| db-scheduler.threads=10                              | Number of threads to use for task execution. |
+| db-scheduler.threads=10                              | Number of threads to use for task execution. Each thread uses a database connection, so `hikari.maximum_pool_size` must be raised together with this value. See [2.7 Database Connection Pool Sizing](#27-database-connection-pool-sizing). |
 | db-scheduler.delay-startup-until-context-ready=false | Whether scheduler startup should wait until application context is fully ready. |
 | timer.retries                                        | Number of retry attempts for timers in case of exceptions. |
 | direct.tls.version=TLSv1.2                           | TLS version used for secure Direct Protocol communication. |
@@ -110,6 +118,27 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | mail.imap.ssl.trust                                  | Specifies trusted IMAP SSL hosts. Setting to `*` trusts all hosts; restrict to a specific hostname in production. |
 | mail.imap.connectionpoolsize                         | Number of IMAP connections to maintain in the pool. Default value is `1`. Increase for higher-throughput environments. |
 | mail.imap.ssl.protocols                              | Comma-separated list of SSL/TLS protocol versions allowed for IMAP (e.g. `TLSv1.2`). Leave empty to use JVM defaults. |
+
+## 2.7 Database Connection Pool Sizing
+
+Always keep the database connection pool 2 to 4 connections larger than the number of scheduler threads. These reserved connections ensure that `launchPatient` requests, notifications, and other database operations always have a connection available while scheduled jobs are running.
+
+```text
+hikari.maximum_pool_size = db-scheduler.threads + 2 to 4
+```
+
+Use `+ 2` as the minimum. Use `+ 4` when the EHR sends a high volume of notifications or launch requests.
+
+| db-scheduler.threads | hikari.maximum_pool_size |
+|---|---|
+| 5 | 7 to 9 |
+| 8 | 10 to 12 |
+| 10 | 12 to 14 |
+
+- Never set `hikari.maximum_pool_size` to less than `db-scheduler.threads + 2`.
+- Always change both properties together.
+- For multiple instances, `hikari.maximum_pool_size` × number of instances must stay below the PostgreSQL `max_connections` limit.
+
 ---
 # 3. eCRNow-UI Project and its relationship to eCRNow:
 The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.

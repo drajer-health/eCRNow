@@ -7,9 +7,13 @@ import static org.mockito.Mockito.*;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.exceptions.UnclassifiedServerFailureException;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.drajer.bsa.auth.EhrAccessTokenCache;
+import com.drajer.bsa.auth.EhrAccessTokenCache.EhrAccessToken;
+import com.drajer.bsa.auth.EhrAccessTokenException;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
@@ -24,6 +28,7 @@ import com.drajer.cda.parser.RrParser;
 import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.sof.utils.FhirContextInitializer;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -32,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -46,6 +52,7 @@ public class RrReceiverImplTest {
   @Mock private EhrQueryService ehrService;
   @Mock private FhirContextInitializer fhirContextInitializer;
   @Mock private NotificationContextDao ncDao;
+  @Mock private EhrAccessTokenCache ehrAccessTokenCache;
 
   private PublicHealthMessage phm;
   private HealthcareSetting hs;
@@ -75,6 +82,7 @@ public class RrReceiverImplTest {
     docRef = new DocumentReference();
     tokenResponse = new JSONObject();
     tokenResponse.put("access_token", "mockToken");
+    when(ehrAccessTokenCache.getToken(any())).thenReturn(token("mockToken", null));
 
     methodOutcome = new MethodOutcome();
     methodOutcome.setCreated(true);
@@ -323,20 +331,25 @@ public class RrReceiverImplTest {
         localPhm.getResponseProcessingStatus());
   }
 
-  @Test(expected = ResponseStatusException.class)
+  @Test
   public void testPostDocRefToEhr_Unauthorized() {
 
-    when(ehrService.getAuthorizationToken(hs)).thenReturn(null);
+    when(ehrAccessTokenCache.getToken(hs))
+        .thenThrow(new EhrAccessTokenException("token endpoint down"));
 
-    rrReceiver.postDocRefToEhr(docRef, phm, hs, rrModel);
+    ResponseStatusException thrown =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> rrReceiver.postDocRefToEhr(docRef, phm, hs, rrModel));
+
+    assertEquals(401, thrown.getStatusCode().value());
+    verify(fhirContextInitializer, never()).submitResourceRethrowingUnauthorized(any(), any());
   }
 
   @Test(expected = UnclassifiedServerFailureException.class)
   public void testPostDocRefToEhr_FailurePosting() throws JSONException {
 
-    tokenResponse.put("access_token", "mockAccessToken");
-
-    when(ehrService.getAuthorizationToken(hs)).thenReturn(tokenResponse);
+    when(ehrAccessTokenCache.getToken(hs)).thenReturn(token("mockAccessToken", null));
     when(ncDao.getNotificationContextById(any())).thenReturn(new NotificationContext());
 
     when(fhirContextInitializer.getFhirContext(anyString())).thenReturn(mock(FhirContext.class));
@@ -346,7 +359,8 @@ public class RrReceiverImplTest {
 
     MethodOutcome localMethodOutcome = new MethodOutcome();
     localMethodOutcome.setCreated(false);
-    when(fhirContextInitializer.submitResource(any(), eq(docRef))).thenReturn(localMethodOutcome);
+    when(fhirContextInitializer.submitResourceRethrowingUnauthorized(any(), eq(docRef)))
+        .thenReturn(localMethodOutcome);
 
     rrReceiver.postDocRefToEhr(docRef, phm, hs, rrModel);
   }
@@ -354,13 +368,13 @@ public class RrReceiverImplTest {
   @Test
   public void testPostDocRefToEhr_Success() throws JSONException {
 
-    when(ehrService.getAuthorizationToken(hs)).thenReturn(tokenResponse);
     when(ncDao.getNotificationContextById(any(UUID.class))).thenReturn(new NotificationContext());
     when(fhirContextInitializer.getFhirContext(anyString())).thenReturn(mock(FhirContext.class));
     when(fhirContextInitializer.createClient(
             any(), anyString(), anyString(), anyString(), anyString()))
         .thenReturn(mock(IGenericClient.class));
-    when(fhirContextInitializer.submitResource(any(), any())).thenReturn(methodOutcome);
+    when(fhirContextInitializer.submitResourceRethrowingUnauthorized(any(), any()))
+        .thenReturn(methodOutcome);
 
     try {
       rrReceiver.postDocRefToEhr(docRef, phm, hs, rrModel);
@@ -368,10 +382,72 @@ public class RrReceiverImplTest {
       fail("Exception should not be thrown");
     }
 
-    verify(ehrService).getAuthorizationToken(hs);
-    verify(fhirContextInitializer).submitResource(any(), any());
+    verify(ehrAccessTokenCache).getToken(hs);
+    verify(ehrService, never()).getAuthorizationToken(any());
+    verify(fhirContextInitializer)
+        .createClient(
+            any(), eq("http://fhirserver.com"), eq("mockToken"), eq("testRequestId"), any());
+    verify(fhirContextInitializer).submitResourceRethrowingUnauthorized(any(), any());
+    verify(ehrAccessTokenCache, never()).refreshAfterUnauthorized(any(), any());
+  }
 
-    assertEquals("mockToken", tokenResponse.getString("access_token"));
+  @Test
+  public void testPostDocRefToEhr_401_retriesOnceWithNewToken() {
+
+    when(ncDao.getNotificationContextById(any(UUID.class))).thenReturn(new NotificationContext());
+    when(fhirContextInitializer.getFhirContext(anyString())).thenReturn(mock(FhirContext.class));
+    when(fhirContextInitializer.submitResourceRethrowingUnauthorized(any(), any()))
+        .thenThrow(new AuthenticationException("token revoked"));
+    when(ehrAccessTokenCache.refreshAfterUnauthorized(hs, "mockToken"))
+        .thenReturn(token("freshToken", null));
+    when(fhirContextInitializer.submitResource(any(), any())).thenReturn(methodOutcome);
+
+    rrReceiver.postDocRefToEhr(docRef, phm, hs, rrModel);
+
+    InOrder inOrder = inOrder(fhirContextInitializer, ehrAccessTokenCache);
+    inOrder.verify(fhirContextInitializer).submitResourceRethrowingUnauthorized(any(), any());
+    inOrder.verify(ehrAccessTokenCache).refreshAfterUnauthorized(hs, "mockToken");
+    inOrder
+        .verify(fhirContextInitializer)
+        .createClient(any(), eq("http://fhirserver.com"), eq("freshToken"), any(), any());
+    inOrder.verify(fhirContextInitializer).submitResource(any(), any());
+    assertEquals("12345", phm.getResponseEhrDocRefId());
+  }
+
+  @Test
+  public void testPostDocRefToEhr_401_andNewTokenUnavailable_throwsUnauthorized() {
+
+    when(ncDao.getNotificationContextById(any(UUID.class))).thenReturn(new NotificationContext());
+    when(fhirContextInitializer.getFhirContext(anyString())).thenReturn(mock(FhirContext.class));
+    when(fhirContextInitializer.submitResourceRethrowingUnauthorized(any(), any()))
+        .thenThrow(new AuthenticationException("token revoked"));
+    when(ehrAccessTokenCache.refreshAfterUnauthorized(hs, "mockToken"))
+        .thenThrow(new EhrAccessTokenException("token endpoint down"));
+
+    ResponseStatusException thrown =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> rrReceiver.postDocRefToEhr(docRef, phm, hs, rrModel));
+
+    assertEquals(401, thrown.getStatusCode().value());
+    verify(fhirContextInitializer, never()).submitResource(any(), any());
+  }
+
+  @Test
+  public void testPostDocRefToEhr_secondAttemptAlsoFails_throwsServerFailure() {
+
+    when(ncDao.getNotificationContextById(any(UUID.class))).thenReturn(new NotificationContext());
+    when(fhirContextInitializer.getFhirContext(anyString())).thenReturn(mock(FhirContext.class));
+    when(fhirContextInitializer.submitResourceRethrowingUnauthorized(any(), any()))
+        .thenThrow(new AuthenticationException("token revoked"));
+    when(ehrAccessTokenCache.refreshAfterUnauthorized(hs, "mockToken"))
+        .thenReturn(token("freshToken", null));
+    when(fhirContextInitializer.submitResource(any(), any())).thenReturn(null);
+
+    assertThrows(
+        UnclassifiedServerFailureException.class,
+        () -> rrReceiver.postDocRefToEhr(docRef, phm, hs, rrModel));
+    verify(ehrAccessTokenCache, times(1)).refreshAfterUnauthorized(any(), any());
   }
 
   @Test
@@ -407,6 +483,8 @@ public class RrReceiverImplTest {
 
     assertNotNull(result);
     assertEquals(expectedDocRef, result);
+    // The token is obtained first, so a provider id from the token response is on the setting.
+    verify(ehrAccessTokenCache).getToken(localHs);
 
     verify(ehrService)
         .constructR4DocumentReference(
@@ -438,5 +516,31 @@ public class RrReceiverImplTest {
     verify(ehrService, never())
         .constructR4DocumentReference(
             any(), any(), any(), any(), any(), any(), any(), any(), any());
+    verify(ehrAccessTokenCache, never()).getToken(any());
+  }
+
+  @Test
+  public void testConstructDocumentReference_tokenFailure_isOnlyLoggedAndDocRefIsStillBuilt() {
+    PublicHealthMessage localPhm = new PublicHealthMessage();
+    localPhm.setResponseProcessingInstruction(EicrTypes.ReportabilityType.RRVS2.toString());
+
+    HealthcareSetting localHs = new HealthcareSetting();
+    localHs.setDefaultProviderId("provider123");
+    when(ehrAccessTokenCache.getToken(localHs))
+        .thenThrow(new EhrAccessTokenException("token endpoint down"));
+
+    DocumentReference expectedDocRef = new DocumentReference();
+    when(ehrService.constructR4DocumentReference(
+            any(), any(), any(), eq("provider123"), any(), any(), any(), any(), any()))
+        .thenReturn(expectedDocRef);
+
+    DocumentReference result =
+        rrReceiver.constructDocumentReference(localPhm, new CdaRrModel(), localHs, "<xml/>");
+
+    assertSame(expectedDocRef, result);
+  }
+
+  private static EhrAccessToken token(String accessToken, String providerId) {
+    return new EhrAccessToken(accessToken, Instant.now().plusSeconds(300), providerId);
   }
 }

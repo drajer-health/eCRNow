@@ -1,6 +1,7 @@
 package com.drajer.bsa.auth.impl;
 
 import com.drajer.bsa.auth.AuthorizationService;
+import com.drajer.bsa.auth.TokenEndpointHttp;
 import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.sof.model.Response;
 import com.jayway.jsonpath.JsonPath;
@@ -70,7 +71,7 @@ public class PasswordAuthorizationServiceImpl implements AuthorizationService {
    * @throws KeyStoreException in case of invalid public/private keys
    */
   public JSONObject connectToServer(String url, FhirServerDetails fsd) throws KeyStoreException {
-    RestTemplate resTemplate = new RestTemplate();
+    RestTemplate resTemplate = TokenEndpointHttp.withTimeouts(new RestTemplate());
     String tokenEndpoint;
 
     tokenEndpoint = fsd.getTokenUrl();
@@ -99,7 +100,7 @@ public class PasswordAuthorizationServiceImpl implements AuthorizationService {
    * @return token endpoint from the server's capability statement
    */
   public String getTokenEndpoint(String url) {
-    RestTemplate resTemplate = new RestTemplate();
+    RestTemplate resTemplate = TokenEndpointHttp.withTimeouts(new RestTemplate());
     try {
       ResponseEntity<String> res =
           resTemplate.getForEntity(String.format("%s/%s", url, WELL_KNOWN), String.class);

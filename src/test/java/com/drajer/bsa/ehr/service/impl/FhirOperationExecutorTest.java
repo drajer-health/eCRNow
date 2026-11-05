@@ -7,6 +7,8 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,8 +20,9 @@ import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import com.drajer.bsa.auth.AuthorizationUtils;
-import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.auth.EhrAccessTokenCache;
+import com.drajer.bsa.auth.EhrAccessTokenCache.EhrAccessToken;
+import com.drajer.bsa.auth.EhrAccessTokenException;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
@@ -27,18 +30,19 @@ import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.sof.utils.FhirContextInitializer;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/** Unit tests for {@link FhirOperationExecutor}. */
+/**
+ * Unit tests for {@link FhirOperationExecutor}. Token caching and expiry are covered by
+ * EhrAccessTokenCacheTest; here the cache is mocked.
+ */
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class FhirOperationExecutorTest {
 
@@ -47,8 +51,7 @@ public class FhirOperationExecutorTest {
   private static final String EHR_CONTEXT = "ehr-launch-context";
 
   @Mock private FhirContextInitializer fhirContextInitializer;
-  @Mock private AuthorizationUtils authorizationUtils;
-  @Mock private HealthcareSettingsDao healthcareSettingsDao;
+  @Mock private EhrAccessTokenCache tokenCache;
 
   @Mock private KarProcessingData data;
   @Mock private HealthcareSetting healthcareSetting;
@@ -62,11 +65,7 @@ public class FhirOperationExecutorTest {
 
   @Before
   public void setUp() {
-    executor =
-        new FhirOperationExecutor(
-            fhirContextInitializer, authorizationUtils, healthcareSettingsDao);
-    // @Value("${token.refresh.threshold:60}") is not injected outside Spring.
-    ReflectionTestUtils.setField(executor, "TOKEN_EXPIRY_BUFFER_SECONDS", 60L);
+    executor = new FhirOperationExecutor(fhirContextInitializer, tokenCache);
 
     when(data.getHealthcareSetting()).thenReturn(healthcareSetting);
     when(data.getNotificationContext()).thenReturn(notificationContext);
@@ -78,82 +77,43 @@ public class FhirOperationExecutorTest {
     when(fhirContextInitializer.createClient(any(), any(), any(), any(), any()))
         .thenReturn(firstClient, retryClient);
 
-    when(authorizationUtils.getToken(healthcareSetting))
-        .thenReturn(tokenResponse("fresh-token", 3600, "provider-123"));
+    when(tokenCache.getToken(healthcareSetting)).thenReturn(token("valid-token"));
+    // Every refresh after a 401 returns a different token: fresh-1, fresh-2, fresh-3.
+    when(tokenCache.refreshAfterUnauthorized(eq(healthcareSetting), anyString()))
+        .thenReturn(token("fresh-1"), token("fresh-2"), token("fresh-3"));
   }
 
-  // ---------------- ensureValidAccessToken / hasUsableAccessToken ----------------
+  // ---------------- token from the cache ----------------
 
   @Test
-  public void execute_validToken_runsOperationWithoutRefreshing() {
-    validToken();
-
+  public void execute_usesTheCachedTokenWithoutRefreshing() {
     String result = executor.execute(data, fhirContext, client -> "result-" + name(client));
 
     assertEquals("result-first", result);
-    verify(authorizationUtils, never()).getToken(any());
-    verify(healthcareSettingsDao, never()).saveOrUpdate(any());
+    verify(tokenCache, times(1)).getToken(healthcareSetting);
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer)
         .createClient(fhirContext, BASE_URL, "valid-token", REQUEST_ID, EHR_CONTEXT);
   }
 
   @Test
-  public void execute_missingToken_refreshesBeforeRunning() {
-    when(healthcareSetting.getEhrAccessToken()).thenReturn(null);
-    when(healthcareSetting.getEhrAccessTokenExpirationTime()).thenReturn(inSeconds(3600));
+  public void execute_tokenCannotBeObtained_throwsWithoutCallingTheEhr() {
+    EhrAccessTokenException failure = new EhrAccessTokenException("token endpoint down");
+    when(tokenCache.getToken(healthcareSetting)).thenThrow(failure);
 
-    assertEquals("ok", executor.execute(data, fhirContext, client -> "ok"));
+    EhrAccessTokenException thrown =
+        assertThrows(
+            EhrAccessTokenException.class,
+            () -> executor.execute(data, fhirContext, client -> "never"));
 
-    verifyTokenRefreshedOnce(true);
+    assertSame(failure, thrown);
+    verify(fhirContextInitializer, never()).createClient(any(), any(), any(), any(), any());
   }
 
-  @Test
-  public void execute_blankToken_refreshesBeforeRunning() {
-    when(healthcareSetting.getEhrAccessToken()).thenReturn("   ");
-    when(healthcareSetting.getEhrAccessTokenExpirationTime()).thenReturn(inSeconds(3600));
-
-    executor.execute(data, fhirContext, client -> "ok");
-
-    verifyTokenRefreshedOnce(true);
-  }
-
-  @Test
-  public void execute_missingExpirationTime_refreshesBeforeRunning() {
-    when(healthcareSetting.getEhrAccessToken()).thenReturn("valid-token");
-    when(healthcareSetting.getEhrAccessTokenExpirationTime()).thenReturn(null);
-
-    executor.execute(data, fhirContext, client -> "ok");
-
-    verifyTokenRefreshedOnce(true);
-  }
-
-  @Test
-  public void execute_tokenExpiringWithinTheBuffer_refreshesBeforeRunning() {
-    when(healthcareSetting.getEhrAccessToken()).thenReturn("valid-token");
-    // 30 seconds left, but the buffer is 60 seconds -> treated as expired
-    when(healthcareSetting.getEhrAccessTokenExpirationTime()).thenReturn(inSeconds(30));
-
-    executor.execute(data, fhirContext, client -> "ok");
-
-    verifyTokenRefreshedOnce(true);
-  }
-
-  @Test
-  public void execute_tokenResponseWithoutProviderId_doesNotSetDefaultProvider() {
-    when(healthcareSetting.getEhrAccessToken()).thenReturn(null);
-    when(authorizationUtils.getToken(healthcareSetting))
-        .thenReturn(tokenResponse("fresh-token", 3600, null));
-
-    executor.execute(data, fhirContext, client -> "ok");
-
-    verifyTokenRefreshedOnce(false);
-  }
-
-  // ---------------- execute: error handling and the single 401 retry ----------------
+  // ---------------- execute: error handling and the 401 retry ----------------
 
   @Test
   public void execute_non401ServerError_isRethrownWithoutRetry() {
-    validToken();
     InternalErrorException serverError = new InternalErrorException("server error");
 
     InternalErrorException thrown =
@@ -168,14 +128,12 @@ public class FhirOperationExecutorTest {
                     }));
 
     assertSame(serverError, thrown);
-    verify(authorizationUtils, never()).getToken(any());
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(1)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void execute_otherRuntimeException_isNotCaught() {
-    validToken();
-
     assertThrows(
         IllegalStateException.class,
         () ->
@@ -186,12 +144,11 @@ public class FhirOperationExecutorTest {
                   throw new IllegalStateException("socket closed");
                 }));
 
-    verify(authorizationUtils, never()).getToken(any());
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
   }
 
   @Test
   public void execute_401ThenSuccess_refreshesTokenAndRetriesWithANewClient() {
-    validToken();
     List<IGenericClient> usedClients = new ArrayList<>();
 
     String result =
@@ -208,13 +165,19 @@ public class FhirOperationExecutorTest {
 
     assertEquals("result-retry", result);
     assertEquals(List.of(firstClient, retryClient), usedClients);
-    verifyTokenRefreshedOnce(true);
-    verify(fhirContextInitializer, times(2)).createClient(any(), any(), any(), any(), any());
+    verify(tokenCache, times(1)).refreshAfterUnauthorized(healthcareSetting, "valid-token");
+
+    InOrder order = inOrder(fhirContextInitializer);
+    order
+        .verify(fhirContextInitializer)
+        .createClient(fhirContext, BASE_URL, "valid-token", REQUEST_ID, EHR_CONTEXT);
+    order
+        .verify(fhirContextInitializer)
+        .createClient(fhirContext, BASE_URL, "fresh-1", REQUEST_ID, EHR_CONTEXT);
   }
 
   @Test
   public void execute_401TwiceInARow_rethrowsTheRetryErrorAndRefreshesOnlyOnce() {
-    validToken();
     AuthenticationException retryError = new AuthenticationException("still unauthorized");
 
     BaseServerResponseException thrown =
@@ -233,13 +196,12 @@ public class FhirOperationExecutorTest {
 
     assertSame(retryError, thrown);
     assertEquals(401, thrown.getStatusCode());
-    verifyTokenRefreshedOnce(true);
+    verify(tokenCache, times(1)).refreshAfterUnauthorized(healthcareSetting, "valid-token");
     verify(fhirContextInitializer, times(2)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void execute_401ThenServerError_rethrowsTheServerError() {
-    validToken();
     InternalErrorException retryError = new InternalErrorException("server error on retry");
 
     BaseServerResponseException thrown =
@@ -258,7 +220,28 @@ public class FhirOperationExecutorTest {
 
     assertSame(retryError, thrown);
     assertEquals(500, thrown.getStatusCode());
-    verifyTokenRefreshedOnce(true);
+    verify(tokenCache, times(1)).refreshAfterUnauthorized(any(), any());
+  }
+
+  @Test
+  public void execute_401AndTokenRefreshFails_throwsTheTokenError() {
+    EhrAccessTokenException failure = new EhrAccessTokenException("token endpoint down");
+    when(tokenCache.refreshAfterUnauthorized(eq(healthcareSetting), anyString()))
+        .thenThrow(failure);
+
+    EhrAccessTokenException thrown =
+        assertThrows(
+            EhrAccessTokenException.class,
+            () ->
+                executor.execute(
+                    data,
+                    fhirContext,
+                    client -> {
+                      throw new AuthenticationException("expired token");
+                    }));
+
+    assertSame(failure, thrown);
+    verify(fhirContextInitializer, times(1)).createClient(any(), any(), any(), any(), any());
   }
 
   // ------- ecr.fhir.retry.enabled=true: EcrFhirRetryClient wraps errors in RetryableException
@@ -266,7 +249,6 @@ public class FhirOperationExecutorTest {
 
   @Test
   public void execute_wrapped401ThenSuccess_refreshesTokenAndRetriesWithANewClient() {
-    validToken();
     List<IGenericClient> usedClients = new ArrayList<>();
 
     String result =
@@ -283,13 +265,12 @@ public class FhirOperationExecutorTest {
 
     assertEquals("result-retry", result);
     assertEquals(List.of(firstClient, retryClient), usedClients);
-    verifyTokenRefreshedOnce(true);
+    verify(tokenCache, times(1)).refreshAfterUnauthorized(healthcareSetting, "valid-token");
     verify(fhirContextInitializer, times(2)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void execute_wrapped401TwiceInARow_rethrowsTheRetryErrorAndRefreshesOnlyOnce() {
-    validToken();
     RetryableException retryError = wrapped401();
 
     RetryableException thrown =
@@ -305,13 +286,12 @@ public class FhirOperationExecutorTest {
 
     assertSame(retryError, thrown); // original status and cause are preserved
     assertEquals(401, thrown.getHttpResponseStatusCode());
-    verifyTokenRefreshedOnce(true);
+    verify(tokenCache, times(1)).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(2)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void execute_wrappedNon401ServerError_isRethrownWithoutRetry() {
-    validToken();
     RetryableException serverError =
         new RetryableException(new InternalErrorException("server error"), 500, "GET");
 
@@ -327,7 +307,7 @@ public class FhirOperationExecutorTest {
                     }));
 
     assertSame(serverError, thrown);
-    verify(authorizationUtils, never()).getToken(any());
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(1)).createClient(any(), any(), any(), any(), any());
   }
 
@@ -368,7 +348,6 @@ public class FhirOperationExecutorTest {
 
   @Test
   public void retryOn401_zero_throwsFirst401WithoutRefreshing() {
-    validToken();
     setMaxAttempts(0);
     RetryableException first401 = wrapped401();
 
@@ -384,13 +363,12 @@ public class FhirOperationExecutorTest {
                     }));
 
     assertSame(first401, thrown);
-    verify(authorizationUtils, never()).getToken(any());
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(1)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void retryOn401_two_succeedsOnTheSecondRetry() {
-    validToken();
     setMaxAttempts(2);
     List<Integer> calls = new ArrayList<>();
 
@@ -408,14 +386,16 @@ public class FhirOperationExecutorTest {
 
     assertEquals("ok", result);
     assertEquals(3, calls.size());
-    verify(authorizationUtils, times(2)).getToken(healthcareSetting);
-    verify(healthcareSettingsDao, times(2)).saveOrUpdate(healthcareSetting);
+    // Each refresh reports the token that was just rejected.
+    InOrder order = inOrder(tokenCache);
+    order.verify(tokenCache).refreshAfterUnauthorized(healthcareSetting, "valid-token");
+    order.verify(tokenCache).refreshAfterUnauthorized(healthcareSetting, "fresh-1");
+    verify(tokenCache, times(2)).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(3)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void retryOn401_two_always401_refreshesTwiceThenThrowsTheLastError() {
-    validToken();
     setMaxAttempts(2);
     List<RetryableException> raised = new ArrayList<>();
 
@@ -434,13 +414,12 @@ public class FhirOperationExecutorTest {
 
     assertEquals(3, raised.size());
     assertSame(raised.get(2), thrown);
-    verify(authorizationUtils, times(2)).getToken(any());
+    verify(tokenCache, times(2)).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(3)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void retryOn401_aboveMaximum_isLimitedToThree() {
-    validToken();
     setMaxAttempts(10);
     assertEquals(3, executor.getEffectiveRetryOn401MaxAttempts());
 
@@ -454,13 +433,12 @@ public class FhirOperationExecutorTest {
                   throw wrapped401();
                 }));
 
-    verify(authorizationUtils, times(3)).getToken(any());
+    verify(tokenCache, times(3)).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(4)).createClient(any(), any(), any(), any(), any());
   }
 
   @Test
   public void retryOn401_negative_isTreatedAsZero() {
-    validToken();
     setMaxAttempts(-1);
     assertEquals(0, executor.getEffectiveRetryOn401MaxAttempts());
 
@@ -474,12 +452,11 @@ public class FhirOperationExecutorTest {
                   throw new AuthenticationException("expired token");
                 }));
 
-    verify(authorizationUtils, never()).getToken(any());
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
   }
 
   @Test
   public void retryOn401_doesNotAffectNon401Errors() {
-    validToken();
     setMaxAttempts(3);
     InternalErrorException serverError = new InternalErrorException("server error");
 
@@ -495,7 +472,7 @@ public class FhirOperationExecutorTest {
                     }));
 
     assertSame(serverError, thrown);
-    verify(authorizationUtils, never()).getToken(any());
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(1)).createClient(any(), any(), any(), any(), any());
   }
 
@@ -509,41 +486,8 @@ public class FhirOperationExecutorTest {
     return new RetryableException(new AuthenticationException("HTTP 401 Unauthorized"), 401, "GET");
   }
 
-  private void validToken() {
-    when(healthcareSetting.getEhrAccessToken()).thenReturn("valid-token");
-    when(healthcareSetting.getEhrAccessTokenExpirationTime()).thenReturn(inSeconds(3600));
-  }
-
-  private void verifyTokenRefreshedOnce(boolean withProviderId) {
-    verify(authorizationUtils, times(1)).getToken(healthcareSetting);
-    verify(healthcareSetting).setEhrAccessToken("fresh-token");
-    verify(healthcareSetting).setEhrAccessTokenExpiryDuration(3600);
-
-    ArgumentCaptor<Date> expiration = ArgumentCaptor.forClass(Date.class);
-    verify(healthcareSetting).setEhrAccessTokenExpirationTime(expiration.capture());
-    long secondsLeft = (expiration.getValue().getTime() - System.currentTimeMillis()) / 1000L;
-    assertTrue("expiry about one hour ahead, was " + secondsLeft, secondsLeft > 3500);
-
-    if (withProviderId) {
-      verify(healthcareSetting).setDefaultProviderId("provider-123");
-    } else {
-      verify(healthcareSetting, never()).setDefaultProviderId(anyString());
-    }
-    verify(healthcareSettingsDao, times(1)).saveOrUpdate(healthcareSetting);
-  }
-
-  private static JSONObject tokenResponse(String token, long expiresIn, String providerId) {
-    JSONObject json = new JSONObject();
-    json.put("access_token", token);
-    json.put("expires_in", expiresIn);
-    if (providerId != null) {
-      json.put("uuid", providerId);
-    }
-    return json;
-  }
-
-  private static Date inSeconds(long seconds) {
-    return Date.from(Instant.now().plusSeconds(seconds));
+  private static EhrAccessToken token(String value) {
+    return new EhrAccessToken(value, Instant.now().plusSeconds(3600), null);
   }
 
   private String name(IGenericClient client) {

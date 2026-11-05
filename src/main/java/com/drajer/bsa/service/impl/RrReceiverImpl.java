@@ -5,10 +5,13 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnclassifiedServerFailureException;
+import com.drajer.bsa.auth.EhrAccessTokenCache;
+import com.drajer.bsa.auth.EhrAccessTokenException;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.ehr.service.impl.FhirOperationExecutor;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PublicHealthMessage;
@@ -27,7 +30,6 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +54,6 @@ public class RrReceiverImpl implements RrReceiver {
 
   private final Logger logger = LoggerFactory.getLogger(RrReceiverImpl.class);
 
-  private static final String ACCESS_TOKEN = "access_token";
-
   @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired PublicHealthMessagesDao phDao;
@@ -65,6 +65,8 @@ public class RrReceiverImpl implements RrReceiver {
   @Autowired FhirContextInitializer fhirContextInitializer;
 
   @Autowired NotificationContextDao ncDao;
+
+  @Autowired EhrAccessTokenCache ehrAccessTokenCache;
 
   /**
    * The method is used to handle a failure MDN that is received from the Direct channel.
@@ -271,8 +273,14 @@ public class RrReceiverImpl implements RrReceiver {
           "PublicHealthMessage and HealthcareSetting are required to post the RR to the EHR");
     }
 
-    // Get the AccessToken using the HealthcareSetting
-    JSONObject tokenResponse = ehrService.getAuthorizationToken(hs);
+    // Get the EHR access token for the HealthcareSetting (cached in memory, refreshed as needed).
+    String accessToken;
+    try {
+      accessToken = ehrAccessTokenCache.getToken(hs).accessToken();
+    } catch (EhrAccessTokenException e) {
+      throw unauthorized(e);
+    }
+
     String ehrContext = null;
     if (phm.getNotificationId() != null) {
       NotificationContext nc =
@@ -280,44 +288,75 @@ public class RrReceiverImpl implements RrReceiver {
       if (nc != null) ehrContext = nc.getEhrLaunchContext();
     }
 
-    if (tokenResponse != null) {
+    String fhirVersion = FhirVersionEnum.R4.toString();
 
-      String accessToken = tokenResponse.getString(ACCESS_TOKEN);
+    // Initialize the FHIR Context based on FHIR Version
+    FhirContext context = fhirContextInitializer.getFhirContext(fhirVersion);
 
-      String fhirVersion = FhirVersionEnum.R4.toString();
+    // Initialize the Client
+    IGenericClient client =
+        fhirContextInitializer.createClient(
+            context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId(), ehrContext);
 
-      // Initialize the FHIR Context based on FHIR Version
-      FhirContext context = fhirContextInitializer.getFhirContext(fhirVersion);
-
-      // Initialize the Client
-      IGenericClient client =
+    MethodOutcome outcome;
+    try {
+      outcome = fhirContextInitializer.submitResourceRethrowingUnauthorized(client, docRef);
+    } catch (RuntimeException e) {
+      if (!FhirOperationExecutor.isUnauthorized(e)) {
+        throw e;
+      }
+      // The EHR rejected the cached token (for example, it was revoked). Retry once with a new one.
+      logger.warn(
+          "EHR returned HTTP 401 for the RR DocumentReference; retrying once with a new access"
+              + " token");
+      try {
+        accessToken = ehrAccessTokenCache.refreshAfterUnauthorized(hs, accessToken).accessToken();
+      } catch (EhrAccessTokenException tokenFailure) {
+        throw unauthorized(tokenFailure);
+      }
+      client =
           fhirContextInitializer.createClient(
               context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId(), ehrContext);
+      outcome = fhirContextInitializer.submitResource(client, docRef);
+    }
 
-      MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
-      if (outcome != null && outcome.getCreated()) {
-        logger.info(
-            "Successfully posted RR: {} for EICR: {} version: {} to EHR with DocRefId: {}",
-            rrModel.getRrDocId(),
-            phm.getSubmittedDataId(),
-            phm.getSubmittedVersionNumber(),
-            outcome.getId().getIdPart());
+    if (outcome != null && outcome.getCreated()) {
+      logger.info(
+          "Successfully posted RR: {} for EICR: {} version: {} to EHR with DocRefId: {}",
+          rrModel.getRrDocId(),
+          phm.getSubmittedDataId(),
+          phm.getSubmittedVersionNumber(),
+          outcome.getId().getIdPart());
 
-        // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
-        phm.setResponseEhrDocRefId(outcome.getId().getIdPart());
-
-      } else {
-        String errorMsg =
-            "Unable to post RR response to FHIR server: "
-                + StringEscapeUtils.escapeJava(hs.getFhirServerBaseURL());
-        logger.error(errorMsg);
-        throw new UnclassifiedServerFailureException(500, errorMsg);
-      }
+      // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
+      phm.setResponseEhrDocRefId(outcome.getId().getIdPart());
 
     } else {
+      String errorMsg =
+          "Unable to post RR response to FHIR server: "
+              + StringEscapeUtils.escapeJava(hs.getFhirServerBaseURL());
+      logger.error(errorMsg);
+      throw new UnclassifiedServerFailureException(500, errorMsg);
+    }
+  }
 
-      throw new ResponseStatusException(
-          HttpStatus.UNAUTHORIZED, "Error in getting Authorization token");
+  private static ResponseStatusException unauthorized(EhrAccessTokenException cause) {
+    return new ResponseStatusException(
+        HttpStatus.UNAUTHORIZED, "Error in getting Authorization token", cause);
+  }
+
+  /**
+   * Some EHRs return the default provider id with the token response. Obtaining the token (from the
+   * cache when possible) puts that provider id on {@code hs} before the DocumentReference is built.
+   * A token failure is not raised here: posting the DocumentReference reports it.
+   */
+  private void resolveEhrProviderId(HealthcareSetting hs) {
+    try {
+      ehrAccessTokenCache.getToken(hs);
+    } catch (EhrAccessTokenException e) {
+      logger.warn(
+          "Could not obtain the EHR access token before building the DocumentReference: {}",
+          e.getMessage());
     }
   }
 
@@ -330,6 +369,8 @@ public class RrReceiverImpl implements RrReceiver {
                 .equals(EicrTypes.ReportabilityType.RRVS1.toString())
             || phm.getResponseProcessingInstruction()
                 .equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
+
+      resolveEhrProviderId(hs);
 
       return ehrService.constructR4DocumentReference(
           rrXml,

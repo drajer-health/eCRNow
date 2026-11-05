@@ -1,6 +1,7 @@
 package com.drajer.bsa.auth.impl;
 
 import com.drajer.bsa.auth.AuthorizationService;
+import com.drajer.bsa.auth.TokenEndpointHttp;
 import com.drajer.bsa.model.FhirServerDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,7 +75,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    */
   public JSONObject connectToServer(String url, FhirServerDetails fsd)
       throws KeyStoreException, JsonProcessingException {
-    RestTemplate resTemplate = new RestTemplate();
+    RestTemplate resTemplate = TokenEndpointHttp.withTimeouts(new RestTemplate());
     String tokenEndpoint;
 
     ObjectMapper mapper = new ObjectMapper();
@@ -140,7 +141,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    * @return token endpoint from the server's capability statement
    */
   public String getTokenEndpoint(String url) {
-    RestTemplate resTemplate = new RestTemplate();
+    RestTemplate resTemplate = TokenEndpointHttp.withTimeouts(new RestTemplate());
     try {
       ResponseEntity<String> response =
           resTemplate.getForEntity(String.format("%s/%s", url, WELL_KNOWN), String.class);

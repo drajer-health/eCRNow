@@ -54,7 +54,7 @@ public class AuthorizationUtils {
         break;
     }
 
-    logger.debug("Returning token {}", token);
+    logger.debug("Returning token response for authorization type {}", authTYpe);
     return token;
   }
 }

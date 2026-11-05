@@ -12,7 +12,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import java.util.Date;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -162,37 +161,11 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
     remove(healthcareSetting);
   }
 
-  /** Seconds to wait for the token UPDATE, for example when another transaction locks the row. */
-  static final int TOKEN_UPDATE_TIMEOUT_SECONDS = 10;
-
   @Override
   public void markReadOnly(HealthcareSetting hs) {
     Session session = getSession();
     if (hs != null && session.contains(hs)) {
       session.setReadOnly(hs, true);
     }
-  }
-
-  @Override
-  public int updateEhrAccessToken(
-      Integer id,
-      String ehrAccessToken,
-      int ehrAccessTokenExpiryDuration,
-      Date ehrAccessTokenExpirationTime,
-      String defaultProviderId) {
-    return getSession()
-        .createMutationQuery(
-            "update HealthcareSetting hs set hs.ehrAccessToken = :token,"
-                + " hs.ehrAccessTokenExpiryDuration = :duration,"
-                + " hs.ehrAccessTokenExpirationTime = :expiration,"
-                + " hs.defaultProviderId = :providerId"
-                + " where hs.id = :id")
-        .setParameter("token", ehrAccessToken)
-        .setParameter("duration", ehrAccessTokenExpiryDuration)
-        .setParameter("expiration", ehrAccessTokenExpirationTime)
-        .setParameter("providerId", defaultProviderId)
-        .setParameter("id", id)
-        .setTimeout(TOKEN_UPDATE_TIMEOUT_SECONDS)
-        .executeUpdate();
   }
 }

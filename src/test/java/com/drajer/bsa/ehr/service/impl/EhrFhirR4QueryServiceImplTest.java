@@ -10,7 +10,9 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.*;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.auth.AuthorizationUtils;
-import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.auth.EhrAccessTokenCache;
+import com.drajer.bsa.auth.EhrAccessTokenCache.EhrAccessToken;
+import com.drajer.bsa.auth.EhrAccessTokenException;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.HealthcareSetting;
@@ -47,7 +49,7 @@ public class EhrFhirR4QueryServiceImplTest {
 
   @Mock private AuthorizationUtils authUtils;
 
-  @Mock private HealthcareSettingsDao hsDao;
+  @Mock private EhrAccessTokenCache ehrAccessTokenCache;
 
   @Mock private FhirContextInitializer fhirContextInitializer;
 
@@ -142,6 +144,9 @@ public class EhrFhirR4QueryServiceImplTest {
     Mockito.lenient().when(fhirContextInitializer.getFhirContext("R4")).thenReturn(fhirContext);
     Mockito.lenient().when(karProcessingData.hasValidAccessToken()).thenReturn(true);
     Mockito.lenient().when(authUtils.getToken(healthcareSetting)).thenReturn(tokenResponse);
+    Mockito.lenient()
+        .when(ehrAccessTokenCache.getToken(healthcareSetting))
+        .thenReturn(new EhrAccessToken("mockAccessToken", new Date().toInstant(), null));
 
     Mockito.lenient().when(karProcessingData.getHealthcareSetting()).thenReturn(healthcareSetting);
     Mockito.lenient()
@@ -226,16 +231,13 @@ public class EhrFhirR4QueryServiceImplTest {
   }
 
   @Test
-  public void getClient_ValidAcesssToken_false_Test() {
-    Mockito.lenient().when(karProcessingData.hasValidAccessToken()).thenReturn(false);
-    Mockito.lenient().when(authUtils.getToken(healthcareSetting)).thenReturn(tokenResponse);
-
+  public void getClient_usesTheTokenFromTheCache() {
     ehrFhirR4QueryService.getClient(karProcessingData, fhirContext);
-    verify(authUtils, times(1)).getToken(healthcareSetting);
+
+    verify(ehrAccessTokenCache, times(1)).getToken(healthcareSetting);
+    verify(authUtils, never()).getToken(any());
     verify(fhirContextInitializer, times(1))
-        .createClient(any(FhirContext.class), any(), any(), any(), any());
-    assertEquals("mockAccessToken", karProcessingData.getAccessToken());
-    assertFalse(karProcessingData.hasValidAccessToken());
+        .createClient(fhirContext, "fhirserverurl", "mockAccessToken", "32", "ehrLaunchContext");
   }
 
   @Test
@@ -1067,25 +1069,33 @@ public class EhrFhirR4QueryServiceImplTest {
     assertSame(token, ehrFhirR4QueryService.getAuthorizationToken(healthcareSetting));
   }
 
-  // ---------------- getClient / retrieveAndUpdateAccessToken ----------------
+  // ---------------- getClient ----------------
 
   @Test
-  public void getClient_expiredToken_storesNewTokenExpiryAndProviderId() {
-    JSONObject token =
-        new JSONObject()
-            .put("access_token", "new-token")
-            .put("expires_in", 3600)
-            .put("uuid", "provider-9");
-    when(karProcessingData.hasValidAccessToken()).thenReturn(false);
-    when(authUtils.getToken(healthcareSetting)).thenReturn(token);
+  public void getClient_refreshedTokenFromCache_isUsedAndNothingIsStoredOnTheHealthcareSetting() {
+    when(ehrAccessTokenCache.getToken(healthcareSetting))
+        .thenReturn(new EhrAccessToken("new-token", new Date().toInstant(), "provider-9"));
 
     assertSame(fhirClient, ehrFhirR4QueryService.getClient(karProcessingData, fhirContext));
 
-    verify(healthcareSetting).setEhrAccessToken("new-token");
-    verify(healthcareSetting).setEhrAccessTokenExpiryDuration(3600);
-    verify(healthcareSetting).setDefaultProviderId("provider-9");
-    verify(healthcareSetting).setEhrAccessTokenExpirationTime(any(Date.class));
-    verify(hsDao).saveOrUpdate(healthcareSetting);
+    verify(fhirContextInitializer)
+        .createClient(fhirContext, "fhirserverurl", "new-token", "32", "ehrLaunchContext");
+    verify(healthcareSetting, never()).setEhrAccessToken(any());
+    verify(healthcareSetting, never()).setEhrAccessTokenExpirationTime(any());
+  }
+
+  @Test
+  public void getClient_tokenCannotBeObtained_throwsWithoutCreatingAClient() {
+    EhrAccessTokenException failure = new EhrAccessTokenException("token endpoint down");
+    when(ehrAccessTokenCache.getToken(healthcareSetting)).thenThrow(failure);
+
+    EhrAccessTokenException thrown =
+        assertThrows(
+            EhrAccessTokenException.class,
+            () -> ehrFhirR4QueryService.getClient(karProcessingData, fhirContext));
+
+    assertSame(failure, thrown);
+    verify(fhirContextInitializer, never()).createClient(any(), any(), any(), any(), any());
   }
 
   // ---------------- initializeCustomQueries / processQueryFile ----------------

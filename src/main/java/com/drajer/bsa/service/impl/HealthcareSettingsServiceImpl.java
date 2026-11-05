@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -87,25 +86,5 @@ public class HealthcareSettingsServiceImpl implements HealthcareSettingsService 
   @Override
   public void markReadOnly(HealthcareSetting hs) {
     hsDao.markReadOnly(hs);
-  }
-
-  @Override
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void saveEhrAccessToken(HealthcareSetting hs) {
-    int updated =
-        hsDao.updateEhrAccessToken(
-            hs.getId(),
-            hs.getEhrAccessToken(),
-            hs.getEhrAccessTokenExpiryDuration(),
-            hs.getEhrAccessTokenExpirationTime(),
-            hs.getDefaultProviderId());
-    if (updated == 1) {
-      logger.info("Saved refreshed EHR access token for HealthcareSetting {}", hs.getId());
-    } else {
-      logger.warn(
-          "Refreshed EHR access token for HealthcareSetting {} was not saved (rows updated: {})",
-          hs.getId(),
-          updated);
-    }
   }
 }
