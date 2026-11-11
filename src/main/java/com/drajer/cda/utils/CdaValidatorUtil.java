@@ -37,7 +37,11 @@ public class CdaValidatorUtil {
       String xsd = new File(ActionRepo.getInstance().getXsdSchemasLocation()).getAbsolutePath();
       StreamSource xsdStreamSource = new StreamSource(xsd);
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "file");
+      // S2755 (XXE): no external DTD/entity access at all. External entities are the XXE
+      // attack vector, and neither the CDA schemas nor eICR documents use DTDs.
+      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      // "file" (not "") is required here: CDA_SDTC.xsd pulls in the other local schema files
+      // through xs:include/xs:import. Only local files are allowed; http/https stay blocked.
       schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "file");
       schema = schemaFactory.newSchema(xsdStreamSource);
     } catch (SAXException e) {
@@ -67,6 +71,8 @@ public class CdaValidatorUtil {
       }
 
       Validator validator = schema.newValidator();
+      // S2755 (XXE): block external entity resolution while validating the incoming document.
+      validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       // Add a custom ErrorHandler
       ValidateErrorHandler errorHandler = new ValidateErrorHandler();
       validator.setErrorHandler(errorHandler);
