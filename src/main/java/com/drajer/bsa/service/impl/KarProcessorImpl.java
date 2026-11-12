@@ -1,6 +1,7 @@
 package com.drajer.bsa.service.impl;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.auth.EhrTokenStorageMode;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.dao.impl.PublicHealthMessagesDaoImpl;
 import com.drajer.bsa.ehr.service.EhrQueryService;
@@ -72,6 +73,9 @@ public class KarProcessorImpl implements KarProcessor {
   @Autowired NotificationContextDao ncDao;
 
   @Autowired HealthcareSettingsService hsService;
+
+  /** ecr.ehr.token.store: in-memory cache or the original database implementation. */
+  @Autowired EhrTokenStorageMode tokenStorage = EhrTokenStorageMode.memory();
 
   @Autowired PublicHealthMessagesDaoImpl phDao;
 
@@ -202,7 +206,10 @@ public class KarProcessorImpl implements KarProcessor {
           kd.setExecutionSequenceId(data.getJobId());
           kd.setNotificationContext(nc);
           HealthcareSetting hs = hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl());
-          hsService.markReadOnly(hs);
+          if (tokenStorage.isInMemory()) {
+            // In-memory mode: nothing the token cache sets on the HealthcareSetting is saved.
+            hsService.markReadOnly(hs);
+          }
           kd.setHealthcareSetting(hs);
           kd.setKar(knowledgeArtifactRepositorySystem.getById(state.getKarUniqueId()));
           kd.setxRequestId(data.getxRequestId());

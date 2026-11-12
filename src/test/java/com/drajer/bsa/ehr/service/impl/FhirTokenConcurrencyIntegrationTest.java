@@ -130,8 +130,7 @@ public class FhirTokenConcurrencyIntegrationTest {
 
     assertTrue("jobs completed: " + completed, completed > 0);
     assertEquals("the EHR never rejected a token", 0, ehrUnauthorized.get());
-    assertTrue(
-        "token calls: " + tokenCalls.get(), tokenCalls.get() >= 2 && tokenCalls.get() <= 8);
+    assertTrue("token calls: " + tokenCalls.get(), tokenCalls.get() >= 2 && tokenCalls.get() <= 8);
     assertNoProblemsLogged(e -> false);
   }
 

@@ -563,8 +563,7 @@ public class EhrAccessTokenCacheTest {
   }
 
   @Test
-  public void slowRefreshAhead_otherThreadsKeepUsingCurrentToken_withoutWaiting()
-      throws Exception {
+  public void slowRefreshAhead_otherThreadsKeepUsingCurrentToken_withoutWaiting() throws Exception {
     CountDownLatch endpointEntered = new CountDownLatch(1);
     CountDownLatch releaseEndpoint = new CountDownLatch(1);
     when(authUtils.getToken(any()))

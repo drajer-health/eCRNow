@@ -7,6 +7,9 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnclassifiedServerFailureException;
 import com.drajer.bsa.auth.EhrAccessTokenCache;
 import com.drajer.bsa.auth.EhrAccessTokenException;
+import com.drajer.bsa.auth.EhrTokenMetrics;
+import com.drajer.bsa.auth.EhrTokenMetrics.Outcome;
+import com.drajer.bsa.auth.EhrTokenStorageMode;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
@@ -30,6 +33,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +58,8 @@ public class RrReceiverImpl implements RrReceiver {
 
   private final Logger logger = LoggerFactory.getLogger(RrReceiverImpl.class);
 
+  private static final String ACCESS_TOKEN = "access_token";
+
   @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired PublicHealthMessagesDao phDao;
@@ -67,6 +73,12 @@ public class RrReceiverImpl implements RrReceiver {
   @Autowired NotificationContextDao ncDao;
 
   @Autowired EhrAccessTokenCache ehrAccessTokenCache;
+
+  /** ecr.ehr.token.store: in-memory cache or the original database implementation. */
+  @Autowired EhrTokenStorageMode tokenStorage = EhrTokenStorageMode.memory();
+
+  /** Optional token performance metrics (ecr.ehr.token.metrics.enabled). */
+  @Autowired EhrTokenMetrics tokenMetrics = EhrTokenMetrics.disabled();
 
   /**
    * The method is used to handle a failure MDN that is received from the Direct channel.
@@ -273,7 +285,13 @@ public class RrReceiverImpl implements RrReceiver {
           "PublicHealthMessage and HealthcareSetting are required to post the RR to the EHR");
     }
 
-    // Get the EHR access token for the HealthcareSetting (cached in memory, refreshed as needed).
+    if (tokenStorage.isDatabase()) {
+      postDocRefToEhrWithDatabaseTokenHandling(docRef, phm, hs, rrModel);
+      return;
+    }
+
+    // In-memory mode: the EHR access token comes from the cache (refreshed as needed).
+    EhrTokenStorageMode.keepTokenChangesOutOfDatabase(hsDao, hs);
     String accessToken;
     try {
       accessToken = ehrAccessTokenCache.getToken(hs).accessToken();
@@ -340,6 +358,76 @@ public class RrReceiverImpl implements RrReceiver {
     }
   }
 
+  /** Database mode: the original implementation, a new token from the EHR for every RR. */
+  private void postDocRefToEhrWithDatabaseTokenHandling(
+      DocumentReference docRef, PublicHealthMessage phm, HealthcareSetting hs, CdaRrModel rrModel) {
+
+    // Get the AccessToken using the HealthcareSetting
+    JSONObject tokenResponse = requestDatabaseModeToken(hs);
+    String ehrContext = null;
+    if (phm.getNotificationId() != null) {
+      NotificationContext nc =
+          ncDao.getNotificationContextById(UUID.fromString(phm.getNotificationId()));
+      if (nc != null) ehrContext = nc.getEhrLaunchContext();
+    }
+
+    if (tokenResponse != null) {
+
+      String accessToken = tokenResponse.getString(ACCESS_TOKEN);
+
+      String fhirVersion = FhirVersionEnum.R4.toString();
+
+      // Initialize the FHIR Context based on FHIR Version
+      FhirContext context = fhirContextInitializer.getFhirContext(fhirVersion);
+
+      // Initialize the Client
+      IGenericClient client =
+          fhirContextInitializer.createClient(
+              context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId(), ehrContext);
+
+      MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
+      if (outcome != null && outcome.getCreated()) {
+        logger.info(
+            "Successfully posted RR: {} for EICR: {} version: {} to EHR with DocRefId: {}",
+            rrModel.getRrDocId(),
+            phm.getSubmittedDataId(),
+            phm.getSubmittedVersionNumber(),
+            outcome.getId().getIdPart());
+
+        // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
+        phm.setResponseEhrDocRefId(outcome.getId().getIdPart());
+
+      } else {
+        String errorMsg =
+            "Unable to post RR response to FHIR server: "
+                + StringEscapeUtils.escapeJava(hs.getFhirServerBaseURL());
+        logger.error(errorMsg);
+        throw new UnclassifiedServerFailureException(500, errorMsg);
+      }
+
+    } else {
+
+      throw new ResponseStatusException(
+          HttpStatus.UNAUTHORIZED, "Error in getting Authorization token");
+    }
+  }
+
+  /** ehrService.getAuthorizationToken(hs), measured when token metrics are enabled. */
+  private JSONObject requestDatabaseModeToken(HealthcareSetting hs) {
+    EhrTokenMetrics.Sample sample = tokenMetrics.begin();
+    long requestStarted = tokenMetrics.now();
+    JSONObject tokenResponse = null;
+    try {
+      tokenResponse = ehrService.getAuthorizationToken(hs);
+      return tokenResponse;
+    } finally {
+      sample.endpoint(tokenMetrics.now() - requestStarted);
+      sample.outcome(
+          tokenResponse != null ? Outcome.DATABASE_RR_REQUESTED : Outcome.DATABASE_REQUEST_FAILED);
+      sample.finish();
+    }
+  }
+
   private static ResponseStatusException unauthorized(EhrAccessTokenException cause) {
     return new ResponseStatusException(
         HttpStatus.UNAUTHORIZED, "Error in getting Authorization token", cause);
@@ -351,6 +439,7 @@ public class RrReceiverImpl implements RrReceiver {
    * A token failure is not raised here: posting the DocumentReference reports it.
    */
   private void resolveEhrProviderId(HealthcareSetting hs) {
+    EhrTokenStorageMode.keepTokenChangesOutOfDatabase(hsDao, hs);
     try {
       ehrAccessTokenCache.getToken(hs);
     } catch (EhrAccessTokenException e) {
@@ -370,7 +459,9 @@ public class RrReceiverImpl implements RrReceiver {
             || phm.getResponseProcessingInstruction()
                 .equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
 
-      resolveEhrProviderId(hs);
+      if (tokenStorage.isInMemory()) {
+        resolveEhrProviderId(hs);
+      }
 
       return ehrService.constructR4DocumentReference(
           rrXml,

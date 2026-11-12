@@ -885,4 +885,43 @@ public class KarProcessorImplTest {
     verify(phDao, times(1)).saveOrUpdate(any());
     verify(ncDao, times(1)).saveOrUpdate(nc);
   }
+
+  // ==================== EHR access token storage mode ====================
+
+  private HealthcareSetting runScheduledJobLoadingHealthcareSetting() {
+    UUID stateId = UUID.randomUUID();
+    UUID ncId = UUID.randomUUID();
+    ScheduledJobData data = jobData(stateId, "job-1", null, null, null, null);
+    KarExecutionState state = mock(KarExecutionState.class);
+    when(state.getNcId()).thenReturn(ncId);
+    when(state.getHsFhirServerUrl()).thenReturn("http://hs-url");
+    when(karExecutionStateService.getKarExecutionStateById(stateId)).thenReturn(state);
+    when(ncService.getNotificationContext(ncId)).thenReturn(buildNotificationContext("trigger-1"));
+    HealthcareSetting hs = new HealthcareSetting();
+    when(hsService.getHealthcareSettingByUrl("http://hs-url")).thenReturn(hs);
+    when(karRepositorySystem.getById(any())).thenReturn(mock(KnowledgeArtifact.class));
+
+    karProcessor.applyKarForScheduledJob(data, buildTaskInstance(data), buildExecutionContext(0));
+    return hs;
+  }
+
+  @Test
+  public void scheduledJob_memoryTokenStorage_healthcareSettingMarkedReadOnly() {
+    ReflectionTestUtils.setField(
+        karProcessor, "tokenStorage", com.drajer.bsa.auth.EhrTokenStorageMode.memory());
+
+    HealthcareSetting hs = runScheduledJobLoadingHealthcareSetting();
+
+    verify(hsService, times(1)).markReadOnly(hs);
+  }
+
+  @Test
+  public void scheduledJob_databaseTokenStorage_healthcareSettingNotReadOnly_asOriginally() {
+    ReflectionTestUtils.setField(
+        karProcessor, "tokenStorage", com.drajer.bsa.auth.EhrTokenStorageMode.database());
+
+    runScheduledJobLoadingHealthcareSetting();
+
+    verify(hsService, never()).markReadOnly(any());
+  }
 }

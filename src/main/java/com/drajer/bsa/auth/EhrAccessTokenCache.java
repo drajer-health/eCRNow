@@ -1,5 +1,6 @@
 package com.drajer.bsa.auth;
 
+import com.drajer.bsa.auth.EhrTokenMetrics.Outcome;
 import com.drajer.bsa.model.HealthcareSetting;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -42,10 +43,10 @@ import org.springframework.stereotype.Component;
  *   <li>After an HTTP 401, {@link #refreshAfterUnauthorized} gets a new token unless another thread
  *       has already replaced the rejected one.
  *   <li>A change to the HealthcareSetting's authorization settings (for example a new client id or
- *       token URL saved from eCRNow-UI) is detected on the next request on every instance, and a new
- *       token is requested.
- *   <li>A failed token request affects only the thread that made it. The next thread that needs
- *       the token makes its own request, so one failed call never fails other jobs.
+ *       token URL saved from eCRNow-UI) is detected on the next request on every instance, and a
+ *       new token is requested.
+ *   <li>A failed token request affects only the thread that made it. The next thread that needs the
+ *       token makes its own request, so one failed call never fails other jobs.
  *   <li>If a refresh fails while the current token has not yet expired, the current token is still
  *       returned, so a short token-endpoint outage does not fail any job.
  * </ul>
@@ -83,6 +84,7 @@ public class EhrAccessTokenCache {
       EhrAccessToken token, Instant refreshAt, Instant usableUntil, String configFingerprint) {}
 
   private final AuthorizationUtils authorizationUtils;
+  private final EhrTokenMetrics metrics;
   private final Clock clock;
   private final long refreshThresholdSeconds;
   private final long lockTimeoutSeconds;
@@ -93,9 +95,28 @@ public class EhrAccessTokenCache {
   @Autowired
   public EhrAccessTokenCache(
       AuthorizationUtils authorizationUtils,
+      EhrTokenMetrics metrics,
       @Value("${token.refresh.threshold:60}") long refreshThresholdSeconds,
       @Value("${ecr.ehr.token.lock-timeout-seconds:45}") long lockTimeoutSeconds) {
-    this(authorizationUtils, Clock.systemUTC(), refreshThresholdSeconds, lockTimeoutSeconds);
+    this(
+        authorizationUtils,
+        metrics,
+        Clock.systemUTC(),
+        refreshThresholdSeconds,
+        lockTimeoutSeconds);
+  }
+
+  /** Without performance metrics. */
+  public EhrAccessTokenCache(
+      AuthorizationUtils authorizationUtils,
+      long refreshThresholdSeconds,
+      long lockTimeoutSeconds) {
+    this(
+        authorizationUtils,
+        EhrTokenMetrics.disabled(),
+        Clock.systemUTC(),
+        refreshThresholdSeconds,
+        lockTimeoutSeconds);
   }
 
   EhrAccessTokenCache(
@@ -103,7 +124,22 @@ public class EhrAccessTokenCache {
       Clock clock,
       long refreshThresholdSeconds,
       long lockTimeoutSeconds) {
+    this(
+        authorizationUtils,
+        EhrTokenMetrics.disabled(),
+        clock,
+        refreshThresholdSeconds,
+        lockTimeoutSeconds);
+  }
+
+  EhrAccessTokenCache(
+      AuthorizationUtils authorizationUtils,
+      EhrTokenMetrics metrics,
+      Clock clock,
+      long refreshThresholdSeconds,
+      long lockTimeoutSeconds) {
     this.authorizationUtils = Objects.requireNonNull(authorizationUtils, "authorizationUtils");
+    this.metrics = metrics == null ? EhrTokenMetrics.disabled() : metrics;
     this.clock = Objects.requireNonNull(clock, "clock");
     this.refreshThresholdSeconds = Math.max(0, refreshThresholdSeconds);
     this.lockTimeoutSeconds = Math.max(1, lockTimeoutSeconds);
@@ -119,17 +155,23 @@ public class EhrAccessTokenCache {
    */
   public EhrAccessToken getToken(HealthcareSetting hs) {
     Objects.requireNonNull(hs, "HealthcareSetting");
-    String key = cacheKey(hs.getFhirServerBaseURL());
-    String fingerprint = configFingerprint(hs);
+    EhrTokenMetrics.Sample sample = metrics.begin();
+    try {
+      String key = cacheKey(hs.getFhirServerBaseURL());
+      String fingerprint = configFingerprint(hs);
 
-    CachedToken cached = tokens.get(key);
-    if (isFresh(cached, fingerprint)) {
-      return applyProviderId(hs, cached.token());
+      CachedToken cached = tokens.get(key);
+      if (isFresh(cached, fingerprint)) {
+        sample.outcome(Outcome.MEMORY_CACHE_HIT);
+        return applyProviderId(hs, cached.token());
+      }
+      if (isUsable(cached, fingerprint)) {
+        return applyProviderId(hs, refreshAhead(hs, key, fingerprint, cached));
+      }
+      return applyProviderId(hs, obtainToken(hs, key, fingerprint, null));
+    } finally {
+      sample.finish();
     }
-    if (isUsable(cached, fingerprint)) {
-      return applyProviderId(hs, refreshAhead(hs, key, fingerprint, cached));
-    }
-    return applyProviderId(hs, obtainToken(hs, key, fingerprint, null));
   }
 
   /**
@@ -138,13 +180,17 @@ public class EhrAccessTokenCache {
    *
    * @throws EhrAccessTokenException if no token can be obtained.
    */
-  public EhrAccessToken refreshAfterUnauthorized(
-      HealthcareSetting hs, String rejectedAccessToken) {
+  public EhrAccessToken refreshAfterUnauthorized(HealthcareSetting hs, String rejectedAccessToken) {
     Objects.requireNonNull(hs, "HealthcareSetting");
-    String key = cacheKey(hs.getFhirServerBaseURL());
-    String fingerprint = configFingerprint(hs);
-    String rejected = rejectedAccessToken == null ? "" : rejectedAccessToken;
-    return applyProviderId(hs, obtainToken(hs, key, fingerprint, rejected));
+    EhrTokenMetrics.Sample sample = metrics.begin();
+    try {
+      String key = cacheKey(hs.getFhirServerBaseURL());
+      String fingerprint = configFingerprint(hs);
+      String rejected = rejectedAccessToken == null ? "" : rejectedAccessToken;
+      return applyProviderId(hs, obtainToken(hs, key, fingerprint, rejected));
+    } finally {
+      sample.finish();
+    }
   }
 
   /** Removes the cached token for the FHIR server URL, if any. */
@@ -163,18 +209,22 @@ public class EhrAccessTokenCache {
 
     ReentrantLock lock = lockFor(key);
     if (!lock.tryLock()) {
+      metrics.current().outcome(Outcome.MEMORY_REFRESH_IN_PROGRESS_USED_CURRENT);
       return cached.token(); // another thread is refreshing: do not wait for it
     }
     try {
       CachedToken current = tokens.get(key);
       if (isFresh(current, fingerprint)) {
+        metrics.current().outcome(Outcome.MEMORY_REFRESHED_BY_OTHER_THREAD);
         return current.token(); // refreshed just before this thread got the lock
       }
       try {
         EhrAccessToken token = requestToken(hs, key);
         tokens.put(key, newEntry(token, fingerprint));
+        metrics.current().outcome(Outcome.MEMORY_REFRESHED_AHEAD);
         return token;
       } catch (EhrAccessTokenException e) {
+        metrics.current().outcome(Outcome.MEMORY_REFRESH_FAILED_USED_CURRENT);
         CachedToken usable = isUsable(current, fingerprint) ? current : cached;
         logger.warn(
             "Could not refresh the EHR access token for {} ahead of expiry; using the current"
@@ -205,6 +255,7 @@ public class EhrAccessTokenCache {
       CachedToken cached = tokens.get(key);
       if (isUsable(cached, fingerprint)
           && (rejectedToken == null || !rejectedToken.equals(cached.token().accessToken()))) {
+        metrics.current().outcome(Outcome.MEMORY_WAITED_THEN_REUSED);
         return cached.token();
       }
 
@@ -225,12 +276,20 @@ public class EhrAccessTokenCache {
               key,
               cached.token().expiresAt(),
               String.valueOf(e.getCause() != null ? e.getCause() : e.getMessage()));
+          metrics.current().outcome(Outcome.MEMORY_REQUEST_FAILED_USED_CURRENT);
           return cached.token();
         }
+        metrics.current().outcome(Outcome.MEMORY_REQUEST_FAILED);
         throw e;
       }
 
       tokens.put(key, newEntry(token, fingerprint));
+      metrics
+          .current()
+          .outcome(
+              rejectedToken == null
+                  ? Outcome.MEMORY_REQUESTED
+                  : Outcome.MEMORY_REQUESTED_AFTER_401);
       return token;
 
     } finally {
@@ -245,6 +304,8 @@ public class EhrAccessTokenCache {
       response = authorizationUtils.getToken(hs);
     } catch (RuntimeException e) {
       throw new EhrAccessTokenException("EHR access token request failed for " + key, e);
+    } finally {
+      metrics.current().endpoint(System.nanoTime() - started);
     }
 
     if (response == null) {
@@ -314,8 +375,11 @@ public class EhrAccessTokenCache {
   }
 
   private void acquire(ReentrantLock lock, String key) {
+    long waitStarted = metrics.now();
+    metrics.waitingStarted();
     try {
       if (!lock.tryLock(lockTimeoutSeconds, TimeUnit.SECONDS)) {
+        metrics.current().outcome(Outcome.MEMORY_LOCK_TIMEOUT);
         throw new EhrAccessTokenException(
             "Timed out after "
                 + lockTimeoutSeconds
@@ -326,6 +390,11 @@ public class EhrAccessTokenCache {
       Thread.currentThread().interrupt();
       throw new EhrAccessTokenException(
           "Interrupted while waiting for the EHR access token for " + key, e);
+    } finally {
+      metrics.waitingEnded();
+      if (metrics.isEnabled()) {
+        metrics.current().lockWait(System.nanoTime() - waitStarted);
+      }
     }
   }
 
@@ -376,7 +445,7 @@ public class EhrAccessTokenCache {
     String material =
         String.join(
             "\u0000",
-            String.valueOf(hs.getFhirServerBaseURL()),
+            cacheKey(hs.getFhirServerBaseURL()),
             String.valueOf(hs.getAuthType()),
             String.valueOf(hs.getTokenUrl()),
             String.valueOf(hs.getClientId()),
