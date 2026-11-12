@@ -18,13 +18,11 @@ public class PublicHealthAuthorityController {
 
   @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
 
-  @CrossOrigin
   @GetMapping("/api/publicHealthAuthority/{phaId}")
   public PublicHealthAuthority getPublicHealthAuthorityById(@PathVariable("phaId") Integer phaId) {
     return publicHealthAuthorityService.getPublicHealthAuthorityById(phaId);
   }
 
-  @CrossOrigin
   @PostMapping(value = "/api/publicHealthAuthority")
   public ResponseEntity<Object> createPublicHealthAuthority(
       @RequestBody PublicHealthAuthorityRequest phaRequest) {
@@ -54,7 +52,6 @@ public class PublicHealthAuthorityController {
     }
   }
 
-  @CrossOrigin
   @PutMapping(value = "/api/publicHealthAuthority")
   public ResponseEntity<Object> updatePublicHealthAuthority(
       @RequestBody PublicHealthAuthorityRequest phaRequest) {
@@ -79,14 +76,12 @@ public class PublicHealthAuthorityController {
     }
   }
 
-  @CrossOrigin
   @GetMapping("/api/publicHealthAuthority")
   public PublicHealthAuthority getPublicHealthAuthorityByUrl(
       @RequestParam(value = "url") String url) {
     return publicHealthAuthorityService.getPublicHealthAuthorityByUrl(url);
   }
 
-  @CrossOrigin
   @GetMapping("/api/publicHealthAuthority/")
   public List<PublicHealthAuthority> getAllPublicHealthAuthority() {
     return publicHealthAuthorityService.getAllPublicHealthAuthority();

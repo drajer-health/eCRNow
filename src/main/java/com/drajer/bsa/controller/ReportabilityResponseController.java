@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,7 +29,6 @@ public class ReportabilityResponseController {
 
   @Autowired PublicHealthMessagesDao phDao;
 
-  @CrossOrigin
   @PostMapping(value = "/api/receiveReportabilityResponse")
   public ResponseEntity<String> receiveReportabilityResponse(
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
@@ -78,7 +76,6 @@ public class ReportabilityResponseController {
     return new ResponseEntity<>("Success", HttpStatus.OK);
   }
 
-  @CrossOrigin
   @PostMapping(value = "/api/reSubmitReportabilityResponse")
   public ResponseEntity<String> reSubmitReportabilityResponse(
       @RequestParam(name = "eicrId", required = false) String eicrId,

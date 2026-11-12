@@ -81,7 +81,6 @@ public class PatientLaunchController {
    * @return
    * @throws IOException
    */
-  @CrossOrigin
   @PostMapping(value = "/api/launchPatient")
   public ResponseEntity<Object> launchPatient(
       @RequestBody PatientLaunchContext launchContext,
@@ -193,7 +192,6 @@ public class PatientLaunchController {
    * @return
    * @throws IOException
    */
-  @CrossOrigin
   @PostMapping(value = "/api/reLaunchPatient")
   public ResponseEntity<Object> reLaunchPatient(
       @RequestBody PatientLaunchContext launchContext,
@@ -299,7 +297,6 @@ public class PatientLaunchController {
    * @return
    * @throws IOException
    */
-  @CrossOrigin
   @PostMapping(value = "/api/reProcessPatient")
   public ResponseEntity<Object> reProcessPatient(
       @RequestBody PatientLaunchContext launchContext,

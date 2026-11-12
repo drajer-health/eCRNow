@@ -1,7 +1,6 @@
 package com.drajer.ecrapp.config;
 
 import jakarta.servlet.Filter;
-import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,30 +34,35 @@ public class WebSecurityConfig {
   @Value("#{'${security.whitelist-endpoints}'.split(',')}")
   private List<String> whitelistEndpoints;
 
+  @Value("#{'${security.cors.allowed-origins:*}'.split(',')}")
+  private List<String> corsAllowedOrigins;
+
+  // java:S5122: CORS is governed by the security.cors.allowed-origins property (comma separated)
+  // instead of per-controller @CrossOrigin annotations. The default keeps the behavior the
+  // application has always had; production deployments should set the property (or the
+  // SECURITY_CORS_ALLOWED_ORIGINS environment variable) to the origins of their UI, or to an
+  // empty value to turn cross-origin browser access off entirely.
+  private CorsConfiguration buildCorsConfiguration() {
+    CorsConfiguration config = new CorsConfiguration();
+    List<String> origins =
+        corsAllowedOrigins.stream().map(String::trim).filter(o -> !o.isEmpty()).toList();
+    config.setAllowedOrigins(origins);
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    return config;
+  }
+
   @Bean
   public CorsFilter corsFilter() {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("*"));
-    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.setAllowedHeaders(List.of("*"));
-
-    source.registerCorsConfiguration("/**", config);
+    source.registerCorsConfiguration("/**", buildCorsConfiguration());
     return new CorsFilter(source);
   }
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
-
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("*"));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.setAllowedHeaders(List.of("*"));
-
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config);
-
+    source.registerCorsConfiguration("/**", buildCorsConfiguration());
     return source;
   }
 

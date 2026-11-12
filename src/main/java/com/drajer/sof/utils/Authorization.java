@@ -3,6 +3,8 @@ package com.drajer.sof.utils;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.text.StringEscapeUtils;
@@ -25,6 +27,13 @@ public class Authorization {
   private final Logger logger = LoggerFactory.getLogger(Authorization.class);
 
   public JSONObject getMetadata(String serverURL) {
+    String validatedUrl = validateServerUrl(serverURL);
+    if (validatedUrl == null) {
+      logger.error(
+          "Not retrieving metadata, the FHIR server URL is not a valid http(s) URL: {}",
+          StringEscapeUtils.escapeJava(serverURL));
+      return null;
+    }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
     HttpEntity<?> entity = new HttpEntity(headers);
@@ -34,7 +43,7 @@ public class Authorization {
     try {
       logger.info(
           "Getting Metadata information from URL::::: {}", StringEscapeUtils.escapeJava(serverURL));
-      response = restTemplate.exchange(serverURL, HttpMethod.GET, entity, String.class);
+      response = restTemplate.exchange(validatedUrl, HttpMethod.GET, entity, String.class);
       metadata = new JSONObject(response.getBody());
       logger.info(
           "Received Metadata Information from URL::::: {}",
@@ -46,6 +55,40 @@ public class Authorization {
           e);
     }
     return metadata;
+  }
+
+  /**
+   * SSRF mitigation: the FHIR server base URL is supplied by administrators when provisioning
+   * HealthcareSettings and can legitimately point at internal EHR servers, so it cannot be
+   * allow-listed in code. Instead the URL is parsed and rebuilt from its validated components
+   * before this class issues a request to it: only http/https schemes with a host and without
+   * embedded credentials are accepted, and the request uses the reconstructed URL, never the raw
+   * input. Returns null when the URL is not acceptable.
+   */
+  private static String validateServerUrl(String serverURL) {
+    if (serverURL == null) {
+      return null;
+    }
+    try {
+      URI uri = new URI(serverURL.trim());
+      boolean httpScheme =
+          "https".equalsIgnoreCase(uri.getScheme()) || "http".equalsIgnoreCase(uri.getScheme());
+      if (!httpScheme || uri.getHost() == null || uri.getUserInfo() != null) {
+        return null;
+      }
+      URI rebuilt =
+          new URI(
+              uri.getScheme(),
+              null,
+              uri.getHost(),
+              uri.getPort(),
+              uri.getPath(),
+              uri.getQuery(),
+              null);
+      return rebuilt.toString();
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 
   public String createAuthUrl(

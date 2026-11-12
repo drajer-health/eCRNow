@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -136,6 +137,29 @@ public class AuthorizationTest {
   }
 
   @Test
+  public void getMetadata_unsafeUrl_isRejectedWithoutContactingTheServer() throws Exception {
+    // A reachable FHIR server is running, so a missed SSRF guard would show up below as
+    // requestCount > 0 instead of a connection error.
+    String url =
+        startServer(
+            "/fhir/metadata",
+            200,
+            "{\"resourceType\":\"CapabilityStatement\",\"fhirVersion\":\"4.0.1\"}");
+
+    // embedded credentials and non http(s) schemes are refused before any request is sent
+    assertNull(authorization.getMetadata(url.replace("http://", "http://fhiruser:fhirpass@")));
+    assertNull(authorization.getMetadata(url.replace("http://", "ftp://")));
+    assertEquals(0, requestCount.get());
+  }
+
+  @Test
+  public void getMetadata_urlThatIsNullHostlessOrMalformed_isRejected() {
+    assertNull(authorization.getMetadata(null));
+    assertNull(authorization.getMetadata("ehr.example.org/fhir/metadata"));
+    assertNull(authorization.getMetadata("http://ehr example.org/fhir/metadata"));
+  }
+
+  @Test
   public void getAccessToken_success_returnsTheTokenResponse() throws Exception {
     String url =
         startServer(
@@ -184,11 +208,14 @@ public class AuthorizationTest {
     assertEquals("?a=1&b=2", authorization.formatQueryParams(params));
   }
 
+  private final AtomicInteger requestCount = new AtomicInteger();
+
   private String startServer(String path, int status, String body) throws IOException {
     server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
     server.createContext(
         path,
         exchange -> {
+          requestCount.incrementAndGet();
           exchange.getRequestBody().readAllBytes();
           byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
           exchange.getResponseHeaders().add("Content-Type", "application/json");
