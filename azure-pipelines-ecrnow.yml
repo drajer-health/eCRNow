@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - origin/in-memory-token-refressher-1155
+      - in-memory-token-refressher-1155
 
 pr: none
 
