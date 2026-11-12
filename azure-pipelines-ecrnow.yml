@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - issue-fixes-1155
+      - origin/in-memory-token-refressher-1155
 
 pr: none
 
