@@ -177,6 +177,13 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    * @return a signed JWT
    * @throws KeyStoreException for problems with public/private keys
    */
+  // S4790: the JOSE "x5t" header is defined by RFC 7515 as the SHA-1 thumbprint of the X.509
+  // certificate. It is only an identifier that the EHR token endpoint uses to look up the
+  // registered certificate; token security comes from the RS256/RS384/ES384 signature, so the
+  // hash is not used in a sensitive context. Replacing SHA-1 would change the x5t value and
+  // break authentication with EHRs that match certificates by this thumbprint (the SHA-256
+  // variant is a different header, "x5t#S256").
+  @SuppressWarnings("java:S4790")
   public String generateJwt(String clientId, String aud, FhirServerDetails fsd)
       throws KeyStoreException {
 

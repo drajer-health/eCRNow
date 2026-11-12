@@ -21,7 +21,6 @@ public class KeycloakTokenController {
    * @param tokenDetails Map containing token details like client_id, client_secret, etc.
    * @return ResponseEntity indicating success or failure of token generation.
    */
-  @CrossOrigin
   @PostMapping("/generate-token")
   public ResponseEntity<Object> generateToken(@RequestParam Map<String, Object> tokenDetails) {
     if (tokenDetails == null || tokenDetails.isEmpty()) {
@@ -53,7 +52,6 @@ public class KeycloakTokenController {
    * @param tokenDetails Map containing token details like client_id, client_secret, etc.
    * @return ResponseEntity indicating success or failure of token generation.
    */
-  @CrossOrigin
   @PostMapping("/generateAuthToken")
   public ResponseEntity<Object> generateUserAuthToken(
       @RequestParam Map<String, Object> tokenDetails) {
@@ -87,7 +85,6 @@ public class KeycloakTokenController {
    * @param tokenDetails Map containing token details like client_id, client_secret, etc.
    * @return ResponseEntity indicating success or failure of token generation.
    */
-  @CrossOrigin
   @PostMapping("/refresh-token")
   public ResponseEntity<Object> refreshToken(@RequestParam Map<String, Object> tokenDetails) {
     if (tokenDetails == null

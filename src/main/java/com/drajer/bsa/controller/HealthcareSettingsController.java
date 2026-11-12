@@ -57,7 +57,6 @@ public class HealthcareSettingsController {
    * @param hdsId The id to be used to retrieve the HealthcareSetting
    * @return The HealthcareSetting object for the id provided
    */
-  @CrossOrigin
   @GetMapping("/api/healthcareSettings/{hsId}")
   public HealthcareSetting getHealthcareSettingById(@PathVariable("hsId") Integer hsId) {
     return healthcareSettingsService.getHealthcareSettingById(hsId);
@@ -72,7 +71,6 @@ public class HealthcareSettingsController {
    * @return This returns the HTTP Response Entity containing the JSON representation of the
    *     HealthcareSetting when successful, else returns appropriate error.
    */
-  @CrossOrigin
   @PostMapping(value = "/api/healthcareSettings")
   public ResponseEntity<Object> createHealthcareSettings(
       @RequestBody HealthcareSettingRequest hsRequest) {
@@ -148,7 +146,6 @@ public class HealthcareSettingsController {
    * @return This returns the HTTP Response Entity containing the JSON representation of the
    *     HealthcareSetting when successful, else returns appropriate error.
    */
-  @CrossOrigin
   @PutMapping(value = "/api/healthcareSettings")
   public ResponseEntity<Object> updateHealthcareSettings(
       @RequestBody HealthcareSettingRequest hsRequest) {
@@ -186,7 +183,6 @@ public class HealthcareSettingsController {
    * @param url The url to be used to retrieve the HealthcareSetting
    * @return The HealthcareSetting for the url provided
    */
-  @CrossOrigin
   @GetMapping("/api/healthcareSettings")
   public HealthcareSetting getHealthcareSettingsByUrl(@RequestParam(value = "url") String url) {
     return healthcareSettingsService.getHealthcareSettingByUrl(url);
@@ -199,7 +195,6 @@ public class HealthcareSettingsController {
    * @param none
    * @return The existing list of HealthcareSettings.
    */
-  @CrossOrigin
   @GetMapping("/api/healthcareSettings/")
   public List<HealthcareSetting> getAllHealthcareSettings() {
     return healthcareSettingsService.getAllHealthcareSettings();
@@ -211,7 +206,6 @@ public class HealthcareSettingsController {
    * @param url The URL used to retrieve the HealthcareSetting.
    * @return A ResponseEntity with a status message indicating the result of the delete operation.
    */
-  @CrossOrigin
   @DeleteMapping("/api/healthcareSettings")
   public ResponseEntity<String> deleteHealthcareSettingsByUrl(@RequestParam("url") String url) {
     try {
@@ -239,7 +233,6 @@ public class HealthcareSettingsController {
   }
 
   @GetMapping("/api/healthcareSettings/check")
-  @CrossOrigin
   public ResponseEntity<Object> checkHealthCareSettingExist(@RequestParam("url") String url) {
     try {
       logger.info("Received URL: {} for checking healthcareSettings", url);

@@ -259,8 +259,15 @@ public class WorkflowService {
         launchDetailsId,
         actionType);
 
-    LaunchDetails launchDetails =
-        ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
+    LaunchService service = ActionRepo.getInstance().getLaunchService();
+    if (service == null) {
+      // javabugs:S2259 guard: the services are wired into ActionRepo during startup; without a
+      // LaunchService the launch details cannot be loaded, so log and skip instead of an NPE.
+      logger.error("Cannot execute scheduled action: no LaunchService configured in ActionRepo");
+      return;
+    }
+
+    LaunchDetails launchDetails = service.getAuthDetailsById(launchDetailsId);
 
     executeActionsForType(launchDetails, actionType, launchType, taskInstanceId);
 

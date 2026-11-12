@@ -15,7 +15,6 @@ public class SchedulerController {
 
   @Autowired SchedulerService schedulerService;
 
-  @CrossOrigin
   @GetMapping("/api/scheduledTasks")
   public List<ScheduledTasks> getScheduledTasks(
       @RequestParam(name = "action", required = false) String actionType,
@@ -27,7 +26,6 @@ public class SchedulerController {
     return schedulerService.getScheduledTasks(actionType, launchId);
   }
 
-  @CrossOrigin
   @GetMapping("/api/scheduledTasks/search")
   public List<ScheduledTasks> getScheduledTasksBySearchQuery(
       @RequestParam(name = "taskInstance", required = false) String taskInstance) {

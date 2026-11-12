@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +31,6 @@ public class PhMessageController {
 
   @Autowired PhMessageService phMessageService;
 
-  @CrossOrigin
   @GetMapping(value = "/api/phMessage", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getPhMessageDetails(
       @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
@@ -158,7 +156,6 @@ public class PhMessageController {
     }
   }
 
-  @CrossOrigin
   @GetMapping(value = "/api/getPhMessagesSummary", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getPhMessageDetailsSummary(
       @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
@@ -327,7 +324,6 @@ public class PhMessageController {
     }
   }
 
-  @CrossOrigin
   @DeleteMapping("/api/phMessage")
   public ResponseEntity<String> deletePhMessages(
       @RequestBody PublicHealthMessageData publicHealthMessageData) {

@@ -3,6 +3,7 @@ package com.drajer.eca.model;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.routing.impl.DirectResponseReceiver;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
@@ -89,7 +90,14 @@ public class ReportabilityResponseAction extends AbstractAction {
 
     if (!StringUtils.isBlank(details.getDirectHost())
         || !StringUtils.isBlank(details.getImapUrl())) {
-      ActionRepo.getInstance().getDirectReceiver().receiveRespone(details);
+      DirectResponseReceiver directReceiver = ActionRepo.getInstance().getDirectReceiver();
+      if (directReceiver != null) {
+        directReceiver.receiveRespone(details);
+      } else {
+        // javabugs:S2259 guard: the receiver is wired into ActionRepo by WorkflowService during
+        // startup; if it is not available, log and skip instead of failing with an NPE.
+        logger.error("Cannot check for RRs: no DirectResponseReceiver configured in ActionRepo");
+      }
     }
 
     for (Integer id : ids) {

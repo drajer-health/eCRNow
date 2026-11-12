@@ -344,6 +344,13 @@ public class LaunchDetails {
     if (Boolean.TRUE.equals(this.isMultiTenantSystemLaunch)) {
       JSONObject accessTokenObj =
           new RefreshTokenScheduler().getAccessTokenForMultiTenantLaunch(this);
+      if (accessTokenObj == null) {
+        // javabugs:S2259 guard: token retrieval failed (reason already logged); fail with a
+        // clear message instead of a NullPointerException.
+        throw new IllegalStateException(
+            "Unable to retrieve the access token for the multi-tenant launch of EHR "
+                + this.ehrServerURL);
+      }
       return accessTokenObj.getString("access_token");
     } else if (this.getTokenExpiryDateTime() != null) {
       // Retrieve Access token 3 minutes before it expires.
@@ -356,6 +363,12 @@ public class LaunchDetails {
         logger.info("AccessToken is Expired. Getting new AccessToken.");
         JSONObject accessTokenObj =
             new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
+        if (accessTokenObj == null) {
+          // javabugs:S2259 guard: token refresh failed (reason already logged); fail with a
+          // clear message instead of a NullPointerException.
+          throw new IllegalStateException(
+              "Unable to refresh the expired access token for EHR " + this.ehrServerURL);
+        }
         return accessTokenObj.getString("access_token");
       } else {
         logger.debug("AccessToken is Valid. No need to get new AccessToken.");
