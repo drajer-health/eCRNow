@@ -1,0 +1,35 @@
+FROM centos:latest
+MAINTAINER eCRNOW App
+
+ADD docker-scripts/entry.sh /opt/app/entry.sh
+RUN chmod +x /opt/app/entry.sh
+
+RUN yum update -y
+RUN yum install java-1.8.0-openjdk -y
+
+RUN yum install postgresql-server -y
+
+ENV TZ=${TZ:-'America/New_York'}
+
+RUN echo "America/New_York" > /etc/timezone
+
+# Copy war artifacts and other supporting documents
+COPY target/ecr-now.war /opt/app/eCRNow.war
+COPY documents/app-artifacts/ersd.json /opt/app/ersd.json
+COPY documents/app-artifacts/CDAR2_IG_PHCASERPT_R2_STU1.1_SCHEMATRON.sch /opt/app/CDAR2_IG_PHCASERPT_R2_STU1.1_SCHEMATRON.sch
+#COPY documents/app-artifacts/CDA_SDTC.xsd /opt/app/CDA_SDTC.xsd 
+
+# Configure application config path and log location
+ENV app_log=/mnt
+ENV app_db=localhost
+ENV app_db_port=5432
+ENV app_db_name=postgres
+ENV app_db_user=postgres
+ENV app_db_pwd=postgres
+
+EXPOSE 8081
+
+# Configure Application directory
+WORKDIR /opt/app
+
+CMD ["/opt/app/entry.sh"]
