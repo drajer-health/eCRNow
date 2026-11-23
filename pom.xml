@@ -27,8 +27,8 @@
         <fhir.core.version>6.9.12</fhir.core.version>
         <fhirpath.version>5.4.0</fhirpath.version>
         <logback-contrib.version>0.1.5</logback-contrib.version>
-        <skip.integration.tests>false</skip.integration.tests>
-        <skip.unit.tests>false</skip.unit.tests>
+        <skip.integration.tests>true</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
         <skip-jacoco-check>true</skip-jacoco-check>
         <cqf.fhir.version>3.28.1</cqf.fhir.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>

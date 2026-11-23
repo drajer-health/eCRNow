@@ -31,8 +31,9 @@ import org.springframework.stereotype.Component;
  * not share or lock anything, so the cache works the same with one pod or many.
  *
  * <ul>
- *   <li>A cached token is used without any locking for the first half of its lifetime.
- *   <li>From half its lifetime, one thread refreshes it ahead of expiry. Other threads that find
+ *   <li>A cached token is used without any locking until its refresh point: half its lifetime by
+ *       default, or {@code ecr.ehr.token.refresh-ahead-seconds} before expiry when that is set.
+ *   <li>From the refresh point, one thread refreshes it ahead of expiry. Other threads that find
  *       the refresh in progress keep using the current token and do not wait, so a slow token
  *       endpoint delays only the thread doing the refresh.
  *   <li>A token is not handed out in its last {@code token.refresh.threshold} seconds (at most half
@@ -88,6 +89,13 @@ public class EhrAccessTokenCache {
   private final Clock clock;
   private final long refreshThresholdSeconds;
   private final long lockTimeoutSeconds;
+
+  /**
+   * Seconds before expiry at which a refresh ahead of expiry starts; 0 or less means half the
+   * token's lifetime. Kept between {@code token.refresh.threshold} and half the lifetime.
+   */
+  @Value("${ecr.ehr.token.refresh-ahead-seconds:0}")
+  private long refreshAheadSeconds;
 
   private final ConcurrentHashMap<String, CachedToken> tokens = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
@@ -342,21 +350,33 @@ public class EhrAccessTokenCache {
     return new EhrAccessToken(accessToken, expiresAt, providerId);
   }
 
+  /** Sets the refresh point; see {@code ecr.ehr.token.refresh-ahead-seconds}. */
+  void setRefreshAheadSeconds(long refreshAheadSeconds) {
+    this.refreshAheadSeconds = refreshAheadSeconds;
+  }
+
   /**
-   * A refresh starts at half the token's lifetime, as MSAL does, so that even a slow token endpoint
-   * has plenty of time. The token stops being handed out {@code token.refresh.threshold} seconds
-   * before expiry (at most half its lifetime, so a short-lived token is not requested on every
-   * call).
+   * By default a refresh starts at half the token's lifetime, as MSAL does, so that even a slow
+   * token endpoint has plenty of time. With {@code ecr.ehr.token.refresh-ahead-seconds} set, it
+   * starts that many seconds before expiry instead (never earlier than half the lifetime and never
+   * later than the point where the token stops being handed out). The token stops being handed out
+   * {@code token.refresh.threshold} seconds before expiry (at most half its lifetime, so a
+   * short-lived token is not requested on every call).
    */
   private CachedToken newEntry(EhrAccessToken token, String fingerprint) {
     long lifetimeSeconds = Math.max(0, Duration.between(now(), token.expiresAt()).getSeconds());
     long half = lifetimeSeconds / 2;
-    Instant refreshAt = token.expiresAt().minusSeconds(lifetimeSeconds - half);
-    Instant usableUntil = token.expiresAt().minusSeconds(Math.min(refreshThresholdSeconds, half));
+    long usableBuffer = Math.min(refreshThresholdSeconds, half);
+    long secondsBeforeExpiry =
+        refreshAheadSeconds > 0
+            ? Math.max(usableBuffer, Math.min(refreshAheadSeconds, lifetimeSeconds - half))
+            : lifetimeSeconds - half;
+    Instant refreshAt = token.expiresAt().minusSeconds(secondsBeforeExpiry);
+    Instant usableUntil = token.expiresAt().minusSeconds(usableBuffer);
     return new CachedToken(token, refreshAt, usableUntil, fingerprint);
   }
 
-  /** Within the first half of its lifetime: used without any locking. */
+  /** Before its refresh point: used without any locking. */
   private boolean isFresh(CachedToken cached, String fingerprint) {
     return cached != null
         && cached.configFingerprint().equals(fingerprint)

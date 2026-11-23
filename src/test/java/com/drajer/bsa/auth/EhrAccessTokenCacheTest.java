@@ -135,6 +135,40 @@ public class EhrAccessTokenCacheTest {
   }
 
   @Test
+  public void refreshAheadSeconds_tenMinuteToken_refreshesOneMinuteBeforeExpiry() {
+    cache.setRefreshAheadSeconds(60);
+    when(authUtils.getToken(any()))
+        .thenReturn(tokenResponse("t1", 600))
+        .thenReturn(tokenResponse("t2", 600));
+    HealthcareSetting hs = hs(URL);
+    cache.getToken(hs);
+
+    clock.advanceSeconds(539); // 8 min 59 s: still reused, no refresh at half lifetime
+    assertEquals("t1", cache.getToken(hs).accessToken());
+    verify(authUtils, times(1)).getToken(any());
+
+    clock.advanceSeconds(2); // 9 min 01 s: refreshed ahead of expiry
+    assertEquals("t2", cache.getToken(hs).accessToken());
+    verify(authUtils, times(2)).getToken(any());
+  }
+
+  @Test
+  public void refreshAheadSeconds_isCappedAtHalfLifetime_andAtLeastTheThreshold() {
+    cache.setRefreshAheadSeconds(5000); // longer than the token: capped at half (300 s)
+    when(authUtils.getToken(any()))
+        .thenReturn(tokenResponse("t1", 600))
+        .thenReturn(tokenResponse("t2", 600));
+    HealthcareSetting hs = hs(URL);
+    cache.getToken(hs);
+
+    clock.advanceSeconds(299);
+    assertEquals("t1", cache.getToken(hs).accessToken());
+    clock.advanceSeconds(2);
+    assertEquals("t2", cache.getToken(hs).accessToken());
+    verify(authUtils, times(2)).getToken(any());
+  }
+
+  @Test
   public void refreshAheadFails_currentTokenIsReturned_nextCallTriesAgain() {
     when(authUtils.getToken(any()))
         .thenReturn(tokenResponse("t1", 3600))
