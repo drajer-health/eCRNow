@@ -23,15 +23,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -495,12 +487,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
     }
 
-    return fhirContextInitializer.createClient(
-        context,
-        kd.getHealthcareSetting().getFhirServerBaseURL(),
-        accessToken,
-        kd.getNotificationContext().getxRequestId(),
-        kd.getNotificationContext().getEhrLaunchContext());
+    // The same client FhirOperationExecutor uses: built once per job, rebuilt only when the token
+    // changes.
+    return fhirOperationExecutor.clientFor(kd, context, accessToken);
   }
 
   /** Database mode (the original implementation): new token saved on the HealthcareSetting. */
