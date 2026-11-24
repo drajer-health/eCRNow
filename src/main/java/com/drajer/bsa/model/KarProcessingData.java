@@ -175,6 +175,15 @@ public class KarProcessingData {
   private Integer tokenRefreshThreshold;
 
   /**
+   * The EHR FHIR client of this job and the access token it was built with. One job runs on one
+   * thread, so the client is reused for every FHIR request of the job and replaced only when the
+   * access token changes (refreshed, or rejected with HTTP 401). Never persisted.
+   */
+  private transient ca.uhn.fhir.rest.client.api.IGenericClient ehrClient;
+
+  private transient String ehrClientAccessToken;
+
+  /**
    * The merged PlanDefinition variables (STATIC variables read from the KAR resolved variable cache
    * plus CONTEXT variables resolved for this patient/encounter) resolved once for the first action
    * of this KAR and reused by every subsequent action processed for this same patient/notification.
@@ -681,6 +690,20 @@ public class KarProcessingData {
 
   public void setJobType(BsaJobType jobType) {
     this.jobType = jobType;
+  }
+
+  public ca.uhn.fhir.rest.client.api.IGenericClient getEhrClient() {
+    return ehrClient;
+  }
+
+  public String getEhrClientAccessToken() {
+    return ehrClientAccessToken;
+  }
+
+  public void setEhrClient(
+      ca.uhn.fhir.rest.client.api.IGenericClient ehrClient, String ehrClientAccessToken) {
+    this.ehrClient = ehrClient;
+    this.ehrClientAccessToken = ehrClientAccessToken;
   }
 
   public Integer getTokenRefreshThreshold() {

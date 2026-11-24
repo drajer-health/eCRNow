@@ -2,6 +2,7 @@ package com.drajer.bsa.ehr.service.impl;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.auth.EhrAccessTokenCache;
@@ -15,6 +16,7 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import jakarta.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 import java.util.function.Function;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -132,7 +134,9 @@ public class FhirOperationExecutor {
 
     String accessToken = currentAccessToken(data);
 
-    IGenericClient client = createClient(data, context, accessToken);
+    // Reuses the job's client while the token is unchanged; builds one only on the first request
+    // of the job or after the token changed.
+    IGenericClient client = clientFor(data, context, accessToken);
 
     int maxAttempts = getEffectiveRetryOn401MaxAttempts();
     int attempt = 0;
@@ -146,6 +150,15 @@ public class FhirOperationExecutor {
         // With ecr.fhir.retry.enabled=true the EcrFhirRetryClient wraps every HAPI exception in a
         // RetryableException, so a 401 does not arrive as a BaseServerResponseException.
         if (!isUnauthorized(exception)) {
+          if (isConnectionFailure(exception)) {
+            // The request never got an HTTP answer: drop the job's client so the next request
+            // builds a fresh one instead of reusing it.
+            data.setEhrClient(null, null);
+            logger.warn(
+                "FHIR request failed without an HTTP response; the job's FHIR client is discarded"
+                    + " and rebuilt on the next request. Request ID: {}",
+                data.getNotificationContext().getxRequestId());
+          }
           throw exception;
         }
 
@@ -178,7 +191,7 @@ public class FhirOperationExecutor {
         accessToken = refreshedAccessToken(data, accessToken);
 
         // The previous client still carries the old bearer token, so a new client is required.
-        client = createClient(data, context, accessToken);
+        client = clientFor(data, context, accessToken);
       }
     }
   }
@@ -215,6 +228,47 @@ public class FhirOperationExecutor {
     return false;
   }
 
+  /**
+   * Returns the job's EHR FHIR client when it was built with {@code accessToken}; otherwise builds
+   * a client with that token and keeps it on {@code data} for the next requests of the job. A
+   * client is never shared between jobs, because the X-Request-ID and EHR launch-context headers
+   * belong to one job.
+   */
+  public IGenericClient clientFor(KarProcessingData data, FhirContext context, String accessToken) {
+    IGenericClient client = data.getEhrClient();
+    if (client != null && Objects.equals(accessToken, data.getEhrClientAccessToken())) {
+      return client;
+    }
+    client = createClient(data, context, accessToken);
+    data.setEhrClient(client, accessToken);
+    logger.debug(
+        "Created EHR FHIR client for Request ID: {}",
+        data.getNotificationContext().getxRequestId());
+    return client;
+  }
+
+  /**
+   * True when the request got no HTTP response at all (connection refused or reset, timeout, I/O
+   * error), directly or as a cause. HTTP error responses (400, 404, 500 ...) are not connection
+   * failures: the client worked and the server answered.
+   */
+  static boolean isConnectionFailure(Throwable throwable) {
+    Throwable current = throwable;
+    int depth = 0;
+    while (current != null && depth < 10) {
+      if (current instanceof FhirClientConnectionException
+          || current instanceof java.io.IOException) {
+        return true;
+      }
+      if (current.getCause() == current) {
+        break;
+      }
+      current = current.getCause();
+      depth++;
+    }
+    return false;
+  }
+
   private IGenericClient createClient(
       KarProcessingData data, FhirContext context, String accessToken) {
 
@@ -229,8 +283,6 @@ public class FhirOperationExecutor {
   /** The access token to start with, from the configured token storage. */
   private String currentAccessToken(KarProcessingData data) {
     if (tokenStorage.isInMemory()) {
-      EhrTokenStorageMode.keepTokenChangesOutOfDatabase(
-          healthcareSettingsDao, data.getHealthcareSetting());
       return tokenCache.getToken(data.getHealthcareSetting()).accessToken();
     }
     // Database mode (the original implementation); the metrics only measure it.

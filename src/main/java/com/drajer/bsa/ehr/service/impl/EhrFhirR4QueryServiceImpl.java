@@ -456,7 +456,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     if (tokenStorage.isInMemory()) {
 
       // In-memory mode: the token is only ever generated, stored and read through the cache.
-      EhrTokenStorageMode.keepTokenChangesOutOfDatabase(hsDao, kd.getHealthcareSetting());
       accessToken = ehrAccessTokenCache.getToken(kd.getHealthcareSetting()).accessToken();
 
     } else {

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -130,6 +131,50 @@ public class FhirOperationExecutorTest {
     assertSame(serverError, thrown);
     verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
     verify(fhirContextInitializer, times(1)).createClient(any(), any(), any(), any(), any());
+  }
+
+  @Test
+  public void execute_connectionFailure_discardsTheJobsClient_andRethrows() {
+    assertThrows(
+        FhirClientConnectionException.class,
+        () ->
+            executor.execute(
+                data,
+                fhirContext,
+                client -> {
+                  throw new FhirClientConnectionException(
+                      new java.net.SocketTimeoutException("Read timed out"));
+                }));
+
+    verify(data).setEhrClient(null, null);
+    verify(tokenCache, never()).refreshAfterUnauthorized(any(), any());
+  }
+
+  @Test
+  public void execute_httpErrorResponse_keepsTheJobsClient() {
+    assertThrows(
+        InternalErrorException.class,
+        () ->
+            executor.execute(
+                data,
+                fhirContext,
+                client -> {
+                  throw new InternalErrorException("EHR error");
+                }));
+
+    verify(data, never()).setEhrClient(null, null);
+  }
+
+  @Test
+  public void isConnectionFailure_recognisesConnectionAndIoErrorsOnly() {
+    assertTrue(
+        FhirOperationExecutor.isConnectionFailure(
+            new FhirClientConnectionException(new java.net.ConnectException("refused"))));
+    assertTrue(
+        FhirOperationExecutor.isConnectionFailure(
+            new RuntimeException(new java.net.SocketException("Connection reset"))));
+    assertFalse(FhirOperationExecutor.isConnectionFailure(new InternalErrorException("500")));
+    assertFalse(FhirOperationExecutor.isConnectionFailure(new ResourceNotFoundException("404")));
   }
 
   @Test

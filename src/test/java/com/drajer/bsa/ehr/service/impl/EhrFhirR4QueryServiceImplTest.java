@@ -198,6 +198,19 @@ public class EhrFhirR4QueryServiceImplTest {
               Function<IGenericClient, Object> op = invocation.getArgument(2);
               return op.apply(fhirClient);
             });
+    // FhirOperationExecutor.clientFor builds the job's client through FhirContextInitializer
+    Mockito.lenient()
+        .when(fhirOperationExecutor.clientFor(any(), any(), any()))
+        .thenAnswer(
+            invocation -> {
+              KarProcessingData d = invocation.getArgument(0);
+              return fhirContextInitializer.createClient(
+                  invocation.getArgument(1),
+                  d.getHealthcareSetting().getFhirServerBaseURL(),
+                  invocation.getArgument(2),
+                  d.getNotificationContext().getxRequestId(),
+                  d.getNotificationContext().getEhrLaunchContext());
+            });
   }
 
   @Test

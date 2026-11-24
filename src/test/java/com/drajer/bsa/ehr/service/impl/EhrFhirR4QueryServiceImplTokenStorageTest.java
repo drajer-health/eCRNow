@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -58,6 +59,8 @@ public class EhrFhirR4QueryServiceImplTokenStorageTest {
     ReflectionTestUtils.setField(service, "hsDao", hsDao);
     ReflectionTestUtils.setField(service, "ehrAccessTokenCache", cache);
     ReflectionTestUtils.setField(service, "fhirContextInitializer", fhirContextInitializer);
+    ReflectionTestUtils.setField(
+        service, "fhirOperationExecutor", new FhirOperationExecutor(fhirContextInitializer, cache));
 
     hs = new HealthcareSetting();
     hs.setFhirServerBaseURL(URL);
@@ -85,6 +88,41 @@ public class EhrFhirR4QueryServiceImplTokenStorageTest {
     verifyNoInteractions(authUtils);
     verify(hsDao, never()).saveOrUpdate(any());
     assertEquals("the token is never put on the HealthcareSetting", null, hs.getEhrAccessToken());
+  }
+
+  @Test
+  public void sameJobSameToken_clientIsBuiltOnce_newTokenBuildsANewClient() {
+    mode(EhrTokenStorageMode.memory());
+    IGenericClient second = mock(IGenericClient.class);
+    when(fhirContextInitializer.createClient(any(), any(), any(), any(), any()))
+        .thenReturn(client, second);
+    when(cache.getToken(hs))
+        .thenReturn(
+            new EhrAccessToken("t1", Instant.now().plusSeconds(300), null),
+            new EhrAccessToken("t1", Instant.now().plusSeconds(300), null),
+            new EhrAccessToken("t2", Instant.now().plusSeconds(300), null));
+
+    assertSame(client, service.getClient(kd, context));
+    assertSame(client, service.getClient(kd, context)); // same token: reused
+    assertSame(second, service.getClient(kd, context)); // token changed: new client
+
+    verify(fhirContextInitializer, times(2)).createClient(any(), any(), any(), any(), any());
+  }
+
+  @Test
+  public void differentJobs_doNotShareAClient() {
+    mode(EhrTokenStorageMode.memory());
+    IGenericClient second = mock(IGenericClient.class);
+    when(fhirContextInitializer.createClient(any(), any(), any(), any(), any()))
+        .thenReturn(client, second);
+    when(cache.getToken(hs))
+        .thenReturn(new EhrAccessToken("t1", Instant.now().plusSeconds(300), null));
+    KarProcessingData otherJob = new KarProcessingData();
+    otherJob.setHealthcareSetting(hs);
+    otherJob.setNotificationContext(new NotificationContext());
+
+    assertSame(client, service.getClient(kd, context));
+    assertSame(second, service.getClient(otherJob, context));
   }
 
   // ==================== database (original implementation) ====================
