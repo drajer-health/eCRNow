@@ -1624,9 +1624,11 @@ public class CdaFhirUtilities {
 
       String units = "";
 
-      if (dt.hasCode()) {
+      if (CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME.equals(elName)) {
+        units = getCdaUnitForDoseQuantity(dt);
+      } else if (dt.hasCode()) {
         units = dt.getCode();
-      } else if (units.isEmpty() && dt.hasUnit()) {
+      } else if (dt.hasUnit()) {
         units = dt.getUnit();
       }
 
@@ -1640,6 +1642,37 @@ public class CdaFhirUtilities {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * doseQuantity/@unit must be from the CDA UnitsOfMeasureCaseSensitive value set. Use the FHIR
+   * code if it is in the value set, else the code whose display matches the FHIR unit text, else no
+   * unit (unitless PQ). E.g. FHIR ucum-common {tbl} is not in the CDA value set.
+   */
+  public static String getCdaUnitForDoseQuantity(Quantity dt) {
+
+    String vs = CdaGeneratorConstants.UnitsOfMeasureCaseSensitiveValueset;
+
+    if (dt.hasCode() && CdaGeneratorConstants.isCodePresentInValueSet(vs, dt.getCode())) {
+      return dt.getCode();
+    }
+
+    if (dt.hasUnit()) {
+      String mappedCode = CdaGeneratorConstants.getUcumCodeForDisplay(dt.getUnit());
+      if (mappedCode != null) {
+        return mappedCode;
+      }
+      // unit text may itself be a valid UCUM code, e.g. "mg"
+      if (CdaGeneratorConstants.isCodePresentInValueSet(vs, dt.getUnit())) {
+        return dt.getUnit();
+      }
+    }
+
+    logger.debug(
+        "doseQuantity unit code {} / unit {} not in UnitsOfMeasureCaseSensitive, omitting @unit",
+        dt.getCode(),
+        dt.getUnit());
+    return "";
   }
 
   public static String getBirthSexXml(String birthSex) {
