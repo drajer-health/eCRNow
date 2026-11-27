@@ -7,7 +7,6 @@ import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +15,20 @@ import org.springframework.web.bind.annotation.*;
 public class PublicHealthAuthorityController {
   private final Logger logger = LoggerFactory.getLogger(PublicHealthAuthorityController.class);
 
-  @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
+  private final PublicHealthAuthorityService publicHealthAuthorityService;
 
-  @CrossOrigin
+  public PublicHealthAuthorityController(
+      PublicHealthAuthorityService publicHealthAuthorityService) {
+    this.publicHealthAuthorityService = publicHealthAuthorityService;
+  }
+
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/publicHealthAuthority/{phaId}")
   public PublicHealthAuthority getPublicHealthAuthorityById(@PathVariable("phaId") Integer phaId) {
     return publicHealthAuthorityService.getPublicHealthAuthorityById(phaId);
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/publicHealthAuthority")
   public ResponseEntity<Object> createPublicHealthAuthority(
       @RequestBody PublicHealthAuthorityRequest phaRequest) {
@@ -54,7 +58,7 @@ public class PublicHealthAuthorityController {
     }
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PutMapping(value = "/api/publicHealthAuthority")
   public ResponseEntity<Object> updatePublicHealthAuthority(
       @RequestBody PublicHealthAuthorityRequest phaRequest) {
@@ -79,14 +83,14 @@ public class PublicHealthAuthorityController {
     }
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/publicHealthAuthority")
   public PublicHealthAuthority getPublicHealthAuthorityByUrl(
       @RequestParam(value = "url") String url) {
     return publicHealthAuthorityService.getPublicHealthAuthorityByUrl(url);
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/publicHealthAuthority/")
   public List<PublicHealthAuthority> getAllPublicHealthAuthority() {
     return publicHealthAuthorityService.getAllPublicHealthAuthority();

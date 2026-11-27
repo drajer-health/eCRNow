@@ -19,7 +19,7 @@ public class WorkflowController {
 
   private final Logger logger = LoggerFactory.getLogger(WorkflowController.class);
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/invokeWorkflow")
   public ResponseEntity<String> invokeWorkflow(
       @RequestBody WorkflowTask workflowTask,

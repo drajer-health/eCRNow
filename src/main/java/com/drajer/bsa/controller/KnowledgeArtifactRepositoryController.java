@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +36,15 @@ public class KnowledgeArtifactRepositoryController {
       LoggerFactory.getLogger(KnowledgeArtifactRepositoryController.class);
 
   /** The Service class to manage the Knowledge Artifact Repositories */
-  @Autowired KarService karService;
+  private final KarService karService;
 
   /** The Service class to manage loading of KARs */
-  @Autowired KarParser karParser;
+  private final KarParser karParser;
+
+  public KnowledgeArtifactRepositoryController(KarService karService, KarParser karParser) {
+    this.karService = karService;
+    this.karParser = karParser;
+  }
 
   /**
    * Method to retrieve the Knowledge Artifact Repository by Id
@@ -48,7 +52,7 @@ public class KnowledgeArtifactRepositoryController {
    * @param karId - Id of the Knowledge Artifact Repository
    * @return - The Knowledge Artifact Repository object for the id provided
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/kar/{karId}")
   public KnowledgeArtifactRepository getKnowledgeArtifactById(
       @PathVariable("karId") Integer karId) {
@@ -61,7 +65,7 @@ public class KnowledgeArtifactRepositoryController {
    * @param karRequest - The KnowledgeArtifactRepository details that need to be persisted.
    * @return - Entity that is created.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/kar")
   public ResponseEntity<Object> createKARs(
       @RequestBody KnowledgeArtifactRepositoryRequest karRequest) {
@@ -90,7 +94,7 @@ public class KnowledgeArtifactRepositoryController {
    * @param url - The unique URL for the KAR
    * @return - The KAR object by its URL
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/kars")
   public KnowledgeArtifactRepository getKARByUrl(@RequestParam(value = "url") String url) {
     return karService.getKARByUrl(url);
@@ -101,7 +105,7 @@ public class KnowledgeArtifactRepositoryController {
    *
    * @return - List of KARs
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/kars/")
   public List<KnowledgeArtifactRepository> getAllKARs() {
     return karService.getAllKARs();
@@ -116,7 +120,7 @@ public class KnowledgeArtifactRepositoryController {
    * @param - The KAR status object for the healthcare setting.
    * @return - The KARStatus Object that is created.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/addKARStatus/")
   public ResponseEntity<List<KnowledgeArtifactStatus>> addKARStatus(
       @RequestBody List<KnowledgeArtifactStatusRequest> karStatusRequests) {
@@ -153,7 +157,7 @@ public class KnowledgeArtifactRepositoryController {
    * @param hsId - The Healthcare setting Id for which the KARStatus is being accessed.
    * @return - The List of KnowledgeArtifact Status for the HealthcareSetting.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/karStatusByHsId")
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(
       @RequestParam(value = "hsId") Integer hsId) {
@@ -161,7 +165,7 @@ public class KnowledgeArtifactRepositoryController {
   }
 
   /** Method to reload Kars from the file system */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/loadKars")
   public ResponseEntity<Object> loadKars() {
 

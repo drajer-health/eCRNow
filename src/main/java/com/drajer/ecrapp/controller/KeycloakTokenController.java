@@ -3,7 +3,6 @@ package com.drajer.ecrapp.controller;
 import com.drajer.ecrapp.security.KeyCloakTokenValidationClient;
 import java.util.Map;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class KeycloakTokenController {
 
-  @Autowired private KeyCloakTokenValidationClient keyCloakTokenValidationClient;
+  private final KeyCloakTokenValidationClient keyCloakTokenValidationClient;
+
+  public KeycloakTokenController(KeyCloakTokenValidationClient keyCloakTokenValidationClient) {
+    this.keyCloakTokenValidationClient = keyCloakTokenValidationClient;
+  }
 
   /**
    * Endpoint to generate and validate a token.
@@ -21,7 +24,7 @@ public class KeycloakTokenController {
    * @param tokenDetails Map containing token details like client_id, client_secret, etc.
    * @return ResponseEntity indicating success or failure of token generation.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping("/generate-token")
   public ResponseEntity<Object> generateToken(@RequestParam Map<String, Object> tokenDetails) {
     if (tokenDetails == null || tokenDetails.isEmpty()) {
@@ -53,7 +56,7 @@ public class KeycloakTokenController {
    * @param tokenDetails Map containing token details like client_id, client_secret, etc.
    * @return ResponseEntity indicating success or failure of token generation.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping("/generateAuthToken")
   public ResponseEntity<Object> generateUserAuthToken(
       @RequestParam Map<String, Object> tokenDetails) {
@@ -87,7 +90,7 @@ public class KeycloakTokenController {
    * @param tokenDetails Map containing token details like client_id, client_secret, etc.
    * @return ResponseEntity indicating success or failure of token generation.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping("/refresh-token")
   public ResponseEntity<Object> refreshToken(@RequestParam Map<String, Object> tokenDetails) {
     if (tokenDetails == null

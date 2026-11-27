@@ -24,7 +24,7 @@ public class SampleRestApiReceiver {
 
   private static final Logger logger = LoggerFactory.getLogger(SampleRestApiReceiver.class);
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/receiveEicr")
   public ResponseEntity<Object> receiveEicr(
       @RequestBody RestApiBody body, HttpServletRequest request, HttpServletResponse response) {

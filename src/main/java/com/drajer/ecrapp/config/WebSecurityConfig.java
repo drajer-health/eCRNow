@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,11 @@ public class WebSecurityConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
-  @Autowired private ApplicationContext context;
+  private final ApplicationContext context;
+
+  public WebSecurityConfig(ApplicationContext context) {
+    this.context = context;
+  }
 
   @Value("${token.validator.class:}")
   private String tokenFilterClassName;
@@ -35,12 +38,15 @@ public class WebSecurityConfig {
   @Value("#{'${security.whitelist-endpoints}'.split(',')}")
   private List<String> whitelistEndpoints;
 
+  @Value("#{'${security.cors.allowed-origins:*}'.split(',')}")
+  private List<String> corsAllowedOrigins;
+
   @Bean
   public CorsFilter corsFilter() {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("*"));
+    config.setAllowedOrigins(corsAllowedOrigins);
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
 
@@ -52,7 +58,7 @@ public class WebSecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
 
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("*"));
+    config.setAllowedOrigins(corsAllowedOrigins);
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
 

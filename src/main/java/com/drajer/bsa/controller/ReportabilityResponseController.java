@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,11 +25,17 @@ public class ReportabilityResponseController {
 
   private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseController.class);
 
-  @Autowired RrReceiver rrReceieverService;
+  private final RrReceiver rrReceieverService;
 
-  @Autowired PublicHealthMessagesDao phDao;
+  private final PublicHealthMessagesDao phDao;
 
-  @CrossOrigin
+  public ReportabilityResponseController(
+      RrReceiver rrReceieverService, PublicHealthMessagesDao phDao) {
+    this.rrReceieverService = rrReceieverService;
+    this.phDao = phDao;
+  }
+
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/receiveReportabilityResponse")
   public ResponseEntity<String> receiveReportabilityResponse(
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
@@ -78,7 +83,7 @@ public class ReportabilityResponseController {
     return new ResponseEntity<>("Success", HttpStatus.OK);
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/reSubmitReportabilityResponse")
   public ResponseEntity<String> reSubmitReportabilityResponse(
       @RequestParam(name = "eicrId", required = false) String eicrId,
