@@ -11,7 +11,6 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +29,13 @@ public class PhMessageController {
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
   private final Logger logger = LoggerFactory.getLogger(PhMessageController.class);
 
-  @Autowired PhMessageService phMessageService;
+  private final PhMessageService phMessageService;
 
-  @CrossOrigin
+  public PhMessageController(PhMessageService phMessageService) {
+    this.phMessageService = phMessageService;
+  }
+
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping(value = "/api/phMessage", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getPhMessageDetails(
       @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
@@ -158,7 +161,7 @@ public class PhMessageController {
     }
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping(value = "/api/getPhMessagesSummary", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getPhMessageDetailsSummary(
       @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
@@ -327,7 +330,7 @@ public class PhMessageController {
     }
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @DeleteMapping("/api/phMessage")
   public ResponseEntity<String> deletePhMessages(
       @RequestBody PublicHealthMessageData publicHealthMessageData) {

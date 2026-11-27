@@ -252,10 +252,15 @@ public class RefreshTokenScheduler {
   public JSONObject getAccessTokenForMultiTenantLaunch(LaunchDetails launchDetails) {
     JSONObject tokenResponse = null;
     try {
+      ClientDetailsService clientService = ActionRepo.getInstance().getClientDetailsService();
+      if (clientService == null) {
+        // javabugs:S2259 guard: wired into ActionRepo during startup; return null like any other
+        // token-retrieval failure instead of failing with an NPE.
+        logger.error("Cannot get AccessToken: no ClientDetailsService configured in ActionRepo");
+        return tokenResponse;
+      }
       ClientDetails clientDetails =
-          ActionRepo.getInstance()
-              .getClientDetailsService()
-              .getClientDetailsByUrl(launchDetails.getEhrServerURL());
+          clientService.getClientDetailsByUrl(launchDetails.getEhrServerURL());
 
       Instant currentInstant = new Date().toInstant().plusSeconds(180);
       Date currentDate = Date.from(currentInstant);

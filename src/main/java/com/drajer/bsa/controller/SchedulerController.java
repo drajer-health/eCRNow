@@ -5,7 +5,6 @@ import com.drajer.ecrapp.service.SchedulerService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,9 +12,13 @@ public class SchedulerController {
 
   private final Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 
-  @Autowired SchedulerService schedulerService;
+  private final SchedulerService schedulerService;
 
-  @CrossOrigin
+  public SchedulerController(SchedulerService schedulerService) {
+    this.schedulerService = schedulerService;
+  }
+
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/scheduledTasks")
   public List<ScheduledTasks> getScheduledTasks(
       @RequestParam(name = "action", required = false) String actionType,
@@ -27,7 +30,7 @@ public class SchedulerController {
     return schedulerService.getScheduledTasks(actionType, launchId);
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping("/api/scheduledTasks/search")
   public List<ScheduledTasks> getScheduledTasksBySearchQuery(
       @RequestParam(name = "taskInstance", required = false) String taskInstance) {

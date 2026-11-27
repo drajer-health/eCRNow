@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,9 +31,13 @@ public class NotificationContextController {
 
   private final Logger logger = LoggerFactory.getLogger(NotificationContextController.class);
 
-  @Autowired NotificationContextService notificationContextService;
+  private final NotificationContextService notificationContextService;
 
-  @CrossOrigin
+  public NotificationContextController(NotificationContextService notificationContextService) {
+    this.notificationContextService = notificationContextService;
+  }
+
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @DeleteMapping(value = "/api/notificationContext")
   public String deleteNotificationContext(
       @RequestBody NotificationContextData notificationContextData,
@@ -46,11 +49,9 @@ public class NotificationContextController {
             notificationContextData.getId(), notificationContextData.getFhirServerBaseUrl(),
             notificationContextData.getNotificationResourceId(),
                 notificationContextData.getPatientId());
-    if (notificationContextDetails != null) {
-      for (NotificationContext notificationContext : notificationContextDetails) {
-        notificationContextService.delete(notificationContext);
-        return "NotificationContext deleted successfully.";
-      }
+    if (notificationContextDetails != null && !notificationContextDetails.isEmpty()) {
+      notificationContextService.delete(notificationContextDetails.get(0));
+      return "NotificationContext deleted successfully.";
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "NotificationContext Not found");
     return "NotificationContext Not found";

@@ -43,7 +43,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @author nbashyam
  */
 @Service
-@Transactional
+// java:S8989: make the rollback behavior for checked exceptions explicit. This matches the Spring
+// default this class has always run with: InvalidLaunchContext / InvalidNotification do NOT roll
+// back the transaction, so the NotificationContext rows saved before the throw are kept, which
+// the relaunch and re-process flows rely on.
+@Transactional(noRollbackFor = {InvalidLaunchContext.class, InvalidNotification.class})
 public class SubscriptionNotificationReceiverImpl implements SubscriptionNotificationReceiver {
 
   @Autowired NotificationContextDao ncDao;

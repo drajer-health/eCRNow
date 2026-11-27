@@ -7,10 +7,13 @@ import javax.crypto.SecretKey;
 
 public class CryptoUtils {
 
+  // java:S2119: SecureRandom is thread-safe and expensive to seed, so one shared instance is
+  // created once and reused for every nonce instead of a new instance per call.
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
   public static byte[] getRandomNonce(int numBytes) {
     byte[] nonce = new byte[numBytes];
-    SecureRandom secureRandom = new SecureRandom();
-    secureRandom.nextBytes(nonce);
+    SECURE_RANDOM.nextBytes(nonce);
     return nonce;
   }
 

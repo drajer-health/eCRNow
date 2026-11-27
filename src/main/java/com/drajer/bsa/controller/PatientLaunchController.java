@@ -35,7 +35,6 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -51,13 +50,24 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class PatientLaunchController {
 
-  @Autowired HealthcareSettingsService hsService;
+  private final HealthcareSettingsService hsService;
 
-  @Autowired EhrQueryService ehrService;
+  private final EhrQueryService ehrService;
 
-  @Autowired SubscriptionNotificationReceiver notificationReceiver;
+  private final SubscriptionNotificationReceiver notificationReceiver;
 
-  @Autowired SchedulerService schedulerService;
+  private final SchedulerService schedulerService;
+
+  public PatientLaunchController(
+      HealthcareSettingsService hsService,
+      EhrQueryService ehrService,
+      SubscriptionNotificationReceiver notificationReceiver,
+      SchedulerService schedulerService) {
+    this.hsService = hsService;
+    this.ehrService = ehrService;
+    this.notificationReceiver = notificationReceiver;
+    this.schedulerService = schedulerService;
+  }
 
   /** The token refresh threshold value for refreshing access tokens */
   @Value("${token.refresh.threshold:25}")
@@ -81,7 +91,7 @@ public class PatientLaunchController {
    * @return
    * @throws IOException
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/launchPatient")
   public ResponseEntity<Object> launchPatient(
       @RequestBody PatientLaunchContext launchContext,
@@ -193,7 +203,7 @@ public class PatientLaunchController {
    * @return
    * @throws IOException
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/reLaunchPatient")
   public ResponseEntity<Object> reLaunchPatient(
       @RequestBody PatientLaunchContext launchContext,
@@ -299,7 +309,7 @@ public class PatientLaunchController {
    * @return
    * @throws IOException
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @PostMapping(value = "/api/reProcessPatient")
   public ResponseEntity<Object> reProcessPatient(
       @RequestBody PatientLaunchContext launchContext,

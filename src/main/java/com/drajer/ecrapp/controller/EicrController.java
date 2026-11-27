@@ -12,7 +12,6 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +24,13 @@ public class EicrController {
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
   private final Logger logger = LoggerFactory.getLogger(EicrController.class);
 
-  @Autowired EicrRRService eicrRRService;
+  private final EicrRRService eicrRRService;
 
-  @CrossOrigin
+  public EicrController(EicrRRService eicrRRService) {
+    this.eicrRRService = eicrRRService;
+  }
+
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping(value = "/api/eicrData", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getEicrData(
       @RequestParam(name = "eicrId", required = false) String eicrId,
@@ -102,7 +105,7 @@ public class EicrController {
     return new ResponseEntity<>(eicrData.toString(), HttpStatus.OK);
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping(value = "/api/responseData", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getRRData(
       @RequestParam(name = "responseDocId", required = false) String responseDocId,
@@ -163,7 +166,7 @@ public class EicrController {
     return new ResponseEntity<>(rrData.toString(), HttpStatus.OK);
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping(value = "/api/eicrAndRRData")
   public ResponseEntity<Object> getEicrAndRRByRequestId(
       @RequestParam("xRequestId") String xRequestId,
@@ -185,7 +188,7 @@ public class EicrController {
     return new ResponseEntity<>(eicrList.toString(), HttpStatus.OK);
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping(value = "/api/eicr")
   public ResponseEntity<Object> getEicrByEicrDocID(
       @RequestParam("eicrDocId") String eicrDocId,
@@ -217,7 +220,7 @@ public class EicrController {
     }
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @DeleteMapping(value = "/api/eicr")
   public ResponseEntity<String> deleteEicrByEicrDocID(
       @RequestParam("eicrDocId") String eicrDocId,
@@ -249,7 +252,7 @@ public class EicrController {
     }
   }
 
-  @CrossOrigin
+  @CrossOrigin(origins = "${security.cors.allowed-origins:*}")
   @GetMapping(value = "/api/test2", produces = MediaType.APPLICATION_JSON_VALUE)
   public String test2(@RequestParam(value = "waitFor") Integer waitFor)
       throws InterruptedException {
