@@ -1238,12 +1238,12 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287553"/>
                         <code code="94500-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-                            <reference value="#labTestName1"/>
+                            <reference value="#labTestName1-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="260373001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Detected (qualifier value)"><originalText>
-                        <reference value="#labTestResultValue1"/>
+                        <reference value="#labTestResultValue1-1"/>
                     </originalText>
                     </value>
                         <interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
@@ -1273,7 +1273,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287440"/>
                         <code code="161732006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Gravida (observable entity)"><originalText>
-                            <reference value="#labTestName2"/>
+                            <reference value="#labTestName2-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1297,7 +1297,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="Component1"/>
                         <code code="8480-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Systolic blood pressure"><originalText>
-                            <reference value="#labTestName3"/>
+                            <reference value="#labTestName3-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1321,7 +1321,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287269"/>
                         <code code="79348-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-                            <reference value="#labTestName4"/>
+                            <reference value="#labTestName4-1"/>
                         </originalText>
                             <translation code="29463-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
                         </code>
@@ -1346,7 +1346,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287257"/>
                         <code code="33962009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Chief complaint (finding)"><originalText>
-                            <reference value="#labTestName5"/>
+                            <reference value="#labTestName5-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1371,7 +1371,7 @@
                         <code nullFlavor="NI"/>
                         <statusCode code="completed"/>
                         <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
-                        <reference value="#labTestResultValue6"/>
+                        <reference value="#labTestResultValue6-1"/>
                     </originalText>
                     </value>
                     </observation>
@@ -1393,13 +1393,13 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625813"/>
                         <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-                            <reference value="#labTestName7"/>
+                            <reference value="#labTestName7-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime nullFlavor="NI"/>
                         <value xsi:type="CD" code="35748005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Wine (substance)"><originalText>
-                            <reference value="#labTestResultValue7"/>
+                            <reference value="#labTestResultValue7-1"/>
                         </originalText>
                         </value>
                     </observation>
@@ -1421,13 +1421,13 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625817"/>
                         <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-                            <reference value="#labTestName8"/>
+                            <reference value="#labTestName8-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime nullFlavor="NI"/>
                         <value xsi:type="CD" code="15240007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Current (qualifier value)"><originalText>
-                            <reference value="#labTestResultValue8"/>
+                            <reference value="#labTestResultValue8-1"/>
                         </originalText>
                         </value>
                     </observation>
@@ -1448,13 +1448,13 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079797-q4625809"/>
                         <code code="68518-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-                            <reference value="#labTestName9"/>
+                            <reference value="#labTestName9-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime nullFlavor="NI"/>
                         <value xsi:type="CD" code="1371000175106" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="One to two times per week (qualifier value)"><originalText>
-                            <reference value="#labTestResultValue9"/>
+                            <reference value="#labTestResultValue9-1"/>
                         </originalText>
                         </value>
                     </observation>
@@ -1475,7 +1475,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="SH-93-73079787"/>
                         <code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-                            <reference value="#labTestName10"/>
+                            <reference value="#labTestName10-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1499,7 +1499,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="SH-73079787-q4625825"/>
                         <code code="72166-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-                            <reference value="#labTestName11"/>
+                            <reference value="#labTestName11-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1544,7 +1544,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287241"/>
                         <code code="35081000175103" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"><originalText>
-                            <reference value="#labTestName13"/>
+                            <reference value="#labTestName13-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1568,7 +1568,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287217"/>
                         <code code="34831000175105" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"><originalText>
-                            <reference value="#labTestName14"/>
+                            <reference value="#labTestName14-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1613,7 +1613,7 @@
                         <code nullFlavor="NI"/>
                         <statusCode code="completed"/>
                         <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
-                        <reference value="#labTestResultValue16"/>
+                        <reference value="#labTestResultValue16-1"/>
                     </originalText>
                     </value>
                     </observation>
@@ -1635,7 +1635,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287205"/>
                         <code code="370157003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Main spoken language (finding)"><originalText>
-                            <reference value="#labTestName17"/>
+                            <reference value="#labTestName17-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1660,7 +1660,7 @@
                         <code nullFlavor="NI"/>
                         <statusCode code="completed"/>
                         <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="373066001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Yes (qualifier value)"><originalText>
-                        <reference value="#labTestResultValue18"/>
+                        <reference value="#labTestResultValue18-1"/>
                     </originalText>
                     </value>
                     </observation>
@@ -1682,12 +1682,12 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="M-197287219"/>
                         <code code="161086008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Recent countries visited (observable entity)"><originalText>
-                            <reference value="#labTestName19"/>
+                            <reference value="#labTestName19-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime value="20200428194229+0000"/><value xsi:type="CD" code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"><originalText>
-                        <reference value="#labTestResultValue19"/>
+                        <reference value="#labTestResultValue19-1"/>
                     </originalText>
                     </value>
                     </observation>
@@ -1708,7 +1708,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptlabobservation-601"/>
                         <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-                            <reference value="#labTestName20"/>
+                            <reference value="#labTestName20-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -1732,7 +1732,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.inptlabobservation-601"/>
                         <code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
-                            <reference value="#labTestName21"/>
+                            <reference value="#labTestName21-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>

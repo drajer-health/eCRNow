@@ -171,10 +171,12 @@ public class CdaResultGenerator {
               obsWithComponents.getEffective(),
               obs.getInterpretation(),
               rowNum,
+              i,
               obsWithComponents.getPerformer(),
               data,
               version,
-              obsWithComponents.getReferenceRange()));
+              obsWithComponents.getReferenceRange(),
+              null));
 
       i++;
     }
@@ -401,6 +403,7 @@ public class CdaResultGenerator {
               obs.getEffective(),
               obs.getInterpretation(),
               rowNum,
+              i,
               obs.getPerformer(),
               data,
               version,
@@ -759,6 +762,41 @@ public class CdaResultGenerator {
       List<Observation.ObservationReferenceRangeComponent> referenceRange,
       List<Reference> reportPerformerRefs) {
 
+    return getXmlForObservationComponent(
+        details,
+        cd,
+        val,
+        id,
+        effective,
+        interpretation,
+        rowNum,
+        1,
+        performerRefs,
+        data,
+        version,
+        referenceRange,
+        reportPerformerRefs);
+  }
+
+  /**
+   * @param compIndex 1-based position of this result in its narrative row group; used to build
+   *     originalText references (e.g. #labTestName2-1) that match the narrative content IDs.
+   */
+  public static String getXmlForObservationComponent(
+      LaunchDetails details,
+      CodeableConcept cd,
+      Type val,
+      String id,
+      Type effective,
+      List<CodeableConcept> interpretation,
+      int rowNum,
+      int compIndex,
+      List<Reference> performerRefs,
+      R4FhirData data,
+      String version,
+      List<Observation.ObservationReferenceRangeComponent> referenceRange,
+      List<Reference> reportPerformerRefs) {
+
     StringBuilder lrEntry = new StringBuilder(2000);
 
     // Add the actual Result Observation
@@ -781,13 +819,13 @@ public class CdaResultGenerator {
     paths.add("DiagnosticReport.code");
     paths.add("Observation.value");
 
-    String contentRef =
-        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+    String contentSuffix = rowNum + "-" + compIndex;
+    String contentRef = CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + contentSuffix;
     Pair<Boolean, String> obsCodeXml =
         getObservationCodeXml(details, cd, false, contentRef, paths, version);
 
     Pair<Boolean, String> obsValueXml = null;
-    contentRef = CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT + Integer.toString(rowNum);
+    contentRef = CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT + contentSuffix;
     if (val instanceof CodeableConcept) {
       paths.clear();
       paths.add("Observation.value");
