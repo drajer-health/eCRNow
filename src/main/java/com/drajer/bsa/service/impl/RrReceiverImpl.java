@@ -205,8 +205,28 @@ public class RrReceiverImpl implements RrReceiver {
               EicrTypes.RrProcessingStatus.HEALTHCARE_SETTING_NOT_FOUND_FOR_RR.toString());
         }
 
+        //        // Save the state, no matter what so that they can be reprocessed.
+        //        phDao.saveOrUpdate(phm);
+
         // Save the state, no matter what so that they can be reprocessed.
-        phDao.saveOrUpdate(phm);
+        try {
+          phDao.saveOrUpdate(phm);
+          logger.info(
+              "RR final persisted status={} x-request-id={} rrDocId={} eicrDocId={}",
+              phm.getResponseProcessingStatus(),
+              phm.getxRequestId(),
+              rrDocId.getRootValue(),
+              eicrDocId.getRootValue());
+        } catch (Exception e) {
+          logger.error(
+              "RR final save failed: x-request-id={} status={} rrDocId={} eicrDocId={}",
+              phm.getxRequestId(),
+              phm.getResponseProcessingStatus(),
+              rrDocId.getRootValue(),
+              eicrDocId.getRootValue(),
+              e);
+          throw e; // keep original behaviour
+        }
 
       } else {
         String errorMsg =
