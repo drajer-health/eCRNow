@@ -312,7 +312,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="obs-see-note-example"/>
                         <code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count"><originalText>
-                            <reference value="#labTestName1"/>
+                            <reference value="#labTestName1-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -393,7 +393,7 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="abd14f55-4648-4e91-bfad-9b1844707748"/>
                         <code code="6349-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
-                            <reference value="#labTestName3"/>
+                            <reference value="#labTestName3-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
@@ -471,13 +471,13 @@
                         <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
                         <id root="2.16.840.1.113883.1.1.1.1" extension="05da9140-7ab6-491c-bc4a-3b2fb177ee4f"/>
                         <code code="16177-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Bartonella quintana IgM Ab [Units/volume] in Cerebral spinal fluid"><originalText>
-                            <reference value="#labTestName4"/>
+                            <reference value="#labTestName4-1"/>
                         </originalText>
                         </code>
                         <statusCode code="completed"/>
                         <effectiveTime value="20240107000000+0000"/>
                         <value xsi:type="CD" code="260373001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Detected (qualifier value)"><originalText>
-                            <reference value="#labTestResultValue4"/>
+                            <reference value="#labTestResultValue4-1"/>
                         </originalText>
                         </value>
                         <author>
