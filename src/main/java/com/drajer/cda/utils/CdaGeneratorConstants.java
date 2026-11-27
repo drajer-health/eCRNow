@@ -1132,6 +1132,8 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/us/odh/StructureDefinition/odh-isCurrentJob-extension";
   public static final String GestationalAgeEstimatedValueset = "2.16.840.1.113883.11.20.9.82";
 
+  public static final String UnitsOfMeasureCaseSensitiveValueset = "2.16.840.1.113883.1.11.12839";
+
   // CDA eICR versions supported
   public static final String CDA_EICR_VERSION_R11 = "CDA_R11";
   public static final String CDA_EICR_VERSION_R31 = "CDA_R31";
@@ -1167,6 +1169,9 @@ public class CdaGeneratorConstants {
   private static HashMap<String, HashMap<String, String>> fhirToCdaTerminologyMap = new HashMap<>();
 
   private static HashMap<String, HashSet<String>> valueSetToCodes = new HashMap<>();
+
+  // UnitsOfMeasureCaseSensitive display (lower case) to UCUM code
+  private static HashMap<String, String> ucumDisplayToCode = new HashMap<>();
 
   // Map to hold OID to Name
   private static HashMap<String, String> oidNameMap = new HashMap<>();
@@ -1265,10 +1270,33 @@ public class CdaGeneratorConstants {
               }
             });
       }
+      InputStream ucumFile =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("UnitsOfMeasureCaseSensitiveValueset.properties");
+      if (ucumFile != null) {
+        Properties prop6 = new Properties();
+        prop6.load(ucumFile);
 
+        valueSetToCodes.putIfAbsent(UnitsOfMeasureCaseSensitiveValueset, new HashSet<>());
+        prop6.forEach(
+            (key, value) -> {
+              valueSetToCodes.get(UnitsOfMeasureCaseSensitiveValueset).add((String) key);
+              ucumDisplayToCode.putIfAbsent(((String) value).trim().toLowerCase(), (String) key);
+            });
+      }
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
     }
+  }
+
+  /**
+   * @param display unit display text, e.g. "milligram"
+   * @return the UnitsOfMeasureCaseSensitive code for the display, e.g. "mg", or null
+   */
+  public static String getUcumCodeForDisplay(String display) {
+    if (display == null) return null;
+    return ucumDisplayToCode.get(display.trim().toLowerCase());
   }
 
   public static Boolean isCodePresentInValueSet(String valueset, String code) {
